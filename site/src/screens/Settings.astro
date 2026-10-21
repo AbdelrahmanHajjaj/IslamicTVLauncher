@@ -1,0 +1,345 @@
+---
+// Settings (SettingsActivity): the section sidebar with the Asr preview, the open section's rows, and a list
+// chooser over the screen. The rows really change this browser's prefs, so Home and the rest follow them.
+import Icon from '../components/Icon.astro';
+import type { Ctx } from '../lib/ctx';
+import { href } from '../lib/site';
+import { navHtml, previewHtml, rowsHtml, sectionName, PRAYER } from './settings';
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t, lang } = ctx;
+---
+<div class="settings" data-settings>
+  <aside class="side">
+    <div class="head">
+      <Icon name="mihrab" size={40} stroke={2} class="mihrab" />
+      <h2 class="title display-bold">{t.s('settings')}</h2>
+    </div>
+    <div data-navs set:html={navHtml(t, PRAYER)} />
+    <div class="preview">
+      <span class="pl">{t.s('preview')}</span>
+      <span class="pv display num" data-k="preview" set:html={previewHtml(ctx)} />
+    </div>
+  </aside>
+  <div class="label caps" data-label>{sectionName(t, PRAYER)}</div>
+  <div class="rows" data-rows set:html={rowsHtml(ctx, PRAYER)} />
+  <div class="hints" data-hints-out></div>
+  <div class="chooser" data-chooser hidden></div>
+  <div class="toast" data-toast-out hidden role="status"></div>
+  <a data-home href={href('', lang) + '#tv'} tabindex="-1" hidden>{lang === 'ar' ? 'الرئيسية' : 'Home'}</a>
+  <audio data-audio preload="none"></audio>
+</div>
+
+<script>
+  import { live } from '../scripts/live';
+  import { href } from '../lib/site';
+  import { METHODS, cityOf, stationOf } from '../lib/data';
+  import type { Ctx } from '../lib/ctx';
+  import type { Lang } from '../lib/text';
+  import {
+    VOICES, change, chooserHtml, citiesOf, countries, methodItems, pick, previewHtml, rowsFor, rowsHtml,
+    sectionName, stationChoice, stationsOf, type SPrefs,
+  } from './settings';
+
+  const stage = document.querySelector<HTMLElement>('.tv')!;
+  if (stage.dataset.screen === 'settings') {
+    const $ = <T extends HTMLElement = HTMLElement>(s: string) => stage.querySelector<T>(s)!;
+    const root = $('[data-settings]');
+    const rowsEl = $('[data-rows]');
+    const chooserEl = $('[data-chooser]');
+    const toastEl = $('[data-toast-out]');
+    const audio = $<HTMLAudioElement>('[data-audio]');
+    const navs = [...root.querySelectorAll<HTMLElement>('[data-nav]')];
+    const lang = document.documentElement.lang as Lang;
+    const rtl = document.documentElement.dir === 'rtl';
+    const FOCUS = 'afnon-settings-focus';
+
+    let section = 0;
+    let lastRows = rowsEl.innerHTML;
+    let radioOn = false;
+    let ctx!: Ctx;
+
+    const rowEls = () => [...rowsEl.querySelectorAll<HTMLElement>('[data-row]')];
+    const focusRow = (i: number) => { const r = rowEls(); r[Math.max(0, Math.min(r.length - 1, i))]?.focus({ preventScroll: true }); };
+    const focusedRow = () => { const a = document.activeElement as HTMLElement | null; return a && rowsEl.contains(a) ? +(a.dataset.row ?? -1) : -1; };
+    const focusNav = () => navs[section].focus({ preventScroll: true });
+
+    // The rows are re-rendered only when their HTML changes (a pref, the date), keeping focus on the same row.
+    const rerender = () => {
+      const h = rowsHtml(ctx, section, radioOn);
+      if (h === lastRows) return;
+      const fi = focusedRow();
+      rowsEl.innerHTML = h;
+      lastRows = h;
+      if (fi >= 0) focusRow(fi);
+    };
+    const update = live((c) => ({ html: { preview: previewHtml(c) } }), (c) => { ctx = c; rerender(); });
+    const save = (p: SPrefs | null) => { if (p) update(p); };
+
+    const setSection = (n: number) => {
+      if (n === section) return;
+      section = n;
+      navs.forEach((b, i) => {
+        b.classList.toggle('open', i === n);
+        b.toggleAttribute('data-focus-start', i === n);
+      });
+      $('[data-label]').textContent = sectionName(ctx.t, n);
+      rerender();
+    };
+
+    let toastTimer = 0;
+    const toast = (s: string) => {
+      toastEl.textContent = s;
+      toastEl.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => (toastEl.hidden = true), 2600);
+    };
+
+    // ------------------------------------------------------------ radio (the TV's toggle plays the stream)
+    const setRadio = (on: boolean) => {
+      radioOn = on;
+      if (on) { audio.src = stationOf(ctx.prefs).url; audio.play().catch(() => { radioOn = false; rerender(); }); }
+      else { audio.pause(); audio.removeAttribute('src'); audio.load(); }
+      rerender();
+    };
+    audio.addEventListener('error', () => { if (radioOn && audio.getAttribute('src')) { radioOn = false; rerender(); } });
+
+    // ------------------------------------------------------------ chooser
+    let chooser: { back?: () => void; row: number } | null = null;
+    const items = () => [...chooserEl.querySelectorAll<HTMLElement>('[data-item]')];
+    const focusItem = (i: number) => {
+      const all = items();
+      const el = all[Math.max(0, Math.min(all.length - 1, i))];
+      if (!el) return;
+      el.focus({ preventScroll: true });
+      const list = el.parentElement!;
+      if (el.offsetTop < list.scrollTop) list.scrollTop = el.offsetTop - 10;
+      else if (el.offsetTop + el.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = el.offsetTop + el.offsetHeight - list.clientHeight + 10;
+    };
+    let onPick: (i: number) => void = () => {};
+    const open = (title: string, list: { label: string; chosen: boolean }[], picked: (i: number) => void, back?: () => void) => {
+      const row = chooser?.row ?? focusedRow();
+      chooser = { back, row };
+      onPick = picked;
+      chooserEl.innerHTML = chooserHtml(ctx.t, title, list);
+      chooserEl.hidden = false;
+      focusItem(Math.max(0, list.findIndex((x) => x.chosen)));
+    };
+    const close = (runBack: boolean) => {
+      if (!chooser) return;
+      const { back, row } = chooser;
+      if (runBack && back) { back(); return; }
+      chooser = null;
+      chooserEl.hidden = true;
+      chooserEl.innerHTML = '';
+      focusRow(row);
+    };
+    const choose = (i: number) => {
+      const before = chooser;
+      onPick(i);
+      if (chooser === before) close(false); // picking may open the next step instead
+    };
+
+    const p = () => ({ ...(ctx.prefs as SPrefs) });
+    const openCountries = () => {
+      const t = ctx.t, list = countries(t), mine = t.ar ? cityOf(ctx.prefs).countryAr : cityOf(ctx.prefs).countryEn;
+      open(t.s('country'), list.map((c) => ({ label: c, chosen: c === mine })), (i) => openCities(list[i]));
+    };
+    // A country with one city takes it at once. Picking a city puts the method back to that city's own.
+    const openCities = (country: string) => {
+      const found = citiesOf(ctx.t, country);
+      const take = (id: string) => save({ ...p(), city: id, method: null });
+      if (found.length === 1) { take(found[0].id); return; }
+      chooser!.back = undefined;
+      open(country, found.map((c) => ({ label: ctx.t.ar ? c.ar : c.en, chosen: c.id === ctx.prefs.city })), (i) => take(found[i].id), openCountries);
+    };
+    const openStationGroups = () => {
+      const t = ctx.t, st = stationOf(ctx.prefs);
+      open(t.s('stationRow'), t.list('stationGroups').map((g, i) => ({ label: g, chosen: i === (st.reciter ? 1 : 0) })),
+        (i) => openStations(i === 1));
+    };
+    const openStations = (reciters: boolean) => {
+      const found = stationsOf(reciters), cur = ctx.prefs.station;
+      open(ctx.t.list('stationGroups')[reciters ? 1 : 0], found.map((s) => ({ label: stationChoice(ctx.t, s), chosen: s.id === cur })), (i) => {
+        save({ ...p(), station: found[i].id });
+        if (radioOn) setRadio(true); // playing radio moves to the pick
+      }, openStationGroups);
+    };
+    const openVoices = (fajr: boolean) => {
+      const key = fajr ? 'voiceFajr' : 'voice', cur = (ctx.prefs as SPrefs)[key] ?? (fajr ? 'chebae_fajr' : 'alafasy');
+      open(ctx.t.s(fajr ? 'fajrVoiceRow' : 'voiceRow'), VOICES.map((v) => ({ label: ctx.t.ar ? v.ar : v.en, chosen: v.id === cur })),
+        (i) => save({ ...p(), [key]: VOICES[i].id }));
+    };
+
+    // ------------------------------------------------------------ rows
+    const W = lang === 'ar' ? 'على التلفاز يفتح هذا' : 'On the TV this opens';
+    const goLang = (i: number) => {
+      const to: Lang = i === 0 ? (navigator.language.toLowerCase().startsWith('ar') ? 'ar' : 'en') : i === 1 ? 'ar' : 'en';
+      if (to === lang) return;
+      try { sessionStorage.setItem(FOCUS, JSON.stringify({ section, row: focusedRow() })); } catch { /* fine */ }
+      location.href = href('settings', to) + '#tv';
+    };
+    /** ◀▶ (d: +1 toward the end of the line) or OK on row i. */
+    const act = (i: number, d: number, ok: boolean) => {
+      const r = rowsFor(ctx, section, radioOn)[i];
+      if (!r) return;
+      if (r.id === 'lang') {
+        const n = r.segs!.length, cur = r.selected!;
+        goLang(ok ? (cur + 1) % n : Math.max(0, Math.min(n - 1, cur + d)));
+      } else if (r.id === 'radio') setRadio(!radioOn);
+      else if (r.kind === 'value') {
+        if (!ok) { if (d < 0) focusNav(); return; }
+        if (r.id === 'city') openCountries();
+        else if (r.id === 'method') {
+          open(ctx.t.s('method'), methodItems(ctx.t, ctx.prefs), (k) => save({ ...p(), method: METHODS[k] }));
+        } else if (r.id === 'station') openStationGroups();
+        else if (r.id === 'voice' || r.id === 'voiceFajr') openVoices(r.id === 'voiceFajr');
+        else if (r.id === 'room') location.href = href('prayer-day', lang) + '#tv';
+        else toast(`${W} ${r.label}`);
+      } else save(change(ctx, r, d, ok));
+    };
+
+    // ------------------------------------------------------------ keys: the D-pad map of SettingsActivity
+    root.addEventListener('keydown', (e) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      const k = e.key;
+      const a = document.activeElement as HTMLElement;
+      const ok = k === 'Enter' || k === ' ';
+      const back = k === 'Escape' || k === 'Backspace';
+      const vert = k === 'ArrowUp' ? -1 : k === 'ArrowDown' ? 1 : 0;
+      const horiz = k === 'ArrowRight' ? 1 : k === 'ArrowLeft' ? -1 : 0;
+      const toEnd = rtl ? -horiz : horiz; // +1 toward the end of the line, mirrored in RTL
+      if (!ok && !back && !vert && !horiz) return;
+      const handled = () => { e.preventDefault(); e.stopPropagation(); };
+
+      if (chooser) {
+        handled();
+        const i = items().indexOf(a);
+        if (back) close(true);
+        else if (vert) focusItem(i < 0 ? 0 : i + vert);
+        else if (ok && i >= 0) choose(i);
+        return;
+      }
+      if (a?.dataset.nav != null) {
+        if (back) return; // tv.ts takes Back to [data-home]
+        handled();
+        const i = +a.dataset.nav;
+        if (vert) navs[Math.max(0, Math.min(navs.length - 1, i + vert))].focus({ preventScroll: true });
+        else if (ok || toEnd > 0) focusRow(0);
+        return;
+      }
+      const row = a?.dataset.row;
+      if (row == null) return;
+      handled();
+      if (back) focusNav();
+      else if (vert) focusRow(+row + vert);
+      else act(+row, toEnd, ok);
+    });
+
+    // Focus on a section shows it at once, as on the TV.
+    root.addEventListener('focusin', (e) => {
+      const n = (e.target as HTMLElement).dataset?.nav;
+      if (n != null) setSection(+n);
+    });
+
+    // Pointer: the same actions.
+    root.addEventListener('click', (e) => {
+      const el = e.target as HTMLElement;
+      if (chooser) {
+        const item = el.closest<HTMLElement>('[data-item]');
+        if (item) choose(+item.dataset.item!);
+        else if (!el.closest('.ch-card')) close(false);
+        return;
+      }
+      const nav = el.closest<HTMLElement>('[data-nav]');
+      if (nav) { setSection(+nav.dataset.nav!); focusRow(0); return; }
+      const rowEl = el.closest<HTMLElement>('[data-row]');
+      if (!rowEl) return;
+      const i = +rowEl.dataset.row!;
+      const seg = el.closest<HTMLElement>('[data-seg]');
+      const step = el.closest<HTMLElement>('[data-step]');
+      const r = rowsFor(ctx, section, radioOn)[i];
+      if (seg && r.kind === 'seg') {
+        if (r.id === 'lang') goLang(+seg.dataset.seg!);
+        else save(pick(ctx, r.id, +seg.dataset.seg!));
+      } else if (step) act(i, +step.dataset.step!, false);
+      else act(i, 0, true);
+    });
+
+    // Back from the other language's page (Language row): the same section and row.
+    try {
+      const f = JSON.parse(sessionStorage.getItem(FOCUS) ?? 'null');
+      sessionStorage.removeItem(FOCUS);
+      if (f) requestAnimationFrame(() => { setSection(f.section); if (f.row >= 0) focusRow(f.row); else focusNav(); });
+    } catch { /* fine */ }
+  }
+</script>
+
+<style is:global>
+  .settings { position: absolute; inset: 0; }
+  .settings .side { position: absolute; inset-block: 0; inset-inline-start: 0; width: var(--layout-settings-sidebar-width); background: var(--color-lapis-950); }
+  .settings .head { position: absolute; inset-inline-start: 96px; top: 56px; display: flex; align-items: center; gap: var(--space-3); }
+  .settings .mihrab { color: var(--color-gold-400); }
+  .settings .title { font-size: var(--font-size-title); color: var(--color-plaster-100); line-height: 1.2; }
+  .settings .nav {
+    inset-inline-start: 96px; width: 424px; height: 76px; align-items: center; padding: 0 var(--space-4);
+    border-radius: var(--radius-cell); font-size: var(--font-size-body); color: var(--color-mist-400); --rest-fill: transparent;
+  }
+  .settings .nav.open { --rest-fill: var(--color-lapis-800); --rest-border: var(--color-gold-400); --rest-border-width: 2px; color: var(--color-plaster-100); }
+  .settings .nav:focus, .tv:not(:focus-within) .settings .nav[data-focus-start] { color: var(--focus-text); }
+  .settings .preview {
+    position: absolute; inset-inline-start: 96px; top: 900px; width: 424px; height: 124px; padding: 20px var(--space-4);
+    border-radius: var(--radius-row); background: var(--color-lapis-800); display: flex; flex-direction: column; justify-content: center; gap: 4px;
+  }
+  .settings .pl { font-size: var(--font-size-caption); color: var(--color-mist-400); }
+  .settings .pv { font-size: var(--font-size-display-xs); color: var(--color-gold-400); line-height: 1.2; }
+  .settings .label { position: absolute; inset-inline-start: 640px; top: 56px; font-size: var(--font-size-label); color: var(--color-mist-400); }
+  .settings .hints { inset-inline-start: 640px; top: 976px; }
+
+  /* Rows: label and help at the start, the control at the end. */
+  .settings .srow {
+    inset-inline-start: 640px; width: var(--layout-settings-row-width); height: 88px; padding: 0 28px; align-items: center; justify-content: space-between;
+    gap: var(--space-4); border-radius: var(--radius-row); text-align: start;
+  }
+  .settings .srow:focus { transform: scale(var(--focus-scale-settings-row)); }
+  .settings .words { display: flex; flex-direction: column; min-width: 0; }
+  .settings .rl { font-size: var(--font-size-body); font-weight: 500; line-height: 1.3; }
+  .settings .rh { font-size: var(--font-size-caption); opacity: 0.75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.35; }
+  .settings .ctl { display: flex; align-items: center; flex: none; }
+  .settings .val { font-size: 24px; margin-inline-end: var(--space-2); }
+  .settings .chev { flex: none; }
+  [dir='rtl'] .settings .chev { transform: scaleX(-1); }
+
+  .settings .track { display: flex; padding: 6px; border-radius: var(--radius-pill); background: var(--color-lapis-900); }
+  .settings .srow:focus .track { background: var(--color-seg-track-focused); }
+  .settings .seg { height: 52px; padding: 0 var(--space-4); display: flex; align-items: center; border-radius: var(--radius-pill); font-size: var(--font-size-label); color: var(--color-mist-400); }
+  .settings .seg.on { background: var(--color-plaster-100); color: var(--color-lapis-900); }
+  .settings .srow:focus .seg { color: var(--color-lapis-900); }
+  .settings .srow:focus .seg.on { background: var(--color-lapis-900); color: var(--color-plaster-100); box-shadow: inset 0 0 0 3px var(--color-plaster-100); }
+
+  .settings .stepb { width: 48px; height: 48px; border-radius: var(--radius-pill); background: var(--color-lapis-700); color: var(--color-plaster-100); display: grid; place-items: center; font-size: var(--font-size-body); }
+  .settings .stepv { min-width: 150px; margin: 0 18px; text-align: center; font-size: var(--font-size-body); }
+
+  .settings .switch { width: 88px; height: 48px; border-radius: var(--radius-pill); background: var(--color-lapis-700); display: flex; align-items: center; padding: 0 6px; }
+  .settings .switch i { width: 36px; height: 36px; border-radius: 50%; background: var(--color-mist-400); }
+  .settings .switch.on { background: var(--color-gold-400); justify-content: flex-end; }
+  .settings .switch.on i { background: var(--color-lapis-900); }
+  .settings .srow:focus .switch.on { background: var(--color-lapis-900); }
+  .settings .srow:focus .switch.on i { background: var(--color-gold-400); }
+
+  /* The list chooser over the screen. */
+  .settings .chooser { position: absolute; inset: 0; background: var(--color-scrim-menu); display: grid; place-items: center; }
+  .settings .chooser[hidden] { display: none; }
+  .settings .ch-card { width: 900px; padding: 40px 48px 32px; background: var(--color-lapis-800); border-radius: var(--radius-panel); box-shadow: inset 0 0 0 2px var(--color-gold-400-60); }
+  .settings .ch-title { font-size: var(--font-size-display-s); color: var(--color-gold-400); line-height: 1.2; }
+  .settings .ch-list { position: relative; max-height: calc(8 * 74px + 20px); overflow: hidden; padding: 10px; margin: 0 -10px; display: flex; flex-direction: column; gap: 6px; }
+  .settings .ch-item {
+    position: relative; flex: none; height: 68px; width: 100%; align-items: center; padding: 0 var(--space-4);
+    border-radius: var(--radius-cell); font-size: var(--font-size-body); font-weight: 400; text-align: start; --rest-fill: transparent;
+  }
+  .settings .ch-item.chosen { --rest-fill: var(--color-lapis-700); color: var(--color-gold-400); font-weight: 500; }
+  .settings .ch-item:focus { transform: none; color: var(--focus-text); }
+
+  .settings .toast { position: absolute; inset-inline-end: var(--space-safe-inline); bottom: var(--space-safe-block); max-width: var(--layout-toast-width); padding: 24px 32px; border-radius: var(--radius-panel); background: var(--color-plaster-100); color: var(--color-lapis-900); font-size: var(--font-size-body); }
+  .settings .toast[hidden] { display: none; }
+</style>

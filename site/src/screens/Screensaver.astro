@@ -1,0 +1,70 @@
+---
+// Screensaver (AfnonDream): on black, a dim arch outline holding the clock, the Hijri date, the next prayer and the
+// time left. It drifts every motion.screensaver-drift-interval with a fade. Any key or click wakes it (Home).
+import type { Ctx } from '../lib/ctx';
+import { href } from '../lib/site';
+import { DRIFT_MS, screensaverModel } from './screensaver';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t, lang } = ctx;
+const m = screensaverModel(ctx);
+---
+<a class="wake" href={href('', lang) + '#tv'} data-focus-start data-home aria-label={t.s('home')}></a>
+<!-- 440×640, pinned to the physical top-left so a translation means the same in Arabic and English. -->
+<div class="group" data-group data-drift={DRIFT_MS} aria-live="off">
+  <svg class="outline" aria-hidden="true" width="440" height="640" viewBox="0 0 440 640">
+    <path d="M2 580 L2 230 C2 120 100 52 220 2 C340 52 438 120 438 230 L438 580" />
+  </svg>
+  <div class="col">
+    <div class="clock display num" data-k="clock" set:html={m.html.clock} />
+    <div class="date" data-k="date" set:html={m.html.date} />
+    <div class="rule" aria-hidden="true"></div>
+    <div class="next" data-k="next" set:html={m.html.next} />
+    <div class="left" data-k="left" set:html={m.html.left} />
+  </div>
+</div>
+
+<script>
+  import { live } from '../scripts/live';
+  import { screensaverModel } from './screensaver';
+
+  const stage = document.querySelector<HTMLElement>('.tv')!;
+  if (stage.dataset.screen === 'screensaver') {
+    live(screensaverModel);
+    const wake = stage.querySelector<HTMLAnchorElement>('.wake')!;
+    const group = stage.querySelector<HTMLElement>('[data-group]')!;
+    // Any key wakes it, as on the TV (arrows included, once the screen has focus).
+    wake.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key === 'Tab') return;
+      e.preventDefault();
+      e.stopPropagation();
+      wake.click();
+    });
+    // AfnonDream.drift: fade out, move somewhere new inside the safe margins, fade back in.
+    const place = (x: number, y: number) => group.style.setProperty('transform', `translate(${x}px, ${y}px)`);
+    const fadeMs = () => parseFloat(getComputedStyle(group).transitionDuration) * 1000 || 0;
+    place(1140, 250);
+    window.setInterval(() => {
+      group.style.opacity = '0';
+      window.setTimeout(() => {
+        place(96 + Math.random() * (1920 - 192 - 440), 56 + Math.random() * (1080 - 112 - 640));
+        group.style.opacity = '1';
+      }, fadeMs());
+    }, Number(group.dataset.drift));
+  }
+</script>
+
+<style>
+  .wake { position: absolute; inset: 0; z-index: 1; outline: none; cursor: pointer; }
+  .group { position: absolute; left: 0; top: 0; width: 440px; height: 640px; transform: translate(1140px, 250px); transition: opacity var(--motion-screensaver-fade) linear; }
+  .outline { position: absolute; inset: 0; overflow: visible; }
+  .outline path { fill: none; stroke: var(--color-screensaver-arch-line); stroke-width: 2; }
+  .col { position: absolute; left: 20px; right: 20px; top: 190px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .clock { font-size: 128px; line-height: 1; color: var(--color-screensaver-text); word-spacing: -0.15em; }
+  .date { margin-top: 10px; font-size: 24px; color: var(--color-screensaver-text-dim); }
+  .rule { width: 80px; height: 1px; margin: 28px 0 18px; background: var(--color-screensaver-arch-line); }
+  .next { margin-top: 10px; font-size: 28px; color: var(--color-screensaver-next); }
+  .left { margin-top: 10px; font-size: 24px; color: var(--color-screensaver-text-dim); }
+  @media (prefers-reduced-motion: reduce) { .group { transition: none; } }
+</style>

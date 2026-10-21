@@ -4,3 +4,5 @@
 *.ttf binary
 *.jar binary
 *.mp3 binary
+site/** linguist-documentation
+site/package-lock.json linguist-generated

@@ -1,0 +1,38 @@
+---
+// Every page, generated: each entry of PAGES in Arabic (at the root) and English (under /en/).
+import Layout from '../layouts/Layout.astro';
+import Tv from '../components/Tv.astro';
+import Home from '../screens/Home.astro';
+import PrayerDay from '../screens/PrayerDay.astro';
+import Apps from '../screens/Apps.astro';
+import Settings from '../screens/Settings.astro';
+import Call from '../screens/Call.astro';
+import Screensaver from '../screens/Screensaver.astro';
+import { buildCtx } from '../lib/ctx';
+import { PAGES, type Page } from '../lib/site';
+import type { Lang } from '../lib/text';
+
+export function getStaticPaths() {
+  return PAGES.flatMap((page) =>
+    (['ar', 'en'] as Lang[]).map((lang) => {
+      const parts = [lang === 'en' ? 'en' : '', page.slug].filter(Boolean);
+      return { params: { path: parts.length ? parts.join('/') : undefined }, props: { page, lang } };
+    }),
+  );
+}
+
+interface Props { page: Page; lang: Lang }
+const { page, lang } = Astro.props;
+const ctx = buildCtx(lang, page.mode);
+const SCREENS = { home: Home, 'prayer-day': PrayerDay, apps: Apps, settings: Settings, call: Call, screensaver: Screensaver } as Record<string, any>;
+const Screen = SCREENS[page.screen];
+const images: Record<string, string> = {
+  'prayer-day': 'prayer-day.png', reminder: 'reminder.png', call: 'call.png', friday: 'friday.png', ramadan: 'ramadan.png',
+  apps: 'all-apps.png', settings: lang === 'en' ? 'settings-en.png' : 'settings-radio.png', screensaver: 'screensaver.png',
+};
+---
+<Layout lang={lang} page={page} image={images[page.slug]}>
+  <Tv screen={page.screen} mode={page.mode} ground={page.screen === 'screensaver' ? 'black' : 'lattice'}>
+    {Screen ? <Screen ctx={ctx} /> : <p style="position:absolute;inset:0;display:grid;place-items:center;font-size:40px">…</p>}
+  </Tv>
+</Layout>

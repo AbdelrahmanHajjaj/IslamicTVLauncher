@@ -1,0 +1,29 @@
+---
+// The 1920×1080 TV stage with the star lattice ground (Ui.starLattice), scaled into a 16:9 frame by tv.ts.
+interface Props { mode?: string; screen: string; ground?: 'lattice' | 'black' }
+const { mode, screen, ground = 'lattice' } = Astro.props;
+---
+<div class="tv-frame">
+  <div class="tv" data-mode={mode} data-screen={screen} data-ground={ground}>
+    {ground === 'lattice' && (
+      <svg class="lattice" aria-hidden="true" width="1920" height="1080">
+        <defs>
+          <pattern id="star8" width="96" height="96" patternUnits="userSpaceOnUse">
+            <g fill="none" stroke="var(--color-pattern-line)" stroke-width="1.5">
+              <rect x="28" y="28" width="40" height="40" />
+              <rect x="28" y="28" width="40" height="40" transform="rotate(45 48 48)" />
+              <path d="M0 48h20M76 48h20M48 0v20M48 76v20" />
+            </g>
+          </pattern>
+        </defs>
+        <rect width="1920" height="1080" fill="url(#star8)" />
+      </svg>
+    )}
+    <slot />
+  </div>
+</div>
+
+<style>
+  .lattice { position: absolute; inset: 0; pointer-events: none; }
+  .tv[data-ground='black'] { background: var(--color-screensaver-ground); }
+</style>

@@ -1,0 +1,218 @@
+---
+// Prayer day (PrayerDayActivity): title and dates, Home pill, the arch (method and Asr school below the
+// countdown), six rows with their status and an adhan bell each, the Qibla panel and the room-direction picker.
+import Arch from '../components/Arch.astro';
+import Icon from '../components/Icon.astro';
+import type { Ctx } from '../lib/ctx';
+import { href } from '../lib/site';
+import { prayerDayModel, pickerModel } from './prayer-day';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t, lang, day } = ctx;
+const m = prayerDayModel(ctx);
+const archM = { left: 0, html: m.html as any, attr: m.attr as any };
+const pm = pickerModel(ctx, 0);
+const hints = (...h: string[]) => JSON.stringify(h);
+const rowHints = hints(t.hintOk(t.s('bellToggle')), t.s('hintQibla'), t.s('hintBackHome'));
+// Toward the Qibla side (the end side) is Right in English and Left in Arabic.
+const toEnd = t.ar ? 'data-nav-left' : 'data-nav-right';
+const toStart = t.ar ? 'data-nav-right' : 'data-nav-left';
+
+/** QiblaView as SVG (360 viewBox): rings, cardinal ticks, north marker, optional room-mode north, needle + Kaaba. */
+const dial = (needle: string, north: string, a: Record<string, Record<string, string>>) => `
+  <svg viewBox="0 0 360 360" aria-hidden="true">
+    <circle cx="180" cy="180" r="160" fill="var(--color-lapis-900)" stroke="var(--color-line-soft)" stroke-width="2"/>
+    <circle cx="180" cy="180" r="120" fill="none" stroke="var(--color-qibla-ring)" stroke-width="1.5"/>
+    <path d="M180 20v18M180 322v18M20 180h18M322 180h18" stroke="var(--color-qibla-tick)" stroke-width="3"/>
+    <path d="M180 34l-10 22h20z" fill="var(--color-plaster-100)"/>
+    <path data-a="${north}" d="M180 66l-7 16h14z" fill="var(--color-mist-400)" visibility="${a[north].visibility}" transform="${a[north].transform}"/>
+    <g data-a="${needle}" transform="${a[needle].transform}">
+      <path d="M180 180V30" stroke="var(--color-gold-400)" stroke-width="6" stroke-linecap="round"/>
+      <rect x="167" y="14" width="26" height="26" rx="3" fill="var(--color-gold-400)"/>
+    </g>
+    <circle cx="180" cy="180" r="10" fill="var(--color-plaster-100)"/>
+  </svg>`;
+---
+<Arch ctx={ctx} infoTop={500} subSize={24} subGap={16} sub2Color="var(--color-mist-400)" sub2Gap={0} model={archM} />
+
+<div class="head">
+  <h2 class="title display-bold">{t.s('dayTitle')}</h2>
+  <div class="dates" data-k="dates" set:html={m.html.dates} />
+</div>
+
+<a class="ft home-pill" href={href('', lang) + '#tv'} data-home data-nav-down='[data-row="0"]' data-nav-up=".home-pill" {...{ [toEnd]: '.home-pill', [toStart]: '[data-row="0"]' }} data-hints={hints(t.hintOk(t.s('home')))}>
+  <Icon name="back" size={28} stroke={2} class="back-icon" /> <span>{t.s('home')}</span>
+</a>
+
+{day.times.map((_, i) => (
+  <button class="ft row day-row" data-row={i} data-a={'r' + i} data-state={m.attr!['r' + i]['data-state']} data-bell={m.attr!['r' + i]['data-bell']}
+    aria-label={m.attr!['r' + i]['aria-label']} style={`top:${236 + i * 116}px`} data-hints={rowHints}
+    {...{ [toEnd]: '.room-btn', [toStart]: `[data-row="${i}"]` }} {...(i === day.times.length - 1 ? { 'data-nav-down': `[data-row="${i}"]` } : {})} {...(i === 0 ? { 'data-nav-up': '.home-pill' } : {})} {...(i === day.nextIndex ? { 'data-focus-start': '' } : {})}>
+    <span class="r-name" data-k={'n' + i} set:html={m.html['n' + i]} />
+    <span class="r-status" data-k={'s' + i} set:html={m.html['s' + i]} />
+    <span class="r-time display num" data-k={'t' + i} set:html={m.html['t' + i]} />
+    <span class="bell"><Icon name="bell" size={26} stroke={2} /></span>
+  </button>
+))}
+
+<section class="qibla" aria-label={t.s('qibla')}>
+  <div class="q-label caps">{t.s('qibla')}</div>
+  <div class="dial" set:html={dial('needle', 'northMark', m.attr as any)} />
+  <div class="q-north" data-k="northLabel" set:html={m.html.northLabel} />
+  <div class="q-deg display num" dir="ltr" data-k="deg" set:html={m.html.deg} />
+  <div class="q-dir" data-k="direction" set:html={m.html.direction} />
+  <div class="q-hint" data-k="qiblaHint" set:html={m.html.qiblaHint} />
+</section>
+<button class="ft room-btn" data-room data-a="room" data-hints={m.attr!.room['data-hints']} data-nav-up=".home-pill" data-nav-down=".room-btn" {...{ [toStart]: '[data-focus-start]', [toEnd]: '.room-btn' }}>
+  <span data-k="roomLabel" set:html={m.html.roomLabel} />
+</button>
+
+<div class="hints" style="top:976px" data-hints-out></div>
+
+<!-- Room direction picker: ◀▶ 5°, ▲▼ 45°, OK saves, Back cancels. -->
+<div class="picker" data-picker hidden tabindex="-1" role="dialog" aria-label={t.s('roomTitle')}>
+  <div class="p-card">
+    <div class="p-title display-bold">{t.s('roomTitle')}</div>
+    <p class="p-tip">{t.s('roomTip')}</p>
+    <div class="p-body">
+      <div class="p-dial" set:html={dial('pickerNeedle', 'pickerNorth', pm.attr as any)} />
+      <div>
+        <div class="p-value display num" data-k="pickerValue" set:html={pm.html.pickerValue} />
+        <div class="p-where" data-k="pickerWhere" set:html={pm.html.pickerWhere} />
+      </div>
+    </div>
+    <div class="p-keys">{t.s('roomKeys')}</div>
+  </div>
+</div>
+
+<script>
+  import { live, bind } from '../scripts/live';
+  import { prayerDayModel, pickerModel, loadBells, saveBells, loadFacing, saveFacing } from './prayer-day';
+  import type { Ctx } from '../lib/ctx';
+
+  const stage = document.querySelector<HTMLElement>('.tv')!;
+  if (stage.dataset.screen === 'prayer-day') {
+    const $ = <T extends HTMLElement = HTMLElement>(s: string) => stage.querySelector<T>(s)!;
+    const rows = [...stage.querySelectorAll<HTMLElement>('[data-row]')];
+    const room = $('[data-room]');
+    const toStart = document.documentElement.lang === 'ar' ? 'navRight' : 'navLeft';
+    let last: Ctx | null = null;
+    let nextIndex = -1;
+
+    const rerender = live(prayerDayModel, (c) => {
+      last = c;
+      // The default focus is the next prayer's row, as the app focuses it on arrival.
+      if (c.day.nextIndex !== nextIndex) {
+        nextIndex = c.day.nextIndex;
+        rows.forEach((r, i) => r.toggleAttribute('data-focus-start', i === nextIndex));
+      }
+    });
+
+    // OK on a row turns its adhan on or off. Focus on a row is remembered for Left/Right from the room button.
+    rows.forEach((r, i) => {
+      r.addEventListener('click', () => {
+        const b = loadBells();
+        b[i] = !b[i];
+        saveBells(b);
+        rerender();
+      });
+      r.addEventListener('focus', () => { room.dataset[toStart] = `[data-row="${i}"]`; });
+    });
+
+    const picker = $('[data-picker]');
+    let facing = 0;
+    const renderPicker = () => last && bind(picker, pickerModel(last, facing));
+    const open = () => {
+      const f = loadFacing();
+      facing = f < 0 ? 0 : f;
+      renderPicker();
+      picker.hidden = false;
+      picker.focus({ preventScroll: true });
+    };
+    const close = (save: boolean) => {
+      if (save) saveFacing(facing);
+      picker.hidden = true;
+      rerender();
+      room.focus({ preventScroll: true });
+    };
+    room.addEventListener('click', open);
+    picker.addEventListener('keydown', (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // the picker has the keys: no spatial navigation, no Back to Home
+      const k = e.key;
+      if (k === 'Enter' || k === ' ') return close(true);
+      if (k === 'Escape' || k === 'Backspace') return close(false);
+      let v = facing;
+      // Clockwise is always Right, as on a compass, in either language.
+      if (k === 'ArrowRight') v += 5;
+      else if (k === 'ArrowLeft') v -= 5;
+      else if (k === 'ArrowUp') v = (Math.floor(v / 45) + 1) * 45;
+      else if (k === 'ArrowDown') v = (Math.floor((v + 44) / 45) - 1) * 45;
+      else return;
+      facing = ((v % 360) + 360) % 360;
+      renderPicker();
+    });
+    picker.addEventListener('click', (e) => { if (e.target === picker) close(false); });
+  }
+</script>
+
+<style>
+  .head { position: absolute; inset-inline-start: var(--layout-courtyard-inset-inline-start); top: 56px; }
+  .title { font-size: var(--font-size-title-l); line-height: 1.1; color: var(--color-plaster-100); }
+  .dates { margin-top: 8px; font-size: var(--font-size-body); color: var(--color-mist-400); }
+
+  .home-pill {
+    inset-inline-end: calc(1920px - var(--layout-courtyard-inset-inline-start) - var(--layout-courtyard-width)); top: 56px;
+    height: 72px; padding: 0 28px; border-radius: 36px; align-items: center; gap: 12px; font-size: 24px;
+    --rest-fill: transparent; --rest-border: var(--color-line-soft); --rest-border-width: 2px;
+  }
+  :global([dir='rtl']) .home-pill :global(.back-icon) { transform: scaleX(-1); }
+
+  .day-row {
+    inset-inline-start: var(--layout-courtyard-inset-inline-start); width: var(--layout-day-row-width); height: var(--layout-day-row-height);
+    border-radius: var(--radius-row); align-items: center; gap: 20px; padding-inline: 28px 20px; text-align: start;
+  }
+  .day-row[data-state='now'] { --rest-fill: var(--color-plaster-100); color: var(--color-lapis-900); }
+  .day-row[data-state='past'] { --rest-fill: var(--color-lapis-800-60); color: var(--color-mist-400); }
+  .day-row:focus { color: var(--focus-text); }
+  .r-name { flex: 1; font-size: 32px; }
+  .day-row:is(:focus, [data-state='now']) .r-name,
+  :global(.tv:not(:focus-within)) .day-row[data-focus-start] .r-name { font-weight: 600; }
+  .r-status { font-size: var(--font-size-label); opacity: 0.85; white-space: nowrap; }
+  .r-time { min-width: 120px; font-size: 40px; text-align: end; white-space: nowrap; }
+  .bell { width: 56px; height: 56px; flex: none; border-radius: 50%; display: grid; place-items: center; }
+  .day-row[data-bell='true'] .bell { background: var(--color-lapis-700); color: var(--color-gold-400); }
+  .day-row[data-bell='true']:is(:focus, [data-state='now']) .bell,
+  :global(.tv:not(:focus-within)) .day-row[data-bell='true'][data-focus-start] .bell { background: var(--color-lapis-900); }
+  .day-row[data-bell='false'] .bell { box-shadow: inset 0 0 0 2px var(--color-bell-off-border); color: var(--color-mist-400); opacity: 0.7; }
+  .day-row[data-bell='false']:is(:focus, [data-state='now']) .bell,
+  :global(.tv:not(:focus-within)) .day-row[data-bell='false'][data-focus-start] .bell { color: var(--color-lapis-900); }
+
+  .qibla {
+    position: absolute; inset-inline-start: 1424px; top: 236px; width: 400px; height: 698px; padding: 28px 32px;
+    border-radius: var(--radius-panel); background: var(--color-lapis-800); display: flex; flex-direction: column; align-items: center; text-align: center;
+  }
+  .q-label { align-self: stretch; text-align: start; font-size: var(--font-size-label); color: var(--color-mist-400); line-height: 1.3; }
+  .dial { width: 260px; height: 260px; margin-top: 14px; }
+  .dial :global(svg), .p-dial :global(svg) { width: 100%; height: 100%; display: block; }
+  .q-north { margin-top: 8px; font-size: var(--font-size-caption); color: var(--color-mist-400); line-height: 1.3; }
+  .q-deg { margin-top: 14px; font-size: var(--font-size-title-l); color: var(--color-gold-400); line-height: 1; }
+  .q-dir { margin-top: 14px; font-size: 24px; line-height: 1.3; }
+  .q-hint { margin-top: 14px; font-size: var(--font-size-caption); color: var(--color-mist-400); line-height: 1.4; }
+  .room-btn {
+    inset-inline-start: calc(1424px + 32px); top: calc(236px + 698px - 28px - 64px); width: calc(400px - 64px); height: 64px;
+    border-radius: 32px; align-items: center; justify-content: center; font-size: var(--font-size-label); --rest-fill: var(--color-lapis-700);
+  }
+
+  .picker { position: absolute; inset: 0; background: var(--color-scrim-menu); display: grid; place-items: center; outline: none; }
+  .picker[hidden] { display: none; }
+  .p-card { width: 1100px; padding: 48px 56px; border-radius: var(--radius-panel); background: var(--color-lapis-800); box-shadow: inset 0 0 0 2px var(--color-gold-400-60); }
+  .p-title { font-size: var(--font-size-title); line-height: 1.2; color: var(--color-gold-400); }
+  .p-tip { margin: 20px 0 0; font-size: var(--font-size-body); line-height: 1.6; }
+  .p-body { margin-top: 32px; display: flex; align-items: center; gap: 48px; }
+  .p-dial { width: 240px; height: 240px; flex: none; }
+  .p-value { font-size: var(--font-size-title-l); line-height: 1.1; }
+  .p-where { font-size: 28px; color: var(--color-gold-200); }
+  .p-keys { margin-top: 32px; font-size: var(--font-size-label); color: var(--color-mist-400); white-space: pre; }
+</style>

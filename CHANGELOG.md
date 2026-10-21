@@ -4,6 +4,19 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Added
+- A web preview of the launcher in `site/` (Astro, deployed to GitHub Pages by `.github/workflows/site.yml`): every
+  screen in Arabic and English, driven by the arrow keys like the remote, with live prayer times for the visitor's
+  chosen city. It reads the app's own strings (`Text.java`), cities, methods, stations and fonts at build time, so
+  it never keeps a second copy. One page per screen and mode, with titles, descriptions, `hreflang`, a sitemap and
+  structured data for search engines.
+
+### Changed
+- `afnon-mihrab/tokens.json` is the single source of the design tokens. `Tokens.java` and `colors.xml` are now
+  generated from it (`npm run tokens` in `site/`, Style Dictionary), as is the site's CSS; CI fails if they drift.
+  The 15 colours that were hard-coded in the app (screensaver, menus, the reminder card, Qibla rings, the banner
+  track, the Settings sidebar) are tokens now. Every value is unchanged.
+
 ## [0.2.1] - 2026-10-22
 
 ### Fixed

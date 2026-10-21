@@ -1,0 +1,141 @@
+---
+// One page of the preview: SEO head, header, the TV (slot), the page's text and the footer.
+import '../styles/base.css';
+import { APK, PAGES, REPO, href, type Page } from '../lib/site';
+import type { Lang } from '../lib/text';
+
+interface Props { lang: Lang; page: Page; image?: string }
+const { lang, page, image = lang === 'ar' ? 'home-ar.png' : 'home-en.png' } = Astro.props;
+const ar = lang === 'ar';
+const other: Lang = ar ? 'en' : 'ar';
+const site = Astro.site!;
+const abs = (path: string) => new URL(path, site).href;
+const canonical = abs(href(page.slug, lang));
+const ogImage = abs(import.meta.env.BASE_URL.replace(/\/?$/, '/') + 'screenshots/' + image);
+const name = ar ? 'أفنون' : 'Afnon';
+// The page's heading: its title without the brand part.
+const heading = page.title[lang].split(' · ').find((p) => p !== name) ?? page.title[lang];
+const L = ar
+  ? { download: 'تنزيل التطبيق (APK)', source: 'الكود المصدري على GitHub', screens: 'الشاشات', lang: 'English', skip: 'انتقل إلى الشاشة',
+      tvLabel: 'معاينة شاشة التلفاز', keys: 'الأسهم للتنقل · Enter موافق · Esc رجوع',
+      foot: 'مجاني ومفتوح المصدر (MIT). المعاينة لا ترسل أي بيانات؛ إعداداتك تُحفظ في هذا المتصفح فقط.' }
+  : { download: 'Download the APK', source: 'Source on GitHub', screens: 'Screens', lang: 'العربية', skip: 'Skip to the screen',
+      tvLabel: 'TV screen preview', keys: 'Arrows move · Enter is OK · Esc is Back',
+      foot: 'Free and open source (MIT). This preview sends no data; your settings stay in this browser.' };
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Afnon · أفنون',
+  alternateName: ['Afnon', 'أفنون'],
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'Android TV',
+  description: page.description[lang],
+  inLanguage: ['ar', 'en'],
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  license: 'https://opensource.org/licenses/MIT',
+  downloadUrl: APK,
+  codeRepository: REPO,
+  screenshot: ogImage,
+  url: abs(href('', lang)),
+};
+---
+<!doctype html>
+<html lang={lang} dir={ar ? 'rtl' : 'ltr'}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{page.title[lang]}</title>
+  <meta name="description" content={page.description[lang]} />
+  <link rel="canonical" href={canonical} />
+  <link rel="alternate" hreflang={lang} href={canonical} />
+  <link rel="alternate" hreflang={other} href={abs(href(page.slug, other))} />
+  <link rel="alternate" hreflang="x-default" href={abs(href(page.slug, 'ar'))} />
+  <link rel="sitemap" href={import.meta.env.BASE_URL.replace(/\/?$/, '/') + 'sitemap-index.xml'} />
+  <link rel="icon" href={import.meta.env.BASE_URL.replace(/\/?$/, '/') + 'favicon.svg'} type="image/svg+xml" />
+  <meta name="theme-color" content="#0C1B33" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={name} />
+  <meta property="og:locale" content={ar ? 'ar_EG' : 'en_GB'} />
+  <meta property="og:locale:alternate" content={ar ? 'en_GB' : 'ar_EG'} />
+  <meta property="og:title" content={page.title[lang]} />
+  <meta property="og:description" content={page.description[lang]} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1920" />
+  <meta property="og:image:height" content="1080" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</head>
+<body>
+  <a class="visually-hidden" href="#tv">{L.skip}</a>
+  <header class="top">
+    <a class="brand" href={href('', lang)}>
+      <svg viewBox="0 0 64 64" width="36" height="36" aria-hidden="true"><path d="M14 58V30C14 18 22 11 32 6c10 5 18 12 18 24v28" fill="var(--color-lapis-800)" stroke="var(--color-gold-400)" stroke-width="3"/></svg>
+      <span>{name}</span>
+    </a>
+    <nav class="top-links">
+      <a href={href(page.slug, other)} hreflang={other} lang={other}>{L.lang}</a>
+      <a href={REPO}>GitHub</a>
+      <a class="cta" href={APK}>{L.download}</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>{heading}</h1>
+    <section id="tv" class="tv-wrap" aria-label={L.tvLabel}>
+      <slot />
+      <p class="keys">{L.keys}</p>
+    </section>
+
+    <nav class="screens" aria-label={L.screens}>
+      <h2>{L.screens}</h2>
+      <ul>
+        {PAGES.map((p) => (
+          <li><a href={href(p.slug, lang)} aria-current={p.slug === page.slug ? 'page' : undefined}>{p.nav[lang]}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <article class="about">
+      <p class="lede">{page.description[lang]}</p>
+      {page.body[lang].map((para) => <p>{para}</p>)}
+    </article>
+  </main>
+
+  <footer class="foot">
+    <p class="sacred" lang="ar" dir="rtl">إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا</p>
+    <p>{L.foot}</p>
+    <p><a href={APK}>{L.download}</a> · <a href={REPO}>{L.source}</a></p>
+  </footer>
+</body>
+</html>
+
+<script>
+  import '../scripts/tv.ts';
+</script>
+
+<style>
+  body { --gutter: clamp(16px, 4vw, 48px); }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--gutter); flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: var(--space-2); color: var(--color-plaster-100); text-decoration: none; font-family: var(--display); font-weight: var(--display-weight); font-size: 28px; }
+  .top-links { display: flex; gap: var(--space-4); align-items: center; flex-wrap: wrap; font-size: 16px; }
+  .top-links a { text-decoration: none; }
+  .cta { background: var(--color-gold-400); color: var(--color-lapis-900) !important; padding: 8px 18px; border-radius: var(--radius-pill); }
+  .cta:hover { background: var(--color-gold-200); }
+  main { max-width: 1280px; margin: 0 auto; padding: 0 var(--gutter); }
+  h1 { font-size: clamp(26px, 4vw, 44px); color: var(--color-gold-400); margin: var(--space-4) 0 var(--space-5); }
+  .tv-wrap { margin: 0; }
+  .keys { color: var(--color-mist-400); font-size: 14px; margin: var(--space-2) 0 0; }
+  @media (hover: none) { .keys { display: none; } }
+  .screens { margin-top: var(--space-6); }
+  .screens h2, .about h2 { font-size: 24px; margin-bottom: var(--space-3); }
+  .screens ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .screens a { display: block; padding: 8px 16px; border-radius: var(--radius-pill); border: var(--border-chip-width) solid var(--color-line-soft); color: var(--color-plaster-100); text-decoration: none; font-size: 16px; }
+  .screens a:hover { border-color: var(--color-gold-400); }
+  .screens a[aria-current] { background: var(--color-gold-400); color: var(--color-lapis-900); border-color: var(--color-gold-400); }
+  .about { max-width: 760px; margin: var(--space-6) 0; font-size: 18px; }
+  .about .lede { font-size: 21px; color: var(--color-plaster-100); }
+  .about p { color: var(--color-mist-400); }
+  .foot { border-top: 1px solid var(--color-line-soft); padding: var(--space-5) var(--gutter); text-align: center; color: var(--color-mist-400); font-size: 15px; }
+  .foot .sacred { font-size: 24px; }
+</style>

@@ -1,0 +1,92 @@
+/* Every colour, size and timing comes from tokens.css, generated from afnon-mihrab/tokens.json. */
+@import './tokens.css';
+
+@font-face { font-family: Alexandria; font-weight: 300; font-display: swap; src: url('../assets/fonts/alexandria_light.ttf'); }
+@font-face { font-family: Alexandria; font-weight: 400; font-display: swap; src: url('../assets/fonts/alexandria_regular.ttf'); }
+@font-face { font-family: Alexandria; font-weight: 500; font-display: swap; src: url('../assets/fonts/alexandria_medium.ttf'); }
+@font-face { font-family: Alexandria; font-weight: 600; font-display: swap; src: url('../assets/fonts/alexandria_semibold.ttf'); }
+@font-face { font-family: Amiri; font-weight: 400; font-display: swap; src: url('../assets/fonts/amiri_regular.ttf'); }
+@font-face { font-family: Amiri; font-weight: 700; font-display: swap; src: url('../assets/fonts/amiri_bold.ttf'); }
+@font-face { font-family: Marcellus; font-weight: 400; font-display: swap; src: url('../assets/fonts/marcellus_regular.ttf'); }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--color-lapis-900); color: var(--color-plaster-100); color-scheme: dark; }
+body {
+  margin: 0;
+  font-family: var(--font-family-ui);
+  line-height: var(--font-line-height-body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--color-gold-400); }
+a:hover { color: var(--color-gold-200); }
+h1, h2, h3 { font-family: var(--display); font-weight: var(--display-weight); line-height: var(--font-line-height-title); margin: 0; }
+:lang(ar) { --display: var(--font-family-display-ar); --display-weight: 700; --caps: var(--font-letter-spacing-ar); }
+:lang(en) { --display: var(--font-family-display-en); --display-weight: 400; --caps: var(--font-letter-spacing-caps-en); }
+.caps { letter-spacing: var(--caps); }
+:lang(en) .caps { text-transform: uppercase; }
+.sacred { font-family: var(--font-family-sacred); color: var(--color-gold-400); letter-spacing: 0; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------------------------------------------------------------- the TV: a 1920×1080 stage, scaled to fit */
+
+.tv-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-tile);
+  overflow: hidden;
+  outline: var(--border-chip-width) solid var(--color-line-soft);
+  background: var(--color-lapis-900);
+  container-type: inline-size;
+}
+.tv {
+  position: absolute;
+  inset-block-start: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  transform-origin: 0 0;
+  transform: scale(var(--k, 0.5));
+  background: var(--color-lapis-900);
+  color: var(--color-plaster-100);
+  font-size: var(--font-size-body);
+  line-height: 1.3;
+  --spatial-navigation-contain: contain;
+}
+.tv * { -webkit-tap-highlight-color: transparent; }
+:where(.tv) :where(a, button) { color: inherit; font: inherit; text-decoration: none; text-align: inherit; }
+:where(.tv) :where(button) { border: 0; background: none; padding: 0; cursor: pointer; }
+.tv .num { font-feature-settings: 'tnum'; }
+.tv .display { font-family: var(--display); }
+.tv .display-bold { font-family: var(--display); font-weight: var(--display-weight); }
+.tv .abs { position: absolute; }
+
+/* A focusable tile, as FocusTile.java: rest look, then gold fill + plaster ring + scale on focus. */
+.ft {
+  position: absolute;
+  display: flex;
+  border-radius: var(--radius-tile);
+  background: var(--rest-fill, var(--color-lapis-800));
+  color: var(--color-plaster-100);
+  box-shadow: inset 0 0 0 var(--rest-border-width, 0) var(--rest-border, transparent);
+  outline: 0 solid transparent;
+  transition: transform var(--motion-focus) var(--motion-easing-standard);
+  cursor: pointer;
+}
+.ft:focus,
+.tv:not(:focus-within) [data-focus-start].ft {
+  background: var(--focus-fill);
+  color: var(--focus-text);
+  box-shadow: none;
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  transform: scale(var(--focus-scale));
+}
+.ft:active { background: var(--focus-pressed-fill); transform: scale(var(--focus-pressed-scale)); }
+.ft.row:focus { transform: scale(var(--focus-scale-row)); }
+.on-light .ft:focus { background: var(--focus-on-light-fill); color: var(--focus-on-light-text); outline-color: var(--focus-on-light-ring-color); outline-offset: var(--focus-on-light-ring-offset); }
+
+.hints { position: absolute; inset-inline-start: var(--layout-courtyard-inset-inline-start); top: 962px; display: flex; gap: 40px; font-size: var(--font-size-label); color: var(--color-mist-400); white-space: pre; }
+
+@media (prefers-reduced-motion: reduce) { .ft { transition: none; } }

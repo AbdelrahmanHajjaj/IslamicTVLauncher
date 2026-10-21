@@ -8,7 +8,7 @@
 
 Arabic first (RTL) and English · Offline prayer times for 74 cities · 14 adhan voices · Qibla · 16 Quran radio stations and reciters
 
-**[⬇ Download the APK](https://github.com/egyjs/afnon-android-tv-launcher/releases/latest/download/afnon.apk)** · [Releases](https://github.com/egyjs/afnon-android-tv-launcher/releases)
+**[⬇ Download the APK](https://github.com/egyjs/afnon-android-tv-launcher/releases/latest/download/afnon.apk)** · [Releases](https://github.com/egyjs/afnon-android-tv-launcher/releases) · **[Try it in your browser](https://egyjs.github.io/afnon-android-tv-launcher/)**
 
 ![Afnon home screen in Arabic](docs/screenshots/home-ar.png)
 
@@ -88,6 +88,9 @@ internet, and it connects only to the chosen station's stream, one at a time: `s
 makes no other network requests, and its [network security config](app/src/main/res/xml/network_security.xml)
 allows plain HTTP for the Cairo stream only.
 Your city and settings stay on the TV.
+
+The [web preview](https://egyjs.github.io/afnon-android-tv-launcher/) is a separate static site, not the app. It loads
+nothing from other sites except the station's stream when you press Play, and keeps your settings in your browser.
 
 | Permission | Why |
 |---|---|

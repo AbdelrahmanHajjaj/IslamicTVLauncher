@@ -1,0 +1,23 @@
+{
+  "name": "afnon-site",
+  "private": true,
+  "type": "module",
+  "description": "Afnon preview site and the token generator (afnon-mihrab/tokens.json -> app + site)",
+  "scripts": {
+    "gen": "node scripts/tokens.mjs && node scripts/extract.mjs",
+    "dev": "npm run gen && astro dev",
+    "build": "npm run gen && astro build",
+    "preview": "astro preview",
+    "tokens": "node scripts/tokens.mjs",
+    "tokens:check": "node scripts/tokens.mjs --check"
+  },
+  "devDependencies": {
+    "style-dictionary": "^5.7.0"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "adhan": "^4.4.6",
+    "astro": "^7.4.2",
+    "spatial-navigation-polyfill": "^1.3.1"
+  }
+}

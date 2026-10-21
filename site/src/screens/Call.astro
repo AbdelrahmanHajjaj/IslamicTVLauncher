@@ -1,0 +1,73 @@
+---
+// The call (NowActivity): scrim over the lattice, a tall gold-200 arch, حيّ على الصلاة, the prayer and its time,
+// Play adhan / Dismiss and the hint. Up/Down move between the buttons; Back or Dismiss goes Home.
+import type { Ctx } from '../lib/ctx';
+import { href } from '../lib/site';
+import { AUTO_DISMISS_MS, callModel } from './call';
+
+interface Props { ctx: Ctx }
+const { ctx } = Astro.props;
+const { t, lang } = ctx;
+const m = callModel(ctx);
+const home = href('', lang) + '#tv';
+const labels = { play: t.s('play'), stop: t.s('stop') };
+const note = t.ar ? 'المعاينة على الويب لا تشغّل صوت الأذان؛ على التلفاز يُرفع الأذان الآن.' : 'The web preview has no adhan audio; on the TV the adhan plays now.';
+---
+<div class="scrim" aria-hidden="true"></div>
+<!-- ArchView APPROACHING at (600, 110), 720 wide: the 600×900 path scaled by 1.2, so it runs off the bottom. -->
+<svg class="frame" aria-hidden="true" width="720" height="1080" viewBox="0 0 600 900">
+  <path class="outer" d="M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z" />
+  <path class="inner" d="M18 900 L18 334 C18 184 150 92 300 22 C450 92 582 184 582 334 L582 900" />
+</svg>
+
+<div class="col" data-auto-dismiss={AUTO_DISMISS_MS} data-labels={JSON.stringify(labels)} data-home-href={home}>
+  <p class="verse sacred" lang="ar" dir="rtl">حَيَّ عَلَى الصَّلَاةِ</p>
+  <div class="label caps">{t.s('nowLabel')}</div>
+  <div class="name display-bold" data-k="name" set:html={m.html.name} />
+  <div class="time display num" data-k="time" set:html={m.html.time} />
+  <button class="ft pill play" data-focus-start data-play data-nav-down=".dismiss" data-nav-up=".play" data-nav-left=".play" data-nav-right=".play">{labels.play}</button>
+  <a class="ft pill dismiss" href={home} data-back data-nav-up=".play" data-nav-down=".dismiss" data-nav-left=".dismiss" data-nav-right=".dismiss">{t.s('dismiss')}</a>
+  <p class="hint">{t.nowHint()}</p>
+  <p class="note" data-note hidden>{note}</p>
+</div>
+
+<script>
+  import { live } from '../scripts/live';
+  import { callModel } from './call';
+
+  const stage = document.querySelector<HTMLElement>('.tv')!;
+  if (stage.dataset.screen === 'call') {
+    live(callModel);
+    const col = stage.querySelector<HTMLElement>('.col')!;
+    const play = stage.querySelector<HTMLButtonElement>('[data-play]')!;
+    const note = stage.querySelector<HTMLElement>('[data-note]')!;
+    const labels = JSON.parse(col.dataset.labels!);
+    // No audio on the web: Play only flips to Stop (as while the adhan plays) and says so.
+    let playing = false;
+    play.addEventListener('click', () => {
+      playing = !playing;
+      play.textContent = playing ? labels.stop : labels.play;
+      note.hidden = !playing;
+    });
+    // As on the TV, the call closes by itself (motion.call-auto-dismiss).
+    window.setTimeout(() => location.assign(col.dataset.homeHref!), Number(col.dataset.autoDismiss));
+  }
+</script>
+
+<style>
+  .scrim { position: absolute; inset: 0; background: var(--color-scrim); }
+  .frame { position: absolute; left: 600px; top: 110px; overflow: visible; }
+  .outer { fill: var(--color-lapis-800); stroke: var(--border-arch-approaching-color); stroke-width: var(--border-arch-approaching-width); vector-effect: non-scaling-stroke; }
+  .inner { fill: none; stroke: var(--color-arch-inner); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .col { position: absolute; left: 640px; top: 230px; width: 640px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .verse { margin: 0; font-size: 54px; line-height: 1.4; color: var(--color-gold-400); }
+  .label { margin-top: 32px; font-size: var(--font-size-label); color: var(--color-mist-400); }
+  .name { font-size: 128px; line-height: 1.1; color: var(--color-plaster-100); }
+  .time { font-size: 64px; line-height: 1.2; color: var(--color-gold-400); }
+  .pill { position: relative; width: 420px; height: 76px; border-radius: var(--radius-pill); align-items: center; justify-content: center; font-size: 28px; font-weight: 500; }
+  .play { margin-top: 36px; }
+  .dismiss { margin-top: 18px; --rest-fill: transparent; --rest-border: var(--color-line-soft); --rest-border-width: 2px; }
+  .hint { margin: 20px 0 0; font-size: var(--font-size-label); color: var(--color-mist-400); }
+  .note { margin: 12px 0 0; max-width: 560px; font-size: var(--font-size-caption); color: var(--color-gold-200); }
+  .note[hidden] { display: none; }
+</style>
