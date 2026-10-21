@@ -18,7 +18,8 @@ real TV over ADB, never just in the build.
 - Plain Java + Android Views. One dependency (adhan-java). No AndroidX, Kotlin or Compose.
 - No blur, video or shadows; animate transform/opacity only. No new timers or background services: prayer checks
   share one 15 s timer in the accessibility service.
-- No network access except the radio stream (`stream.radiojar.com`). No analytics, ads or feeds.
+- No network access except the chosen radio station's stream (hosts listed in `Radio.STATIONS` and the README's
+  Privacy section). No analytics, ads or feeds.
 - Colours/sizes/timings from `Tokens.java`; every string in Arabic and English in `Text.java`. Arabic (RTL) is the
   default; check RTL and LTR. No letter-spacing on Arabic. Quranic text uses Amiri and must be exact (surah:ayah).
 - D-pad focus is explicit per screen, with Left/Right swapped in RTL.

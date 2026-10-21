@@ -78,7 +78,7 @@ public class ScreenOffActivity extends Activity implements Radio.Listener {
         note.setTextSize(TypedValue.COMPLEX_UNIT_PX, Ui.px(24));
         note.setTextColor(0xFFA69F90);
         note.setGravity(Gravity.CENTER);
-        note.setText(t.radioStation() + "\n" + t.screenOffNote());
+        note.setText(t.station(Radio.station(this)) + "\n" + t.screenOffNote());
         LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(-2, -2);
         nlp.topMargin = Ui.ipx(20);
         col.addView(note, nlp);
