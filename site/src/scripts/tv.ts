@@ -25,7 +25,7 @@ if (frame && stage) {
   showHints(null);
 
   // Arrow keys: the first press anywhere on the page wakes the TV at its default focus; after that they move
-  // focus inside the TV (the polyfill's navigate(), its own key handling off) and never scroll the page.
+  // focus inside the TV (the polyfill's search, its own key handling off) and never scroll the page.
   const DIRS: Record<string, 'left' | 'right' | 'up' | 'down'> = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' };
   const spatnav = (window as any).__spatialNavigation__;
   if (spatnav) spatnav.keyMode = 'NONE';
@@ -46,10 +46,11 @@ if (frame && stage) {
     const target = sel ? stage.querySelector<HTMLElement>(sel) : null;
     if (target && visible(target)) target.focus({ preventScroll: true });
     else {
-      const from = document.activeElement as HTMLElement;
-      (window as any).navigate?.(dir);
+      // Only search: the polyfill's navigate() scrolls the page 40px when nothing lies that way.
       // Nothing that way inside the TV: stay put rather than leave for the page's links.
-      if (!stage.contains(document.activeElement)) from.focus({ preventScroll: true });
+      const from = document.activeElement as HTMLElement & { spatialNavigationSearch?: (d: string, o: object) => HTMLElement | null };
+      const next = from.spatialNavigationSearch?.(dir, { container: stage });
+      if (next && stage.contains(next)) next.focus({ preventScroll: true });
     }
   });
 
