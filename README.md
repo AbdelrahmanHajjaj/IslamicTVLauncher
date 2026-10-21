@@ -63,7 +63,11 @@ Afnon started from [cleanyourtv](https://github.com/Gathin23/cleanyourtv):
   zero, the volume comes up for the adhan and goes back afterwards.
 - **Reminders.** A card on Home, or a banner over other apps, before each prayer.
 - **Friday and Ramadan.** Both modes switch themselves on from the date.
-- **Quran Radio.** إذاعة القرآن الكريم from Cairo (98.2 FM), streamed live.
+- **Quran Radio.** إذاعة القرآن الكريم from Cairo (98.2 FM) by default, streamed live. Settings → Radio
+  → Station picks another:
+  - Quran radios: Nablus, Shabab FM Quran (Nablus), Qatar 1 and 2, Jordan.
+  - Ten reciters' 24/7 channels from mp3quran.net (Alafasy, Abdul Basit, Al-Minshawi, Al-Husary, Al-Muaiqly,
+    Al-Ghamdi, Al-Sudais, Al-Dosari, Al-Qatami, Mohammad Rashad Al-Shareef).
   - Live level bars, from the audio itself.
   - It pauses for the adhan and resumes after.
   - **Screen off while listening**, using TCL's own Audio Only mode: the panel goes dark and the
@@ -78,9 +82,11 @@ Afnon started from [cleanyourtv](https://github.com/Gathin23/cleanyourtv):
 ## Privacy
 
 Afnon has **no accounts, no analytics and no ads**. The radio is the only feature that uses the
-internet, and it connects only to the station's stream (`stream.radiojar.com`). Afnon makes no other
-network requests, and its [network security config](app/src/main/res/xml/network_security.xml) allows
-plain HTTP for that stream only.
+internet, and it connects only to the chosen station's stream, one at a time: `stream.radiojar.com` (Cairo),
+`quran-radio.org` (Nablus), `streaming.zaytonatube.com` (Shabab FM), `live.kwikmotion.com` (Qatar),
+`jrtv-live.ercdn.net` (Jordan) or `backup.qurango.net` (the reciters). The list is in `Radio.STATIONS`. Afnon
+makes no other network requests, and its [network security config](app/src/main/res/xml/network_security.xml)
+allows plain HTTP for the Cairo stream only.
 Your city and settings stay on the TV.
 
 | Permission | Why |
@@ -150,6 +156,7 @@ adb shell am start -n tv.afnon.home/.MainActivity --es test reminder  # Home's r
 adb shell am start -n tv.afnon.home/.MainActivity --es test call      # the call screen, 8 s later
 adb shell am start -n tv.afnon.home/.MainActivity --es test banner    # the banner, 8 s later (open another app)
 adb shell am start -n tv.afnon.home/.MainActivity --es test radio     # radio on / off
+adb shell am start -n tv.afnon.home/.MainActivity --es station nablus # pick a station (ids in Radio.STATIONS)
 bash tools/shot.sh home                                               # screenshot to state/shots/
 ```
 
@@ -204,7 +211,8 @@ docs/screenshots/     the images above, all from the real TV
 - **التنبيهات**: بطاقة على الرئيسية، أو شريط فوق التطبيقات الأخرى، قبل كل صلاة.
 - **الجمعة ورمضان**: تتغير الشاشة وحدها؛ الجمعة مكان الظهر مع تذكير بسورة الكهف، والإفطار والسحور في رمضان.
 - **إذاعة القرآن الكريم من القاهرة (٩٨٫٢ إف إم)**: بث مباشر، وأعمدة تتحرك مع صوت التلاوة نفسه. تتوقف
-  للأذان ثم تُستأنف، ويمكن إطفاء الشاشة أثناء الاستماع لتوفير الكهرباء.
+  للأذان ثم تُستأنف، ويمكن إطفاء الشاشة أثناء الاستماع لتوفير الكهرباء. ومن الإعدادات ← الإذاعة ← المحطة:
+  إذاعات القرآن الكريم من نابلس وشباب إف إم وقطر والأردن، أو قناة أحد القرّاء العشرة على مدار الساعة.
 - **أزرار الريموت**: أزرار التطبيقات والإعدادات والمدخلات تعمل مع أفنون.
 - **العربية أولًا**: من اليمين إلى اليسار، مع الإنجليزية، والأرقام عربية أو لاتينية.
 - **بلا حسابات ولا إعلانات ولا تتبّع**. الإذاعة وحدها تستخدم الإنترنت.
@@ -222,8 +230,9 @@ docs/screenshots/     the images above, all from the real TV
 - Adhan recordings: [abodehq/Athan-MP3](https://github.com/abodehq/Athan-MP3). They are not in the
   source; `fetch-adhans.sh` downloads them, and the release APK includes them with this credit. If you
   hold the rights to a recording and want it removed, open an issue.
-- Radio: إذاعة القرآن الكريم, Cairo, via the station's public stream. Afnon is not affiliated with
-  the station.
+- Radio: إذاعة القرآن الكريم, Cairo; Holy Quran Radio, Nablus; Shabab FM; Qatar's and Jordan's Quran radios;
+  and [mp3quran.net](https://mp3quran.net)'s reciter channels, each via its own public stream. Afnon is not
+  affiliated with any of them.
 - Fonts: [Amiri](https://github.com/aliftype/amiri), [Alexandria](https://fonts.google.com/specimen/Alexandria)
   and [Marcellus](https://fonts.google.com/specimen/Marcellus), all under the SIL Open Font Licence.
   See [THIRD_PARTY.md](THIRD_PARTY.md).

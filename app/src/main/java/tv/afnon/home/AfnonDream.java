@@ -183,7 +183,7 @@ public class AfnonDream extends DreamService {
         boolean on = Radio.on();
         radioRow.setVisibility(on ? View.VISIBLE : View.GONE);
         if (on) {
-            radioText.setText(t.radioStation() + t.sep() + t.radioStatus(Radio.state()));
+            radioText.setText(t.station(Radio.station(this)) + t.sep() + t.radioStatus(Radio.state()));
             radioBars.setLive(Radio.state() == Radio.PLAYING);
         }
         int minutes = Prefs.radioScreenOff(this);

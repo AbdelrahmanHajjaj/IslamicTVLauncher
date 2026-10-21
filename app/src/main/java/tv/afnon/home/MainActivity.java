@@ -103,8 +103,14 @@ public class MainActivity extends Screen {
     /**
      * Checking reminders on the TV without waiting for a prayer: `--es test reminder` shows Home's card now;
      * `banner` and `call` come from the remote buttons service 8 s later, time enough to open another app.
+     * `--es station <id>` (ids in Radio.STATIONS) picks a radio station as Settings does, before any test runs.
      */
     private void runTest(Intent i) {
+        String station = i == null ? null : i.getStringExtra("station");
+        if (station != null) {
+            i.removeExtra("station");
+            for (int k = 0; k < Radio.STATIONS.length; k++) if (Radio.STATIONS[k].id.equals(station)) Radio.switchTo(this, k);
+        }
         String kind = i == null ? null : i.getStringExtra("test");
         if (kind == null) return;
         i.removeExtra("test");
@@ -529,7 +535,7 @@ public class MainActivity extends Screen {
         nodes[RADIO] = b;
         b.setLook(f -> styleRadio());
         b.setOnClickListener(v -> showRadioCard());
-        nodeLabel[RADIO] = t.radioStation();
+        nodeLabel[RADIO] = t.station(Radio.station(this));
         return b;
     }
 
@@ -551,7 +557,7 @@ public class MainActivity extends Screen {
         pillBars.setColor(focused ? Tokens.LAPIS_900 : Tokens.GOLD_400);
         ((FocusTile) nodes[RADIO]).setRest(Tokens.LAPIS_800, on ? Tokens.GOLD_400_60 : Tokens.LINE_SOFT, 2);
         if (radioCard != null) {
-            cardStatus.setText(t.radioWhere() + t.sep() + t.radioStatus(state));
+            cardStatus.setText(t.stationWhere(Radio.station(this)) + t.sep() + t.radioStatus(state));
             cardBars.setLive(playing);
             playLabel.setText(on ? t.radioStop() : t.radioPlay());
             playIcon.setKind(on ? Icon.STOP : Icon.PLAY);
@@ -585,7 +591,7 @@ public class MainActivity extends Screen {
         TextView label = caps(text(ui400, 20, Tokens.MIST_400));
         label.setText(t.radio());
         TextView title = text(displayBold, 48, Tokens.PLASTER_100);
-        title.setText(t.radioStation());
+        title.setText(t.station(Radio.station(this)));
         cardStatus = text(ui400, 24, Tokens.GOLD_400);
         words.addView(label);
         words.addView(title);
