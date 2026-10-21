@@ -66,7 +66,7 @@ final class Prefs {
         new City("alain", "العين", "Al Ain", "الإمارات", "UAE", 24.2075, 55.7447, CalculationMethod.DUBAI),
         new City("kuwait", "الكويت", "Kuwait City", "الكويت", "Kuwait", 29.3759, 47.9774, CalculationMethod.KUWAIT),
         new City("doha", "الدوحة", "Doha", "قطر", "Qatar", 25.2854, 51.5310, CalculationMethod.QATAR),
-        new City("amman", "عمّان", "Amman", "الأردن", "Jordan", 31.9539, 35.9106, CalculationMethod.MUSLIM_WORLD_LEAGUE),
+        new City("amman", "عمّان", "Amman", "الأردن", "Jordan", 31.9539, 35.9106, MWL),
         new City("irbid", "إربد", "Irbid", "الأردن", "Jordan", 32.5556, 35.8500, MWL),
         new City("zarqa", "الزرقاء", "Zarqa", "الأردن", "Jordan", 32.0833, 36.1000, MWL),
         new City("aqaba", "العقبة", "Aqaba", "الأردن", "Jordan", 29.5322, 35.0061, MWL),

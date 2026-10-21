@@ -89,6 +89,8 @@ public class SettingsActivity extends Screen {
     private TextView sectionLabel, previewValue;
     private LinearLayout hints;
     private FrameLayout chooser;
+    /** What Back in the open chooser goes back to (the city list returns to the countries); null closes it. */
+    private Runnable chooserBack;
     /** The voice being previewed in the adhan list. */
     private android.media.MediaPlayer previewPlayer;
     private PrayerDay day;
@@ -216,7 +218,7 @@ public class SettingsActivity extends Screen {
                         int sel = countries.indexOf(t.ar ? now.countryAr : now.countryEn);
                         // The city list opens once this chooser has closed (closeChooser runs after the pick).
                         openChooser(t.country(), countries.toArray(new String[0]), sel,
-                            i -> root.post(() -> openCities(countries.get(i))));
+                            i -> root.post(() -> openCities(countries.get(i), this::open)));
                     }
                 },
                 new Row(VALUE) {
@@ -537,7 +539,11 @@ public class SettingsActivity extends Screen {
         boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
         if (chooser != null) {
             if (k == KeyEvent.KEYCODE_BACK) {
-                if (!down) closeChooser();
+                if (!down) {
+                    Runnable back = chooserBack;
+                    closeChooser();
+                    if (back != null) back.run();
+                }
                 return true;
             }
             if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
@@ -601,8 +607,8 @@ public class SettingsActivity extends Screen {
 
     // ---------------------------------------------------------------- list chooser
 
-    /** Location's second step: one country's cities. A country with a single city takes it at once. */
-    private void openCities(String country) {
+    /** Location's second step: one country's cities. A country with a single city takes it at once. Back runs back. */
+    private void openCities(String country, Runnable back) {
         List<Integer> found = new ArrayList<>();
         for (int i = 0; i < Prefs.CITIES.length; i++) {
             Prefs.City city = Prefs.CITIES[i];
@@ -615,13 +621,16 @@ public class SettingsActivity extends Screen {
             return;
         }
         String[] names = new String[found.size()];
-        int sel = 0;
+        int current = Prefs.cityIndex(this);
+        // -1 when the saved city is in another country: nothing is marked, focus starts on the first city.
+        int sel = -1;
         for (int k = 0; k < names.length; k++) {
             Prefs.City city = Prefs.CITIES[found.get(k)];
             names[k] = t.ar ? city.ar : city.en;
-            if (found.get(k) == Prefs.cityIndex(this)) sel = k;
+            if (found.get(k) == current) sel = k;
         }
         openChooser(country, names, sel, k -> Prefs.setCity(this, found.get(k)));
+        chooserBack = back;
     }
 
     /** A list over the screen (cities, methods): OK picks, Back cancels. Up/Down are the system's own. */
@@ -706,6 +715,7 @@ public class SettingsActivity extends Screen {
         stopPreview();
         root.removeView(chooser);
         chooser = null;
+        chooserBack = null;
         setRowsFocusable(true);
         refresh();
         focusRow(rowIndex);

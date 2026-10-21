@@ -30,6 +30,10 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent>
+        <!-- TCL's Audio Only panel service (ScreenOffActivity), in com.android.tv.settings or com.tcl.settings. -->
+        <intent>
+            <action android:name="com.tcl.settings.SHOW_WINDOW" />
+        </intent>
     </queries>
 
     <application
