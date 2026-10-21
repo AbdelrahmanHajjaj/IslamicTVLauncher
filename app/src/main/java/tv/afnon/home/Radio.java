@@ -16,8 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Quran Radio from Cairo (إذاعة القرآن الكريم, 98.2 FM), streamed live. One player for the whole app: Home's pill
- * and card start and stop it, the screensaver shows it, and it keeps playing while Afnon is in the background.
+ * Quran radio, streamed live: Cairo's إذاعة القرآن الكريم (98.2 FM) by default, or another station from
+ * {@link #STATIONS} (Settings → Radio). One player for the whole app: Home's pill and card start and stop it, the
+ * screensaver shows it, and it keeps playing while Afnon is in the background.
  *
  * <p>Sound: it takes the audio focus, so another app playing sound stops it; the call to prayer takes the focus
  * for a while, which pauses it, and it comes back afterwards (Settings → Radio). A dropped stream reconnects.
@@ -26,8 +27,78 @@ import java.util.List;
  * the screen) without the TV switching itself off mid-recitation; the timer is put back when the radio stops.
  */
 final class Radio {
-    /** The station's own stream, the one its website plays. 64 kbps MP3; redirects to plain http. */
-    static final String URL = "https://stream.radiojar.com/8s5u5tpdtwzuv";
+    static final class Station {
+        final String id, ar, en, whereAr, whereEn, url;
+        /** A reciter's around-the-clock channel rather than a broadcast station. */
+        final boolean reciter;
+
+        Station(String id, String ar, String en, String whereAr, String whereEn, String url, boolean reciter) {
+            this.id = id;
+            this.ar = ar;
+            this.en = en;
+            this.whereAr = whereAr;
+            this.whereEn = whereEn;
+            this.url = url;
+            this.reciter = reciter;
+        }
+
+        static Station reciter(String id, String ar, String en) {
+            return new Station(id, ar, en, "تلاوة على مدار الساعة", "Recitation, around the clock",
+                "https://backup.qurango.net/radio/" + id, true);
+        }
+    }
+
+    private static final String QURAN_AR = "إذاعة القرآن الكريم", QURAN_EN = "Holy Quran Radio";
+
+    /**
+     * Each station's own stream, the one its website or official player uses. All https except radiojar, which
+     * redirects to plain http (allowed in network_security.xml). Two are HLS (Qatar, Jordan); the rest MP3 or AAC.
+     * Reciters are mp3quran.net's 24/7 channels (its API: mp3quran.net/api/v3/radios), MP3 at 128 kbps.
+     */
+    static final Station[] STATIONS = {
+        new Station("cairo", QURAN_AR, QURAN_EN, "القاهرة · 98٫2 إف إم", "Cairo · 98.2 FM",
+            "https://stream.radiojar.com/8s5u5tpdtwzuv", false),
+        new Station("nablus", QURAN_AR, QURAN_EN, "نابلس", "Nablus", "https://quran-radio.org:8899/;", false),
+        new Station("shabab", "شباب إف إم · قرآن", "Shabab FM Quran", "نابلس", "Nablus",
+            "https://streaming.zaytonatube.com/ShababFM.aac", false),
+        new Station("qatar", QURAN_AR, QURAN_EN, "قطر", "Qatar",
+            "https://live.kwikmotion.com/qmcquranradiolive/quranradio/playlist.m3u8", false),
+        new Station("qatar2", QURAN_AR + " 2", QURAN_EN + " 2", "قطر", "Qatar",
+            "https://live.kwikmotion.com/qmcquranradio2live/quranradio2/playlist.m3u8", false),
+        new Station("jordan", QURAN_AR, QURAN_EN, "الأردن", "Jordan",
+            "https://jrtv-live.ercdn.net/jrradio/quranradio.m3u8", false),
+        // Not Sharjah: its audio stream is raw ADTS AAC, which MediaPlayer's AACExtractor scans to the end before
+        // playing, so a live one never starts; its official HLS is 1080p video.
+        Station.reciter("mishary_alafasi", "مشاري العفاسي", "Mishary Alafasy"),
+        Station.reciter("abdulbasit_abdulsamad", "عبد الباسط عبد الصمد", "Abdul Basit Abdul Samad"),
+        Station.reciter("mohammed_siddiq_alminshawi", "محمد صديق المنشاوي", "Mohamed Siddiq Al-Minshawi"),
+        Station.reciter("mahmoud_khalil_alhussary", "محمود خليل الحصري", "Mahmoud Khalil Al-Husary"),
+        Station.reciter("maher", "ماهر المعيقلي", "Maher Al-Muaiqly"),
+        Station.reciter("saad_alghamdi", "سعد الغامدي", "Saad Al-Ghamdi"),
+        Station.reciter("abdulrahman_alsudaes", "عبد الرحمن السديس", "Abdul Rahman Al-Sudais"),
+        Station.reciter("yasser_aldosari", "ياسر الدوسري", "Yasser Al-Dosari"),
+        Station.reciter("nasser_alqatami", "ناصر القطامي", "Nasser Al-Qatami"),
+        Station.reciter("mohammad_rashad_alshareef", "محمد رشاد الشريف", "Mohammad Rashad Al-Shareef"),
+    };
+
+    static int stationIndex(Context c) {
+        String id = Prefs.of(c).getString("station", "cairo");
+        for (int i = 0; i < STATIONS.length; i++) if (STATIONS[i].id.equals(id)) return i;
+        return 0;
+    }
+
+    static Station station(Context c) {
+        return STATIONS[stationIndex(c)];
+    }
+
+    /** Picks another station; if the radio is on, it moves there at once (after the adhan, if paused for it). */
+    static void switchTo(Context c, int index) {
+        Prefs.of(c).edit().putString("station", STATIONS[index].id).apply();
+        if (wanted && state != PAUSED) {
+            failures = 0;
+            connect();
+        }
+    }
 
     static final int OFF = 0, CONNECTING = 1, PLAYING = 2, RETRYING = 3, PAUSED = 4;
     static final int BANDS = 5;
@@ -131,7 +202,7 @@ final class Radio {
         // A live stream never completes; if it does, the connection dropped.
         mp.setOnCompletionListener(p -> { if (p == player) retry(); });
         try {
-            mp.setDataSource(URL);
+            mp.setDataSource(station(app).url);
             mp.prepareAsync();
         } catch (Exception e) {
             retry();
@@ -153,12 +224,16 @@ final class Radio {
         if (player != null) {
             MediaPlayer p = player;
             player = null;
-            try {
-                p.reset();
-                p.release();
-            } catch (RuntimeException ignored) {
-                // Already gone.
-            }
+            // reset() waits for a stream that is still connecting, up to several seconds, so it runs off the main
+            // thread. Its callbacks are ignored: they check p == player.
+            new Thread(() -> {
+                try {
+                    p.reset();
+                    p.release();
+                } catch (RuntimeException ignored) {
+                    // Already gone.
+                }
+            }, "radio-release").start();
         }
     }
 

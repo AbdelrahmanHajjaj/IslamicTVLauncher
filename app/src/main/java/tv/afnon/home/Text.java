@@ -93,8 +93,14 @@ final class Text {
     String dismiss() { return ar ? "إغلاق" : "Dismiss"; }
     // Radio: Home's pill and card, the screen-off view, the screensaver line and the Settings section.
     String radio() { return ar ? "الإذاعة" : "Radio"; }
-    String radioStation() { return ar ? "إذاعة القرآن الكريم" : "Holy Quran Radio"; }
-    String radioWhere() { return d(ar ? "القاهرة · 98٫2 إف إم" : "Cairo · 98.2 FM"); }
+    String station(Radio.Station s) { return d(ar ? s.ar : s.en); }
+    String stationWhere(Radio.Station s) { return d(ar ? s.whereAr : s.whereEn); }
+    /** A station in a list: its name and place, since several are called إذاعة القرآن الكريم. */
+    String stationChoice(Radio.Station s) { return s.reciter ? station(s) : station(s) + sep() + stationWhere(s); }
+    String stationRow() { return ar ? "المحطة" : "Station"; }
+    String[] stationGroups() {
+        return ar ? new String[] {"إذاعات القرآن الكريم", "القرّاء"} : new String[] {"Quran radio stations", "Reciters"};
+    }
     String radioStatus(int s) {
         switch (s) {
             case Radio.PLAYING: return ar ? "على الهواء" : "On air";
@@ -116,7 +122,7 @@ final class Text {
     }
     String hintClose() { return ar ? "رجوع  إغلاق" : "Back  Close"; }
     String sectionRadio() { return ar ? "الإذاعة" : "Radio"; }
-    String radioRowHelp() { return d(ar ? "من القاهرة · 98٫2 إف إم · تحتاج إلى الإنترنت" : "From Cairo · 98.2 FM · needs the internet"); }
+    String radioRowHelp(Radio.Station s) { return stationWhere(s) + (ar ? " · تحتاج إلى الإنترنت" : " · needs the internet"); }
     String afterAdhanRow() { return ar ? "بعد الأذان" : "After the adhan"; }
     String afterAdhanHelp() { return ar ? "تتوقف الإذاعة أثناء الأذان ثم…" : "The radio pauses for the adhan, then…"; }
     String[] afterAdhanChoices() { return ar ? new String[] {"تُستأنف", "تبقى متوقفة"} : new String[] {"Resumes", "Stays off"}; }

@@ -5,6 +5,10 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 ## [Unreleased]
 
 ### Added
+- Radio stations: Settings → Radio → Station picks broadcast Quran radios (Cairo, Nablus, Shabab FM Quran, Qatar 1
+  and 2, Jordan) or one of 10 reciters' 24/7 channels from mp3quran.net. Each URL is the station's own stream;
+  the same single player plays them. Home's card, the screensaver and the screen-off view show the station.
+  `--es station <id>` picks one from adb.
 - 57 cities, for 74 in 13 countries. Coordinates and Arabic names from Wikipedia/Wikidata.
   - Palestine, the seat of every governorate: Jerusalem, Ramallah, Nablus, Hebron, Bethlehem, Jenin, Tulkarm,
     Qalqilya, Salfit, Tubas, Jericho, Gaza, Jabalia, Deir al-Balah, Khan Yunis and Rafah.

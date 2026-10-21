@@ -282,10 +282,20 @@ public class SettingsActivity extends Screen {
                 voiceRow(true));
             case RADIO: return Arrays.asList(
                 new Row(TOGGLE) {
-                    String label() { return t.radioStation(); }
-                    String help() { return t.radioRowHelp(); }
+                    String label() { return t.station(Radio.station(c)); }
+                    String help() { return t.radioRowHelp(Radio.station(c)); }
                     boolean on() { return Radio.on(); }
                     void set(boolean on) { if (on) Radio.start(c); else Radio.stop(); }
+                },
+                new Row(VALUE) {
+                    String label() { return t.stationRow(); }
+                    String help() { return t.stationGroups()[Radio.station(c).reciter ? 1 : 0]; }
+                    String value() { return t.stationChoice(Radio.station(c)); }
+                    void open() {
+                        int sel = Radio.station(c).reciter ? 1 : 0;
+                        // The station list opens once this chooser has closed (closeChooser runs after the pick).
+                        openChooser(t.stationRow(), t.stationGroups(), sel, i -> root.post(() -> openStations(i == 1, this::open)));
+                    }
                 },
                 new Row(SEG) {
                     String label() { return t.afterAdhanRow(); }
@@ -635,6 +645,22 @@ public class SettingsActivity extends Screen {
             if (found.get(k) == current) sel = k;
         }
         openChooser(country, names, sel, k -> Prefs.setCity(this, found.get(k)));
+        chooserBack = back;
+    }
+
+    /** Station's second step: the broadcast stations or the reciters. Playing radio moves to the pick. Back runs back. */
+    private void openStations(boolean reciters, Runnable back) {
+        List<Integer> found = new ArrayList<>();
+        for (int i = 0; i < Radio.STATIONS.length; i++) if (Radio.STATIONS[i].reciter == reciters) found.add(i);
+        String[] names = new String[found.size()];
+        int current = Radio.stationIndex(this);
+        // -1 when the station is in the other group: nothing is marked, focus starts on the first one.
+        int sel = -1;
+        for (int k = 0; k < names.length; k++) {
+            names[k] = t.stationChoice(Radio.STATIONS[found.get(k)]);
+            if (found.get(k) == current) sel = k;
+        }
+        openChooser(t.stationGroups()[reciters ? 1 : 0], names, sel, k -> Radio.switchTo(this, found.get(k)));
         chooserBack = back;
     }
 
