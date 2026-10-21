@@ -23,8 +23,16 @@ countdown sit inside a mihrab arch. The day's six times run across the top, your
 below, and the call to prayer comes to the TV by itself. Built and tested on a **TCL 55P7K (Google
 TV, Android 12)**, driven only by the remote's D-pad.
 
-It started as a [cleanyourtv](https://github.com/Gathin23/cleanyourtv) debloat and grew into its
-own launcher.
+### How it started
+
+Afnon started from [cleanyourtv](https://github.com/Gathin23/cleanyourtv):
+
+1. **Debloat.** cleanyourtv's prompt cleared the TCL's ads and bloat, reversibly, with a backup and a restore script.
+2. **Launcher.** cleanyourtv's Apple TV-style home took over from the stock one.
+3. **Design.** A new direction, *Mihrab*, was designed around the prayer day: lapis and gold, with an arch for the next prayer.
+4. **Build.** [Claude Code](https://claude.com/claude-code) built it on the real TV over ADB, one screen at a time, checking each with a screenshot.
+
+<p dir="rtl">بدأ أفنون من مشروع <a href="https://github.com/Gathin23/cleanyourtv">cleanyourtv</a>: تنظيف التلفاز من الإعلانات، ثم شاشة رئيسية بسيطة، ثم تصميم «محراب» حول يوم الصلاة، ثم بناؤه على التلفاز نفسه شاشةً شاشة.</p>
 
 ---
 
