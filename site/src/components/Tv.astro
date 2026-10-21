@@ -1,5 +1,6 @@
 ---
-// The 1920×1080 TV stage with the star lattice ground (Ui.starLattice), scaled into a 16:9 frame by tv.ts.
+// The 1920×1080 TV stage with the star lattice ground (Ui.starLattice), scaled into a 16:9 frame by the inline script below
+// (inline so the TV still fits when a cached page outlives its script bundle after a deploy).
 interface Props { mode?: string; screen: string; ground?: 'lattice' | 'black' }
 const { mode, screen, ground = 'lattice' } = Astro.props;
 ---
@@ -22,6 +23,14 @@ const { mode, screen, ground = 'lattice' } = Astro.props;
     <slot />
   </div>
 </div>
+<script is:inline>
+  (() => {
+    const frame = document.currentScript.previousElementSibling, stage = frame.firstElementChild;
+    const fit = () => stage.style.setProperty('--k', String(frame.clientWidth / 1920));
+    new ResizeObserver(fit).observe(frame);
+    fit();
+  })();
+</script>
 
 <style>
   .lattice { position: absolute; inset: 0; pointer-events: none; }

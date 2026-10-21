@@ -1,4 +1,4 @@
-// The TV stage: scaled to its frame, driven by the arrow keys like the D-pad (WICG spatial navigation
+// The TV stage (Tv.astro scales it to its frame), driven by the arrow keys like the D-pad (WICG spatial navigation
 // polyfill, contained in the stage), Enter as OK, Escape/Backspace as Back. Hover focuses, like moving the remote.
 // The key hints along the bottom follow focus: each focusable (or its container) carries data-hints (JSON).
 import 'spatial-navigation-polyfill';
@@ -7,10 +7,6 @@ const frame = document.querySelector<HTMLElement>('.tv-frame');
 const stage = document.querySelector<HTMLElement>('.tv');
 
 if (frame && stage) {
-  const fit = () => stage.style.setProperty('--k', String(frame.clientWidth / 1920));
-  new ResizeObserver(fit).observe(frame);
-  fit();
-
   const visible = (e: HTMLElement) => e.getClientRects().length > 0;
   const start = () => stage.querySelector<HTMLElement>('[data-focus-start]')?.focus({ preventScroll: true });
 
