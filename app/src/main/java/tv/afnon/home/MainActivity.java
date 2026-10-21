@@ -542,6 +542,7 @@ public class MainActivity extends Screen {
     /** Puts the pill and the open card in step with the radio. */
     private void styleRadio() {
         if (radioLabel == null || nodes[RADIO] == null) return;
+        nodeLabel[RADIO] = t.station(Radio.station(this));
         int state = Radio.state();
         boolean on = Radio.on(), playing = state == Radio.PLAYING;
         boolean focused = nodes[RADIO].isFocused();

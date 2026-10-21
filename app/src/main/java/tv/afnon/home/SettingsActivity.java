@@ -294,7 +294,7 @@ public class SettingsActivity extends Screen {
                     void open() {
                         int sel = Radio.station(c).reciter ? 1 : 0;
                         // The station list opens once this chooser has closed (closeChooser runs after the pick).
-                        openChooser(t.stationRow(), t.stationGroups(), sel, i -> root.post(() -> openStations(i == 1)));
+                        openChooser(t.stationRow(), t.stationGroups(), sel, i -> root.post(() -> openStations(i == 1, this::open)));
                     }
                 },
                 new Row(SEG) {
@@ -648,17 +648,20 @@ public class SettingsActivity extends Screen {
         chooserBack = back;
     }
 
-    /** Station's second step: the broadcast stations or the reciters. Playing radio moves to the pick at once. */
-    private void openStations(boolean reciters) {
+    /** Station's second step: the broadcast stations or the reciters. Playing radio moves to the pick. Back runs back. */
+    private void openStations(boolean reciters, Runnable back) {
         List<Integer> found = new ArrayList<>();
         for (int i = 0; i < Radio.STATIONS.length; i++) if (Radio.STATIONS[i].reciter == reciters) found.add(i);
         String[] names = new String[found.size()];
-        int sel = 0;
+        int current = Radio.stationIndex(this);
+        // -1 when the station is in the other group: nothing is marked, focus starts on the first one.
+        int sel = -1;
         for (int k = 0; k < names.length; k++) {
             names[k] = t.stationChoice(Radio.STATIONS[found.get(k)]);
-            if (found.get(k) == Radio.stationIndex(this)) sel = k;
+            if (found.get(k) == current) sel = k;
         }
         openChooser(t.stationGroups()[reciters ? 1 : 0], names, sel, k -> Radio.switchTo(this, found.get(k)));
+        chooserBack = back;
     }
 
     /** A list over the screen (cities, methods): OK picks, Back cancels. Up/Down are the system's own. */

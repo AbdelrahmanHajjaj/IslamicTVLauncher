@@ -91,10 +91,10 @@ final class Radio {
         return STATIONS[stationIndex(c)];
     }
 
-    /** Picks another station; if the radio is on, it moves there at once. */
+    /** Picks another station; if the radio is on, it moves there at once (after the adhan, if paused for it). */
     static void switchTo(Context c, int index) {
         Prefs.of(c).edit().putString("station", STATIONS[index].id).apply();
-        if (wanted) {
+        if (wanted && state != PAUSED) {
             failures = 0;
             connect();
         }
@@ -224,12 +224,16 @@ final class Radio {
         if (player != null) {
             MediaPlayer p = player;
             player = null;
-            try {
-                p.reset();
-                p.release();
-            } catch (RuntimeException ignored) {
-                // Already gone.
-            }
+            // reset() waits for a stream that is still connecting, up to several seconds, so it runs off the main
+            // thread. Its callbacks are ignored: they check p == player.
+            new Thread(() -> {
+                try {
+                    p.reset();
+                    p.release();
+                } catch (RuntimeException ignored) {
+                    // Already gone.
+                }
+            }, "radio-release").start();
         }
     }
 
