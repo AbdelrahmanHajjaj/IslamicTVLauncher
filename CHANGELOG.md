@@ -4,6 +4,12 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Fixed
+- A prayer's reminder and the call to prayer no longer come back after you close them. Each check computed the
+  prayer's time with a few different milliseconds, so it never matched the one already shown; the reminder
+  returned within 15 s and the call screen during its first two minutes. What was shown is also saved, so a
+  restart of the remote buttons service (low memory, TCL's background manager) doesn't show it again.
+
 ## [0.2] - 2026-10-21
 
 ### Added

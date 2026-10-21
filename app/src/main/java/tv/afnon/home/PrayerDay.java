@@ -41,12 +41,12 @@ final class PrayerDay {
         CalculationParameters params = method.getParameters();
         params.madhab = madhab;
         PrayerTimes today = new PrayerTimes(where, DateComponents.from(now), params);
-        times[FAJR] = today.fajr;
-        times[SUNRISE] = today.sunrise;
-        times[DHUHR] = today.dhuhr;
-        times[ASR] = today.asr;
-        times[MAGHRIB] = today.maghrib;
-        times[ISHA] = today.isha;
+        times[FAJR] = minute(today.fajr);
+        times[SUNRISE] = minute(today.sunrise);
+        times[DHUHR] = minute(today.dhuhr);
+        times[ASR] = minute(today.asr);
+        times[MAGHRIB] = minute(today.maghrib);
+        times[ISHA] = minute(today.isha);
 
         int latest = -1;
         for (int i = 0; i < 6; i++) if (!times[i].after(now)) latest = i;
@@ -59,14 +59,14 @@ final class PrayerDay {
         Calendar c = Calendar.getInstance();
         c.setTime(now);
         c.add(Calendar.DAY_OF_MONTH, 1);
-        Date tomorrowFajr = new PrayerTimes(where, DateComponents.from(c.getTime()), params).fajr;
+        Date tomorrowFajr = minute(new PrayerTimes(where, DateComponents.from(c.getTime()), params).fajr);
         if (next == -1) {
             next = FAJR;
             times[FAJR] = tomorrowFajr;
         }
         nextIndex = next;
         nextTime = times[next];
-        suhoorEnd = today.fajr.after(now) ? today.fajr : tomorrowFajr;
+        suhoorEnd = times[FAJR].after(now) ? times[FAJR] : tomorrowFajr;
 
         c.setTime(now);
         friday = c.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY;
@@ -81,5 +81,14 @@ final class PrayerDay {
         ramadan = hijriMonth == IslamicCalendar.RAMADAN;
 
         qibla = new Qibla(where).direction;
+    }
+
+    /**
+     * The time on its whole minute. adhan-java keeps the milliseconds of the moment it was asked, so the same
+     * prayer came out a little different on every check, and "already shown" never matched: the reminder and the
+     * call kept coming back after being closed.
+     */
+    private static Date minute(Date d) {
+        return new Date(d.getTime() / 60_000 * 60_000);
     }
 }

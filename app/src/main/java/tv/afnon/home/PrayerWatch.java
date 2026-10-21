@@ -30,8 +30,11 @@ final class PrayerWatch {
 
     private final AccessibilityService service;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    /** "prayer index:time" of the last reminder and call shown, so each happens once. */
-    private String reminded = "", called = "";
+    /**
+     * "prayer index:time" of the last reminder and call shown, so each happens once. Saved, because the system
+     * restarts this service (low memory, TCL's background manager) and a fresh one would show them again.
+     */
+    private String reminded, called;
     private View banner;
 
     private final Runnable check = new Runnable() {
@@ -44,6 +47,8 @@ final class PrayerWatch {
 
     PrayerWatch(AccessibilityService service) {
         this.service = service;
+        reminded = Prefs.of(service).getString("reminded", "");
+        called = Prefs.of(service).getString("called", "");
     }
 
     void start() {
@@ -71,6 +76,7 @@ final class PrayerWatch {
             // While Afnon's screensaver runs it wakes itself for the call; open the screen once it has gone.
             if (!key.equals(called) && !AfnonDream.running) {
                 called = key;
+                Prefs.of(service).edit().putString("called", key).apply();
                 openCall(call, day.times[call]);
             }
             return;
@@ -80,6 +86,7 @@ final class PrayerWatch {
             String key = day.nextIndex + ":" + day.nextTime.getTime();
             if (key.equals(reminded) || AfnonDream.running) return;
             reminded = key;
+            Prefs.of(service).edit().putString("reminded", key).apply();
             if (Reminders.home != null) Reminders.home.showReminder();
             else showBanner(day, now);
         }
