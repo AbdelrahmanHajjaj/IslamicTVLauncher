@@ -54,8 +54,8 @@ Afnon started from [cleanyourtv](https://github.com/Gathin23/cleanyourtv):
 ## Features
 
 - **Prayer times, fully offline.** Calculated on the TV with
-  [adhan-java](https://github.com/batoulapps/adhan-java). It ships with 17 cities (Egypt, Saudi Arabia,
-  UAE, Kuwait, Qatar, Jordan). You choose the calculation method (Egyptian, Umm al-Qura, MWL,
+  [adhan-java](https://github.com/batoulapps/adhan-java). It ships with 74 cities in 13 countries (Egypt,
+  Saudi Arabia, UAE, Kuwait, Qatar, Jordan, Palestine, Lebanon, Syria, Iraq, Bahrain, Oman, Yemen). You choose the calculation method (Egyptian, Umm al-Qura, MWL,
   Karachi and more), the Asr school (Shafi'i or Hanafi) and a Hijri date offset.
 - **Qibla and room direction.** The Qibla bearing from your city, and a one-time "which way does
   the TV face" setting, so the screen can say *"Qibla is behind you"*.
@@ -210,7 +210,7 @@ docs/screenshots/     the images above, all from the real TV
 **أفنون** شاشة رئيسية لتلفاز أندرويد، تبدأ من يوم الصلاة. الصلاة القادمة والعدّ التنازلي في قلب
 محراب، ومواقيت اليوم الستة في الأعلى، وتطبيقاتك المفضلة تحتها. ويأتي الأذان إلى التلفاز وحده في وقته.
 
-- **مواقيت بلا إنترنت**: تُحسب على التلفاز نفسه، مع ١٧ مدينة وعدة طرق حساب، والمذهب الشافعي أو الحنفي في
+- **مواقيت بلا إنترنت**: تُحسب على التلفاز نفسه، مع ٧٤ مدينة في ١٣ دولة وعدة طرق حساب، والمذهب الشافعي أو الحنفي في
   العصر، وتعديل التاريخ الهجري.
 - **القبلة واتجاه الغرفة**: اتجاه القبلة من مدينتك، وإعداد لمرة واحدة لاتجاه التلفاز، فتقول لك الشاشة
   «القبلة خلفك».

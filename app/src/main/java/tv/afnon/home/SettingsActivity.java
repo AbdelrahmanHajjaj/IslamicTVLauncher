@@ -89,6 +89,8 @@ public class SettingsActivity extends Screen {
     private TextView sectionLabel, previewValue;
     private LinearLayout hints;
     private FrameLayout chooser;
+    /** What Back in the open chooser goes back to (the city list returns to the countries); null closes it. */
+    private Runnable chooserBack;
     /** The voice being previewed in the adhan list. */
     private android.media.MediaPlayer previewPlayer;
     private PrayerDay day;
@@ -99,6 +101,7 @@ public class SettingsActivity extends Screen {
         // old root; left set, it would swallow every key while nothing shows.
         stopPreview();
         chooser = null;
+        chooserBack = null;
         newRoot();
         root.setBackgroundColor(Tokens.LAPIS_900);
         readClockFormat();
@@ -211,12 +214,16 @@ public class SettingsActivity extends Screen {
                     String help() { Prefs.City city = Prefs.city(c); return t.locationHelp(city.lat, city.lng); }
                     String value() { Prefs.City city = Prefs.city(c); return t.ar ? t.place(city.ar, city.countryAr) : t.place(city.en, city.countryEn); }
                     void open() {
-                        String[] names = new String[Prefs.CITIES.length];
-                        for (int i = 0; i < names.length; i++) {
-                            Prefs.City city = Prefs.CITIES[i];
-                            names[i] = t.ar ? t.place(city.ar, city.countryAr) : t.place(city.en, city.countryEn);
+                        List<String> countries = new ArrayList<>();
+                        for (Prefs.City city : Prefs.CITIES) {
+                            String name = t.ar ? city.countryAr : city.countryEn;
+                            if (!countries.contains(name)) countries.add(name);
                         }
-                        openChooser(t.location(), names, Prefs.cityIndex(c), i -> Prefs.setCity(c, i));
+                        Prefs.City now = Prefs.city(c);
+                        int sel = countries.indexOf(t.ar ? now.countryAr : now.countryEn);
+                        // The city list opens once this chooser has closed (closeChooser runs after the pick).
+                        openChooser(t.country(), countries.toArray(new String[0]), sel,
+                            i -> root.post(() -> openCities(countries.get(i), this::open)));
                     }
                 },
                 new Row(VALUE) {
@@ -537,7 +544,11 @@ public class SettingsActivity extends Screen {
         boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
         if (chooser != null) {
             if (k == KeyEvent.KEYCODE_BACK) {
-                if (!down) closeChooser();
+                if (!down) {
+                    Runnable back = chooserBack;
+                    closeChooser();
+                    if (back != null) back.run();
+                }
                 return true;
             }
             if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
@@ -601,6 +612,32 @@ public class SettingsActivity extends Screen {
 
     // ---------------------------------------------------------------- list chooser
 
+    /** Location's second step: one country's cities. A country with a single city takes it at once. Back runs back. */
+    private void openCities(String country, Runnable back) {
+        List<Integer> found = new ArrayList<>();
+        for (int i = 0; i < Prefs.CITIES.length; i++) {
+            Prefs.City city = Prefs.CITIES[i];
+            if ((t.ar ? city.countryAr : city.countryEn).equals(country)) found.add(i);
+        }
+        if (found.size() == 1) {
+            Prefs.setCity(this, found.get(0));
+            refresh();
+            focusRow(rowIndex);
+            return;
+        }
+        String[] names = new String[found.size()];
+        int current = Prefs.cityIndex(this);
+        // -1 when the saved city is in another country: nothing is marked, focus starts on the first city.
+        int sel = -1;
+        for (int k = 0; k < names.length; k++) {
+            Prefs.City city = Prefs.CITIES[found.get(k)];
+            names[k] = t.ar ? city.ar : city.en;
+            if (found.get(k) == current) sel = k;
+        }
+        openChooser(country, names, sel, k -> Prefs.setCity(this, found.get(k)));
+        chooserBack = back;
+    }
+
     /** A list over the screen (cities, methods): OK picks, Back cancels. Up/Down are the system's own. */
     private void openChooser(String title, String[] items, int selected, IntConsumer pick) {
         openChooser(title, items, selected, pick, null);
@@ -629,8 +666,8 @@ public class SettingsActivity extends Screen {
         scroll.setVerticalScrollBarEnabled(false);
         int reach = Ui.ipx(FocusTile.REACH);
         scroll.setPadding(reach, reach, reach, reach);
-        scroll.setClipToPadding(false);
-        scroll.setClipChildren(false);
+        scroll.setClipToPadding(false);   // the focus ring may use the padding...
+        scroll.setClipChildren(true);     // ...but scrolled items must not draw over the title above
         LinearLayout list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
         list.setClipChildren(false);
@@ -683,6 +720,7 @@ public class SettingsActivity extends Screen {
         stopPreview();
         root.removeView(chooser);
         chooser = null;
+        chooserBack = null;
         setRowsFocusable(true);
         refresh();
         focusRow(rowIndex);

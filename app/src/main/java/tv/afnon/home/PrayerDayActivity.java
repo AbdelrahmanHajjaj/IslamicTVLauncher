@@ -41,6 +41,8 @@ public class PrayerDayActivity extends Screen {
     private QiblaView pickerDial;
     private TextView pickerValue, pickerWhere;
     private int pickerFacing;
+    // OK and Back act on release; Settings opens the picker on press, so that press's release must not close it.
+    private boolean pickerPressed;
     private LinearLayout hints;
     private PrayerDay day;
     private long lastMinute = -1;
@@ -223,6 +225,7 @@ public class PrayerDayActivity extends Screen {
     private void openPicker() {
         int f = facing();
         pickerFacing = f < 0 ? 0 : f;
+        pickerPressed = false;
         picker = new FrameLayout(this);
         picker.setBackgroundColor(0xEB0C1B33);
         picker.setClickable(true);
@@ -439,12 +442,10 @@ public class PrayerDayActivity extends Screen {
     private boolean pickerKey(KeyEvent e) {
         int k = e.getKeyCode();
         boolean up = e.getAction() == KeyEvent.ACTION_UP;
-        if (k == KeyEvent.KEYCODE_BACK) {
-            if (up) closePicker(false);
-            return true;
-        }
-        if (k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER) {
-            if (up) closePicker(true);
+        boolean ok = k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER;
+        if (k == KeyEvent.KEYCODE_BACK || ok) {
+            if (!up) pickerPressed = true;
+            else if (pickerPressed) closePicker(ok);
             return true;
         }
         if (e.getAction() == KeyEvent.ACTION_DOWN) {
