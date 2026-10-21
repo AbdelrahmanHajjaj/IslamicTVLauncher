@@ -4,6 +4,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-22
+
 ### Fixed
 - A prayer's reminder and the call to prayer no longer come back after you close them. Each check computed the
   prayer's time with a few different milliseconds, so it never matched the one already shown; the reminder
@@ -78,7 +80,8 @@ First public release.
 - Screensaver, on-TV settings and remote button mapping.
 - Arabic (RTL) first, with English.
 
-[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.2...HEAD
+[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.2...v0.2.1
 [0.2]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.1.1...v0.2
 [0.1.1]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.1...v0.1.1
 [0.1]: https://github.com/egyjs/afnon-android-tv-launcher/releases/tag/v0.1
