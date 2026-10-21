@@ -2,7 +2,7 @@
 //   app/src/main/java/tv/afnon/home/Tokens.java   (Java constants, names as the app uses them)
 //   app/src/main/res/values/colors.xml            (window background etc.)
 //   site/src/styles/tokens.css                    (CSS custom properties for the preview site)
-// `--check` writes nothing and fails if a committed output differs (for CI).
+// `--check` writes nothing and fails if the app's committed outputs differ (for CI).
 import StyleDictionary from 'style-dictionary';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -107,7 +107,8 @@ const sd = new StyleDictionary({
 });
 
 let stale = [];
-for (const platform of ['css', 'java', 'android']) {
+// The CSS is gitignored and rebuilt with the site, so --check covers only the app's committed files.
+for (const platform of check ? ['java', 'android'] : ['css', 'java', 'android']) {
   for (const { output, destination } of await sd.formatPlatform(platform)) {
     let old = null;
     try { old = readFileSync(destination, 'utf8'); } catch {}
