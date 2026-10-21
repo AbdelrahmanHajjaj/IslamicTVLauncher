@@ -198,6 +198,7 @@ final class Text {
     String sectionDevice() { return ar ? "إعدادات الجهاز" : "Device settings"; }
     String preview() { return ar ? "العصر اليوم بهذه الإعدادات" : "Asr today with these settings"; }
     String location() { return ar ? "الموقع" : "Location"; }
+    String country() { return ar ? "الدولة" : "Country"; }
     String locationHelp(double lat, double lng) {
         String ns = lat >= 0 ? (ar ? "ش" : "N") : (ar ? "ج" : "S");
         String ew = lng >= 0 ? (ar ? "ق" : "E") : (ar ? "غ" : "W");

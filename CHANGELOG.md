@@ -4,6 +4,28 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Added
+- 57 cities, for 74 in 13 countries. Coordinates and Arabic names from Wikipedia/Wikidata.
+  - Palestine, the seat of every governorate: Jerusalem, Ramallah, Nablus, Hebron, Bethlehem, Jenin, Tulkarm,
+    Qalqilya, Salfit, Tubas, Jericho, Gaza, Jabalia, Deir al-Balah, Khan Yunis and Rafah.
+  - Lebanon (Beirut, Tripoli, Sidon, Tyre, Baalbek), Syria (Damascus, Aleppo, Homs, Hama, Latakia, Deir ez-Zor),
+    Iraq (Baghdad, Basra, Mosul, Erbil, Najaf, Karbala, Kirkuk, Sulaymaniyah), Bahrain (Manama, Muharraq),
+    Oman (Muscat, Salalah, Sohar, Nizwa) and Yemen (Sanaa, Aden, Taiz, Hodeidah, Mukalla).
+  - More cities where there was one: Saudi Arabia (Jeddah, Dammam, Taif, Tabuk, Abha) with Umm al-Qura,
+    UAE (Abu Dhabi, Sharjah, Al Ain) with the Dubai method, Jordan (Irbid, Zarqa, Aqaba).
+  - The new countries use the Muslim World League method, like Amman; the method row can still change it.
+
+### Changed
+- Location picks a country first, then one of its cities, so the remote never scrolls through all 74. A country
+  with a single city is picked at once.
+
+### Fixed
+- In the settings lists (cities, methods, adhan voices), items scrolled up no longer draw over the list's title.
+- Settings → Room direction stays open. Settings acts on OK's press and the picker on its release, so the same
+  press closed the picker at once and saved 0°.
+- Screen off while listening uses TCL's Audio Only on Android TV 11 TCL sets too (tested on a C06_2K_GB set),
+  where TCL Settings hosts it in `com.tcl.settings` instead of `com.android.tv.settings`.
+
 ## [0.1.1] - 2026-10-21
 
 ### Fixed

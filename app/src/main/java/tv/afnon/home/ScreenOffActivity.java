@@ -39,16 +39,21 @@ public class ScreenOffActivity extends Activity implements Radio.Listener {
     /**
      * TCL Settings' panel service, Type "AudioOnly": the same countdown dialog its quick menu shows ("TV screen
      * will turn off in 10 seconds…", with Cancel), then Audio Only. False if this TV has no such service.
+     * Google TV sets (55P7K) host it in com.android.tv.settings; the Android TV 11 C06_2K_GB set in
+     * com.tcl.settings.
      */
     static boolean audioOnly(Context c) {
-        try {
-            ComponentName cn = c.startService(new Intent("com.tcl.settings.SHOW_WINDOW")
-                .setPackage("com.android.tv.settings")
-                .putExtra("Type", "AudioOnly"));
-            return cn != null;
-        } catch (RuntimeException e) {
-            return false;
+        for (String pkg : new String[] {"com.android.tv.settings", "com.tcl.settings"}) {
+            try {
+                ComponentName cn = c.startService(new Intent("com.tcl.settings.SHOW_WINDOW")
+                    .setPackage(pkg)
+                    .putExtra("Type", "AudioOnly"));
+                if (cn != null) return true;
+            } catch (RuntimeException ignored) {
+                // Not in this package; try the next.
+            }
         }
+        return false;
     }
 
     @Override
