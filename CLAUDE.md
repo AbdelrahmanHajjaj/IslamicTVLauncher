@@ -75,6 +75,12 @@ Settings button sends `KEYCODE_NOTIFICATION` (83); Web is 4159; Netflix is 4062 
 and 190. Audio Only via `com.tcl.settings.SHOW_WINDOW`. `APP_AUTO_START` appop keeps the service across reboots.
 `screen_brightness` does nothing (TCL drives the backlight). Each of these fails quietly on other brands.
 
+## Other brands (CVTE)
+
+`FirmwareKeys` detects CVTE boards (`android.intent.action.HOTKEYSERVICE`): no key filtering there, and Home opens
+CVTE's source menu for Source. `Redirects` (pref `redirects`, `from=to` packages) repoints buttons the firmware
+hard-wires to an app. Tested on one Super General (Android 9) only; any change here must leave TCL untouched.
+
 ## Releases
 
 Debug-signed on purpose (`restore.sh` uses `run-as`), with `~/.android/debug.keystore` on the maintainer's machine:

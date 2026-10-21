@@ -167,6 +167,20 @@ Some of this is TCL-specific. Each piece fails quietly on other brands:
 - Android's `screen_brightness` setting does nothing on this TV, because TCL drives the backlight
   itself.
 
+## Other brands (CVTE)
+
+Tested on one Super General TV (CVTE board, Android 9). CVTE makes the boards in many budget TVs; Afnon
+detects them by their hotkey service and each piece is skipped elsewhere:
+
+- The firmware answers the remote's buttons itself (from `/vendor/menu_config_xml/hotkey.xml`), so the remote
+  buttons service doesn't filter keys there (`FirmwareKeys.java`) and holding Volume keeps changing it.
+- The firmware leaves Source to the app in front, so Home opens CVTE's source menu
+  (`com.cvte.tv.globalui`) itself.
+- Buttons wired to an app that can't be replaced (ESHARE opens EShare) can be pointed at another app with
+  the `redirects` preference, e.g. `com.ecloud.eshare.server=com.droidlogic.miracast`. Empty by default.
+- If Afnon guesses wrong about key filtering on some TV, the `key_filter` preference (`on`/`off`) forces it.
+- `install.sh` grants location, which Android 9+ needs before Home can show the Wi-Fi name.
+
 ## Project layout
 
 ```

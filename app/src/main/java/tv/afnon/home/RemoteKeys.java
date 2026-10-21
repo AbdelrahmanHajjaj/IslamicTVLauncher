@@ -21,8 +21,9 @@ import java.util.Map;
  * Being always on, it also hosts {@link PrayerWatch}: the reminders and the call to prayer.
  *
  * On TCL firmwares the buttons are handed to TCL's own key remapping ({@link TclKeys}) and this service stops
- * filtering keys: filtered keys lose their auto-repeat, so holding Volume moved it only one step. Elsewhere it
- * filters keys and opens the targets itself, as below.
+ * filtering keys: filtered keys lose their auto-repeat, so holding Volume moved it only one step. Firmwares that
+ * answer the buttons themselves (CVTE's hotkey service, see {@link FirmwareKeys}) are left alone too. Elsewhere it
+ * filters keys and opens the targets itself, as below; a button whose target is missing passes through.
  */
 public class RemoteKeys extends AccessibilityService {
 
@@ -51,7 +52,8 @@ public class RemoteKeys extends AccessibilityService {
             int code = KeyEvent.keyCodeFromString(k[0]);
             if (code > 0) appKeys.put(code, k[1]);
         }
-        filterKeys(!TclKeys.install(this, targets()));
+        boolean tcl = TclKeys.install(this, targets());
+        filterKeys(!tcl && FirmwareKeys.shouldFilter(this));
         // The radio may have left the TV's sleep timer off (a crash, a reboot mid-listen): put it back.
         Radio.restoreSleep(this);
         if (watch != null) watch.stop();
@@ -74,9 +76,12 @@ public class RemoteKeys extends AccessibilityService {
         if (app != null) open = null;
         // Afnon Settings, which lists the TV's own under Device settings.
         else if (code == SETTINGS_KEY || code == KeyEvent.KEYCODE_SETTINGS) open = new Intent(this, SettingsActivity.class);
-        else if (code == KeyEvent.KEYCODE_TV || code == KeyEvent.KEYCODE_TV_INPUT) open = new Intent(ACTION_VIEW_INPUTS);
+        else if (code == KeyEvent.KEYCODE_TV || code == KeyEvent.KEYCODE_TV_INPUT) open = inputs();
         else if (code == KeyEvent.KEYCODE_ALL_APPS) open = new Intent(this, AllAppsActivity.class);
         else return false;
+        // Nothing here answers it (the app is gone, or the firmware has no Android TV inputs screen): let the key
+        // through so the firmware's own handling (a CVTE source menu, say) still gets it.
+        if (app != null ? Apps.launchIntent(this, app) == null : open == null || explicit(new Intent(open)) == null) return false;
         // Act on release only, and swallow the press too so the app underneath never sees half a key.
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
             if (app != null) {
@@ -102,7 +107,7 @@ public class RemoteKeys extends AccessibilityService {
         Intent settings = new Intent(this, SettingsActivity.class);
         out.put(SETTINGS_KEY, settings);
         out.put(KeyEvent.KEYCODE_SETTINGS, settings);
-        Intent inputs = explicit(new Intent(ACTION_VIEW_INPUTS));
+        Intent inputs = inputs();
         if (inputs != null) {
             out.put(KeyEvent.KEYCODE_TV, inputs);
             out.put(KeyEvent.KEYCODE_TV_INPUT, inputs);
@@ -110,6 +115,12 @@ public class RemoteKeys extends AccessibilityService {
         out.put(KeyEvent.KEYCODE_ALL_APPS, new Intent(this, AllAppsActivity.class));
         for (Intent i : out.values()) i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         return out;
+    }
+
+    /** The Android TV inputs screen, else the firmware's own source menu; null if neither exists. */
+    private Intent inputs() {
+        Intent i = explicit(new Intent(ACTION_VIEW_INPUTS));
+        return i != null ? i : FirmwareKeys.sourceMenu(this);
     }
 
     /** The intent pinned to the activity that answers it now, or null if none does. */
@@ -130,6 +141,7 @@ public class RemoteKeys extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        Redirects.onWindowChanged(this, event);
     }
 
     @Override
