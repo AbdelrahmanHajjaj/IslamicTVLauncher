@@ -4,6 +4,11 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Fixed
+- Settings no longer stops answering OK after you leave it with a list open (city, method, adhan) and change
+  something elsewhere, such as the room direction: coming back rebuilt the screen without the list but kept it
+  marked as open.
+
 ## [0.1.1] - 2026-10-21
 
 ### Fixed

@@ -95,6 +95,10 @@ public class SettingsActivity extends Screen {
 
     @Override
     void build() {
+        // A rebuild (back with settings changed elsewhere, or a language change) drops an open chooser with the
+        // old root; left set, it would swallow every key while nothing shows.
+        stopPreview();
+        chooser = null;
         newRoot();
         root.setBackgroundColor(Tokens.LAPIS_900);
         readClockFormat();
