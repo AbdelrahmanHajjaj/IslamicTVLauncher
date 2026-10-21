@@ -151,10 +151,15 @@ final class Apps {
     }
 
     /** Opens the app's TV entry, or its phone-style one; back at its main screen, not wherever it was left. */
-    static void launch(Context c, String pkg) {
+    /** The app's TV launch intent, or its phone one, or null if it isn't installed. */
+    static Intent launchIntent(Context c, String pkg) {
         PackageManager pm = c.getPackageManager();
         Intent i = pm.getLeanbackLaunchIntentForPackage(pkg);
-        if (i == null) i = pm.getLaunchIntentForPackage(pkg);
+        return i != null ? i : pm.getLaunchIntentForPackage(pkg);
+    }
+
+    static void launch(Context c, String pkg) {
+        Intent i = launchIntent(c, pkg);
         if (i == null) return;
         try {
             c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));

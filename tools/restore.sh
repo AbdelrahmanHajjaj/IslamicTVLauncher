@@ -15,6 +15,11 @@ fi
 adb shell cmd package set-home-activity "$STOCK_HOME"
 adb shell settings put secure screensaver_components "$STOCK_DREAM"
 adb shell settings delete secure enabled_accessibility_services
+# Afnon's remote buttons, handed to TCL's key remapping (TclKeys.java); harmless where they were never set.
+for code in $(adb shell settings get global CustomKeyList | tr -d '[]"' | tr ',' ' '); do
+  adb shell settings delete global "CustomKey_$code" >/dev/null
+done
+adb shell settings delete global CustomKeyList >/dev/null
 # The radio turns the sleep timer off while it plays and saves the old value; put it back if it's still off.
 if [ "$(adb shell settings get secure sleep_timeout | tr -d '\r')" = "-1" ]; then
   saved=$(adb shell "run-as tv.afnon.home cat shared_prefs/afnon.xml" 2>/dev/null | sed -n 's/.*name="sleep_saved" value="\([0-9]*\)".*/\1/p')

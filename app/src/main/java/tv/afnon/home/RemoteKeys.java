@@ -1,8 +1,12 @@
 package tv.afnon.home;
 
 import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -15,6 +19,10 @@ import java.util.Map;
  * apps. Every other key passes through untouched. Taken over from the cleanyourtv launcher's InputKeyService and
  * HomeKeyService so that package can be disabled. Keys injected over ADB never reach this; test with the remote.
  * Being always on, it also hosts {@link PrayerWatch}: the reminders and the call to prayer.
+ *
+ * On TCL firmwares the buttons are handed to TCL's own key remapping ({@link TclKeys}) and this service stops
+ * filtering keys: filtered keys lose their auto-repeat, so holding Volume moved it only one step. Elsewhere it
+ * filters keys and opens the targets itself, as below.
  */
 public class RemoteKeys extends AccessibilityService {
 
@@ -43,6 +51,7 @@ public class RemoteKeys extends AccessibilityService {
             int code = KeyEvent.keyCodeFromString(k[0]);
             if (code > 0) appKeys.put(code, k[1]);
         }
+        filterKeys(!TclKeys.install(this, targets()));
         // The radio may have left the TV's sleep timer off (a crash, a reboot mid-listen): put it back.
         Radio.restoreSleep(this);
         if (watch != null) watch.stop();
@@ -81,6 +90,42 @@ public class RemoteKeys extends AccessibilityService {
             }
         }
         return true;
+    }
+
+    /** Every button this service answers, with what it opens; buttons whose target is missing are left out. */
+    private Map<Integer, Intent> targets() {
+        Map<Integer, Intent> out = new HashMap<>();
+        for (Map.Entry<Integer, String> e : appKeys.entrySet()) {
+            Intent i = Apps.launchIntent(this, e.getValue());
+            if (i != null) out.put(e.getKey(), i);
+        }
+        Intent settings = new Intent(this, SettingsActivity.class);
+        out.put(SETTINGS_KEY, settings);
+        out.put(KeyEvent.KEYCODE_SETTINGS, settings);
+        Intent inputs = explicit(new Intent(ACTION_VIEW_INPUTS));
+        if (inputs != null) {
+            out.put(KeyEvent.KEYCODE_TV, inputs);
+            out.put(KeyEvent.KEYCODE_TV_INPUT, inputs);
+        }
+        out.put(KeyEvent.KEYCODE_ALL_APPS, new Intent(this, AllAppsActivity.class));
+        for (Intent i : out.values()) i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        return out;
+    }
+
+    /** The intent pinned to the activity that answers it now, or null if none does. */
+    private Intent explicit(Intent i) {
+        ResolveInfo r = getPackageManager().resolveActivity(i, 0);
+        if (r == null || r.activityInfo == null) return null;
+        ActivityInfo a = r.activityInfo;
+        return i.setComponent(new ComponentName(a.packageName, a.name));
+    }
+
+    private void filterKeys(boolean on) {
+        AccessibilityServiceInfo info = getServiceInfo();
+        if (info == null) return;
+        int flag = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
+        info.flags = on ? info.flags | flag : info.flags & ~flag;
+        setServiceInfo(info);
     }
 
     @Override

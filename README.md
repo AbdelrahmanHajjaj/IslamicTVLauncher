@@ -87,7 +87,7 @@ Your city and settings stay on the TV.
 |---|---|
 | `INTERNET`, `WAKE_LOCK` | The radio stream, kept playing with the screen off |
 | `RECORD_AUDIO` | Required by Android's Visualizer, to read Afnon's **own** player for the level bars. It does not use the microphone. |
-| `WRITE_SECURE_SETTINGS` | Turns the TV's sleep timer off while the radio plays, and puts it back after |
+| `WRITE_SECURE_SETTINGS` | Turns the TV's sleep timer off while the radio plays, and puts it back after. On TCL, also writes the remote button mappings (see TCL notes) |
 | Accessibility service | Remote button mapping (see `RemoteKeys.java`) |
 
 ## Install
@@ -161,6 +161,8 @@ Some of this is TCL-specific. Each piece fails quietly on other brands:
   (`com.tcl.settings.SHOW_WINDOW`, `Type=AudioOnly`). Elsewhere Afnon falls back to a black,
   dimmed screen.
 - TCL remotes send Settings as `KEYCODE_NOTIFICATION` and the browser key as code `4159`.
+- The remote buttons go through TCL's own button remapping (`TclKeys.java`), so the accessibility
+  service doesn't filter keys and holding Volume keeps changing it. Elsewhere the service filters keys itself.
 - `install.sh` grants TCL's `APP_AUTO_START` so the remote buttons service survives a reboot.
 - Android's `screen_brightness` setting does nothing on this TV, because TCL drives the backlight
   itself.
@@ -177,6 +179,7 @@ app/src/main/java/tv/afnon/home/
   AfnonDream          Screensaver
   PrayerWatch         Reminders, banner and the call, run inside the accessibility service
   RemoteKeys          Remote button mapping
+  TclKeys             The same buttons through TCL's own remapping, so held keys still repeat
   Radio, RadioBars    Quran Radio player and its level bars
   ScreenOffActivity   Screen off while listening (TCL Audio Only, or a black fallback)
   PrayerDay, Prefs, Reminders, Adhans, Text, Tokens, Ui …
