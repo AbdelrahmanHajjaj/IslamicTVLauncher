@@ -14,12 +14,25 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   - More cities where there was one: Saudi Arabia (Jeddah, Dammam, Taif, Tabuk, Abha) with Umm al-Qura,
     UAE (Abu Dhabi, Sharjah, Al Ain) with the Dubai method, Jordan (Irbid, Zarqa, Aqaba).
   - The new countries use the Muslim World League method, like Amman; the method row can still change it.
+- A `redirects` preference (`from=to` package pairs) that opens another app whenever one app's screen comes up,
+  for remote buttons the firmware hard-wires to an app that can't be replaced (`Redirects.java`). Empty by default.
+- A `key_filter` preference (`auto`, `on`, `off`) to force key filtering on or off on a TV the guess gets wrong.
 
 ### Changed
 - Location picks a country first, then one of its cities, so the remote never scrolls through all 74. A country
   with a single city is picked at once.
 
 ### Fixed
+- On TVs whose firmware answers the remote's buttons itself (CVTE boards, e.g. Super General), holding Volume
+  works continuously and the Source button opens the TV's own source menu again. The remote buttons service no
+  longer filters keys there (`FirmwareKeys.java`, detected by CVTE's `android.intent.action.HOTKEYSERVICE`).
+  CVTE's firmware leaves Source to the app in front, so Home now opens the TV's source menu itself.
+- `tools/install.sh` grants location, so Home shows the Wi-Fi name on a fresh install (Android 9+ hides it otherwise).
+- Where the service still filters keys, a button whose target is missing (an app that isn't installed, or no
+  Android TV inputs screen) now passes through to the TV instead of doing nothing.
+- Settings no longer stops answering OK after you leave it with a list open (city, method, adhan) and change
+  something elsewhere, such as the room direction: coming back rebuilt the screen without the list but kept it
+  marked as open.
 - In the settings lists (cities, methods, adhan voices), items scrolled up no longer draw over the list's title.
 - Settings → Room direction stays open. Settings acts on OK's press and the picker on its release, so the same
   press closed the picker at once and saved 0°.

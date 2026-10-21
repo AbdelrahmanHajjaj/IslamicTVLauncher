@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds Afnon, installs it over the running copy and brings it straight back as the home screen. Also sets
 # what Afnon needs from the system: HOME, the remote buttons service, the screensaver, TCL's auto-start
-# grants and two permissions the radio uses.
+# grants, two permissions the radio uses and location for the Wi-Fi name.
 set -e
 . "$(dirname "$0")/env.sh"
 [ -n "$(ls "$ROOT/app/src/main/assets/adhan/"*.mp3 2>/dev/null)" ] || bash "$ROOT/tools/fetch-adhans.sh"
@@ -17,5 +17,7 @@ adb shell appops set tv.afnon.home APP_ASSOC_START allow 2>/dev/null || true
 # Radio: the level bars (RECORD_AUDIO) and the TV's sleep timer while listening (WRITE_SECURE_SETTINGS).
 adb shell pm grant tv.afnon.home android.permission.RECORD_AUDIO
 adb shell pm grant tv.afnon.home android.permission.WRITE_SECURE_SETTINGS
+# Home's Wi-Fi name: Android 9+ hides the network name from apps without location.
+adb shell pm grant tv.afnon.home android.permission.ACCESS_FINE_LOCATION
 adb shell am start -a android.intent.action.MAIN -c android.intent.category.HOME >/dev/null
 echo "Afnon installed and on screen."

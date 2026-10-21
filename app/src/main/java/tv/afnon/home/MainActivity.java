@@ -763,6 +763,20 @@ public class MainActivity extends Screen {
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         int k = e.getKeyCode();
+        // Source, where the firmware leaves it to the app in front (CVTE) and nothing else opens the source menu.
+        if (k == KeyEvent.KEYCODE_TV_INPUT) {
+            Intent source = FirmwareKeys.sourceMenu(this);
+            if (source != null) {
+                if (e.getAction() == KeyEvent.ACTION_UP && !e.isCanceled()) {
+                    try {
+                        startActivity(source.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    } catch (RuntimeException ignored) {
+                        // Not exported or gone after all; the key just does nothing.
+                    }
+                }
+                return true;
+            }
+        }
         if (radioCard != null) {
             if (k == KeyEvent.KEYCODE_BACK) {
                 if (e.getAction() == KeyEvent.ACTION_UP) closeRadioCard(true);
