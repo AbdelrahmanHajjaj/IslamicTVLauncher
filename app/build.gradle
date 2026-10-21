@@ -1,0 +1,26 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'tv.afnon.home'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'tv.afnon.home'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '0.1'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    // Offline prayer-time calculation (no network, no transitive dependencies).
+    implementation 'com.batoulapps.adhan:adhan:1.2.1'
+}
