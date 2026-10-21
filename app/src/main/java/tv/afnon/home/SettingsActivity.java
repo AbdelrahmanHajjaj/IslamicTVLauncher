@@ -3,7 +3,6 @@ package tv.afnon.home;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.GradientDrawable;
@@ -39,9 +38,7 @@ public class SettingsActivity extends Screen {
 
     private static final int PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, NETWORK = 4, DEVICE = 5, SECTIONS = 6;
     private static final int VALUE = 0, SEG = 1, STEP = 2, TOGGLE = 3;
-    private static final int SIDEBAR = 0xFF0A1730;
-    /** Segmented control's track on a focused (gold) row: lapis-900 at 15%. */
-    private static final int SEG_TRACK_FOCUSED = Color.argb(38, 0x0C, 0x1B, 0x33);
+    private static final int SIDEBAR = Tokens.LAPIS_950;
     private static final float ROWS_TOP = 112, ROW_H = 88, ROW_GAP = 10;
     private static final float NAV_TOP = 152, NAV_H = 76, NAV_GAP = 10;
 
@@ -108,7 +105,7 @@ public class SettingsActivity extends Screen {
 
         View side = new View(this);
         side.setBackgroundColor(SIDEBAR);
-        place(side, 0, 0, 560, 1080);
+        place(side, 0, 0, Tokens.LAYOUT_SETTINGS_SIDEBAR_WIDTH, 1080);
 
         LinearLayout head = new LinearLayout(this);
         head.setGravity(Gravity.CENTER_VERTICAL);
@@ -132,7 +129,7 @@ public class SettingsActivity extends Screen {
         preview.setBackground(round(Tokens.LAPIS_800, 16));
         TextView pl = text(ui400, 20, Tokens.MIST_400);
         pl.setText(t.preview());
-        previewValue = text(display, 36, Tokens.GOLD_400);
+        previewValue = text(display, Tokens.FONT_SIZE_DISPLAY_XS, Tokens.GOLD_400);
         preview.addView(pl);
         preview.addView(previewValue);
         lineHeight(previewValue, 1.2f);
@@ -403,7 +400,7 @@ public class SettingsActivity extends Screen {
 
     private void addRow(Row r, int i) {
         r.tile = new FocusTile(this, 16);
-        r.tile.setFocusScale(1.02f);
+        r.tile.setFocusScale(Tokens.FOCUS_SCALE_SETTINGS_ROW);
         r.tile.setRest(Tokens.LAPIS_800, 0, 0);
         LinearLayout line = new LinearLayout(this);
         line.setGravity(Gravity.CENTER_VERTICAL);
@@ -425,7 +422,7 @@ public class SettingsActivity extends Screen {
         line.addView(r.control, clp);
         r.tile.addView(line, new FrameLayout.LayoutParams(-1, -1));
         r.tile.setLook(f -> render(r, f));
-        placeTile(r.tile, 640, ROWS_TOP + i * (ROW_H + ROW_GAP), 1184, ROW_H);
+        placeTile(r.tile, 640, ROWS_TOP + i * (ROW_H + ROW_GAP), Tokens.LAYOUT_SETTINGS_ROW_WIDTH, ROW_H);
     }
 
     /** Every row and the preview, from the saved settings. */
@@ -462,7 +459,7 @@ public class SettingsActivity extends Screen {
                 LinearLayout track = new LinearLayout(this);
                 int pad = Ui.ipx(6);
                 track.setPadding(pad, pad, pad, pad);
-                track.setBackground(round(focused ? SEG_TRACK_FOCUSED : Tokens.LAPIS_900, 30));
+                track.setBackground(round(focused ? Tokens.SEG_TRACK_FOCUSED : Tokens.LAPIS_900, 30));
                 String[] segs = r.segs();
                 for (int i = 0; i < segs.length; i++) {
                     boolean chosen = i == r.selected();
@@ -672,7 +669,7 @@ public class SettingsActivity extends Screen {
     /** onFocus, if given, hears each item as focus reaches it (the adhan list plays that voice). */
     private void openChooser(String title, String[] items, int selected, IntConsumer pick, IntConsumer onFocus) {
         chooser = new FrameLayout(this);
-        chooser.setBackgroundColor(0xEB0C1B33);
+        chooser.setBackgroundColor(Tokens.SCRIM_MENU);
         chooser.setClickable(true);
 
         LinearLayout card = new LinearLayout(this);
@@ -683,7 +680,7 @@ public class SettingsActivity extends Screen {
         card.setBackground(bg);
         card.setClipChildren(false);
 
-        TextView head = text(displayBold, 44, Tokens.GOLD_400);
+        TextView head = text(displayBold, Tokens.FONT_SIZE_DISPLAY_S, Tokens.GOLD_400);
         head.setText(title);
         card.addView(head);
         lineHeight(head, 1.2f);

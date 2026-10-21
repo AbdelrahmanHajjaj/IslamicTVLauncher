@@ -227,7 +227,7 @@ public class PrayerDayActivity extends Screen {
         pickerFacing = f < 0 ? 0 : f;
         pickerPressed = false;
         picker = new FrameLayout(this);
-        picker.setBackgroundColor(0xEB0C1B33);
+        picker.setBackgroundColor(Tokens.SCRIM_MENU);
         picker.setClickable(true);
 
         LinearLayout card = new LinearLayout(this);
@@ -397,7 +397,7 @@ public class PrayerDayActivity extends Screen {
             bell[i].setAlpha(1f);
         } else {
             g.setColor(0);
-            g.setStroke(Ui.ipx(2), 0x669FB0CC);
+            g.setStroke(Ui.ipx(2), Tokens.BELL_OFF_BORDER);
             bellIcon[i].setColor(dark ? Tokens.LAPIS_900 : Tokens.MIST_400);
             bell[i].setAlpha(0.7f);
         }

@@ -169,7 +169,7 @@ final class PrayerWatch {
 
         // The time left before it hides, emptying toward the start side.
         FrameLayout track = new FrameLayout(service);
-        track.setBackgroundColor(android.graphics.Color.argb(64, 0xD8, 0xB4, 0x6A));
+        track.setBackgroundColor(Tokens.BANNER_TRACK);
         View fill = new View(service);
         fill.setBackgroundColor(Tokens.GOLD_400);
         track.addView(fill, new FrameLayout.LayoutParams(-1, -1));

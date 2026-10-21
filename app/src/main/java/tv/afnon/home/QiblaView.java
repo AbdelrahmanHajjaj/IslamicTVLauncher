@@ -2,7 +2,6 @@ package tv.afnon.home;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.view.View;
@@ -50,11 +49,11 @@ final class QiblaView extends View {
         p.setColor(Tokens.LINE_SOFT);
         c.drawCircle(180, 180, 160, p);
         p.setStrokeWidth(1.5f);
-        p.setColor(Color.argb(26, 0xEF, 0xE7, 0xD6));
+        p.setColor(Tokens.QIBLA_RING);
         c.drawCircle(180, 180, 120, p);
         // Cardinal ticks.
         p.setStrokeWidth(3);
-        p.setColor(Color.argb(128, 0xEF, 0xE7, 0xD6));
+        p.setColor(Tokens.QIBLA_TICK);
         c.drawLine(180, 20, 180, 38, p);
         c.drawLine(180, 322, 180, 340, p);
         c.drawLine(20, 180, 38, 180, p);

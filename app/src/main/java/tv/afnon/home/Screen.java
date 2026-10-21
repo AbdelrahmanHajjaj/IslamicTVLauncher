@@ -228,7 +228,7 @@ abstract class Screen extends Activity {
         long left = secondsUntil(day.nextTime, now);
         long h = left / 3600;
         archCount.setText(t.d(duration(left, true)));
-        float countSize = Ui.px(h > 0 ? 120 : 150);
+        float countSize = Ui.px(h > 0 ? Tokens.FONT_SIZE_DISPLAY_XL_HOURS : Tokens.FONT_SIZE_DISPLAY_XL);
         if (archCount.getTextSize() != countSize) {
             archCount.setTextSize(TypedValue.COMPLEX_UNIT_PX, countSize);
             lineHeight(archCount, 1f);

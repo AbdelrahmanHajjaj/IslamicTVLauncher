@@ -2,7 +2,6 @@ package tv.afnon.home;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Typeface;
@@ -29,8 +28,8 @@ import java.util.Random;
  */
 public class AfnonDream extends DreamService {
 
-    private static final int INK = 0xFFA69F90, DIM = 0xFF7D7769, NEXT = 0xFFB8A578;
-    private static final int LINE = Color.argb(89, 0xD8, 0xB4, 0x6A);
+    private static final int INK = Tokens.SCREENSAVER_TEXT, DIM = Tokens.SCREENSAVER_TEXT_DIM, NEXT = Tokens.SCREENSAVER_NEXT;
+    private static final int LINE = Tokens.SCREENSAVER_ARCH_LINE;
     private static final float W = 440, H = 640;
     private static final long DRIFT_MS = 60_000, FADE_MS = 800;
 
@@ -74,7 +73,7 @@ public class AfnonDream extends DreamService {
         Typeface display = getResources().getFont(t.ar ? R.font.amiri_regular : R.font.marcellus_regular);
 
         root = new FrameLayout(this);
-        root.setBackgroundColor(Color.BLACK);
+        root.setBackgroundColor(Tokens.SCREENSAVER_GROUND);
         root.setLayoutDirection(t.ar ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
 
         group = new FrameLayout(this);

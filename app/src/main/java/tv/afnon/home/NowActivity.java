@@ -45,7 +45,7 @@ public class NowActivity extends Screen {
         time = new Date(getIntent().getLongExtra("time", System.currentTimeMillis()));
         readClockFormat();
         newRoot();
-        root.setBackgroundColor(0xF0081224);
+        root.setBackgroundColor(Tokens.SCRIM);
 
         ArchView frame = new ArchView(this);
         frame.setState(ArchView.APPROACHING);

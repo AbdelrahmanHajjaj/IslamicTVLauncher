@@ -696,18 +696,18 @@ public class MainActivity extends Screen {
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(Tokens.PLASTER_100);
         bg.setCornerRadius(Ui.px(24));
-        bg.setStroke(Ui.ipx(6), 0x990C1B33);
+        bg.setStroke(Ui.ipx(6), Tokens.ON_PLASTER_BORDER);
         card.setBackground(bg);
         card.setClipChildren(false);
         card.setClipToPadding(false);
 
         String[] names = t.prayerNames();
         if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
-        TextView label = caps(text(ui400, 20, 0xFF5A4A22));
+        TextView label = caps(text(ui400, 20, Tokens.ON_PLASTER_LABEL));
         label.setText(t.apLabel());
         TextView title = text(displayBold, 52, Tokens.LAPIS_900);
         title.setText(t.apTitle(names[day.nextIndex], Reminders.minutesLeft(day, now), duration(secondsUntil(day.nextTime, now), false)));
-        TextView sub = text(ui400, 24, 0xFF3D4A63);
+        TextView sub = text(ui400, 24, Tokens.ON_PLASTER_SECONDARY);
         sub.setText(t.apSub(time(day.nextTime, 1f)));
         card.addView(label);
         card.addView(title);
@@ -749,7 +749,7 @@ public class MainActivity extends Screen {
     /** A 68px pill on the cream card: lapis (Got it) or outlined; gold when focused. */
     private FocusTile cardButton(String label, boolean filled) {
         FocusTile b = new FocusTile(this, 34);
-        b.setRest(filled ? Tokens.LAPIS_900 : 0, 0x590C1B33, filled ? 0 : 2);
+        b.setRest(filled ? Tokens.LAPIS_900 : 0, Tokens.ON_PLASTER_BUTTON_BORDER, filled ? 0 : 2);
         TextView v = text(ui400, 24, filled ? Tokens.PLASTER_100 : Tokens.LAPIS_900);
         v.setText(label);
         v.setGravity(Gravity.CENTER);

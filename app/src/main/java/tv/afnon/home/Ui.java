@@ -3,7 +3,6 @@ package tv.afnon.home;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
@@ -40,7 +39,7 @@ final class Ui {
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
         p.setStyle(Paint.Style.STROKE);
         p.setStrokeWidth(px(1.5f));
-        p.setColor(Color.argb(Math.round(255 * 0.07f), 0xD8, 0xB4, 0x6A));
+        p.setColor(Tokens.PATTERN_LINE);
         float k = s / 96f;
         cv.drawRect(28 * k, 28 * k, 68 * k, 68 * k, p);
         cv.save();

@@ -336,7 +336,7 @@ public class AllAppsActivity extends Screen {
         menuActions.add(null);
 
         menu = new FrameLayout(this);
-        menu.setBackgroundColor(0xEB0C1B33);
+        menu.setBackgroundColor(Tokens.SCRIM_MENU);
         menu.setClickable(true);
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
