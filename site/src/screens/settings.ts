@@ -94,22 +94,20 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
   }
 }
 
-/** A row's new prefs after ◀▶ (d = +1 toward the end) or OK (d = 0 on seg: next choice). null: nothing to change. */
-export function change(c: Ctx, row: Row, d: number, ok: boolean): SPrefs | null {
-  const p = { ...(c.prefs as SPrefs) };
-  if (row.kind === 'seg') {
-    const n = row.segs!.length, cur = row.selected!;
-    const to = ok ? (cur + 1) % n : Math.max(0, Math.min(n - 1, cur + d));
-    if (to === cur) return null;
-    return pick(c, row.id, to);
-  }
-  if (row.kind === 'step') {
-    if (ok) return null;
-    const v = Math.max(-2, Math.min(2, p.hijriOffset + d));
-    return v === p.hijriOffset ? null : { ...p, hijriOffset: v };
-  }
-  if (row.kind === 'toggle' && row.id === 'adhan') return { ...p, adhan: !p.adhan };
-  return null;
+/** Editing a seg or step row (OK, then ◀▶): the row and its unsaved choice or amount. */
+export type Edit = { row: number; draft: number };
+
+/** What editing starts from: the chosen segment, or the Hijri offset. */
+export const savedDraft = (c: Ctx, row: Row) => (row.kind === 'seg' ? row.selected! : (c.prefs as SPrefs).hijriOffset);
+
+/** ◀▶ while editing (d = +1 toward the end), held to the row's range. */
+export const moveDraft = (row: Row, draft: number, d: number) =>
+  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : Math.max(-2, Math.min(2, draft + d));
+
+/** OK while editing: the new prefs, or null when the draft is what is already saved. 'lang' is the page's. */
+export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
+  if (draft === savedDraft(c, row)) return null;
+  return row.kind === 'seg' ? pick(c, row.id, draft) : { ...(c.prefs as SPrefs), hijriOffset: draft };
 }
 
 /** Choosing item i of a seg row. 'lang' is handled by the page (it moves to the other language's page). */
@@ -130,8 +128,10 @@ export function pick(c: Ctx, id: string, i: number): SPrefs | null {
 
 const chevron = '<svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
-export function rowHtml(t: Text, r: Row, i: number) {
-  const hint = JSON.stringify([t.s('hintMove'), r.kind === 'value' ? t.s('hintChoose') : t.s('hintChange'), t.s('hintBackMenu')]);
+export function rowHtml(t: Text, r: Row, i: number, editing = false) {
+  const hint = JSON.stringify(editing
+    ? [t.s('hintChange'), t.s('hintSave'), t.s('hintBackCancel')]
+    : [t.s('hintMove'), r.kind === 'value' ? t.s('hintChoose') : r.kind === 'toggle' ? t.s('hintSwitch') : t.s('hintEdit'), t.s('hintBackMenu')]);
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
   else if (r.kind === 'seg')
@@ -139,7 +139,7 @@ export function rowHtml(t: Text, r: Row, i: number) {
   else if (r.kind === 'step')
     control = `<span class="stepb" data-step="-1">−</span><span class="stepv">${esc(r.value ?? '')}</span><span class="stepb" data-step="1">+</span>`;
   else control = `<span class="switch${r.on ? ' on' : ''}"><i></i></span>`;
-  return `<button class="ft row srow" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:${112 + i * 98}px" data-hints="${esc(hint)}">`
+  return `<button class="ft row srow${editing ? ' editing' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:${112 + i * 98}px" data-hints="${esc(hint)}">`
     + `<span class="words"><span class="rl">${esc(r.label)}</span>${r.help ? `<span class="rh">${esc(r.help)}</span>` : ''}</span>`
     + `<span class="ctl">${control}</span></button>`;
 }
@@ -150,7 +150,13 @@ export function navHtml(t: Text, section: number) {
     `<button class="ft row nav${i === section ? ' open' : ''}" data-nav="${i}"${i === section ? ' data-focus-start' : ''} style="top:${152 + i * 86}px" data-hints="${hint}">${esc(sectionName(t, i))}</button>`).join('');
 }
 
-export const rowsHtml = (c: Ctx, section: number, radioOn = false) => rowsFor(c, section, radioOn).map((r, i) => rowHtml(c.t, r, i)).join('');
+/** The rows; the one being edited shows its draft. */
+export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null) =>
+  rowsFor(c, section, radioOn).map((r, i) => {
+    if (edit?.row !== i) return rowHtml(c.t, r, i);
+    const shown = r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: c.t.days(edit.draft) };
+    return rowHtml(c.t, shown, i, true);
+  }).join('');
 export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);
 
 // ---------------------------------------------------------------- chooser lists
@@ -163,7 +169,7 @@ export const methodItems = (t: Text, p: Prefs): Item[] => METHODS.map((m) => ({ 
 export const stationsOf = (reciters: boolean) => STATIONS.filter((s) => !!s.reciter === reciters);
 
 export function chooserHtml(t: Text, title: string, items: Item[]) {
-  const hint = esc(JSON.stringify([t.s('hintMove'), t.s('hintChoose'), t.s('hintBackMenu').replace(t.ar ? 'القائمة' : 'Menu', t.s('cancel'))]));
+  const hint = esc(JSON.stringify([t.s('hintMove'), t.s('hintChoose'), t.s('hintBackCancel')]));
   return `<div class="ch-card"><div class="ch-title display-bold">${esc(title)}</div><div class="ch-list">`
     + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}" data-hints="${hint}">${esc(it.label)}</button>`).join('')
     + '</div></div>';

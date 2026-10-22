@@ -246,6 +246,11 @@ final class Text {
     String hintChange() { return ar ? "◀▶  تغيير القيمة" : "◀▶  Change value"; }
     String hintChoose() { return ar ? "OK  اختيار" : "OK  Choose"; }
     String hintBackMenu() { return ar ? "رجوع  القائمة" : "Back  Menu"; }
+    String hintEdit() { return ar ? "OK  تعديل" : "OK  Edit"; }
+    String hintSwitch() { return ar ? "OK  تشغيل/إيقاف" : "OK  On/Off"; }
+    String hintSave() { return ar ? "OK  حفظ" : "OK  Save"; }
+    String hintBackCancel() { return ar ? "رجوع  إلغاء" : "Back  Cancel"; }
+    String saved() { return ar ? "✓  تم الحفظ" : "✓  Saved"; }
     String qibla() { return ar ? "القبلة" : "QIBLA"; }
     String north() { return ar ? "الشمال ▲" : "▲ North"; }
     String qiblaHint() { return ar ? "وجّه الشمال على البوصلة نحو الشمال الحقيقي" : "Line up the compass north with true north"; }
