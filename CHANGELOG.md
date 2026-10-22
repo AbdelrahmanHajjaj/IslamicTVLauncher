@@ -10,6 +10,15 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   Netherlands, Belgium, Austria, Switzerland, Italy, Spain, Bosnia, Canada, Kenya, Nigeria,
   South Africa, Australia, New Zealand, plus Houston and Los Angeles for the US) with local prayer calculation methods.
 
+## [0.3.1] - 2026-10-22
+
+### Changed
+- Settings keys are the same on every row: the arrows only move (toward the start side goes back to the
+  sections), and OK is the only key that changes anything. OK on a choice or the Hijri offset starts editing it
+  (a ring shows round the control): ◀▶ move the choice, OK saves, Back cancels. OK flips a switch and opens a
+  list as before. Every save shows "✓ Saved" at the end of the hint line for 2 s. Reported in #5 (thanks,
+  @mohammed-althaf-h).
+
 ## [0.3] - 2026-10-22
 
 ### Added
@@ -106,7 +115,8 @@ First public release.
 - Screensaver, on-TV settings and remote button mapping.
 - Arabic (RTL) first, with English.
 
-[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.3...HEAD
+[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.3...v0.3.1
 [0.3]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.2.1...v0.3
 [0.2.1]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.2...v0.2.1
 [0.2]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.1.1...v0.2

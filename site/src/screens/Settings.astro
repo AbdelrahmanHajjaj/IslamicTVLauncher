@@ -24,6 +24,7 @@ const { t, lang } = ctx;
   <div class="label caps" data-label>{sectionName(t, PRAYER)}</div>
   <div class="rows" data-rows set:html={rowsHtml(ctx, PRAYER)} />
   <div class="hints" data-hints-out></div>
+  <div class="saved" data-saved role="status">{t.s('saved')}</div>
   <div class="chooser" data-chooser hidden></div>
   <div class="toast" data-toast-out hidden role="status"></div>
   <a data-home href={href('', lang) + '#tv'} tabindex="-1" hidden>{lang === 'ar' ? 'الرئيسية' : 'Home'}</a>
@@ -37,8 +38,8 @@ const { t, lang } = ctx;
   import type { Ctx } from '../lib/ctx';
   import type { Lang } from '../lib/text';
   import {
-    VOICES, change, chooserHtml, citiesOf, countries, methodItems, pick, previewHtml, rowsFor, rowsHtml,
-    sectionName, stationChoice, stationsOf, type SPrefs,
+    VOICES, chooserHtml, citiesOf, commit, countries, methodItems, moveDraft, pick, previewHtml, rowsFor, rowsHtml,
+    savedDraft, sectionName, stationChoice, stationsOf, type Edit, type SPrefs,
   } from './settings';
 
   const stage = document.querySelector<HTMLElement>('.tv')!;
@@ -55,6 +56,7 @@ const { t, lang } = ctx;
     const FOCUS = 'afnon-settings-focus';
 
     let section = 0;
+    let edit: Edit | null = null;
     let lastRows = rowsEl.innerHTML;
     let radioOn = false;
     let ctx!: Ctx;
@@ -66,7 +68,7 @@ const { t, lang } = ctx;
 
     // The rows are re-rendered only when their HTML changes (a pref, the date), keeping focus on the same row.
     const rerender = () => {
-      const h = rowsHtml(ctx, section, radioOn);
+      const h = rowsHtml(ctx, section, radioOn, edit);
       if (h === lastRows) return;
       const fi = focusedRow();
       rowsEl.innerHTML = h;
@@ -74,11 +76,21 @@ const { t, lang } = ctx;
       if (fi >= 0) focusRow(fi);
     };
     const update = live((c) => ({ html: { preview: previewHtml(c) } }), (c) => { ctx = c; rerender(); });
-    const save = (p: SPrefs | null) => { if (p) update(p); };
+    // ✓ Saved at the end of the hint line after every save, as long as motion.saved-lifetime.
+    const savedEl = $('[data-saved]');
+    const lifetime = parseFloat(getComputedStyle(savedEl).getPropertyValue('--motion-saved-lifetime')) * 1000 || 2000;
+    let savedTimer = 0;
+    const showSaved = () => {
+      savedEl.classList.add('on');
+      clearTimeout(savedTimer);
+      savedTimer = window.setTimeout(() => savedEl.classList.remove('on'), lifetime);
+    };
+    const save = (p: SPrefs | null) => { if (p) { update(p); showSaved(); } };
 
     const setSection = (n: number) => {
       if (n === section) return;
       section = n;
+      edit = null;
       navs.forEach((b, i) => {
         b.classList.toggle('open', i === n);
         b.toggleAttribute('data-focus-start', i === n);
@@ -179,16 +191,25 @@ const { t, lang } = ctx;
       try { sessionStorage.setItem(FOCUS, JSON.stringify({ section, row: focusedRow() })); } catch { /* fine */ }
       location.href = href('settings', to) + '#tv';
     };
-    /** ◀▶ (d: +1 toward the end of the line) or OK on row i. */
-    const act = (i: number, d: number, ok: boolean) => {
+    // Editing a seg or step row: OK starts it, ◀▶ move the draft, OK saves, Back cancels.
+    const setEdit = (e: Edit | null) => { edit = e; rerender(); };
+    const endEdit = (keep: boolean) => {
+      if (!edit) return;
+      const r = rowsFor(ctx, section, radioOn)[edit.row], draft = edit.draft;
+      setEdit(null);
+      if (!keep) return;
+      if (r.id === 'lang') { if (draft !== r.selected) goLang(draft); }
+      else save(commit(ctx, r, draft));
+    };
+
+    /** OK on row i: the only key that changes anything. */
+    const act = (i: number) => {
       const r = rowsFor(ctx, section, radioOn)[i];
       if (!r) return;
-      if (r.id === 'lang') {
-        const n = r.segs!.length, cur = r.selected!;
-        goLang(ok ? (cur + 1) % n : Math.max(0, Math.min(n - 1, cur + d)));
-      } else if (r.id === 'radio') setRadio(!radioOn);
+      if (r.kind === 'seg' || r.kind === 'step') setEdit({ row: i, draft: savedDraft(ctx, r) });
+      else if (r.id === 'radio') setRadio(!radioOn);
+      else if (r.id === 'adhan') save({ ...p(), adhan: !ctx.prefs.adhan });
       else if (r.kind === 'value') {
-        if (!ok) { if (d < 0) focusNav(); return; }
         if (r.id === 'city') openCountries();
         else if (r.id === 'method') {
           open(ctx.t.s('method'), methodItems(ctx.t, ctx.prefs), (k) => save({ ...p(), method: METHODS[k] }));
@@ -196,7 +217,7 @@ const { t, lang } = ctx;
         else if (r.id === 'voice' || r.id === 'voiceFajr') openVoices(r.id === 'voiceFajr');
         else if (r.id === 'room') location.href = href('prayer-day', lang) + '#tv';
         else toast(`${W} ${r.label}`);
-      } else save(change(ctx, r, d, ok));
+      }
     };
 
     // ------------------------------------------------------------ keys: the D-pad map of SettingsActivity
@@ -231,9 +252,21 @@ const { t, lang } = ctx;
       const row = a?.dataset.row;
       if (row == null) return;
       handled();
+      if (edit) {
+        // Up/Down stay on the row being edited.
+        if (back) endEdit(false);
+        else if (ok) endEdit(true);
+        else if (horiz) {
+          const draft = moveDraft(rowsFor(ctx, section, radioOn)[edit.row], edit.draft, toEnd);
+          if (draft !== edit.draft) setEdit({ ...edit, draft });
+        }
+        return;
+      }
+      // The arrows only move: toward the start goes back to the sections.
       if (back) focusNav();
       else if (vert) focusRow(+row + vert);
-      else act(+row, toEnd, ok);
+      else if (horiz) { if (toEnd < 0) focusNav(); }
+      else act(+row);
     });
 
     // Focus on a section shows it at once, as on the TV.
@@ -254,6 +287,7 @@ const { t, lang } = ctx;
       const nav = el.closest<HTMLElement>('[data-nav]');
       if (nav) { setSection(+nav.dataset.nav!); focusRow(0); return; }
       const rowEl = el.closest<HTMLElement>('[data-row]');
+      if (edit) setEdit(null);
       if (!rowEl) return;
       const i = +rowEl.dataset.row!;
       const seg = el.closest<HTMLElement>('[data-seg]');
@@ -262,8 +296,8 @@ const { t, lang } = ctx;
       if (seg && r.kind === 'seg') {
         if (r.id === 'lang') goLang(+seg.dataset.seg!);
         else save(pick(ctx, r.id, +seg.dataset.seg!));
-      } else if (step) act(i, +step.dataset.step!, false);
-      else act(i, 0, true);
+      } else if (step) save(commit(ctx, r, moveDraft(r, savedDraft(ctx, r), +step.dataset.step!)));
+      else act(i);
     });
 
     // Back from the other language's page (Language row): the same section and row.
@@ -295,6 +329,11 @@ const { t, lang } = ctx;
   .settings .pv { font-size: var(--font-size-display-xs); color: var(--color-gold-400); line-height: 1.2; }
   .settings .label { position: absolute; inset-inline-start: 640px; top: 56px; font-size: var(--font-size-label); color: var(--color-mist-400); }
   .settings .hints { inset-inline-start: 640px; top: 976px; }
+  .settings .saved {
+    position: absolute; inset-inline-end: 96px; top: 976px; font-size: 22px; font-weight: 500; color: var(--color-gold-400);
+    opacity: 0; transition: opacity var(--motion-overlay-fade) linear; pointer-events: none;
+  }
+  .settings .saved.on { opacity: 1; }
 
   /* Rows: label and help at the start, the control at the end. */
   .settings .srow {
@@ -306,6 +345,8 @@ const { t, lang } = ctx;
   .settings .rl { font-size: var(--font-size-body); font-weight: 500; line-height: 1.3; }
   .settings .rh { font-size: var(--font-size-caption); opacity: 0.75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.35; }
   .settings .ctl { display: flex; align-items: center; flex: none; }
+  /* Editing: a lapis ring around the control on the gold row. */
+  .settings .srow.editing .ctl { padding: 6px; border-radius: var(--radius-pill); box-shadow: inset 0 0 0 3px var(--color-lapis-900); }
   .settings .val { font-size: 24px; margin-inline-end: var(--space-2); }
   .settings .chev { flex: none; }
   [dir='rtl'] .settings .chev { transform: scaleX(-1); }

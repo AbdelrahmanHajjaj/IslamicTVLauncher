@@ -30,9 +30,11 @@ import java.util.function.IntConsumer;
  * preview of today's Asr under the current choices. Every change is saved at once; the other screens rebuild
  * when they come back to the front.
  *
- * <p>Focus: Up/Down through the sections, toward the end side (or OK) into the rows. On a row Up/Down move,
- * ◀▶ change a choice, a stepper or a switch, OK opens a list or flips the choice; Back returns to the sections,
- * Back again goes Home. Network and Device settings open the TV's own screens.
+ * <p>Keys: the arrows only ever move. Up/Down go through the sections or the rows, toward the end side (or OK)
+ * goes into the rows, toward the start side goes back to the sections. OK is the only key that changes anything:
+ * it opens a list, flips a switch, or starts editing a choice or a stepper. While editing, ◀▶ move the choice,
+ * OK saves it and Back cancels. Back on a row returns to the sections, Back again goes Home. Network and Device
+ * settings open the TV's own screens. Every save shows ✓ Saved at the end of the hint line for a moment.
  */
 public class SettingsActivity extends Screen {
 
@@ -42,7 +44,7 @@ public class SettingsActivity extends Screen {
     private static final float ROWS_TOP = 112, ROW_H = 88, ROW_GAP = 10;
     private static final float NAV_TOP = 152, NAV_H = 76, NAV_GAP = 10;
 
-    /** One row: what it shows and what ◀▶ and OK do. */
+    /** One row: what it shows and what OK (and ◀▶ while editing) do. */
     private abstract class Row {
         final int kind;
         FocusTile tile;
@@ -57,7 +59,7 @@ public class SettingsActivity extends Screen {
 
         String help() { return ""; }
 
-        /** VALUE and STEP rows. */
+        /** VALUE rows. */
         String value() { return ""; }
 
         /** SEG rows: the choices (already in the screen's digits) and the chosen one. */
@@ -67,11 +69,23 @@ public class SettingsActivity extends Screen {
 
         void select(int i) {}
 
-        void step(int delta) {}
+        /** STEP rows: the saved amount, its range, and how an amount reads. */
+        int amount() { return 0; }
+
+        void setAmount(int n) {}
+
+        int lowest() { return 0; }
+
+        int highest() { return 0; }
+
+        String valueOf(int n) { return ""; }
 
         boolean on() { return false; }
 
         void set(boolean on) {}
+
+        /** TOGGLE rows: false when flipping it is an action (play the radio), not a saved setting. */
+        boolean saves() { return true; }
 
         /** VALUE rows: OK. */
         void open() {}
@@ -85,6 +99,11 @@ public class SettingsActivity extends Screen {
     private final List<Row> rows = new ArrayList<>();
     private TextView sectionLabel, previewValue;
     private LinearLayout hints;
+    private TextView saved;
+    private final Runnable hideSaved = () -> saved.animate().alpha(0).setDuration(Tokens.MOTION_OVERLAY_FADE_MS);
+    /** The SEG or STEP row being edited (null: none) and its unsaved choice or amount. */
+    private Row editing;
+    private int draft;
     private FrameLayout chooser;
     /** What Back in the open chooser goes back to (the city list returns to the countries); null closes it. */
     private Runnable chooserBack;
@@ -99,6 +118,7 @@ public class SettingsActivity extends Screen {
         stopPreview();
         chooser = null;
         chooserBack = null;
+        editing = null;
         newRoot();
         root.setBackgroundColor(Tokens.LAPIS_900);
         readClockFormat();
@@ -143,6 +163,13 @@ public class SettingsActivity extends Screen {
         hints = new LinearLayout(this);
         hints.setOrientation(LinearLayout.HORIZONTAL);
         place(hints, 640, 976, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        // ✓ Saved: on the hint line, at the rows' end edge, so the hints never shift when it comes and goes.
+        saved = text(ui500, 22, Tokens.GOLD_400);
+        saved.setText(t.saved());
+        saved.setAlpha(0);
+        placeEnd(saved, 1920 - 640 - Tokens.LAYOUT_SETTINGS_ROW_WIDTH, 976,
+            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         setContentView(root);
         showSection();
@@ -234,7 +261,7 @@ public class SettingsActivity extends Screen {
                             names[i] = t.methodName(Prefs.METHODS[i]);
                             if (Prefs.METHODS[i] == Prefs.method(c)) sel = i;
                         }
-                        openChooser(t.method(), names, sel, i -> Prefs.setMethod(c, Prefs.METHODS[i]));
+                        openChooser(t.method(), names, sel, i -> { Prefs.setMethod(c, Prefs.METHODS[i]); showSaved(); });
                     }
                 },
                 new Row(SEG) {
@@ -247,8 +274,11 @@ public class SettingsActivity extends Screen {
                 new Row(STEP) {
                     String label() { return t.hijriAdjust(); }
                     String help() { return t.hijriToday(hijri(day)); }
-                    String value() { return t.days(Prefs.hijriOffset(c)); }
-                    void step(int d) { Prefs.setHijriOffset(c, Prefs.hijriOffset(c) + d); }
+                    int amount() { return Prefs.hijriOffset(c); }
+                    void setAmount(int n) { Prefs.setHijriOffset(c, n); }
+                    int lowest() { return -2; }
+                    int highest() { return 2; }
+                    String valueOf(int n) { return t.days(n); }
                 },
                 new Row(VALUE) {
                     String label() { return t.roomRow(); }
@@ -283,6 +313,7 @@ public class SettingsActivity extends Screen {
                     String help() { return t.radioRowHelp(Radio.station(c)); }
                     boolean on() { return Radio.on(); }
                     void set(boolean on) { if (on) Radio.start(c); else Radio.stop(); }
+                    boolean saves() { return false; }
                 },
                 new Row(VALUE) {
                     String label() { return t.stationRow(); }
@@ -362,7 +393,7 @@ public class SettingsActivity extends Screen {
                 String[] names = new String[Adhans.VOICES.length];
                 for (int i = 0; i < names.length; i++) names[i] = Adhans.name(t, Adhans.VOICES[i][0]);
                 openChooser(label(), names, Adhans.index(Prefs.voice(SettingsActivity.this, fajr)),
-                    i -> Prefs.setVoice(SettingsActivity.this, fajr, Adhans.VOICES[i][0]),
+                    i -> { Prefs.setVoice(SettingsActivity.this, fajr, Adhans.VOICES[i][0]); showSaved(); },
                     i -> preview(Adhans.VOICES[i][0]));
             }
         };
@@ -443,6 +474,18 @@ public class SettingsActivity extends Screen {
         r.help.setTextColor(ink);
         r.help.setAlpha(0.75f);
         r.control.removeAllViews();
+        boolean edit = r == editing;
+        if (edit) {
+            // Editing: a lapis ring around the control on the gold row.
+            GradientDrawable ring = round(0, 34);
+            ring.setStroke(Ui.ipx(3), Tokens.LAPIS_900);
+            r.control.setBackground(ring);
+            int pad = Ui.ipx(6);
+            r.control.setPadding(pad, pad, pad, pad);
+        } else {
+            r.control.setBackground(null);
+            r.control.setPadding(0, 0, 0, 0);
+        }
         switch (r.kind) {
             case VALUE: {
                 TextView v = text(ui400, 24, ink);
@@ -462,7 +505,7 @@ public class SettingsActivity extends Screen {
                 track.setBackground(round(focused ? Tokens.SEG_TRACK_FOCUSED : Tokens.LAPIS_900, 30));
                 String[] segs = r.segs();
                 for (int i = 0; i < segs.length; i++) {
-                    boolean chosen = i == r.selected();
+                    boolean chosen = i == (edit ? draft : r.selected());
                     TextView s = text(ui400, 22, chosen ? (focused ? Tokens.PLASTER_100 : Tokens.LAPIS_900) : (focused ? Tokens.LAPIS_900 : Tokens.MIST_400));
                     s.setText(segs[i]);
                     s.setGravity(Gravity.CENTER);
@@ -482,7 +525,7 @@ public class SettingsActivity extends Screen {
             case STEP: {
                 r.control.addView(stepButton("−"), new LinearLayout.LayoutParams(Ui.ipx(48), Ui.ipx(48)));
                 TextView v = text(ui400, 26, ink);
-                v.setText(r.value());
+                v.setText(r.valueOf(edit ? draft : r.amount()));
                 v.setGravity(Gravity.CENTER);
                 v.setMinWidth(Ui.ipx(150));
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
@@ -532,10 +575,45 @@ public class SettingsActivity extends Screen {
         r.tile.requestFocus();
         List<String> h = new ArrayList<>();
         h.add(t.hintMove());
-        h.add(r.kind == VALUE ? t.hintChoose() : t.hintChange());
+        h.add(r.kind == VALUE ? t.hintChoose() : r.kind == TOGGLE ? t.hintSwitch() : t.hintEdit());
         h.add(t.hintBackMenu());
         setHints(hints, h);
         styleNav(section);
+    }
+
+    /** OK on a SEG or STEP row: ◀▶ now move an unsaved choice, OK saves it, Back cancels. */
+    private void startEditing(Row r) {
+        editing = r;
+        draft = r.kind == SEG ? r.selected() : r.amount();
+        render(r, true);
+        List<String> h = new ArrayList<>();
+        h.add(t.hintChange());
+        h.add(t.hintSave());
+        h.add(t.hintBackCancel());
+        setHints(hints, h);
+    }
+
+    /** Leaves editing; save keeps the draft if it differs from what is saved. */
+    private void stopEditing(boolean save) {
+        Row r = editing;
+        editing = null;
+        if (save && draft != (r.kind == SEG ? r.selected() : r.amount())) {
+            if (r.kind == SEG) r.select(draft);
+            else r.setAmount(draft);
+            showSaved();
+        }
+        // A language or digits change rebuilt the screen and its rows already.
+        if (rows.contains(r)) {
+            refresh();
+            focusRow(rowIndex);
+        }
+    }
+
+    /** ✓ Saved fades in at the end of the hint line, then out; a new save restarts it. */
+    private void showSaved() {
+        saved.removeCallbacks(hideSaved);
+        saved.animate().alpha(1).setDuration(Tokens.MOTION_OVERLAY_FADE_MS);
+        saved.postDelayed(hideSaved, Tokens.MOTION_SAVED_LIFETIME_MS);
     }
 
     private void navTo(int i) {
@@ -563,7 +641,8 @@ public class SettingsActivity extends Screen {
         }
         if (k == KeyEvent.KEYCODE_BACK) {
             if (!down) {
-                if (onNav) finish();
+                if (editing != null) stopEditing(false);
+                else if (onNav) finish();
                 else focusNav();
             }
             return true;
@@ -585,36 +664,46 @@ public class SettingsActivity extends Screen {
             return true;
         }
 
+        if (editing != null) {
+            if (ok) stopEditing(true);
+            else if (horizontal) {
+                Row r = editing;
+                int lo = r.kind == SEG ? 0 : r.lowest();
+                int hi = r.kind == SEG ? r.segs().length - 1 : r.highest();
+                int to = Math.max(lo, Math.min(hi, draft + (toEnd ? 1 : -1)));
+                if (to != draft) {
+                    draft = to;
+                    render(r, true);
+                }
+            }
+            // Up/Down stay on the row being edited.
+            return true;
+        }
+
         Row r = rows.get(rowIndex);
         if (vertical) {
             int to = rowIndex + up;
             if (to >= 0 && to < rows.size()) focusRow(to);
             return true;
         }
-        int d = toEnd ? 1 : -1;
+        if (horizontal) {
+            if (!toEnd) focusNav();
+            return true;
+        }
         switch (r.kind) {
-            case SEG: {
-                int n = r.segs().length;
-                int to = ok ? (r.selected() + 1) % n : Math.max(0, Math.min(n - 1, r.selected() + d));
-                if (to == r.selected()) return true;
-                r.select(to);
-                break;
-            }
+            case SEG:
             case STEP:
-                if (ok) return true;
-                r.step(d);
-                break;
+                startEditing(r);
+                return true;
             case TOGGLE:
                 r.set(!r.on());
-                break;
+                if (r.saves()) showSaved();
+                refresh();
+                return true;
             default:
-                if (ok) r.open();
-                else if (!toEnd) focusNav();
+                r.open();
                 return true;
         }
-        // A language or digits change rebuilt the screen and its rows already.
-        if (chooser == null && rows.contains(r)) refresh();
-        return true;
     }
 
     // ---------------------------------------------------------------- list chooser
@@ -630,6 +719,7 @@ public class SettingsActivity extends Screen {
             Prefs.setCity(this, found.get(0));
             refresh();
             focusRow(rowIndex);
+            showSaved();
             return;
         }
         String[] names = new String[found.size()];
@@ -641,7 +731,7 @@ public class SettingsActivity extends Screen {
             names[k] = t.ar ? city.ar : city.en;
             if (found.get(k) == current) sel = k;
         }
-        openChooser(country, names, sel, k -> Prefs.setCity(this, found.get(k)));
+        openChooser(country, names, sel, k -> { Prefs.setCity(this, found.get(k)); showSaved(); });
         chooserBack = back;
     }
 
@@ -657,7 +747,7 @@ public class SettingsActivity extends Screen {
             names[k] = t.stationChoice(Radio.STATIONS[found.get(k)]);
             if (found.get(k) == current) sel = k;
         }
-        openChooser(t.stationGroups()[reciters ? 1 : 0], names, sel, k -> Radio.switchTo(this, found.get(k)));
+        openChooser(t.stationGroups()[reciters ? 1 : 0], names, sel, k -> { Radio.switchTo(this, found.get(k)); showSaved(); });
         chooserBack = back;
     }
 
@@ -735,7 +825,7 @@ public class SettingsActivity extends Screen {
         List<String> h = new ArrayList<>();
         h.add(t.hintMove());
         h.add(t.hintChoose());
-        h.add(t.hintBackMenu().replace(t.ar ? "القائمة" : "Menu", t.cancel()));
+        h.add(t.hintBackCancel());
         setHints(hints, h);
     }
 
