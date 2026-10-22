@@ -12,13 +12,19 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 - Announce the time: «حان الآن موعد صلاة …» when a prayer's time begins with its adhan off, either for all prayers
   or by that prayer's bell (on by default). Friday says الجمعة. Both lower whatever is playing for a moment
   instead of pausing it, and each is said once per prayer, also across a restart of the remote buttons service.
-  The 12 clips are not in the repo: `tools/fetch-announce.sh` (run by `install.sh` the first time)
-  records them with a Microsoft neural Arabic voice through edge-tts into `app/src/main/assets/announce/`; without them both stay silent. `--es test announce`
-  tries it; `--es test banner` and `--es test reminder` now say the reminder too.
+  The 12 clips are not in the repo: `tools/fetch-announce.sh` (run by `install.sh` the first time) records
+  them with a Microsoft neural Arabic voice through edge-tts into `app/src/main/assets/announce/`; without them
+  both stay silent. `--es test announce` tries it; `--es test banner` and `--es test reminder` now say the
+  reminder too.
 
 ### Changed
 - The reminder can come 5, 10, 15, 20 or 30 minutes before each prayer (or not at all). Settings → Reminders →
   Remind me before prayer is now a list, like the adhan voices; 15 is still the default.
+- The Hijri date comes first: on Home it is the line under the clock (with the city) and the Gregorian date is
+  the smaller line below it; on Prayer day the date line starts with it.
+- The verse reference under the arch («النساء 103») follows the digits setting like every other number; it was
+  always Eastern Arabic (١٠٣), even with Western digits chosen. It is the only surah:ayah reference on screen:
+  Friday, Ramadan, the call screen and the screensaver show none.
 
 ## [0.4] - 2026-10-22
 
