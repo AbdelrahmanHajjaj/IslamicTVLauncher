@@ -12,8 +12,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 - Announce the time: «حان الآن موعد صلاة …» when a prayer's time begins with its adhan off, either for all prayers
   or by that prayer's bell (on by default). Friday says الجمعة. Both lower whatever is playing for a moment
   instead of pausing it, and each is said once per prayer, also across a restart of the remote buttons service.
-  The 12 clips are not in the repo: `tools/make-voice.ps1` records them on Windows with its Arabic voice (e.g.
-  Microsoft Naayf) into `app/src/main/assets/announce/`; without them both stay silent. `--es test announce`
+  The 12 clips are not in the repo: `tools/fetch-announce.sh` (run by `install.sh` the first time)
+  records them with a Microsoft neural Arabic voice through edge-tts into `app/src/main/assets/announce/`; without them both stay silent. `--es test announce`
   tries it; `--es test banner` and `--es test reminder` now say the reminder too.
 
 ### Changed

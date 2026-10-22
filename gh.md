@@ -38,6 +38,7 @@ would have to uninstall and lose their settings. Keep a backup of that keystore 
 4. **Build with the adhans in.** The APK must include the recordings:
    ```bash
    bash tools/fetch-adhans.sh          # no-op if they are already there
+   bash tools/fetch-announce.sh        # the 12 spoken lines (pip install edge-tts); no-op if there
    ls app/src/main/assets/adhan/*.mp3 | wc -l   # expect 14
    ./gradlew clean assembleDebug
    cp app/build/outputs/apk/debug/app-debug.apk afnon.apk
