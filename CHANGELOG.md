@@ -4,6 +4,12 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Added
+- 57 worldwide cities across 20 countries (India, Pakistan, Bangladesh, Sri Lanka, Maldives,
+  Indonesia, Malaysia, Singapore, Brunei, Thailand, Japan, South Korea, Turkey, UK, France, Germany,
+  Netherlands, Belgium, Austria, Switzerland, Italy, Spain, Bosnia, Canada, Kenya, Nigeria,
+  South Africa, Australia, New Zealand, plus Houston and Los Angeles for the US) with local prayer calculation methods.
+
 ## [0.3] - 2026-10-22
 
 ### Added

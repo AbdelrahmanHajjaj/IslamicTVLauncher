@@ -41,6 +41,9 @@ final class Prefs {
 
     private static final CalculationMethod EG = CalculationMethod.EGYPTIAN;
     private static final CalculationMethod MWL = CalculationMethod.MUSLIM_WORLD_LEAGUE;
+    private static final CalculationMethod IN = CalculationMethod.KARACHI;
+    private static final CalculationMethod SG = CalculationMethod.SINGAPORE;
+    private static final CalculationMethod NA = CalculationMethod.NORTH_AMERICA;
     static final City[] CITIES = {
         new City("cairo", "القاهرة", "Cairo", "مصر", "Egypt", 30.0444, 31.2357, EG),
         new City("giza", "الجيزة", "Giza", "مصر", "Egypt", 30.0131, 31.2089, EG),
@@ -116,9 +119,89 @@ final class Prefs {
         new City("taiz", "تعز", "Taiz", "اليمن", "Yemen", 13.5789, 44.0219, MWL),
         new City("hodeidah", "الحديدة", "Hodeidah", "اليمن", "Yemen", 14.8022, 42.9511, MWL),
         new City("mukalla", "المكلا", "Mukalla", "اليمن", "Yemen", 14.5333, 49.1333, MWL),
-        new City("newyork", "نيويورك", "New York", "الولايات المتحدة", "United States", 40.7128, -74.0060, CalculationMethod.NORTH_AMERICA),
-        new City("chicago", "شيكاغو", "Chicago", "الولايات المتحدة", "United States", 41.8781, -87.6298, CalculationMethod.NORTH_AMERICA),
-        new City("dallas", "دالاس", "Dallas", "الولايات المتحدة", "United States", 32.7767, -96.7970, CalculationMethod.NORTH_AMERICA),
+        // United States & Canada
+        new City("newyork", "نيويورك", "New York", "الولايات المتحدة", "United States", 40.7128, -74.0060, NA),
+        new City("chicago", "شيكاغو", "Chicago", "الولايات المتحدة", "United States", 41.8781, -87.6298, NA),
+        new City("dallas", "دالاس", "Dallas", "الولايات المتحدة", "United States", 32.7767, -96.7970, NA),
+        new City("houston", "هيوستن", "Houston", "الولايات المتحدة", "United States", 29.7604, -95.3698, NA),
+        new City("losangeles", "لوس أنجلوس", "Los Angeles", "الولايات المتحدة", "United States", 34.0522, -118.2437, NA),
+        new City("toronto", "تورونتو", "Toronto", "كندا", "Canada", 43.6532, -79.3832, NA),
+
+        // India
+        new City("bangalore", "بنغالور", "Bengaluru", "الهند", "India", 12.9716, 77.5946, IN),
+        new City("kozhikode", "كوزيكود", "Kozhikode", "الهند", "India", 11.2588, 75.7804, IN),
+        new City("mumbai", "مومباي", "Mumbai", "الهند", "India", 19.0760, 72.8777, IN),
+        new City("delhi", "دلهي", "Delhi", "الهند", "India", 28.6139, 77.2090, IN),
+        new City("hyderabad", "حيدر أباد", "Hyderabad", "الهند", "India", 17.3850, 78.4867, IN),
+        new City("chennai", "تشيناي", "Chennai", "الهند", "India", 13.0827, 80.2707, IN),
+        new City("kolkata", "كولكاتا", "Kolkata", "الهند", "India", 22.5726, 88.3639, IN),
+        new City("ahmedabad", "أحمد أباد", "Ahmedabad", "الهند", "India", 23.0225, 72.5714, IN),
+        new City("pune", "بونا", "Pune", "الهند", "India", 18.5204, 73.8567, IN),
+        new City("lucknow", "لكهنؤ", "Lucknow", "الهند", "India", 26.8467, 80.9462, IN),
+        new City("srinagar", "سرينغار", "Srinagar", "الهند", "India", 34.0837, 74.7973, IN),
+        new City("kochi", "كوتشي", "Kochi", "الهند", "India", 9.9312, 76.2673, IN),
+        new City("malappuram", "ملابورام", "Malappuram", "الهند", "India", 11.0510, 76.0711, IN),
+        new City("bhopal", "بوبال", "Bhopal", "الهند", "India", 23.2599, 77.4126, IN),
+        new City("patna", "باتنا", "Patna", "الهند", "India", 25.5941, 85.1376, IN),
+
+        // Pakistan
+        new City("karachi", "كراتشي", "Karachi", "باكستان", "Pakistan", 24.8607, 67.0011, IN),
+        new City("lahore", "لاهور", "Lahore", "باكستان", "Pakistan", 31.5204, 74.3587, IN),
+        new City("islamabad", "إسلام أباد", "Islamabad", "باكستان", "Pakistan", 33.6844, 73.0479, IN),
+        new City("rawalpindi", "راولبندي", "Rawalpindi", "باكستان", "Pakistan", 33.5651, 73.0169, IN),
+        new City("peshawar", "بيشاور", "Peshawar", "باكستان", "Pakistan", 34.0151, 71.5249, IN),
+
+        // Bangladesh
+        new City("dhaka", "دكا", "Dhaka", "بنغلاديش", "Bangladesh", 23.8103, 90.4125, IN),
+        new City("chittagong", "شيتاغونغ", "Chittagong", "بنغلاديش", "Bangladesh", 22.3569, 91.7832, IN),
+
+        // Sri Lanka & Maldives
+        new City("colombo", "كولمبو", "Colombo", "سريلانكا", "Sri Lanka", 6.9271, 79.8612, IN),
+        new City("male", "ماليه", "Male", "المالديف", "Maldives", 4.1755, 73.5093, MWL),
+
+        // Southeast Asia
+        new City("jakarta", "جاكرتا", "Jakarta", "إندونيسيا", "Indonesia", -6.2088, 106.8456, SG),
+        new City("surabaya", "سورابايا", "Surabaya", "إندونيسيا", "Indonesia", -7.2575, 112.7521, SG),
+        new City("bandung", "باندونغ", "Bandung", "إندونيسيا", "Indonesia", -6.9175, 107.6191, SG),
+        new City("medan", "ميدان", "Medan", "إندونيسيا", "Indonesia", 3.5952, 98.6722, SG),
+        new City("kualalumpur", "كوالالمبور", "Kuala Lumpur", "ماليزيا", "Malaysia", 3.1390, 101.6869, SG),
+        new City("penang", "بينانغ", "Penang", "ماليزيا", "Malaysia", 5.4164, 100.3327, SG),
+        new City("singapore", "سنغافورة", "Singapore", "سنغافورة", "Singapore", 1.3521, 103.8198, SG),
+        new City("brunei", "بندر سري بكاوان", "Bandar Seri Begawan", "بروناي", "Brunei", 4.9031, 114.9398, SG),
+        new City("bangkok", "بانكوك", "Bangkok", "تايلاند", "Thailand", 13.7563, 100.5018, SG),
+
+        // East Asia
+        new City("tokyo", "طوكيو", "Tokyo", "اليابان", "Japan", 35.6762, 139.6503, MWL),
+        new City("seoul", "سول", "Seoul", "كوريا الجنوبية", "South Korea", 37.5665, 126.9780, MWL),
+
+        // Turkey
+        new City("istanbul", "إسطنبول", "Istanbul", "تركيا", "Turkey", 41.0082, 28.9784, MWL),
+        new City("ankara", "أنقرة", "Ankara", "تركيا", "Turkey", 39.9334, 32.8597, MWL),
+
+        // Europe
+        new City("london", "لندن", "London", "المملكة المتحدة", "UK", 51.5074, -0.1278, MWL),
+        new City("birmingham", "برمنغهام", "Birmingham", "المملكة المتحدة", "UK", 52.4862, -1.8904, MWL),
+        new City("manchester", "مانشستر", "Manchester", "المملكة المتحدة", "UK", 53.4808, -2.2426, MWL),
+        new City("paris", "باريس", "Paris", "فرنسا", "France", 48.8566, 2.3522, MWL),
+        new City("berlin", "برلين", "Berlin", "ألمانيا", "Germany", 52.5200, 13.4050, MWL),
+        new City("frankfurt", "فرانكفورت", "Frankfurt", "ألمانيا", "Germany", 50.1109, 8.6821, MWL),
+        new City("amsterdam", "أمستردام", "Amsterdam", "هولندا", "Netherlands", 52.3676, 4.9041, MWL),
+        new City("brussels", "بروكسل", "Brussels", "بلجيكا", "Belgium", 50.8503, 4.3517, MWL),
+        new City("vienna", "فيينا", "Vienna", "النمسا", "Austria", 48.2082, 16.3738, MWL),
+        new City("zurich", "زيورخ", "Zurich", "سويسرا", "Switzerland", 47.3769, 8.5417, MWL),
+        new City("rome", "روما", "Rome", "إيطاليا", "Italy", 41.9028, 12.4964, MWL),
+        new City("madrid", "مدريد", "Madrid", "إسبانيا", "Spain", 40.4168, -3.7038, MWL),
+        new City("sarajevo", "سراييفو", "Sarajevo", "البوسنة والهرسك", "Bosnia", 43.8563, 18.4131, MWL),
+
+        // Africa
+        new City("nairobi", "نيروبي", "Nairobi", "كينيا", "Kenya", -1.2921, 36.8219, MWL),
+        new City("lagos", "لاغوس", "Lagos", "نيجيريا", "Nigeria", 6.5244, 3.3792, MWL),
+        new City("johannesburg", "جوهانسبرغ", "Johannesburg", "جنوب أفريقيا", "South Africa", -26.2041, 28.0473, MWL),
+
+        // Oceania
+        new City("sydney", "سيدني", "Sydney", "أستراليا", "Australia", -33.8688, 151.2093, MWL),
+        new City("melbourne", "ملبورن", "Melbourne", "أستراليا", "Australia", -37.8136, 144.9631, MWL),
+        new City("auckland", "أوكلاند", "Auckland", "نيوزيلندا", "New Zealand", -36.8485, 174.7633, MWL),
     };
 
     static int cityIndex(Context c) {
