@@ -768,7 +768,7 @@ public class SettingsActivity extends Screen {
         GradientDrawable bg = round(Tokens.LAPIS_800, 24);
         bg.setStroke(Ui.ipx(2), Tokens.GOLD_400_60);
         card.setBackground(bg);
-        card.setClipChildren(false);
+        card.setClipChildren(true);
 
         TextView head = text(displayBold, Tokens.FONT_SIZE_DISPLAY_S, Tokens.GOLD_400);
         head.setText(title);
@@ -779,8 +779,8 @@ public class SettingsActivity extends Screen {
         scroll.setVerticalScrollBarEnabled(false);
         int reach = Ui.ipx(FocusTile.REACH);
         scroll.setPadding(reach, reach, reach, reach);
-        scroll.setClipToPadding(false);   // the focus ring may use the padding...
-        scroll.setClipChildren(true);     // ...but scrolled items must not draw over the title above
+        scroll.setClipToPadding(true);
+        scroll.setClipChildren(true);
         LinearLayout list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
         list.setClipChildren(false);

@@ -4,6 +4,9 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Fixed
+- In Settings, list chooser items (cities, countries, calculation methods, stations, adhans) no longer draw over the modal title heading when scrolled.
+
 ## [0.3.1] - 2026-10-22
 
 ### Changed
