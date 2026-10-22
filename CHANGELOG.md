@@ -4,6 +4,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+## [0.3] - 2026-10-22
+
 ### Added
 - United States in the location list, with New York, Chicago and Dallas (ISNA method).
   The Hijri date and Ramadan mode still use Umm al-Qura, so US users who follow local moon sighting set the Hijri
@@ -98,7 +100,8 @@ First public release.
 - Screensaver, on-TV settings and remote button mapping.
 - Arabic (RTL) first, with English.
 
-[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.3...HEAD
+[0.3]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.2.1...v0.3
 [0.2.1]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.2...v0.2.1
 [0.2]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.1.1...v0.2
 [0.1.1]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.1...v0.1.1
