@@ -143,7 +143,7 @@ that collection has no licence.
 The spoken reminder and «حان الآن موعد صلاة …» are 12 short clips made on your machine: `install.sh` runs
 `tools/fetch-announce.sh` the first time, which reads `tools/announce-lines.txt` with a Microsoft neural Arabic voice
 through [edge-tts](https://github.com/rany2/edge-tts) (`pip install edge-tts`; `VOICE=` picks another) into
-`app/src/main/assets/announce/`. They aren't in this repo either (the voice is for your own use); without them
+`app/src/main/assets/announce/`. They aren't in this repo; the release APK includes them. Without them
 those two stay silent and everything else works.
 
 **Close network debugging when you're done.** Port 5555 is plain text, and on some firmware any

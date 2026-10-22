@@ -4,6 +4,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+## [0.5] - 2026-10-22
+
 ### Added
 - Settings → Reminders → Close the call screen: when the adhan ends, or 1, 5 or 10 minutes after it appears (10,
   as before, by default). Then it's back to what was playing. With no adhan playing (turned off, or stopped with
@@ -14,8 +16,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   instead of pausing it, and each is said once per prayer, also across a restart of the remote buttons service.
   The 12 clips are not in the repo: `tools/fetch-announce.sh` (run by `install.sh` the first time) records
   them with a Microsoft neural Arabic voice through edge-tts into `app/src/main/assets/announce/`; without them
-  both stay silent. `--es test announce` tries it; `--es test banner` and `--es test reminder` now say the
-  reminder too.
+  both stay silent. Release APKs include them. `--es test announce` tries it; `--es test banner` and
+  `--es test reminder` now say the reminder too.
 
 ### Changed
 - The reminder can come 5, 10, 15, 20 or 30 minutes before each prayer (or not at all). Settings → Reminders →
@@ -150,7 +152,8 @@ First public release.
 - Screensaver, on-TV settings and remote button mapping.
 - Arabic (RTL) first, with English.
 
-[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.4...HEAD
+[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.5...HEAD
+[0.5]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.4...v0.5
 [0.4]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.3.1...v0.4
 [0.3.1]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.3...v0.3.1
 [0.3]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.2.1...v0.3
