@@ -4,6 +4,13 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Changed
+- Settings keys are the same on every row: the arrows only move (toward the start side goes back to the
+  sections), and OK is the only key that changes anything. OK on a choice or the Hijri offset starts editing it
+  (a ring shows round the control): ◀▶ move the choice, OK saves, Back cancels. OK flips a switch and opens a
+  list as before. Every save shows "✓ Saved" at the end of the hint line for 2 s. Reported in #5 (thanks,
+  @mohammed-althaf-h).
+
 ## [0.3] - 2026-10-22
 
 ### Added

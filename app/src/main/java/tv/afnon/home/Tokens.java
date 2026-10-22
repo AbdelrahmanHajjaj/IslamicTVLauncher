@@ -248,6 +248,8 @@ final class Tokens {
     static final long MOTION_SCREENSAVER_DRIFT_INTERVAL_MS = 60000;
     /** motion.banner-lifetime */
     static final long MOTION_BANNER_LIFETIME_MS = 12000;
+    /** motion.saved-lifetime: Settings: how long ✓ Saved shows after a change */
+    static final long MOTION_SAVED_LIFETIME_MS = 2000;
     /** motion.call-auto-dismiss */
     static final long MOTION_CALL_AUTO_DISMISS_MS = 600000;
     /** timing.approach: Before a prayer, the arch switches to its approaching outline */
