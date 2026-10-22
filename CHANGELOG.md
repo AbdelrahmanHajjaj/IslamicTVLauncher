@@ -10,6 +10,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   chosen city. It reads the app's own strings (`Text.java`), cities, methods, stations and fonts at build time, so
   it never keeps a second copy. One page per screen and mode, with titles, descriptions, `hreflang`, a sitemap and
   structured data for search engines.
+- `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue templates (bug, prayer times or city, TV report, idea) and a pull
+  request template. `THIRD_PARTY.md` now lists every radio station and the reciter channels.
 
 ### Changed
 - `afnon-mihrab/tokens.json` is the single source of the design tokens. `Tokens.java` and `colors.xml` are now

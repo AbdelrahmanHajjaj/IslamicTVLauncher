@@ -1,0 +1,51 @@
+name: Bug · خلل
+description: Something on the TV doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Arabic or English, either is fine. يمكنك الكتابة بالعربية أو الإنجليزية.
+        Leave out your Wi-Fi name, IP addresses and serial numbers, in text and in screenshots.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: And what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Settings with the remote's Settings button
+        2. ...
+    validations:
+      required: true
+  - type: input
+    id: tv
+    attributes:
+      label: TV
+      placeholder: TCL 55P7K, Google TV, Android 12
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Afnon version
+      description: "The release you installed, or `adb shell dumpsys package tv.afnon.home | grep versionName`."
+      placeholder: "0.2.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: App language
+      options: [العربية, English, Both]
+  - type: textarea
+    id: logs
+    attributes:
+      label: Screenshots or logs
+      description: "Optional. `adb logcat -d | grep -i afnon` helps for crashes."
+      render: text

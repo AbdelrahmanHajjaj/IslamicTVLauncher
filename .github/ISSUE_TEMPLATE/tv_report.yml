@@ -1,0 +1,43 @@
+name: My TV · تلفازي
+description: How Afnon runs on a TV other than the TCL 55P7K, even if everything worked.
+labels: [tv-report]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Afnon is tested on one TCL 55P7K. Reports from other TVs are how it gets better on yours.
+        Leave out your Wi-Fi name, IP addresses and serial numbers.
+  - type: input
+    id: tv
+    attributes:
+      label: TV model, Android version and RAM
+      placeholder: Super General SGLED43, Android 9, 1.5 GB
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Afnon version
+      placeholder: "0.2.1"
+    validations:
+      required: true
+  - type: checkboxes
+    id: works
+    attributes:
+      label: What works after a reboot
+      options:
+        - label: Afnon stays as Home
+        - label: The Afnon remote buttons service stays on
+        - label: The call to prayer comes up by itself with the adhan
+        - label: The screensaver
+        - label: The radio, and the radio with the screen off
+  - type: textarea
+    id: buttons
+    attributes:
+      label: Remote buttons
+      description: Which special buttons (Settings, Netflix, YouTube, Source…) do what. `adb shell getevent -l` shows the codes they send.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: What didn't work, screenshots, or your brand's way to turn the panel off while sound plays.

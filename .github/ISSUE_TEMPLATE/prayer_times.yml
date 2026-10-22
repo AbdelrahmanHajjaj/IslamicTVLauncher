@@ -1,0 +1,42 @@
+name: Prayer times or city · مواقيت الصلاة أو مدينة
+description: A time is off, or your city is missing.
+labels: [prayer-times]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A wrong time matters more than any feature, thank you. شكرًا، خطأ في وقت الصلاة أهم من أي ميزة.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is it
+      options:
+        - A time is wrong
+        - Add my city
+    validations:
+      required: true
+  - type: input
+    id: city
+    attributes:
+      label: City and country
+      placeholder: Alexandria, Egypt
+    validations:
+      required: true
+  - type: input
+    id: method
+    attributes:
+      label: Calculation method
+      description: The one your local religious authority uses, if you know it.
+      placeholder: Egyptian General Authority of Survey
+  - type: textarea
+    id: compare
+    attributes:
+      label: Afnon's times against an official source
+      description: For one date, Afnon's six times next to the official ones. Link the source (ministry, awqaf or a local masjid's timetable).
+      placeholder: |
+        Date: 2026-10-22
+        Fajr  Afnon 04:31  official 04:30
+        ...
+        Source: https://...
+    validations:
+      required: true

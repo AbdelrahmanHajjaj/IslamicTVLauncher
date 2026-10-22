@@ -1,0 +1,27 @@
+name: Idea · فكرة
+description: Suggest something new for Afnon.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Afnon stays calm and private: no feeds, ads, telemetry, sign-ins or anything that phones home, and it
+        has to run smoothly on a TV with under 2 GB of RAM. Ideas that fit that are very welcome.
+        For a ruling where scholars differ, describe the options rather than one answer.
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What it would do, and who it helps.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: What you do today without it.
+  - type: textarea
+    id: remote
+    attributes:
+      label: With the remote
+      description: How it would work with only the D-pad, OK and Back.
