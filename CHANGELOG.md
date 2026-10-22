@@ -6,6 +6,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ### Added
 - United States in the location list, with New York, Chicago and Dallas (ISNA method).
+  The Hijri date and Ramadan mode still use Umm al-Qura, so US users who follow local moon sighting set the Hijri
+  offset.
 - A web preview of the launcher in `site/` (Astro, deployed to GitHub Pages by `.github/workflows/site.yml`): every
   screen in Arabic and English, driven by the arrow keys like the remote, with live prayer times for the visitor's
   chosen city. It reads the app's own strings (`Text.java`), cities, methods, stations and fonts at build time, so
