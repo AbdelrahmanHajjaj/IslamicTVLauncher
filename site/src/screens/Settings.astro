@@ -34,11 +34,11 @@ const { t, lang } = ctx;
 <script>
   import { live } from '../scripts/live';
   import { href } from '../lib/site';
-  import { METHODS, cityOf, stationOf } from '../lib/data';
+  import { CITIES, METHODS, cityOf, stationOf } from '../lib/data';
   import type { Ctx } from '../lib/ctx';
   import type { Lang } from '../lib/text';
   import {
-    VOICES, chooserHtml, citiesOf, commit, countries, methodItems, moveDraft, pick, previewHtml, rowsFor, rowsHtml,
+    VOICES, chooserHtml, citiesOf, commit, countries, methodItems, regionOf, moveDraft, pick, previewHtml, rowsFor, rowsHtml,
     savedDraft, sectionName, stationChoice, stationsOf, type Edit, type SPrefs,
   } from './settings';
 
@@ -153,17 +153,23 @@ const { t, lang } = ctx;
     };
 
     const p = () => ({ ...(ctx.prefs as SPrefs) });
-    const openCountries = () => {
-      const t = ctx.t, list = countries(t), mine = t.ar ? cityOf(ctx.prefs).countryAr : cityOf(ctx.prefs).countryEn;
-      open(t.s('country'), list.map((c) => ({ label: c, chosen: c === mine })), (i) => openCities(list[i]));
+    // Region, then country, then city, as on the TV.
+    const openRegions = () => {
+      const t = ctx.t, mine = regionOf(cityOf(ctx.prefs));
+      open(t.s('region'), t.list('regions').map((r, i) => ({ label: r, chosen: i === mine })), (i) => openCountries(i));
     };
-    // A country with one city takes it at once. Picking a city puts the method back to that city's own.
-    const openCities = (country: string) => {
+    const openCountries = (region: number) => {
+      const t = ctx.t, list = countries(t, region), mine = t.ar ? cityOf(ctx.prefs).countryAr : cityOf(ctx.prefs).countryEn;
+      chooser!.back = undefined;
+      open(t.list('regions')[region], list.map((c) => ({ label: c, chosen: c === mine })), (i) => openCities(list[i], region), openRegions);
+    };
+    // A country with one city takes it at once. Picking a city puts the method and Asr school back to that city's own.
+    const openCities = (country: string, region: number) => {
       const found = citiesOf(ctx.t, country);
-      const take = (id: string) => save({ ...p(), city: id, method: null });
+      const take = (id: string) => save({ ...p(), city: id, method: null, hanafi: CITIES.find((c) => c.id === id)!.hanafi });
       if (found.length === 1) { take(found[0].id); return; }
       chooser!.back = undefined;
-      open(country, found.map((c) => ({ label: ctx.t.ar ? c.ar : c.en, chosen: c.id === ctx.prefs.city })), (i) => take(found[i].id), openCountries);
+      open(country, found.map((c) => ({ label: ctx.t.ar ? c.ar : c.en, chosen: c.id === ctx.prefs.city })), (i) => take(found[i].id), () => openCountries(region));
     };
     const openStationGroups = () => {
       const t = ctx.t, st = stationOf(ctx.prefs);
@@ -210,7 +216,7 @@ const { t, lang } = ctx;
       else if (r.id === 'radio') setRadio(!radioOn);
       else if (r.id === 'adhan') save({ ...p(), adhan: !ctx.prefs.adhan });
       else if (r.kind === 'value') {
-        if (r.id === 'city') openCountries();
+        if (r.id === 'city') openRegions();
         else if (r.id === 'method') {
           open(ctx.t.s('method'), methodItems(ctx.t, ctx.prefs), (k) => save({ ...p(), method: METHODS[k] }));
         } else if (r.id === 'station') openStationGroups();

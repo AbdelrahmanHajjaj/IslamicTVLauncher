@@ -205,6 +205,12 @@ final class Text {
     String preview() { return ar ? "العصر اليوم بهذه الإعدادات" : "Asr today with these settings"; }
     String location() { return ar ? "الموقع" : "Location"; }
     String country() { return ar ? "الدولة" : "Country"; }
+    String region() { return ar ? "المنطقة" : "Region"; }
+    /** Location's first step, in the order of Prefs.REGIONS. */
+    String[] regions() {
+        return ar ? new String[] {"الدول العربية", "آسيا", "أوروبا", "الأمريكتان", "أفريقيا", "أوقيانوسيا"}
+            : new String[] {"Arab world", "Asia", "Europe", "Americas", "Africa", "Oceania"};
+    }
     String locationHelp(double lat, double lng) {
         String ns = lat >= 0 ? (ar ? "ش" : "N") : (ar ? "ج" : "S");
         String ew = lng >= 0 ? (ar ? "ق" : "E") : (ar ? "غ" : "W");

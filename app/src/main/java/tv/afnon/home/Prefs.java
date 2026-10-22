@@ -26,8 +26,14 @@ final class Prefs {
         final double lat, lng;
         /** The method that city's mosques follow; picked for it when the city changes. */
         final CalculationMethod method;
+        /** The Asr school most of its mosques follow, also picked when the city changes. */
+        final Madhab madhab;
 
         City(String id, String ar, String en, String countryAr, String countryEn, double lat, double lng, CalculationMethod method) {
+            this(id, ar, en, countryAr, countryEn, lat, lng, method, Madhab.SHAFI);
+        }
+
+        City(String id, String ar, String en, String countryAr, String countryEn, double lat, double lng, CalculationMethod method, Madhab madhab) {
             this.id = id;
             this.ar = ar;
             this.en = en;
@@ -36,6 +42,7 @@ final class Prefs {
             this.lat = lat;
             this.lng = lng;
             this.method = method;
+            this.madhab = madhab;
         }
     }
 
@@ -44,6 +51,8 @@ final class Prefs {
     private static final CalculationMethod IN = CalculationMethod.KARACHI;
     private static final CalculationMethod SG = CalculationMethod.SINGAPORE;
     private static final CalculationMethod NA = CalculationMethod.NORTH_AMERICA;
+    /** Hanafi Asr (about an hour later), the usual school in Pakistan, Bangladesh and most of North India. */
+    private static final Madhab HANAFI = Madhab.HANAFI;
     static final City[] CITIES = {
         new City("cairo", "القاهرة", "Cairo", "مصر", "Egypt", 30.0444, 31.2357, EG),
         new City("giza", "الجيزة", "Giza", "مصر", "Egypt", 30.0131, 31.2089, EG),
@@ -128,60 +137,64 @@ final class Prefs {
         new City("toronto", "تورونتو", "Toronto", "كندا", "Canada", 43.6532, -79.3832, NA),
 
         // India
-        new City("bangalore", "بنغالور", "Bengaluru", "الهند", "India", 12.9716, 77.5946, IN),
+        new City("bangalore", "بنغالور", "Bengaluru", "الهند", "India", 12.9716, 77.5946, IN, HANAFI),
         new City("kozhikode", "كوزيكود", "Kozhikode", "الهند", "India", 11.2588, 75.7804, IN),
-        new City("mumbai", "مومباي", "Mumbai", "الهند", "India", 19.0760, 72.8777, IN),
-        new City("delhi", "دلهي", "Delhi", "الهند", "India", 28.6139, 77.2090, IN),
-        new City("hyderabad", "حيدر أباد", "Hyderabad", "الهند", "India", 17.3850, 78.4867, IN),
+        new City("mumbai", "مومباي", "Mumbai", "الهند", "India", 19.0760, 72.8777, IN, HANAFI),
+        new City("delhi", "دلهي", "Delhi", "الهند", "India", 28.6139, 77.2090, IN, HANAFI),
+        new City("hyderabad", "حيدر أباد", "Hyderabad", "الهند", "India", 17.3850, 78.4867, IN, HANAFI),
         new City("chennai", "تشيناي", "Chennai", "الهند", "India", 13.0827, 80.2707, IN),
-        new City("kolkata", "كولكاتا", "Kolkata", "الهند", "India", 22.5726, 88.3639, IN),
-        new City("ahmedabad", "أحمد أباد", "Ahmedabad", "الهند", "India", 23.0225, 72.5714, IN),
-        new City("pune", "بونا", "Pune", "الهند", "India", 18.5204, 73.8567, IN),
-        new City("lucknow", "لكهنؤ", "Lucknow", "الهند", "India", 26.8467, 80.9462, IN),
-        new City("srinagar", "سرينغار", "Srinagar", "الهند", "India", 34.0837, 74.7973, IN),
+        new City("kolkata", "كولكاتا", "Kolkata", "الهند", "India", 22.5726, 88.3639, IN, HANAFI),
+        new City("ahmedabad", "أحمد أباد", "Ahmedabad", "الهند", "India", 23.0225, 72.5714, IN, HANAFI),
+        new City("pune", "بونه", "Pune", "الهند", "India", 18.5204, 73.8567, IN, HANAFI),
+        new City("lucknow", "لكهنؤ", "Lucknow", "الهند", "India", 26.8467, 80.9462, IN, HANAFI),
+        new City("srinagar", "سرينغار", "Srinagar", "الهند", "India", 34.0837, 74.7973, IN, HANAFI),
         new City("kochi", "كوتشي", "Kochi", "الهند", "India", 9.9312, 76.2673, IN),
         new City("malappuram", "ملابورام", "Malappuram", "الهند", "India", 11.0510, 76.0711, IN),
-        new City("bhopal", "بوبال", "Bhopal", "الهند", "India", 23.2599, 77.4126, IN),
-        new City("patna", "باتنا", "Patna", "الهند", "India", 25.5941, 85.1376, IN),
+        new City("bhopal", "بوبال", "Bhopal", "الهند", "India", 23.2599, 77.4126, IN, HANAFI),
+        new City("patna", "باتنا", "Patna", "الهند", "India", 25.5941, 85.1376, IN, HANAFI),
 
         // Pakistan
-        new City("karachi", "كراتشي", "Karachi", "باكستان", "Pakistan", 24.8607, 67.0011, IN),
-        new City("lahore", "لاهور", "Lahore", "باكستان", "Pakistan", 31.5204, 74.3587, IN),
-        new City("islamabad", "إسلام أباد", "Islamabad", "باكستان", "Pakistan", 33.6844, 73.0479, IN),
-        new City("rawalpindi", "راولبندي", "Rawalpindi", "باكستان", "Pakistan", 33.5651, 73.0169, IN),
-        new City("peshawar", "بيشاور", "Peshawar", "باكستان", "Pakistan", 34.0151, 71.5249, IN),
+        new City("karachi", "كراتشي", "Karachi", "باكستان", "Pakistan", 24.8607, 67.0011, IN, HANAFI),
+        new City("lahore", "لاهور", "Lahore", "باكستان", "Pakistan", 31.5204, 74.3587, IN, HANAFI),
+        new City("islamabad", "إسلام أباد", "Islamabad", "باكستان", "Pakistan", 33.6844, 73.0479, IN, HANAFI),
+        new City("rawalpindi", "راولبندي", "Rawalpindi", "باكستان", "Pakistan", 33.5651, 73.0169, IN, HANAFI),
+        new City("peshawar", "بيشاور", "Peshawar", "باكستان", "Pakistan", 34.0151, 71.5249, IN, HANAFI),
 
         // Bangladesh
-        new City("dhaka", "دكا", "Dhaka", "بنغلاديش", "Bangladesh", 23.8103, 90.4125, IN),
-        new City("chittagong", "شيتاغونغ", "Chittagong", "بنغلاديش", "Bangladesh", 22.3569, 91.7832, IN),
+        new City("dhaka", "دكا", "Dhaka", "بنغلاديش", "Bangladesh", 23.8103, 90.4125, IN, HANAFI),
+        new City("chittagong", "شيتاغونغ", "Chittagong", "بنغلاديش", "Bangladesh", 22.3569, 91.7832, IN, HANAFI),
 
-        // Sri Lanka & Maldives
+        // Sri Lanka & Maldives (Shafi'i, as are Kerala and Tamil Nadu above)
         new City("colombo", "كولمبو", "Colombo", "سريلانكا", "Sri Lanka", 6.9271, 79.8612, IN),
-        new City("male", "ماليه", "Male", "المالديف", "Maldives", 4.1755, 73.5093, MWL),
+        new City("male", "ماليه", "Malé", "المالديف", "Maldives", 4.1755, 73.5093, MWL),
 
-        // Southeast Asia
+        // Southeast Asia. Indonesia (Kemenag), Singapore (MUIS) and Brunei use 20°/18°. Malaysia (JAKIM) moved Subuh to
+        // 18° in 2020; adhan-java has no JAKIM method, and Moon Sighting Committee came within 2 minutes of every
+        // e-solat time for Kuala Lumpur (2026-10-22), where Singapore's 20° put Fajr 10 minutes early.
         new City("jakarta", "جاكرتا", "Jakarta", "إندونيسيا", "Indonesia", -6.2088, 106.8456, SG),
         new City("surabaya", "سورابايا", "Surabaya", "إندونيسيا", "Indonesia", -7.2575, 112.7521, SG),
         new City("bandung", "باندونغ", "Bandung", "إندونيسيا", "Indonesia", -6.9175, 107.6191, SG),
         new City("medan", "ميدان", "Medan", "إندونيسيا", "Indonesia", 3.5952, 98.6722, SG),
-        new City("kualalumpur", "كوالالمبور", "Kuala Lumpur", "ماليزيا", "Malaysia", 3.1390, 101.6869, SG),
-        new City("penang", "بينانغ", "Penang", "ماليزيا", "Malaysia", 5.4164, 100.3327, SG),
+        new City("kualalumpur", "كوالالمبور", "Kuala Lumpur", "ماليزيا", "Malaysia", 3.1390, 101.6869, CalculationMethod.MOON_SIGHTING_COMMITTEE),
+        new City("penang", "بينانغ", "Penang", "ماليزيا", "Malaysia", 5.4164, 100.3327, CalculationMethod.MOON_SIGHTING_COMMITTEE),
         new City("singapore", "سنغافورة", "Singapore", "سنغافورة", "Singapore", 1.3521, 103.8198, SG),
         new City("brunei", "بندر سري بكاوان", "Bandar Seri Begawan", "بروناي", "Brunei", 4.9031, 114.9398, SG),
         new City("bangkok", "بانكوك", "Bangkok", "تايلاند", "Thailand", 13.7563, 100.5018, SG),
 
         // East Asia
         new City("tokyo", "طوكيو", "Tokyo", "اليابان", "Japan", 35.6762, 139.6503, MWL),
-        new City("seoul", "سول", "Seoul", "كوريا الجنوبية", "South Korea", 37.5665, 126.9780, MWL),
+        new City("seoul", "سيول", "Seoul", "كوريا الجنوبية", "South Korea", 37.5665, 126.9780, MWL),
 
-        // Turkey
+        // Turkey: Diyanet uses MWL's angles (18°/17°) and the first-shadow Asr (asr-ı evvel), plus safety minutes
+        // (temkin) adhan-java can't add. Against Diyanet's Istanbul table (2026-10-22) Fajr and Isha match within a
+        // minute; Dhuhr, Asr and Maghrib come 4 to 8 minutes before the mosques'.
         new City("istanbul", "إسطنبول", "Istanbul", "تركيا", "Turkey", 41.0082, 28.9784, MWL),
         new City("ankara", "أنقرة", "Ankara", "تركيا", "Turkey", 39.9334, 32.8597, MWL),
 
         // Europe
-        new City("london", "لندن", "London", "المملكة المتحدة", "UK", 51.5074, -0.1278, MWL),
-        new City("birmingham", "برمنغهام", "Birmingham", "المملكة المتحدة", "UK", 52.4862, -1.8904, MWL),
-        new City("manchester", "مانشستر", "Manchester", "المملكة المتحدة", "UK", 53.4808, -2.2426, MWL),
+        new City("london", "لندن", "London", "المملكة المتحدة", "United Kingdom", 51.5074, -0.1278, MWL),
+        new City("birmingham", "برمنغهام", "Birmingham", "المملكة المتحدة", "United Kingdom", 52.4862, -1.8904, MWL),
+        new City("manchester", "مانشستر", "Manchester", "المملكة المتحدة", "United Kingdom", 53.4808, -2.2426, MWL),
         new City("paris", "باريس", "Paris", "فرنسا", "France", 48.8566, 2.3522, MWL),
         new City("berlin", "برلين", "Berlin", "ألمانيا", "Germany", 52.5200, 13.4050, MWL),
         new City("frankfurt", "فرانكفورت", "Frankfurt", "ألمانيا", "Germany", 50.1109, 8.6821, MWL),
@@ -191,7 +204,7 @@ final class Prefs {
         new City("zurich", "زيورخ", "Zurich", "سويسرا", "Switzerland", 47.3769, 8.5417, MWL),
         new City("rome", "روما", "Rome", "إيطاليا", "Italy", 41.9028, 12.4964, MWL),
         new City("madrid", "مدريد", "Madrid", "إسبانيا", "Spain", 40.4168, -3.7038, MWL),
-        new City("sarajevo", "سراييفو", "Sarajevo", "البوسنة والهرسك", "Bosnia", 43.8563, 18.4131, MWL),
+        new City("sarajevo", "سراييفو", "Sarajevo", "البوسنة والهرسك", "Bosnia and Herzegovina", 43.8563, 18.4131, MWL),
 
         // Africa
         new City("nairobi", "نيروبي", "Nairobi", "كينيا", "Kenya", -1.2921, 36.8219, MWL),
@@ -214,9 +227,33 @@ final class Prefs {
         return CITIES[cityIndex(c)];
     }
 
-    /** A new city also takes that city's usual method; the method row can still override it afterwards. */
+    /** A new city also takes that city's usual method and Asr school; their rows can still override them after. */
     static void setCity(Context c, int index) {
-        of(c).edit().putString("city", CITIES[index].id).putString("method", CITIES[index].method.name()).apply();
+        City city = CITIES[index];
+        of(c).edit().putString("city", city.id).putString("method", city.method.name())
+            .putString("madhab", city.madhab == Madhab.HANAFI ? "hanafi" : "shafi").apply();
+    }
+
+    /**
+     * Location's first step: each region's countries (English names, as in {@link #CITIES}), in the order of
+     * {@link Text#regions()}. Every country in CITIES must be in exactly one region, or its cities can't be picked.
+     */
+    static final String[][] REGIONS = {
+        {"Egypt", "Saudi Arabia", "UAE", "Kuwait", "Qatar", "Jordan", "Palestine", "Lebanon", "Syria", "Iraq", "Bahrain",
+            "Oman", "Yemen"},
+        {"India", "Pakistan", "Bangladesh", "Sri Lanka", "Maldives", "Indonesia", "Malaysia", "Singapore", "Brunei",
+            "Thailand", "Japan", "South Korea", "Turkey"},
+        {"United Kingdom", "France", "Germany", "Netherlands", "Belgium", "Austria", "Switzerland", "Italy", "Spain",
+            "Bosnia and Herzegovina"},
+        {"United States", "Canada"},
+        {"Kenya", "Nigeria", "South Africa"},
+        {"Australia", "New Zealand"},
+    };
+
+    /** The region (index into {@link #REGIONS}) a city's country is in; -1 if it is in none. */
+    static int region(City city) {
+        for (int r = 0; r < REGIONS.length; r++) for (String n : REGIONS[r]) if (n.equals(city.countryEn)) return r;
+        return -1;
     }
 
     static Coordinates where(Context c) {

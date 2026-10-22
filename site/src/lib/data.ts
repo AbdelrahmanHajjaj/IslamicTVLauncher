@@ -1,6 +1,7 @@
 // The app's data, read from its Java sources by scripts/extract.mjs.
 import citiesJson from '../data/cities.json';
 import methodsJson from '../data/methods.json';
+import regionsJson from '../data/regions.json';
 import stationsJson from '../data/stations.json';
 
 export type City = (typeof citiesJson)[number];
@@ -8,6 +9,8 @@ export type Station = (typeof stationsJson)[number];
 
 export const CITIES: City[] = citiesJson;
 export const METHODS: string[] = methodsJson;
+/** Each region's countries (English names), in the order of the regions string list. */
+export const REGIONS: string[][] = regionsJson;
 export const STATIONS: Station[] = stationsJson;
 
 /** Viewer preferences, as Afnon Settings keeps them on the TV. Saved in this browser only. */

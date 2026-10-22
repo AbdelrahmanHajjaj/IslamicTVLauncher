@@ -5,13 +5,21 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 ## [Unreleased]
 
 ### Added
-- 57 worldwide cities across 20 countries (India, Pakistan, Bangladesh, Sri Lanka, Maldives,
-  Indonesia, Malaysia, Singapore, Brunei, Thailand, Japan, South Korea, Turkey, UK, France, Germany,
-  Netherlands, Belgium, Austria, Switzerland, Italy, Spain, Bosnia, Canada, Kenya, Nigeria,
-  South Africa, Australia, New Zealand, plus Houston and Los Angeles for the US) with local prayer calculation methods.
+- 59 more cities, now 136 in 43 countries: India, Pakistan, Bangladesh, Sri Lanka, Maldives, Indonesia, Malaysia,
+  Singapore, Brunei, Thailand, Japan, South Korea, Turkey, the United Kingdom, France, Germany, the Netherlands,
+  Belgium, Austria, Switzerland, Italy, Spain, Bosnia and Herzegovina, Canada, Kenya, Nigeria, South Africa,
+  Australia and New Zealand, plus Houston and Los Angeles. Each starts on its mosques' calculation method. Thanks,
+  @mohammed-althaf-h (#4).
+
+### Changed
+- Location is picked by region first (Arab world, Asia, Europe, Americas, Africa, Oceania), then country (A to Z),
+  then city, so no list is longer than 16.
+- Picking a city also sets its usual Asr school: Hanafi for Pakistan, Bangladesh and most Indian cities (Kerala and
+  Chennai stay Shafi'i). The Asr row can still change it.
 
 ### Fixed
-- In Settings, list chooser items (cities, countries, calculation methods, stations, adhans) no longer draw over the modal title heading when scrolled.
+- In Settings, list chooser items no longer draw over the chooser's title when scrolled (#8, thanks
+  @mohammed-althaf-h in #9).
 
 ## [0.3.1] - 2026-10-22
 

@@ -2,7 +2,7 @@
 // code renders the page at build time and re-renders it in the browser after every change.
 import voicesJson from '../data/adhans.json';
 import type { Ctx } from '../lib/ctx';
-import { CITIES, METHODS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
+import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
 import { ASR, clock, hijri, methodParams } from '../lib/prayer';
 import type { Text } from '../lib/text';
 import { loadFacing } from './prayer-day';
@@ -163,7 +163,14 @@ export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);
 
 export type Item = { label: string; chosen: boolean };
 
-export const countries = (t: Text) => [...new Set(CITIES.map((c) => (t.ar ? c.countryAr : c.countryEn)))];
+/** The region a city's country is in (index into REGIONS). */
+export const regionOf = (c: (typeof CITIES)[number]) => REGIONS.findIndex((r) => r.includes(c.countryEn));
+/** One region's countries, A to Z in the page's language ("ال" not counted). */
+export const countries = (t: Text, region: number) =>
+  REGIONS[region]
+    .map((en) => CITIES.find((c) => c.countryEn === en)!)
+    .map((c) => (t.ar ? c.countryAr : c.countryEn))
+    .sort((a, b) => new Intl.Collator(t.ar ? 'ar' : 'en').compare(a.replace(/^ال/, ''), b.replace(/^ال/, '')));
 export const citiesOf = (t: Text, country: string) => CITIES.filter((c) => (t.ar ? c.countryAr : c.countryEn) === country);
 export const methodItems = (t: Text, p: Prefs): Item[] => METHODS.map((m) => ({ label: t.methodName(m), chosen: m === methodOf(p) }));
 export const stationsOf = (reciters: boolean) => STATIONS.filter((s) => !!s.reciter === reciters);

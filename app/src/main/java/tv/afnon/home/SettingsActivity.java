@@ -21,8 +21,10 @@ import com.batoulapps.adhan.Madhab;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.IntConsumer;
 
 /**
@@ -238,16 +240,9 @@ public class SettingsActivity extends Screen {
                     String help() { Prefs.City city = Prefs.city(c); return t.locationHelp(city.lat, city.lng); }
                     String value() { Prefs.City city = Prefs.city(c); return t.ar ? t.place(city.ar, city.countryAr) : t.place(city.en, city.countryEn); }
                     void open() {
-                        List<String> countries = new ArrayList<>();
-                        for (Prefs.City city : Prefs.CITIES) {
-                            String name = t.ar ? city.countryAr : city.countryEn;
-                            if (!countries.contains(name)) countries.add(name);
-                        }
-                        Prefs.City now = Prefs.city(c);
-                        int sel = countries.indexOf(t.ar ? now.countryAr : now.countryEn);
-                        // The city list opens once this chooser has closed (closeChooser runs after the pick).
-                        openChooser(t.country(), countries.toArray(new String[0]), sel,
-                            i -> root.post(() -> openCities(countries.get(i), this::open)));
+                        // The next list opens once this chooser has closed (closeChooser runs after the pick).
+                        openChooser(t.region(), t.regions(), Prefs.region(Prefs.city(c)),
+                            i -> root.post(() -> openCountries(i, this::open)));
                     }
                 },
                 new Row(VALUE) {
@@ -708,7 +703,25 @@ public class SettingsActivity extends Screen {
 
     // ---------------------------------------------------------------- list chooser
 
-    /** Location's second step: one country's cities. A country with a single city takes it at once. Back runs back. */
+    /** Location's second step: one region's countries, A to Z in the app's language ("ال" not counted). Back runs back. */
+    private void openCountries(int region, Runnable back) {
+        List<String> countries = new ArrayList<>();
+        for (String en : Prefs.REGIONS[region]) {
+            for (Prefs.City city : Prefs.CITIES) {
+                if (city.countryEn.equals(en)) { countries.add(t.ar ? city.countryAr : city.countryEn); break; }
+            }
+        }
+        java.text.Collator order = java.text.Collator.getInstance(t.ar ? new Locale("ar") : Locale.ENGLISH);
+        Collections.sort(countries, (a, b) -> order.compare(a.replaceFirst("^ال", ""), b.replaceFirst("^ال", "")));
+        Prefs.City now = Prefs.city(this);
+        int sel = countries.indexOf(t.ar ? now.countryAr : now.countryEn);
+        Runnable self = () -> openCountries(region, back);
+        openChooser(t.regions()[region], countries.toArray(new String[0]), sel,
+            i -> root.post(() -> openCities(countries.get(i), self)));
+        chooserBack = back;
+    }
+
+    /** Location's third step: one country's cities. A country with a single city takes it at once. Back runs back. */
     private void openCities(String country, Runnable back) {
         List<Integer> found = new ArrayList<>();
         for (int i = 0; i < Prefs.CITIES.length; i++) {
