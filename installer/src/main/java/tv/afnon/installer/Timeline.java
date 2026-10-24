@@ -45,7 +45,6 @@ final class Timeline extends LinearLayout {
             words.addView(labels[i]);
             notes[i] = Ui.small(c, "");
             notes[i].setVisibility(GONE);
-            Ui.latin(notes[i]);
             words.addView(notes[i], Ui.wide(c, 4));
             row.addView(words, Ui.fill(c));
             addView(row, Ui.wide(c, 0));

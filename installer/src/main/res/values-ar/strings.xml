@@ -61,7 +61,7 @@
     <string name="pairing">جارٍ الإقران…</string>
 
     <string name="install_title">تثبيت أفنون</string>
-    <string name="install_title_version">تثبيت أفنون %1$s</string>
+    <string name="install_lead_version">أفنون %1$s · أبقِ هذه الشاشة مفتوحة. يستغرق ذلك دقيقة أو اثنتين.</string>
     <string name="install_lead">أبقِ هذه الشاشة مفتوحة. يستغرق ذلك دقيقة أو اثنتين.</string>
     <string name="t_download">التنزيل من GitHub</string>
     <string name="t_send">الإرسال إلى التلفاز</string>

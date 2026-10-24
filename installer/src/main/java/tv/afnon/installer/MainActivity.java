@@ -208,14 +208,14 @@ public final class MainActivity extends Activity {
         words.setPaddingRelative(dp(14), 0, dp(8), 0);
         words.addView(Ui.small(this, getString(R.string.tv_found)));
         TextView host = Ui.latin(Ui.text(this, t.host, Ui.PLASTER, 18, Ui.semibold()));
-        host.setGravity(Gravity.START);
+        host.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         words.addView(host, Ui.wide(this, 2));
         if (t.tls > 0) words.addView(door(R.string.badge_wireless, t.tls, true), Ui.wide(this, 6));
         if (t.classic > 0) words.addView(door(R.string.badge_network, t.classic, false), Ui.wide(this, 4));
         if (t.pairing > 0) words.addView(door(R.string.badge_pair, t.pairing, true), Ui.wide(this, 4));
         card.addView(words, Ui.fill(this));
 
-        TextView chevron = Ui.text(this, Ui.arabic(this) ? "‹" : "›", Ui.GOLD_400, 26, Ui.medium());
+        TextView chevron = Ui.text(this, "›", Ui.GOLD_400, 26, Ui.medium());
         card.addView(chevron);
         card.setOnClickListener(v -> go(() -> connect(t.host, t.tls, t.classic)));
         return card;
@@ -233,7 +233,11 @@ public final class MainActivity extends Activity {
         lp.setMarginEnd(dp(8));
         row.addView(dot, lp);
         row.addView(Ui.text(this, getString(name), accent ? Ui.GOLD_200 : Ui.MIST, 13, Ui.medium()));
-        row.addView(Ui.latin(Ui.text(this, "  ·  " + number(port), Ui.MIST, 13, Ui.medium())));
+        TextView p = Ui.latin(Ui.text(this, "·  " + number(port), Ui.MIST, 13, Ui.medium()));
+        LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        pp.setMarginStart(dp(8));
+        row.addView(p, pp);
         return row;
     }
 
@@ -472,7 +476,7 @@ public final class MainActivity extends Activity {
     // Install
 
     private Timeline timeline;
-    private TextView titleView;
+    private TextView titleView, leadView;
 
     private void install() {
         stopFinders();
@@ -494,7 +498,7 @@ public final class MainActivity extends Activity {
                 String tag = Setup.latestTag();
                 String version = tag == null ? "" : tag.replaceFirst("^v", "");
                 post(g, () -> {
-                    if (!version.isEmpty()) titleView.setText(getString(R.string.install_title_version, version));
+                    if (!version.isEmpty()) leadView.setText(getString(R.string.install_lead_version, version));
                     timeline.set(0, Timeline.State.WORKING);
                 });
                 File apk = Setup.download(getCacheDir(), (done, total) -> post(g, () -> {
@@ -639,8 +643,8 @@ public final class MainActivity extends Activity {
                 showPair("192.168.1.50", 41234);
                 break;
             case "install": {
-                frame(INSTALL, Hero.Mode.PROGRESS, getString(R.string.install_title_version, "0.5"),
-                        getString(R.string.install_lead));
+                frame(INSTALL, Hero.Mode.PROGRESS, getString(R.string.install_title),
+                        getString(R.string.install_lead_version, "0.5"));
                 timeline = timeline();
                 add(timeline, 20);
                 timeline.set(0, Timeline.State.DONE);
@@ -693,8 +697,8 @@ public final class MainActivity extends Activity {
         content.addView(hero, Ui.wide(this, 8));
         titleView = Ui.title(this, title);
         content.addView(titleView, Ui.wide(this, 18));
-        TextView l = Ui.lead(this, lead);
-        content.addView(l, Ui.wide(this, 10));
+        leadView = Ui.lead(this, lead);
+        content.addView(leadView, Ui.wide(this, 10));
         scroll.scrollTo(0, 0);
         content.setAlpha(0f);
         content.setTranslationY(dp(8));

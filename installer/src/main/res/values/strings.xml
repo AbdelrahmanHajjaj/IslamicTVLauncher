@@ -63,7 +63,7 @@
     <string name="pairing">Pairing…</string>
 
     <string name="install_title">Installing Afnon</string>
-    <string name="install_title_version">Installing Afnon %1$s</string>
+    <string name="install_lead_version">Afnon %1$s · keep this screen open. It takes a minute or two.</string>
     <string name="install_lead">Keep this screen open. It takes a minute or two.</string>
     <string name="t_download">Download from GitHub</string>
     <string name="t_send">Send to the TV</string>
