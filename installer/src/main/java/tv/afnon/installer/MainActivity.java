@@ -120,16 +120,25 @@ public final class MainActivity extends Activity {
     private void showGuide() {
         stopFinders();
         frame(PREPARE, Hero.Mode.TV, getString(R.string.guide_title), getString(R.string.guide_lead));
-        add(step(1, R.string.g1_title, R.string.g1_path, 0), 20);
-        add(step(2, R.string.g2_title, R.string.g2_path, R.string.g2_body), 10);
-        add(step(3, R.string.g3_title, R.string.g3_path, R.string.g3_body), 10);
-        add(step(4, R.string.g4_title, 0, R.string.g4_body), 10);
+        TextView both = Ui.chip(this, getString(R.string.guide_both), false);
+        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        bp.gravity = Gravity.CENTER_HORIZONTAL;
+        bp.topMargin = dp(12);
+        content.addView(both, bp);
+        add(step(1, R.string.g1_title, 0, Ui.tvText(this, R.string.tv_about_en, R.string.tv_about_ar)), 18);
+        add(step(2, R.string.g2_title, R.string.g2_body, Ui.tvText(this, R.string.tv_build_en, R.string.tv_build_ar)), 10);
+        add(step(3, R.string.g3_title, R.string.g3_body, Ui.tvText(this, R.string.tv_dev_en, R.string.tv_dev_ar),
+                Ui.tvText(this, R.string.tv_usb_en, R.string.tv_usb_ar),
+                Ui.small(this, getString(R.string.g3_wireless)),
+                Ui.tvText(this, R.string.tv_wireless_en, R.string.tv_wireless_ar)), 10);
+        add(step(4, R.string.g4_title, R.string.g4_body), 10);
         foot(Ui.primary(this, getString(R.string.guide_ready), v -> go(this::showFind)));
         back = this::finish;
     }
 
-    /** A numbered card: title, the TV's menu path as a chip, and a line of detail. */
-    private View step(int n, int title, int path, int body) {
+    /** A numbered card: its title, then what to find on the TV (in both languages), with the detail after the first. */
+    private View step(int n, int title, int body, View... tv) {
         LinearLayout card = Ui.card(this);
         LinearLayout row = Ui.row(this);
         row.setGravity(Gravity.TOP);
@@ -137,14 +146,11 @@ public final class MainActivity extends Activity {
         LinearLayout words = Ui.column(this);
         words.setPaddingRelative(dp(14), dp(3), 0, 0);
         words.addView(Ui.label(this, getString(title)));
-        if (path != 0) {
-            TextView p = Ui.path(this, getString(path));
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.topMargin = dp(8);
-            words.addView(p, lp);
+        for (int i = 0; i < tv.length; i++) {
+            words.addView(tv[i], Ui.wide(this, 8));
+            if (i == 0 && body != 0) words.addView(Ui.small(this, getString(body)), Ui.wide(this, 8));
         }
-        if (body != 0) words.addView(Ui.small(this, getString(body)), Ui.wide(this, 8));
+        if (tv.length == 0 && body != 0) words.addView(Ui.small(this, getString(body)), Ui.wide(this, 8));
         row.addView(words, Ui.fill(this));
         card.addView(row);
         return card;
@@ -401,10 +407,12 @@ public final class MainActivity extends Activity {
     /** Classic network debugging: the TV asks to allow this phone. */
     private void showAllow() {
         frame(CONNECT, Hero.Mode.ALLOW, getString(R.string.allow_title), getString(R.string.allow_lead));
+        add(Ui.tvText(this, R.string.tv_allow_q_en, R.string.tv_allow_q_ar), 14);
         LinearLayout card = Ui.card(this);
-        card.addView(numbered(1, getString(R.string.allow_1), null));
-        card.addView(numbered(2, getString(R.string.allow_2), null), Ui.wide(this, 14));
-        add(card, 20);
+        card.addView(numbered(1, getString(R.string.allow_1), Ui.tvText(this, R.string.tv_always_en, R.string.tv_always_ar)));
+        card.addView(numbered(2, getString(R.string.allow_2), Ui.tvText(this, R.string.tv_allow_en, R.string.tv_allow_ar)),
+                Ui.wide(this, 14));
+        add(card, 14);
         add(waiting(getString(R.string.waiting)), 18);
         foot(Ui.secondary(this, getString(R.string.back), v -> go(this::showFind)));
     }
@@ -416,8 +424,10 @@ public final class MainActivity extends Activity {
         stopFinders();
         frame(CONNECT, Hero.Mode.PAIR, getString(R.string.pair_title), getString(R.string.pair_lead));
         LinearLayout card = Ui.card(this);
-        card.addView(numbered(1, getString(R.string.pair_1), getString(R.string.pair_1_path)));
-        card.addView(numbered(2, getString(R.string.pair_2), null), Ui.wide(this, 14));
+        card.addView(numbered(1, getString(R.string.pair_1),
+                Ui.tvText(this, R.string.tv_wireless_path_en, R.string.tv_wireless_path_ar)));
+        card.addView(numbered(2, getString(R.string.pair_2), Ui.tvText(this, R.string.tv_pair_en, R.string.tv_pair_ar)),
+                Ui.wide(this, 14));
         card.addView(numbered(3, getString(R.string.pair_3), null), Ui.wide(this, 14));
         add(card, 20);
 
@@ -860,7 +870,8 @@ public final class MainActivity extends Activity {
         }
     }
 
-    private View numbered(int n, String text, String path) {
+    /** A numbered line, with what to find on the TV under it (in both languages) if there is one. */
+    private View numbered(int n, String text, View tv) {
         LinearLayout row = Ui.row(this);
         row.setGravity(Gravity.TOP);
         TextView b = Ui.badge(this, number(n));
@@ -868,12 +879,7 @@ public final class MainActivity extends Activity {
         LinearLayout words = Ui.column(this);
         words.setPaddingRelative(dp(12), dp(4), 0, 0);
         words.addView(Ui.text(this, text, Ui.PLASTER, 15, Ui.medium()));
-        if (path != null) {
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.topMargin = dp(8);
-            words.addView(Ui.path(this, path), lp);
-        }
+        if (tv != null) words.addView(tv, Ui.wide(this, 8));
         row.addView(words, Ui.fill(this));
         return row;
     }

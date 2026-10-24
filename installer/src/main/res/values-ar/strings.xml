@@ -11,13 +11,10 @@
     <string name="guide_title">أفنون على تلفازك</string>
     <string name="guide_lead">ثبّت أفنون من هذا الهاتف في دقائق، دون حاسوب. أولًا أربع خطوات على التلفاز بجهاز التحكم.</string>
     <string name="g1_title">افتح «حول»</string>
-    <string name="g1_path">الإعدادات ‹ النظام ‹ حول</string>
     <string name="g2_title">فعّل وضع المطوّر</string>
-    <string name="g2_path">إصدار نظام Android TV</string>
     <string name="g2_body">اضغط عليه OK سبع مرات حتى تظهر رسالة أنك أصبحت مطوّرًا.</string>
     <string name="g3_title">فعّل التصحيح</string>
-    <string name="g3_path">الإعدادات ‹ النظام ‹ خيارات المطوّرين</string>
-    <string name="g3_body">فعّل «تصحيح أخطاء USB» (تسمّيه بعض الأجهزة «تصحيح ADB» أو «التصحيح عبر الشبكة»). وإن وجدت «تصحيح الأخطاء اللاسلكي» ففعّله كذلك.</string>
+    <string name="g3_body">فعّل هذا الخيار. تسمّيه بعض الأجهزة «تصحيح ADB» أو «التصحيح عبر الشبكة»:</string>
     <string name="g4_title">الشبكة نفسها</string>
     <string name="g4_body">اجعل التلفاز وهذا الهاتف على شبكة الواي فاي نفسها.</string>
     <string name="guide_ready">ابحث عن تلفازي</string>
@@ -42,16 +39,15 @@
     <string name="scanning_title">فحص التلفاز</string>
     <string name="scanning">جارٍ البحث عن منفذ تصحيح مفتوح على %1$s. يستغرق ذلك نحو ١٥ ثانية.</string>
     <string name="allow_title">اسمح على التلفاز</string>
-    <string name="allow_lead">يسألك التلفاز «السماح بتصحيح أخطاء USB؟»</string>
-    <string name="allow_1">ضع علامة على «السماح دائمًا من هذا الكمبيوتر»</string>
-    <string name="allow_2">اختر «سماح» بجهاز التحكم</string>
+    <string name="allow_lead">تظهر رسالة على التلفاز:</string>
+    <string name="allow_1">ضع علامة على</string>
+    <string name="allow_2">ثم اختر بجهاز التحكم</string>
     <string name="waiting">بانتظار التلفاز…</string>
 
     <string name="pair_title">الإقران بالتلفاز</string>
     <string name="pair_lead">يحتاج التصحيح اللاسلكي إلى رمز من التلفاز مرة واحدة.</string>
     <string name="pair_1">على التلفاز افتح</string>
-    <string name="pair_1_path">خيارات المطوّرين ‹ تصحيح الأخطاء اللاسلكي</string>
-    <string name="pair_2">اختر «إقران الجهاز باستخدام رمز إقران»</string>
+    <string name="pair_2">اختر</string>
     <string name="pair_3">اكتب الرمز المكوّن من ستة أرقام</string>
     <string name="pair_port_found">منفذ الإقران %1$s</string>
     <string name="pair_port_waiting">بانتظار نافذة الإقران على التلفاز…</string>
@@ -170,4 +166,7 @@
     <string name="clean_still_off">تحقّقنا الآن: ما زالت متوقفة على التلفاز.</string>
     <string name="clean_back_on">عاد للعمل بعد آخر تنظيف</string>
     <string name="cleaned_checked">تأكّد إيقاف %1$s من %2$s على التلفاز</string>
+
+    <string name="guide_both">قوائم التلفاز معروضة بالعربية والإنجليزية</string>
+    <string name="g3_wireless">وإن وجدت هذا أيضًا ففعّله:</string>
 </resources>

@@ -13,13 +13,10 @@
     <string name="guide_title">Afnon on your TV</string>
     <string name="guide_lead">Install Afnon from this phone in a few minutes, no computer needed. First, four steps on the TV with its remote.</string>
     <string name="g1_title">Open About</string>
-    <string name="g1_path">Settings › System › About</string>
     <string name="g2_title">Become a developer</string>
-    <string name="g2_path">Android TV OS build</string>
     <string name="g2_body">Press OK on it 7 times, until the TV says you are now a developer.</string>
     <string name="g3_title">Turn on debugging</string>
-    <string name="g3_path">Settings › System › Developer options</string>
-    <string name="g3_body">Turn on USB debugging (some TVs say ADB or Network debugging). If you see Wireless debugging, turn it on too.</string>
+    <string name="g3_body">Turn this on. Some TVs call it ADB or Network debugging:</string>
     <string name="g4_title">Same Wi-Fi</string>
     <string name="g4_body">Keep the TV and this phone on the same Wi-Fi network.</string>
     <string name="guide_ready">Find my TV</string>
@@ -44,16 +41,15 @@
     <string name="scanning_title">Checking the TV</string>
     <string name="scanning">Looking for an open debugging port on %1$s. This takes about 15 seconds.</string>
     <string name="allow_title">Allow on the TV</string>
-    <string name="allow_lead">The TV asks “Allow USB debugging?”</string>
-    <string name="allow_1">Tick “Always allow from this computer”</string>
-    <string name="allow_2">Choose Allow with the remote</string>
+    <string name="allow_lead">A message appears on the TV:</string>
+    <string name="allow_1">Tick</string>
+    <string name="allow_2">Then choose, with the remote</string>
     <string name="waiting">Waiting for the TV…</string>
 
     <string name="pair_title">Pair with the TV</string>
     <string name="pair_lead">Wireless debugging needs a one-time code from the TV.</string>
     <string name="pair_1">On the TV, open</string>
-    <string name="pair_1_path">Developer options › Wireless debugging</string>
-    <string name="pair_2">Choose “Pair device with pairing code”</string>
+    <string name="pair_2">Choose</string>
     <string name="pair_3">Type the six-digit code it shows</string>
     <string name="pair_port_found">Pairing port %1$s</string>
     <string name="pair_port_waiting">Waiting for the pairing dialog on the TV…</string>
@@ -172,4 +168,7 @@
     <string name="clean_still_off">Checked just now: they are still off on the TV.</string>
     <string name="clean_back_on">Back on since the last cleanup</string>
     <string name="cleaned_checked">%1$s of %2$s confirmed off on the TV</string>
+
+    <string name="guide_both">TV menus are shown in Arabic and English</string>
+    <string name="g3_wireless">If you also see this, turn it on too:</string>
 </resources>

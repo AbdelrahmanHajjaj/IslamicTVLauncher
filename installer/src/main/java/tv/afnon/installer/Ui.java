@@ -166,6 +166,27 @@ final class Ui {
         return t;
     }
 
+    /**
+     * Something written on the TV, in both languages, since the TV's language isn't known yet: the phone's
+     * language first, the other under it. Each line keeps its own direction.
+     */
+    static LinearLayout tvText(Context c, int en, int ar) {
+        boolean phoneAr = arabic(c);
+        LinearLayout box = column(c);
+        box.setBackground(round(LAPIS_700, 10, c));
+        box.setPadding(dp(c, 12), dp(c, 8), dp(c, 12), dp(c, 8));
+        int[] order = phoneAr ? new int[] {ar, en} : new int[] {en, ar};
+        for (int i = 0; i < 2; i++) {
+            boolean lineAr = order[i] == ar;
+            TextView t = text(c, c.getString(order[i]), i == 0 ? GOLD_200 : MIST, i == 0 ? 14 : 12.5f,
+                    i == 0 ? medium : regular);
+            t.setTextDirection(lineAr ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
+            t.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+            box.addView(t, wide(c, i == 0 ? 0 : 4));
+        }
+        return box;
+    }
+
     /** A gold disc with a number, for numbered steps. */
     static TextView badge(Context c, String number) {
         TextView t = text(c, number, LAPIS_900, 14, semibold);
