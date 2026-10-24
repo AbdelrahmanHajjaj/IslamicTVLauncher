@@ -32,18 +32,20 @@ jobs:
         with:
           name: afnon-installer
           path: afnon-installer.apk
-      # Run by hand on a branch: a pre-release with the APK, so it can be tried on a phone before merging. Never
-      # "latest", so the README's releases/latest links are untouched.
+      # A pull request from this repo (or a run by hand): a pre-release with its APK, so it can be tried on a phone
+      # before merging. Never "latest", so the README's releases/latest links are untouched.
       - name: Publish preview
-        if: github.event_name == 'workflow_dispatch'
+        if: >-
+          github.event_name == 'workflow_dispatch' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           tag=installer-preview
           gh release view $tag >/dev/null 2>&1 || gh release create $tag --prerelease --target "$GITHUB_SHA" \
-            --title "Afnon Installer preview" --notes "Built from ${GITHUB_REF_NAME} by the Installer workflow; not a release."
+            --title "Afnon Installer preview" --notes "Preview from the Installer workflow; not a release."
           gh release upload $tag afnon-installer.apk --clobber
-          gh release edit $tag --prerelease --notes "Built from ${GITHUB_REF_NAME} @ ${GITHUB_SHA::7} by the Installer workflow; not a release."
+          gh release edit $tag --prerelease --notes "Built from ${GITHUB_HEAD_REF:-$GITHUB_REF_NAME} @ $(git rev-parse --short HEAD) by the Installer workflow; not a release."
 
   # Every screen in Arabic and English on an emulator, pushed to the installer-screenshots branch (not main).
   screenshots:
