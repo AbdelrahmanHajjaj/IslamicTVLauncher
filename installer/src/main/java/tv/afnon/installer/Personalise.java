@@ -42,7 +42,7 @@ final class Personalise {
     private String city, locale;
     private boolean adhan, remind;
     private final List<String> favourites = new ArrayList<>();
-    /** Button key (without KEYCODE_) to package; insertion order is the order shown. */
+    /** The remote's app buttons (key without KEYCODE_ to package), read so the cleanup never offers their apps. */
     private final Map<String, String> keys = new LinkedHashMap<>();
     private final Map<String, byte[]> icons = new HashMap<>();
     private int cleanedCount = -1;
@@ -236,7 +236,7 @@ final class Personalise {
         loadIcons(tiles);
         a.foot(Ui.primary(a, a.getString(R.string.continue_), v -> save(() -> {
             if (!favourites.isEmpty()) tv.set("favourites", String.join(",", favourites));
-        }, this::buttons)));
+        }, this::clean)));
         a.foot(Ui.secondary(a, a.getString(R.string.back), v -> a.go(this::prayer)));
         a.back = () -> a.go(this::prayer);
     }
@@ -307,219 +307,6 @@ final class Personalise {
                 });
             }
         }).start();
-    }
-
-    // Remote buttons: press one, pick its app, press it again to check
-
-    private LinearLayout keyList;
-    private TextView heard, keysProgress;
-    /** Each button's state: init (no app yet), done (set on the TV), checked (pressed and seen opening its app). */
-    private final Map<String, Timeline.State> keyState = new HashMap<>();
-    private final Map<String, String> keyNote = new HashMap<>();
-
-    private void buttons() {
-        a.frame(MainActivity.PERSONAL, Hero.Mode.REMOTE, a.getString(R.string.keys_title), a.getString(R.string.keys_lead));
-        for (Map.Entry<String, String> e : keys.entrySet()) {
-            if (!keyState.containsKey(e.getKey())) {
-                keyState.put(e.getKey(), e.getValue().isEmpty() ? Timeline.State.WAITING : Timeline.State.DONE);
-            }
-        }
-        LinearLayout listening = Ui.row(a);
-        listening.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(Ui.dp(a, 16), Ui.dp(a, 16));
-        sp.setMarginEnd(Ui.dp(a, 10));
-        listening.addView(Timeline.spinner(a), sp);
-        heard = Ui.text(a, a.getString(R.string.keys_listening), Ui.GOLD_200, 14, Ui.medium());
-        listening.addView(heard);
-        a.add(listening, 16);
-        keysProgress = Ui.latin(Ui.chip(a, "", true));
-        LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        kp.gravity = Gravity.CENTER_HORIZONTAL;
-        kp.topMargin = Ui.dp(a, 10);
-        a.content.addView(keysProgress, kp);
-        keyList = Ui.column(a);
-        a.add(keyList, 14);
-        a.add(Timeline.legend(a), 12);
-        a.add(Ui.small(a, a.getString(R.string.keys_hint)), 12);
-        paintKeys(null);
-        int g = a.gen;
-        if (tv != null) new Thread(() -> {
-            try {
-                tv.listen(new Tv.Buttons() {
-                    @Override public void pressed(String key) {
-                        a.post(g, () -> onPressed(g, key));
-                    }
-
-                    @Override public void notApp(String key) {
-                        a.post(g, () -> heard.setText(a.getString(R.string.keys_not_app, Tv.buttonName(key))));
-                    }
-                });
-            } catch (Exception e) {
-                a.post(g, () -> heard.setText(a.getString(R.string.keys_cant_listen)));
-            }
-        }).start();
-        a.foot(Ui.primary(a, a.getString(R.string.continue_), v -> {
-            if (tv != null) tv.stopListening();
-            a.go(this::clean);
-        }));
-        a.foot(Ui.secondary(a, a.getString(R.string.back), v -> {
-            if (tv != null) tv.stopListening();
-            a.go(this::favourites);
-        }));
-        a.back = () -> {
-            if (tv != null) tv.stopListening();
-            a.go(this::favourites);
-        };
-    }
-
-    /** A button was pressed on the real remote: a new one asks for its app, a set one gets checked. */
-    private void onPressed(int g, String key) {
-        heard.setText(a.getString(R.string.keys_heard, Tv.buttonName(key)));
-        String app = keys.get(key);
-        if (app == null || app.isEmpty()) {
-            keys.put(key, "");
-            keyState.put(key, Timeline.State.WAITING);
-            paintKeys(key);
-            chooseApp(key);
-            return;
-        }
-        if (keyState.get(key) == Timeline.State.WORKING) return;
-        keyState.put(key, Timeline.State.WORKING);
-        keyNote.remove(key);
-        paintKeys(key);
-        a.work.execute(() -> {
-            // The TV opens the app as the button goes down; give it a few seconds to come to the front.
-            boolean opened = false;
-            try {
-                for (int i = 0; i < 10 && !opened; i++) {
-                    Thread.sleep(400);
-                    opened = app.equals(tv.foreground());
-                }
-                if (opened) tv.home();
-            } catch (Exception ignored) {
-                // Counted as not seen.
-            }
-            boolean ok = opened;
-            a.post(g, () -> {
-                keyState.put(key, ok ? Timeline.State.CHECKED : Timeline.State.FAILED);
-                if (!ok) keyNote.put(key, a.getString(R.string.keys_not_seen, appName(app)));
-                paintKeys(key);
-            });
-        });
-    }
-
-    private void paintKeys(String flash) {
-        keyList.removeAllViews();
-        int set = 0, checked = 0;
-        for (Map.Entry<String, String> e : keys.entrySet()) {
-            String key = e.getKey();
-            String app = e.getValue();
-            Timeline.State state = keyState.containsKey(key) ? keyState.get(key) : Timeline.State.WAITING;
-            if (!app.isEmpty()) set++;
-            if (state == Timeline.State.CHECKED) checked++;
-            LinearLayout row = Ui.row(a);
-            row.setGravity(Gravity.TOP);
-            boolean lit = key.equals(flash);
-            GradientDrawable bg = Ui.round(lit ? Ui.GOLD_SOFT : Ui.LAPIS_800, 14, a);
-            bg.setStroke(Ui.dp(a, 1), lit ? Ui.GOLD_400 : Ui.LINE_SOFT);
-            Ui.pressable(row, bg, 0x33d8b46a);
-            row.setPadding(Ui.dp(a, 14), Ui.dp(a, 12), Ui.dp(a, 14), Ui.dp(a, 12));
-            LinearLayout.LayoutParams mp = new LinearLayout.LayoutParams(Ui.dp(a, 20), Ui.dp(a, 20));
-            mp.setMarginEnd(Ui.dp(a, 12));
-            mp.topMargin = Ui.dp(a, 2);
-            row.addView(Timeline.mark(a, state), mp);
-            LinearLayout words = Ui.column(a);
-            LinearLayout line = Ui.row(a);
-            line.addView(Ui.latin(Ui.chip(a, Tv.buttonName(key), false)));
-            TextView arrow = Ui.text(a, "→", Ui.MIST, 16, Ui.medium());
-            arrow.setPadding(Ui.dp(a, 8), 0, Ui.dp(a, 8), 0);
-            line.addView(arrow);
-            TextView target = Ui.text(a, app.isEmpty() ? a.getString(R.string.keys_pick) : appName(app),
-                    app.isEmpty() ? Ui.GOLD_200 : Ui.PLASTER, 15, Ui.medium());
-            target.setSingleLine();
-            target.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            line.addView(target, Ui.fill(a));
-            words.addView(line);
-            String note = keyNote.containsKey(key) ? keyNote.get(key) : keyHint(state);
-            TextView n = Ui.small(a, note);
-            n.setTextSize(12);
-            n.setTextColor(state == Timeline.State.FAILED ? Ui.CORAL : state == Timeline.State.CHECKED ? Ui.GOLD_200 : Ui.MIST);
-            words.addView(n, Ui.wide(a, 6));
-            row.addView(words, Ui.fill(a));
-            row.setOnClickListener(v -> chooseApp(key));
-            keyList.addView(row, Ui.wide(a, keyList.getChildCount() == 0 ? 0 : 8));
-        }
-        keysProgress.setText(a.getString(R.string.keys_progress, String.format(Locale.US, "%d", checked),
-                String.format(Locale.US, "%d", set)));
-        keysProgress.setVisibility(set == 0 ? View.GONE : View.VISIBLE);
-    }
-
-    private String keyHint(Timeline.State s) {
-        switch (s) {
-            case WORKING: return a.getString(R.string.keys_checking);
-            case DONE: return a.getString(R.string.keys_press_to_check);
-            case CHECKED: return a.getString(R.string.keys_works);
-            case FAILED: return a.getString(R.string.state_failed);
-            default: return a.getString(R.string.keys_choose_hint);
-        }
-    }
-
-    private void chooseApp(String key) {
-        List<String> pkgs = new ArrayList<>();
-        List<String> names = new ArrayList<>();
-        for (int i = 0; i < apps.length(); i++) {
-            JSONObject app = apps.optJSONObject(i);
-            if (app == null) continue;
-            pkgs.add(app.optString("p"));
-            names.add(ar ? app.optString("ar") : app.optString("en"));
-        }
-        names.add(a.getString(R.string.keys_nothing));
-        new AlertDialog.Builder(a, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle(a.getString(R.string.keys_choose, Tv.buttonName(key)))
-                .setItems(names.toArray(new String[0]), (d, which) -> {
-                    if (which < pkgs.size()) keys.put(key, pkgs.get(which));
-                    else keys.remove(key);
-                    applyKeys(key);
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
-    }
-
-    /** Sends the whole button table to the TV now, so the next press can be checked. */
-    private void applyKeys(String changed) {
-        if (keys.containsKey(changed)) keyState.put(changed, Timeline.State.WORKING);
-        keyNote.remove(changed);
-        paintKeys(changed);
-        StringBuilder b = new StringBuilder();
-        for (Map.Entry<String, String> e : keys.entrySet()) {
-            if (e.getValue().isEmpty()) continue;
-            if (b.length() > 0) b.append(',');
-            b.append(e.getKey()).append('=').append(e.getValue());
-        }
-        int g = a.gen;
-        if (tv == null) {
-            if (keys.containsKey(changed)) keyState.put(changed, Timeline.State.DONE);
-            paintKeys(changed);
-            return;
-        }
-        a.work.execute(() -> {
-            boolean ok;
-            try {
-                ok = tv.set("keys", b.toString());
-            } catch (Exception e) {
-                ok = false;
-            }
-            boolean saved = ok;
-            a.post(g, () -> {
-                if (keys.containsKey(changed)) {
-                    String app = keys.get(changed);
-                    keyState.put(changed, app.isEmpty() ? Timeline.State.WAITING
-                            : saved ? Timeline.State.DONE : Timeline.State.FAILED);
-                }
-                paintKeys(changed);
-            });
-        });
     }
 
     // Cleanup: tick, turn off (done), confirm off (checked)
@@ -790,9 +577,6 @@ final class Personalise {
                 for (String p : favourites) names.add(appName(p));
                 summary.add(a.getString(R.string.sum_favourites, String.join(ar ? "، " : ", ", names)));
             }
-            int mapped = 0;
-            for (String v : keys.values()) if (!v.isEmpty()) mapped++;
-            if (mapped > 0) summary.add(a.getString(R.string.sum_keys, String.format(Locale.US, "%d", mapped)));
         }
         if (cleanedCount > 0) summary.add(a.getString(R.string.sum_cleaned, String.format(Locale.US, "%d", cleanedCount)));
         a.showDone(summary, info == null);
@@ -839,22 +623,9 @@ final class Personalise {
         favourites.add("com.google.android.youtube.tv");
         favourites.add("net.mbc.shahidTV");
         favourites.add("dev.ctv.tv");
-        keys.put("TCL_YOUTUBE", "com.google.android.youtube.tv");
-        keys.put("TCL_NETFLIX", "net.mbc.shahidTV");
-        keys.put("INFO", "dev.ctv.tv");
         switch (screen) {
             case "city": cityPicker(); break;
             case "favourites": favourites(); break;
-            case "keys":
-                keys.put("BUTTON_3", "");
-                keyState.put("TCL_YOUTUBE", Timeline.State.CHECKED);
-                keyState.put("TCL_NETFLIX", Timeline.State.CHECKED);
-                keyState.put("INFO", Timeline.State.DONE);
-                keyState.put("BUTTON_3", Timeline.State.WAITING);
-                buttons();
-                heard.setText(a.getString(R.string.keys_heard, Tv.buttonName("TCL_NETFLIX")));
-                paintKeys("TCL_NETFLIX");
-                break;
             case "cleaning": {
                 List<String> pkgs = java.util.Arrays.asList("tv.samba.ssm.ui", "com.tcl.logkit",
                         "com.google.android.feedback", "com.tcl.messagebox", "com.tcl.partnercustomizer", "com.tcl.exhibit");

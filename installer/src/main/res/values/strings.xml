@@ -117,16 +117,6 @@
     <string name="fav_title">Your four favourites</string>
     <string name="fav_lead">They sit first on the home screen. Tap them in the order you want.</string>
     <string name="fav_count">%1$d of 4</string>
-    <string name="keys_title">Your remote’s buttons</string>
-    <string name="keys_lead">Press an app button on the TV remote, like YouTube or Netflix, then choose what it should open.</string>
-    <string name="keys_listening">Listening for a button…</string>
-    <string name="keys_heard">Heard: %1$s</string>
-    <string name="keys_not_app">%1$s moves around the TV. Press an app button.</string>
-    <string name="keys_cant_listen">Can’t hear the remote from here. You can still change the buttons below.</string>
-    <string name="keys_hint">The TV may open an app as you press. That’s fine.</string>
-    <string name="keys_pick">Choose an app</string>
-    <string name="keys_choose">What should %1$s open?</string>
-    <string name="keys_nothing">Nothing (leave it to the TV)</string>
     <string name="clean_title">Clean up your TV</string>
     <string name="clean_lead">Turn off ads, tracking and apps you don’t use. Nothing is uninstalled, and you can turn it all back on.</string>
     <string name="clean_loading">Checking what’s on the TV…</string>
@@ -149,7 +139,6 @@
     <string name="restoring_title">Turning apps back on</string>
     <string name="sum_city">Prayer times for %1$s</string>
     <string name="sum_favourites">Favourites: %1$s</string>
-    <string name="sum_keys">%1$s remote buttons set</string>
     <string name="sum_cleaned">%1$s apps turned off</string>
 
     <!-- Three states: not set, set, checked on the TV -->
@@ -159,12 +148,6 @@
     <string name="state_was_set">Already in place on the TV</string>
     <string name="state_not_here">Not on this TV</string>
     <string name="state_failed">Set, but the TV doesn’t show it</string>
-    <string name="keys_progress">%1$s of %2$s checked</string>
-    <string name="keys_checking">Watching the TV…</string>
-    <string name="keys_press_to_check">Set. Press it on the remote to check</string>
-    <string name="keys_works">Works: the TV opened it</string>
-    <string name="keys_choose_hint">Choose what it opens</string>
-    <string name="keys_not_seen">Pressed, but %1$s didn’t open. Try again, or pick another app</string>
     <string name="clean_still_off">Checked just now: they are still off on the TV.</string>
     <string name="clean_back_on">Back on since the last cleanup</string>
     <string name="cleaned_checked">%1$s of %2$s confirmed off on the TV</string>

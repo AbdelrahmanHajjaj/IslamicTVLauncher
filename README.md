@@ -118,12 +118,12 @@ on an Android phone (8 or later) on the same Wi-Fi as the TV, open it and follow
 3. **Install.** The latest `afnon.apk` from this repo's releases (skipped when the TV already has it), then the
    steps in [`tools/setup-steps.txt`](tools/setup-steps.txt) at that release's tag, the same file
    `tools/install.sh` runs.
-4. **Make it yours.** The city and prayer settings, the four favourites (with the TV's own app icons), the remote's
-   app buttons (press one on the remote, pick what it opens) and a cleanup: ads, tracking and preloaded apps,
-   turned off (never uninstalled) from [`tools/clean-catalog.tsv`](tools/clean-catalog.tsv), with an undo.
+4. **Make it yours.** The city and prayer settings, the four favourites (with the TV's own app icons) and a
+   cleanup: ads, tracking and preloaded apps, turned off (never uninstalled) from
+   [`tools/clean-catalog.tsv`](tools/clean-catalog.tsv), with an undo.
 
 The installer keeps no copies of what can change: the APK, the setup steps and the cleanup list come from GitHub,
-and the cities, apps and buttons from Afnon on the TV (`SetupProvider`), so a new Afnon release needs no new
+and the cities and apps from Afnon on the TV (`SetupProvider`), so a new Afnon release needs no new
 installer. Source in `installer/` (plain Java, an ADB client library and Conscrypt for TLS).
 
 ### Quick: the APK

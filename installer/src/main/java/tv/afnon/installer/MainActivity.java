@@ -789,13 +789,12 @@ public final class MainActivity extends Activity {
                 if (!installedOk) timeline.set(3, Timeline.State.FAILED);
                 showDone(Arrays.asList(getString(R.string.sum_city, Ui.arabic(this) ? "القاهرة" : "Cairo"),
                         getString(R.string.sum_favourites, "YouTube, Shahid, Claude Code TV, BrowseHere"),
-                        getString(R.string.sum_keys, "3"), getString(R.string.sum_cleaned, "14")), false);
+                        getString(R.string.sum_cleaned, "14")), false);
                 break;
             }
             case "prayer":
             case "city":
             case "favourites":
-            case "keys":
             case "clean":
             case "cleaning":
                 new Personalise(this, null).demo(screen);

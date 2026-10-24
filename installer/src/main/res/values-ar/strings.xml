@@ -115,16 +115,6 @@
     <string name="fav_title">تطبيقاتك المفضلة الأربعة</string>
     <string name="fav_lead">تأتي أولًا في الشاشة الرئيسية. اضغط عليها بالترتيب الذي تريده.</string>
     <string name="fav_count">%1$d من ٤</string>
-    <string name="keys_title">أزرار جهاز التحكم</string>
-    <string name="keys_lead">اضغط زر تطبيق في جهاز تحكم التلفاز، مثل يوتيوب أو نتفليكس، ثم اختر ما يفتحه.</string>
-    <string name="keys_listening">بانتظار ضغطة زر…</string>
-    <string name="keys_heard">سُمع: %1$s</string>
-    <string name="keys_not_app">الزر %1$s للتنقل في التلفاز. اضغط زر تطبيق.</string>
-    <string name="keys_cant_listen">تعذّر سماع جهاز التحكم من هنا. ما زال بإمكانك تغيير الأزرار أدناه.</string>
-    <string name="keys_hint">قد يفتح التلفاز تطبيقًا عند الضغط، ولا بأس بذلك.</string>
-    <string name="keys_pick">اختر تطبيقًا</string>
-    <string name="keys_choose">ماذا يفتح زر %1$s؟</string>
-    <string name="keys_nothing">لا شيء (اتركه للتلفاز)</string>
     <string name="clean_title">نظّف تلفازك</string>
     <string name="clean_lead">أوقف الإعلانات والتتبّع والتطبيقات التي لا تستخدمها. لا يُحذف شيء، ويمكنك إعادة تشغيلها كلها.</string>
     <string name="clean_loading">جارٍ فحص ما على التلفاز…</string>
@@ -147,7 +137,6 @@
     <string name="restoring_title">جارٍ إعادة تشغيل التطبيقات</string>
     <string name="sum_city">مواقيت الصلاة لـ%1$s</string>
     <string name="sum_favourites">المفضلة: %1$s</string>
-    <string name="sum_keys">ضُبط %1$s من أزرار جهاز التحكم</string>
     <string name="sum_cleaned">أُوقف %1$s من التطبيقات</string>
 
     <!-- Three states: not set, set, checked on the TV -->
@@ -157,12 +146,6 @@
     <string name="state_was_set">مضبوط على التلفاز من قبل</string>
     <string name="state_not_here">غير متاح في هذا التلفاز</string>
     <string name="state_failed">ضُبط، لكن التلفاز لا يُظهره</string>
-    <string name="keys_progress">تُحقِّق من %1$s من %2$s</string>
-    <string name="keys_checking">جارٍ مراقبة التلفاز…</string>
-    <string name="keys_press_to_check">مضبوط. اضغطه في جهاز التحكم للتحقّق</string>
-    <string name="keys_works">يعمل: فتحه التلفاز</string>
-    <string name="keys_choose_hint">اختر ما يفتحه</string>
-    <string name="keys_not_seen">ضُغط، لكن %1$s لم يُفتح. أعد المحاولة أو اختر تطبيقًا آخر</string>
     <string name="clean_still_off">تحقّقنا الآن: ما زالت متوقفة على التلفاز.</string>
     <string name="clean_back_on">عاد للعمل بعد آخر تنظيف</string>
     <string name="cleaned_checked">تأكّد إيقاف %1$s من %2$s على التلفاز</string>

@@ -10,9 +10,9 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   debugging's random port and the pairing port, plus a sweep for port 5555, or an address typed by hand with a
   port scan), connects with "Allow debugging?" or a pairing code, downloads the latest release and runs the
   same setup as `tools/install.sh`. Arabic (for Arabic phones) and English. Built by `.github/workflows/installer.yml`.
-  After the install it sets Afnon up: the city, language, adhan and spoken reminder; the four favourites; the
-  remote's app buttons (pressed on the real remote, read with getevent and the TV's key layout); and a cleanup
-  that turns off ads, tracking and preloaded apps, with an undo.
+  After the install it sets Afnon up: the city, language, adhan and spoken reminder; the four favourites; and a
+  cleanup that turns off ads, tracking and preloaded apps, with an undo. TV menu names on the screens that send
+  the user into the TV are shown in Arabic and English, since the TV's language isn't known yet.
 - `SetupProvider`: what the phone installer reads and sets over ADB (cities, regions, apps and their icons, the
   button table, the settings above), guarded by the DUMP permission so only the shell reaches it.
 - Remote buttons are a setting now (pref `keys`, `KEY=package` pairs), defaulting to the old table; a new table
@@ -20,8 +20,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 - `tools/setup-steps.txt`: the setup after `adb install`, in one file that `tools/install.sh` runs and the phone
   installer reads from the release's tag. Each step has a check (`?|` line) that both run before and after it.
 - The installer tracks what can be undone after setup in three states: not set, set, and checked on the TV.
-  Setup steps already in place are left alone; remote buttons are checked by pressing them and seeing the TV open
-  the app; cleaned apps are confirmed off, and ones a firmware update turned back on are offered again.
+  Setup steps already in place are left alone; cleaned apps are confirmed off, and ones a firmware update turned
+  back on are offered again.
 - `tools/clean-catalog.tsv`, from cleanyourtv's per-TV debloat lists (MIT) by `tools/gen-clean-catalog.py`, and
   refreshed weekly by `.github/workflows/clean-catalog.yml`.
 

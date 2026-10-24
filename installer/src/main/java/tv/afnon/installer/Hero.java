@@ -16,7 +16,7 @@ import android.view.animation.LinearInterpolator;
  * inside it. Search sends arch-shaped rings outward; progress fills a ring; done and problem show a mark.
  */
 final class Hero extends View {
-    enum Mode { TV, SEARCH, ALLOW, PAIR, PROGRESS, DONE, PROBLEM, CITY, APPS, REMOTE, CLEAN }
+    enum Mode { TV, SEARCH, ALLOW, PAIR, PROGRESS, DONE, PROBLEM, CITY, APPS, CLEAN }
 
     private Mode mode = Mode.TV;
     /** 0..1, or below 0 for "working, amount unknown". */
@@ -126,7 +126,6 @@ final class Hero extends View {
             case PROBLEM: problem(c, cx, cy); break;
             case CITY: crescent(c, cx, cy); break;
             case APPS: tiles(c, cx, cy); break;
-            case REMOTE: remote(c, cx, cy); break;
             case CLEAN: sparkle(c, cx, cy); break;
         }
     }
@@ -294,28 +293,6 @@ final class Hero extends View {
             r.set(l, top, l + s, top + s);
             p.setColor(i == lit ? Ui.GOLD_400 : Ui.LAPIS_700);
             c.drawRoundRect(r, 20 * k, 20 * k, p);
-        }
-    }
-
-    /** A TV remote with one button pulsing. */
-    private void remote(Canvas c, float cx, float cy) {
-        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        float w = 150 * k, h = 330 * k;
-        r.set(cx - w / 2, cy - h / 2 - 10 * k, cx + w / 2, cy + h / 2 - 10 * k);
-        p.setColor(Ui.LAPIS_700);
-        c.drawRoundRect(r, 60 * k, 60 * k, p);
-        ink.setColor(Ui.PLASTER);
-        ink.setStrokeWidth(8 * k);
-        c.drawCircle(cx, r.top + 90 * k, 46 * k, ink);
-        p.setColor(Ui.PLASTER);
-        c.drawCircle(cx, r.top + 90 * k, 16 * k, p);
-        float pulse = (float) (0.5 + 0.5 * Math.sin(t * Math.PI * 4));
-        for (int i = 0; i < 4; i++) {
-            float bx = cx + (i % 2 == 0 ? -32 : 32) * k, by = r.top + (190 + (i / 2) * 64) * k;
-            boolean lit = i == 1;
-            p.setColor(lit ? Ui.GOLD_400 : 0x80efe7d6);
-            if (lit) p.setAlpha((int) (150 + 105 * pulse));
-            c.drawRoundRect(new RectF(bx - 24 * k, by - 16 * k, bx + 24 * k, by + 16 * k), 10 * k, 10 * k, p);
         }
     }
 
