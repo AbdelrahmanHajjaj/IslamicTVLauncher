@@ -106,6 +106,26 @@ nothing from other sites except the station's stream when you press Play, and ke
 
 ## Install
 
+### Easiest: from your phone
+
+No computer needed. Install [`afnon-installer.apk`](https://github.com/egyjs/afnon-android-tv-launcher/releases/latest/download/afnon-installer.apk)
+on an Android phone (8 or later) on the same Wi-Fi as the TV, open it and follow the screens:
+
+1. **Prepare.** How to turn on Developer options and USB debugging (or Wireless debugging) on the TV.
+2. **Connect.** TVs on the Wi-Fi appear by themselves (mDNS for classic debugging, Wireless debugging's random
+   port and the pairing port, and a sweep for port 5555); or type the address, with or without a port. Then accept
+   "Allow USB debugging?" on the TV, or type the six-digit pairing code it shows.
+3. **Install.** The latest `afnon.apk` from this repo's releases (skipped when the TV already has it), then the
+   steps in [`tools/setup-steps.txt`](tools/setup-steps.txt) at that release's tag, the same file
+   `tools/install.sh` runs.
+4. **Make it yours.** The city and prayer settings, the four favourites (with the TV's own app icons) and a
+   cleanup: ads, tracking and preloaded apps, turned off (never uninstalled) from
+   [`tools/clean-catalog.tsv`](tools/clean-catalog.tsv), with an undo.
+
+The installer keeps no copies of what can change: the APK, the setup steps and the cleanup list come from GitHub,
+and the cities and apps from Afnon on the TV (`SetupProvider`), so a new Afnon release needs no new
+installer. Source in `installer/` (plain Java, an ADB client library and Conscrypt for TLS).
+
 ### Quick: the APK
 
 Download [`afnon.apk`](https://github.com/egyjs/afnon-android-tv-launcher/releases/latest/download/afnon.apk) from the latest release, then:
@@ -221,6 +241,9 @@ app/src/main/java/tv/afnon/home/
   ScreenOffActivity   Screen off while listening (TCL Audio Only, or a black fallback)
   Announce            The spoken reminder and «حان الآن موعد صلاة …»
   PrayerDay, Prefs, Reminders, Adhans, Text, Tokens, Ui …
+installer/            The phone app that installs and sets up Afnon over ADB (Finder, Adb, Tv, Setup, Personalise)
+tools/setup-steps.txt What Afnon needs after install: one list for install.sh and the phone installer
+tools/clean-catalog.tsv  The cleanup list, built weekly from cleanyourtv by tools/gen-clean-catalog.py
 tools/                install, restore, disable/enable, fetch-adhans, fetch-announce, screenshot
 docs/screenshots/     the images above, all from the real TV
 ```

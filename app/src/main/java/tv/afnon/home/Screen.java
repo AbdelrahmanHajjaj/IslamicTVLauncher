@@ -104,10 +104,12 @@ abstract class Screen extends Activity {
      * "en"; "digits" is empty (Eastern in Arabic, Western in English), "eastern" or "western". Set in Afnon
      * Settings, or for testing: `adb shell am start -n tv.afnon.home/.MainActivity --es locale ar|en|system`.
      *
-     * @return whether the intent changed a setting
+     * @return whether a setting changed since the screen was built: by the intent, or while it was away (Afnon
+     *     Settings, or the phone installer through SetupProvider) and Home brought it back through onNewIntent
      */
     boolean loadSettings(Intent i) {
         SharedPreferences p = prefs();
+        String built = builtSettings;
         boolean changed = false;
         if (i != null && i.hasExtra("locale")) {
             p.edit().putString("locale", i.getStringExtra("locale")).apply();
@@ -120,7 +122,7 @@ abstract class Screen extends Activity {
         t = loadText(this);
         rtl = t.ar;
         builtSettings = Prefs.key(this);
-        return changed;
+        return changed || (built != null && !built.equals(builtSettings));
     }
 
     /** The saved language and digits, for screens and for the screensaver, which is not an Activity. */

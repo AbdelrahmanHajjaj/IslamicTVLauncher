@@ -4,6 +4,40 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Added
+- Afnon Installer (`installer/`): an Android phone app that installs Afnon on a TV with no computer. It guides
+  the user through Developer options, finds the TV on the Wi-Fi (mDNS for classic network debugging, Wireless
+  debugging's random port and the pairing port, plus a sweep for port 5555, or an address typed by hand with a
+  port scan), connects with "Allow debugging?" or a pairing code, downloads the latest release and runs the
+  same setup as `tools/install.sh`. Arabic (for Arabic phones) and English. Built by `.github/workflows/installer.yml`.
+  After the install it sets Afnon up: the city, language, adhan and spoken reminder; the four favourites; and a
+  cleanup that turns off ads, tracking and preloaded apps, with an undo. TV menu names on the screens that send
+  the user into the TV are shown in Arabic and English, since the TV's language isn't known yet.
+- `SetupProvider`: what the phone installer reads and sets over ADB (cities, regions, apps and their icons, the
+  button table, the settings above), guarded by the DUMP permission so only the shell reaches it.
+- Remote buttons are a setting now (pref `keys`, `KEY=package` pairs), defaulting to the old table; a new table
+  applies at once, through TCL's remapping as before.
+- `tools/setup-steps.txt`: the setup after `adb install`, in one file that `tools/install.sh` runs and the phone
+  installer reads from the release's tag. Each step has a check (`?|` line) that both run before and after it.
+- The installer tracks what can be undone after setup in three states: not set, set, and checked on the TV.
+  Setup steps already in place are left alone; cleaned apps are confirmed off, and ones a firmware update turned
+  back on are offered again.
+- `tools/clean-catalog.tsv`, from cleanyourtv's per-TV debloat lists (MIT) by `tools/gen-clean-catalog.py`, and
+  refreshed weekly by `.github/workflows/clean-catalog.yml`.
+
+### Changed
+- `tools/install.sh` and the release steps build `:app` only, now that the repo has a second module.
+
+### Fixed
+- Installer: no longer hangs on "Installing Afnon". libadb 3.1.1 loses the TV's close of a stream that still
+  has data queued, so a quick command (the first one, `getprop`) waited for ever; the installer now notices
+  the close itself.
+- Installer: Continue on prayer times took about 10 s with nothing on screen. Its settings now go to the TV in
+  one ADB shell instead of one each, and the button says it is saving and takes no second tap.
+- Home rebuilds when the language, city or another setting changed while it was away and the Home key brings it
+  back. It used to reload the words but keep the old layout: half English, half Arabic, after the phone
+  installer or Afnon Settings changed the language.
+
 ## [0.5] - 2026-10-22
 
 ### Added

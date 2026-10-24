@@ -1,0 +1,22 @@
+# What Afnon needs from the TV after `adb install`. The one source for both tools/install.sh and the phone
+# installer, which reads this file from the release's tag, so a new step here reaches every installer without
+# updating it. Keep commands one line, safe to run again, and harmless on brands without the setting.
+#
+#   required|English label|Arabic label|command
+#   ?|check
+#
+# The check (optional, on the line after its step) exits 0 when the step is in place on the TV. Both tools run
+# it first and skip a step that already passes, and run it again after the command: these are the settings a
+# firmware update, a reboot or the TV's own housekeeping can undo, so "set" is not the same as "checked".
+1|Afnon is the home screen|أفنون هو الشاشة الرئيسية|cmd package set-home-activity tv.afnon.home/.MainActivity
+?|cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME | tail -n 1 | grep -q '^tv.afnon.home/'
+1|Remote buttons and the call to prayer|أزرار جهاز التحكم والأذان|s=$(settings get secure enabled_accessibility_services); case "$s" in *tv.afnon.home/.RemoteKeys*) ;; ''|null) s=tv.afnon.home/.RemoteKeys ;; *) s="$s:tv.afnon.home/.RemoteKeys" ;; esac; settings put secure enabled_accessibility_services "$s" && settings put secure accessibility_enabled 1
+?|settings get secure enabled_accessibility_services | grep -q 'tv.afnon.home/.RemoteKeys' && [ "$(settings get secure accessibility_enabled)" = 1 ]
+0|Afnon screensaver|شاشة توقّف أفنون|settings put secure screensaver_components tv.afnon.home/.AfnonDream
+?|settings get secure screensaver_components | grep -q 'tv.afnon.home/.AfnonDream'
+0|Starts by itself after a restart|يعمل وحده بعد إعادة التشغيل|appops set tv.afnon.home APP_AUTO_START allow 2>/dev/null; appops set tv.afnon.home APP_ASSOC_START allow 2>/dev/null; true
+?|o=$(appops get tv.afnon.home APP_AUTO_START 2>&1); case "$o" in *allow*) true ;; *) false ;; esac
+0|Quran Radio level bars and sleep timer|مؤشّر صوت إذاعة القرآن ومؤقّت النوم|pm grant tv.afnon.home android.permission.RECORD_AUDIO && pm grant tv.afnon.home android.permission.WRITE_SECURE_SETTINGS
+?|d=$(dumpsys package tv.afnon.home); echo "$d" | grep -q 'RECORD_AUDIO: granted=true' && echo "$d" | grep -q 'WRITE_SECURE_SETTINGS: granted=true'
+0|Wi-Fi name in Settings|اسم الواي فاي في الإعدادات|pm grant tv.afnon.home android.permission.ACCESS_FINE_LOCATION
+?|dumpsys package tv.afnon.home | grep -q 'ACCESS_FINE_LOCATION: granted=true'
