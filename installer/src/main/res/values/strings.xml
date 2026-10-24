@@ -3,51 +3,75 @@
      (Arabic is not the unqualified default: Android would then pick values-en for an Arabic phone with English
      as a second language, since an exact match on a later language beats the default.) -->
 <resources>
+    <string name="lang" translatable="false">en</string>
     <string name="app_name">Afnon Installer</string>
 
-    <string name="guide_title">Install Afnon on your TV</string>
-    <string name="guide_body">This puts Afnon on your Android TV from your phone, no computer needed. First, let the TV accept installs over Wi-Fi:\n\n1. On the TV, open Settings → System → About.\n2. Go down to “Android TV OS build” (or “Build”) and press OK on it 7 times, until it says you are now a developer.\n3. Go back to Settings → System → Developer options.\n4. Turn on “USB debugging”. Some TVs call it “ADB debugging” or “Network debugging”.\n5. If you also see “Wireless debugging” (Android 11 and later), turn it on too.\n6. Keep the TV and this phone on the same Wi-Fi.</string>
-    <string name="find_button">Find my TV</string>
+    <string name="stage_prepare">Prepare</string>
+    <string name="stage_connect">Connect</string>
+    <string name="stage_install">Install</string>
+
+    <string name="guide_title">Afnon on your TV</string>
+    <string name="guide_lead">Install Afnon from this phone in a few minutes, no computer needed. First, four steps on the TV with its remote.</string>
+    <string name="g1_title">Open About</string>
+    <string name="g1_path">Settings › System › About</string>
+    <string name="g2_title">Become a developer</string>
+    <string name="g2_path">Android TV OS build</string>
+    <string name="g2_body">Press OK on it 7 times, until the TV says you are now a developer.</string>
+    <string name="g3_title">Turn on debugging</string>
+    <string name="g3_path">Settings › System › Developer options</string>
+    <string name="g3_body">Turn on USB debugging (some TVs say ADB or Network debugging). If you see Wireless debugging, turn it on too.</string>
+    <string name="g4_title">Same Wi-Fi</string>
+    <string name="g4_body">Keep the TV and this phone on the same Wi-Fi network.</string>
+    <string name="guide_ready">Find my TV</string>
 
     <string name="find_title">Looking for your TV</string>
-    <string name="finding">Searching this Wi-Fi. Tap your TV when it appears.</string>
-    <string name="not_wifi">This phone isn’t on Wi-Fi. Join the same Wi-Fi as the TV, then try again.</string>
-    <string name="tv_tls">Wireless debugging · port %1$d</string>
-    <string name="tv_classic">Network debugging · port %1$d</string>
-    <string name="tv_pairing">Ready to pair · port %1$d</string>
+    <string name="find_lead">Searching your Wi-Fi. Tap your TV when it appears.</string>
+    <string name="tv_found">Android TV</string>
+    <string name="badge_wireless">Wireless debugging</string>
+    <string name="badge_network">Network debugging</string>
+    <string name="badge_pair">Ready to pair</string>
+    <string name="help_title">Not seeing your TV?</string>
+    <string name="help_body">• Check that debugging is on (step 3).\n• Make sure both are on the same Wi-Fi.\n• Some routers hide devices from each other: type the TV’s address instead.</string>
     <string name="manual_button">Type the TV’s address</string>
     <string name="manual_title">The TV’s address</string>
-    <string name="manual_body">On the TV: Settings → Network &amp; Internet → your Wi-Fi shows its IP address. Wireless debugging also shows “IP address &amp; Port”: type both, like 192.168.1.50:41234. With only the IP address, every port is checked.</string>
+    <string name="manual_body">Find it on the TV in Settings › Network &amp; Internet › your Wi-Fi. Wireless debugging also shows “IP address &amp; Port”: type both, like 192.168.1.50:41234. With only the address, every port is checked.</string>
     <string name="manual_hint">192.168.1.50 or 192.168.1.50:41234</string>
     <string name="connect">Connect</string>
+    <string name="not_wifi_title">Join the TV’s Wi-Fi</string>
+    <string name="not_wifi">This phone isn’t on Wi-Fi. Connect to the same network as the TV, then try again.</string>
 
     <string name="connecting_title">Connecting</string>
-    <string name="connecting">Connecting to %1$s…</string>
-    <string name="scanning">Checking every port on %1$s. This takes about 15 seconds.</string>
-    <string name="scan_none">No debugging port is open on %1$s. Check that USB debugging or Wireless debugging is on.</string>
-    <string name="accept_on_tv">Look at the TV: “Allow USB debugging?” appears. Tick “Always allow from this computer”, then choose Allow.</string>
-    <string name="not_accepted">The TV didn’t allow this phone. Try again and choose Allow on the TV.</string>
+    <string name="connecting">Reaching %1$s…</string>
+    <string name="scanning_title">Checking the TV</string>
+    <string name="scanning">Looking for an open debugging port on %1$s. This takes about 15 seconds.</string>
+    <string name="allow_title">Allow on the TV</string>
+    <string name="allow_lead">The TV asks “Allow USB debugging?”</string>
+    <string name="allow_1">Tick “Always allow from this computer”</string>
+    <string name="allow_2">Choose Allow with the remote</string>
+    <string name="waiting">Waiting for the TV…</string>
 
     <string name="pair_title">Pair with the TV</string>
-    <string name="pair_body">On the TV: Settings → System → Developer options → Wireless debugging → “Pair device with pairing code”. Type the six-digit code it shows. The pairing port fills in by itself; if it doesn’t, type the port after the colon under “IP address &amp; Port” in that same dialog.</string>
-    <string name="pair_code_hint">Six-digit code</string>
-    <string name="pair_port_hint">Pairing port</string>
-    <string name="pair_port_found">Pairing port found.</string>
-    <string name="pair_missing">Type the six-digit code and the pairing port.</string>
+    <string name="pair_lead">Wireless debugging needs a one-time code from the TV.</string>
+    <string name="pair_1">On the TV, open</string>
+    <string name="pair_1_path">Developer options › Wireless debugging</string>
+    <string name="pair_2">Choose “Pair device with pairing code”</string>
+    <string name="pair_3">Type the six-digit code it shows</string>
+    <string name="pair_port_found">Pairing port %1$s</string>
+    <string name="pair_port_waiting">Waiting for the pairing dialog on the TV…</string>
+    <string name="pair_port_hint">Pairing port (after the colon on the TV)</string>
     <string name="pair_button">Pair</string>
     <string name="pairing">Pairing…</string>
-    <string name="pair_failed">Pairing didn’t work (%1$s). Open the pairing dialog again on the TV and type the new code.</string>
 
     <string name="install_title">Installing Afnon</string>
-    <string name="checking_tv">Checking the TV…</string>
-    <string name="downloading">Downloading Afnon %1$s from GitHub…</string>
-    <string name="sending">Sending it to the TV…</string>
-    <string name="install_failed">The TV refused the install: %1$s</string>
-    <string name="error_install">Something went wrong: %1$s</string>
-    <string name="tv_too_old">Afnon needs Android 8 or later on the TV.</string>
+    <string name="install_title_version">Installing Afnon %1$s</string>
+    <string name="install_lead">Keep this screen open. It takes a minute or two.</string>
+    <string name="t_download">Download from GitHub</string>
+    <string name="t_send">Send to the TV</string>
+    <string name="mb_of">%1$s of %2$s MB</string>
     <string name="old_signature_title">Another copy of Afnon is on the TV</string>
     <string name="old_signature_body">It was signed with a different key, so it can’t be updated in place. Removing it also removes its settings (city, favourites, adhan choices). Remove it and install the latest?</string>
     <string name="remove_and_install">Remove and install</string>
+    <string name="cancel">Cancel</string>
 
     <string name="step_home">Afnon is the home screen</string>
     <string name="step_buttons">Remote buttons and the call to prayer</string>
@@ -55,17 +79,28 @@
     <string name="step_autostart">Starts by itself after a restart</string>
     <string name="step_radio">Quran Radio level bars and sleep timer</string>
     <string name="step_wifi">Wi-Fi name in Settings</string>
-    <string name="step_open">Opening Afnon on the TV</string>
+    <string name="step_open">Open Afnon on the TV</string>
 
     <string name="done_title">Afnon is on your TV</string>
-    <string name="done_partly_title">Afnon is installed, with a problem</string>
-    <string name="done_body">Afnon %1$s is installed and set up. You can turn USB debugging and Wireless debugging off on the TV now. To update later, turn debugging back on and run this app again.</string>
-    <string name="done_body_plain">Afnon is installed and set up. You can turn USB debugging and Wireless debugging off on the TV now. To update later, turn debugging back on and run this app again.</string>
-    <string name="again">Back to the start</string>
+    <string name="done_lead">Afnon %1$s is installed and set up. Pick up the remote.</string>
+    <string name="done_lead_plain">Afnon is installed and set up. Pick up the remote.</string>
+    <string name="done_partly_title">Installed, with a problem</string>
+    <string name="done_partly_lead">Afnon is on the TV, but a step marked in red didn’t finish. Run the installer again to retry it.</string>
+    <string name="tip_title">One more thing</string>
+    <string name="tip_body">You can turn off USB debugging and Wireless debugging on the TV now. To update Afnon later, turn debugging back on and open this app again.</string>
+    <string name="finish">Done</string>
+    <string name="another">Install on another TV</string>
 
     <string name="problem_title">That didn’t work</string>
-    <string name="error_connect">Couldn’t connect to the TV (%1$s). Check that it’s on, on the same Wi-Fi, and that debugging is on.</string>
+    <string name="error_connect">Couldn’t reach the TV (%1$s).</string>
+    <string name="not_accepted">The TV didn’t allow this phone. Try again and choose Allow on the TV.</string>
+    <string name="scan_none">No debugging port is open on %1$s.</string>
+    <string name="pair_failed">Pairing didn’t work (%1$s). Open the pairing dialog on the TV again; it shows a new code each time.</string>
+    <string name="install_failed">The TV refused the install: %1$s</string>
+    <string name="error_install">Something went wrong: %1$s</string>
+    <string name="tv_too_old">Afnon needs Android 8 or later on the TV.</string>
+    <string name="check_title">Things to check</string>
+    <string name="check_body">• The TV is on and awake.\n• Debugging is on in Developer options.\n• The TV and this phone are on the same Wi-Fi.</string>
     <string name="try_again">Try again</string>
     <string name="back">Back</string>
-    <string name="cancel">Cancel</string>
 </resources>

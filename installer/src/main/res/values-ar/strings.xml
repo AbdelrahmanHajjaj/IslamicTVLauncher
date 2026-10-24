@@ -1,51 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Arabic, for phones set to Arabic. English, the fallback, is in values/strings.xml; keep the two in step. -->
 <resources>
+    <string name="lang" translatable="false">ar</string>
     <string name="app_name">مثبّت أفنون</string>
 
-    <string name="guide_title">ثبّت أفنون على تلفازك</string>
-    <string name="guide_body">يثبّت هذا التطبيق أفنون على تلفاز أندرويد من هاتفك، دون حاسوب. أولًا اسمح للتلفاز بالتثبيت عبر الواي فاي:\n\n١. على التلفاز افتح الإعدادات ← النظام ← حول.\n٢. انزل إلى «إصدار نظام Android TV» (أو «رقم الإصدار») واضغط عليه OK سبع مرات حتى تظهر رسالة أنك أصبحت مطوّرًا.\n٣. ارجع إلى الإعدادات ← النظام ← خيارات المطوّرين.\n٤. فعّل «تصحيح أخطاء USB». تسمّيه بعض الأجهزة «تصحيح ADB» أو «تصحيح الأخطاء عبر الشبكة».\n٥. إن وجدت أيضًا «تصحيح الأخطاء اللاسلكي» (أندرويد ١١ فما بعده) ففعّله كذلك.\n٦. اجعل التلفاز وهذا الهاتف على شبكة الواي فاي نفسها.</string>
-    <string name="find_button">ابحث عن تلفازي</string>
+    <string name="stage_prepare">التجهيز</string>
+    <string name="stage_connect">الاتصال</string>
+    <string name="stage_install">التثبيت</string>
+
+    <string name="guide_title">أفنون على تلفازك</string>
+    <string name="guide_lead">ثبّت أفنون من هذا الهاتف في دقائق، دون حاسوب. أولًا أربع خطوات على التلفاز بجهاز التحكم.</string>
+    <string name="g1_title">افتح «حول»</string>
+    <string name="g1_path">الإعدادات ‹ النظام ‹ حول</string>
+    <string name="g2_title">فعّل وضع المطوّر</string>
+    <string name="g2_path">إصدار نظام Android TV</string>
+    <string name="g2_body">اضغط عليه OK سبع مرات حتى تظهر رسالة أنك أصبحت مطوّرًا.</string>
+    <string name="g3_title">فعّل التصحيح</string>
+    <string name="g3_path">الإعدادات ‹ النظام ‹ خيارات المطوّرين</string>
+    <string name="g3_body">فعّل «تصحيح أخطاء USB» (تسمّيه بعض الأجهزة «تصحيح ADB» أو «التصحيح عبر الشبكة»). وإن وجدت «تصحيح الأخطاء اللاسلكي» ففعّله كذلك.</string>
+    <string name="g4_title">الشبكة نفسها</string>
+    <string name="g4_body">اجعل التلفاز وهذا الهاتف على شبكة الواي فاي نفسها.</string>
+    <string name="guide_ready">ابحث عن تلفازي</string>
 
     <string name="find_title">البحث عن تلفازك</string>
-    <string name="finding">جارٍ البحث في هذه الشبكة. اضغط على تلفازك حين يظهر.</string>
-    <string name="not_wifi">هذا الهاتف غير متصل بالواي فاي. اتصل بشبكة التلفاز نفسها ثم أعد المحاولة.</string>
-    <string name="tv_tls">تصحيح الأخطاء اللاسلكي · المنفذ %1$d</string>
-    <string name="tv_classic">تصحيح الأخطاء عبر الشبكة · المنفذ %1$d</string>
-    <string name="tv_pairing">جاهز للإقران · المنفذ %1$d</string>
+    <string name="find_lead">جارٍ البحث في شبكتك. اضغط على تلفازك حين يظهر.</string>
+    <string name="tv_found">تلفاز أندرويد</string>
+    <string name="badge_wireless">تصحيح لاسلكي</string>
+    <string name="badge_network">تصحيح عبر الشبكة</string>
+    <string name="badge_pair">جاهز للإقران</string>
+    <string name="help_title">لا يظهر تلفازك؟</string>
+    <string name="help_body">• تأكّد أن التصحيح مفعّل (الخطوة ٣).\n• تأكّد أن الجهازين على شبكة الواي فاي نفسها.\n• بعض أجهزة الراوتر تُخفي الأجهزة عن بعضها: اكتب عنوان التلفاز بدلًا من ذلك.</string>
     <string name="manual_button">اكتب عنوان التلفاز</string>
     <string name="manual_title">عنوان التلفاز</string>
-    <string name="manual_body">على التلفاز: الإعدادات ← الشبكة والإنترنت ← شبكتك، وفيها عنوان IP. ويعرض «تصحيح الأخطاء اللاسلكي» أيضًا «عنوان IP والمنفذ»: اكتبهما معًا مثل 192.168.1.50:41234. وإن كتبت عنوان IP وحده فُحصت كل المنافذ.</string>
+    <string name="manual_body">تجده على التلفاز في الإعدادات ‹ الشبكة والإنترنت ‹ شبكتك. ويعرض «تصحيح الأخطاء اللاسلكي» أيضًا «عنوان IP والمنفذ»: اكتبهما معًا مثل 192.168.1.50:41234. وإن كتبت العنوان وحده فُحصت كل المنافذ.</string>
     <string name="manual_hint">192.168.1.50 أو 192.168.1.50:41234</string>
     <string name="connect">اتصال</string>
+    <string name="not_wifi_title">اتصل بشبكة التلفاز</string>
+    <string name="not_wifi">هذا الهاتف غير متصل بالواي فاي. اتصل بشبكة التلفاز نفسها ثم أعد المحاولة.</string>
 
     <string name="connecting_title">جارٍ الاتصال</string>
-    <string name="connecting">جارٍ الاتصال بـ %1$s…</string>
-    <string name="scanning">جارٍ فحص كل المنافذ على %1$s. يستغرق ذلك نحو ١٥ ثانية.</string>
-    <string name="scan_none">لا يوجد منفذ تصحيح مفتوح على %1$s. تأكّد من تفعيل «تصحيح أخطاء USB» أو «تصحيح الأخطاء اللاسلكي».</string>
-    <string name="accept_on_tv">انظر إلى التلفاز: تظهر رسالة «السماح بتصحيح أخطاء USB؟». ضع علامة على «السماح دائمًا من هذا الكمبيوتر» ثم اختر «سماح».</string>
-    <string name="not_accepted">لم يسمح التلفاز لهذا الهاتف. أعد المحاولة واختر «سماح» على التلفاز.</string>
+    <string name="connecting">جارٍ الوصول إلى %1$s…</string>
+    <string name="scanning_title">فحص التلفاز</string>
+    <string name="scanning">جارٍ البحث عن منفذ تصحيح مفتوح على %1$s. يستغرق ذلك نحو ١٥ ثانية.</string>
+    <string name="allow_title">اسمح على التلفاز</string>
+    <string name="allow_lead">يسألك التلفاز «السماح بتصحيح أخطاء USB؟»</string>
+    <string name="allow_1">ضع علامة على «السماح دائمًا من هذا الكمبيوتر»</string>
+    <string name="allow_2">اختر «سماح» بجهاز التحكم</string>
+    <string name="waiting">بانتظار التلفاز…</string>
 
     <string name="pair_title">الإقران بالتلفاز</string>
-    <string name="pair_body">على التلفاز: الإعدادات ← النظام ← خيارات المطوّرين ← تصحيح الأخطاء اللاسلكي ← «إقران الجهاز باستخدام رمز إقران». اكتب الرمز المكوّن من ستة أرقام الظاهر هناك. يُملأ منفذ الإقران تلقائيًا، وإن لم يُملأ فاكتب الرقم الذي بعد النقطتين تحت «عنوان IP والمنفذ» في النافذة نفسها.</string>
-    <string name="pair_code_hint">الرمز من ستة أرقام</string>
-    <string name="pair_port_hint">منفذ الإقران</string>
-    <string name="pair_port_found">تم العثور على منفذ الإقران.</string>
-    <string name="pair_missing">اكتب الرمز المكوّن من ستة أرقام ومنفذ الإقران.</string>
+    <string name="pair_lead">يحتاج التصحيح اللاسلكي إلى رمز من التلفاز مرة واحدة.</string>
+    <string name="pair_1">على التلفاز افتح</string>
+    <string name="pair_1_path">خيارات المطوّرين ‹ تصحيح الأخطاء اللاسلكي</string>
+    <string name="pair_2">اختر «إقران الجهاز باستخدام رمز إقران»</string>
+    <string name="pair_3">اكتب الرمز المكوّن من ستة أرقام</string>
+    <string name="pair_port_found">منفذ الإقران %1$s</string>
+    <string name="pair_port_waiting">بانتظار نافذة الإقران على التلفاز…</string>
+    <string name="pair_port_hint">منفذ الإقران (الرقم بعد النقطتين على التلفاز)</string>
     <string name="pair_button">إقران</string>
     <string name="pairing">جارٍ الإقران…</string>
-    <string name="pair_failed">لم ينجح الإقران (%1$s). افتح نافذة الإقران على التلفاز من جديد واكتب الرمز الجديد.</string>
 
     <string name="install_title">تثبيت أفنون</string>
-    <string name="checking_tv">جارٍ فحص التلفاز…</string>
-    <string name="downloading">جارٍ تنزيل أفنون %1$s من GitHub…</string>
-    <string name="sending">جارٍ إرساله إلى التلفاز…</string>
-    <string name="install_failed">رفض التلفاز التثبيت: %1$s</string>
-    <string name="error_install">حدث خطأ: %1$s</string>
-    <string name="tv_too_old">يحتاج أفنون إلى أندرويد ٨ فما بعده على التلفاز.</string>
+    <string name="install_title_version">تثبيت أفنون %1$s</string>
+    <string name="install_lead">أبقِ هذه الشاشة مفتوحة. يستغرق ذلك دقيقة أو اثنتين.</string>
+    <string name="t_download">التنزيل من GitHub</string>
+    <string name="t_send">الإرسال إلى التلفاز</string>
+    <string name="mb_of">%1$s من %2$s ميغابايت</string>
     <string name="old_signature_title">على التلفاز نسخة أخرى من أفنون</string>
     <string name="old_signature_body">وُقّعت بمفتاح مختلف فلا يمكن تحديثها مباشرة. حذفها يحذف إعداداتها أيضًا (المدينة والمفضلة واختيارات الأذان). أتحذفها وتثبّت أحدث إصدار؟</string>
     <string name="remove_and_install">احذف وثبّت</string>
+    <string name="cancel">إلغاء</string>
 
     <string name="step_home">أفنون هو الشاشة الرئيسية</string>
     <string name="step_buttons">أزرار جهاز التحكم والأذان</string>
@@ -56,14 +80,25 @@
     <string name="step_open">فتح أفنون على التلفاز</string>
 
     <string name="done_title">أفنون على تلفازك</string>
-    <string name="done_partly_title">ثُبّت أفنون مع مشكلة</string>
-    <string name="done_body">ثُبّت أفنون %1$s وأُعدّ. يمكنك الآن إيقاف «تصحيح أخطاء USB» و«تصحيح الأخطاء اللاسلكي» على التلفاز. وللتحديث لاحقًا فعّل التصحيح من جديد وشغّل هذا التطبيق مرة أخرى.</string>
-    <string name="done_body_plain">ثُبّت أفنون وأُعدّ. يمكنك الآن إيقاف «تصحيح أخطاء USB» و«تصحيح الأخطاء اللاسلكي» على التلفاز. وللتحديث لاحقًا فعّل التصحيح من جديد وشغّل هذا التطبيق مرة أخرى.</string>
-    <string name="again">العودة إلى البداية</string>
+    <string name="done_lead">ثُبّت أفنون %1$s وأُعدّ. أمسك جهاز التحكم.</string>
+    <string name="done_lead_plain">ثُبّت أفنون وأُعدّ. أمسك جهاز التحكم.</string>
+    <string name="done_partly_title">ثُبّت مع مشكلة</string>
+    <string name="done_partly_lead">أفنون على التلفاز، لكن خطوة باللون الأحمر لم تكتمل. شغّل المثبّت مرة أخرى لإعادتها.</string>
+    <string name="tip_title">أمر أخير</string>
+    <string name="tip_body">يمكنك الآن إيقاف «تصحيح أخطاء USB» و«تصحيح الأخطاء اللاسلكي» على التلفاز. وللتحديث لاحقًا فعّل التصحيح من جديد وافتح هذا التطبيق.</string>
+    <string name="finish">تم</string>
+    <string name="another">التثبيت على تلفاز آخر</string>
 
     <string name="problem_title">لم ينجح ذلك</string>
-    <string name="error_connect">تعذّر الاتصال بالتلفاز (%1$s). تأكّد أنه يعمل وعلى شبكة الواي فاي نفسها وأن التصحيح مفعّل.</string>
+    <string name="error_connect">تعذّر الوصول إلى التلفاز (%1$s).</string>
+    <string name="not_accepted">لم يسمح التلفاز لهذا الهاتف. أعد المحاولة واختر «سماح» على التلفاز.</string>
+    <string name="scan_none">لا يوجد منفذ تصحيح مفتوح على %1$s.</string>
+    <string name="pair_failed">لم ينجح الإقران (%1$s). افتح نافذة الإقران على التلفاز من جديد؛ فهي تعرض رمزًا جديدًا كل مرة.</string>
+    <string name="install_failed">رفض التلفاز التثبيت: %1$s</string>
+    <string name="error_install">حدث خطأ: %1$s</string>
+    <string name="tv_too_old">يحتاج أفنون إلى أندرويد ٨ فما بعده على التلفاز.</string>
+    <string name="check_title">تحقّق من</string>
+    <string name="check_body">• التلفاز يعمل وغير نائم.\n• التصحيح مفعّل في خيارات المطوّرين.\n• التلفاز وهذا الهاتف على شبكة الواي فاي نفسها.</string>
     <string name="try_again">أعد المحاولة</string>
     <string name="back">رجوع</string>
-    <string name="cancel">إلغاء</string>
 </resources>
