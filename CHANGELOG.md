@@ -28,6 +28,11 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 ### Changed
 - `tools/install.sh` and the release steps build `:app` only, now that the repo has a second module.
 
+### Fixed
+- Installer: no longer hangs on "Installing Afnon". libadb 3.1.1 loses the TV's close of a stream that still
+  has data queued, so a quick command (the first one, `getprop`) waited for ever; the installer now notices
+  the close itself.
+
 ## [0.5] - 2026-10-22
 
 ### Added

@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.KeyFactory;
@@ -136,12 +137,38 @@ final class Adb extends AbsAdbConnectionManager {
         byte[] buf = new byte[8192];
         try (InputStream in = stream.openInputStream()) {
             int n;
-            while ((n = in.read(buf)) >= 0) all.write(buf, 0, n);
+            // Once the peer has closed, nothing more arrives: stop when what came is read (see peerClosed).
+            while (!(peerClosed(stream) && in.available() == 0) && (n = in.read(buf)) >= 0) all.write(buf, 0, n);
         } catch (IOException closed) {
             // The library reports a peer-closed stream as "Stream closed." rather than -1; what came before stands.
         } finally {
             if (!stream.isClosed()) stream.close();
         }
         return all.toByteArray();
+    }
+
+    private static final Field PENDING_CLOSE = pendingCloseField();
+
+    private static Field pendingCloseField() {
+        try {
+            Field f = AdbStream.class.getDeclaredField("mPendingClose");
+            f.setAccessible(true);
+            return f;
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Whether the TV has closed the stream. libadb 3.1.1 only marks that "pending" when data is still queued, and
+     * its read() then waits for a close that never comes once the queue is empty: a quick command (getprop) whose
+     * output and close arrive together hung the installer for good. So the reader checks the mark itself.
+     */
+    private static boolean peerClosed(AdbStream stream) {
+        try {
+            return PENDING_CLOSE != null && PENDING_CLOSE.getBoolean(stream);
+        } catch (IllegalAccessException e) {
+            return false;
+        }
     }
 }
