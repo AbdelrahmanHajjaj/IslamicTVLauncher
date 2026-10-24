@@ -64,9 +64,17 @@ final class Tv {
         }
     }
 
-    boolean set(String name, String value) throws IOException, InterruptedException {
-        return adb.shell("content insert --uri " + SETUP + "settings --bind name:s:" + name
-                + " --bind value:s:" + quote(value)).ok();
+    /**
+     * Sets settings given as name, value, name, value…, in one shell: each ADB shell costs about a second on a TCL,
+     * while the inserts themselves are quick. True if the last one took.
+     */
+    boolean set(String... nameValue) throws IOException, InterruptedException {
+        List<String> inserts = new ArrayList<>();
+        for (int i = 0; i + 1 < nameValue.length; i += 2) {
+            inserts.add("content insert --uri " + SETUP + "settings --bind name:s:" + nameValue[i]
+                    + " --bind value:s:" + quote(nameValue[i + 1]));
+        }
+        return adb.shell(String.join("; ", inserts)).ok();
     }
 
     /** An app's icon as PNG bytes, or null. */

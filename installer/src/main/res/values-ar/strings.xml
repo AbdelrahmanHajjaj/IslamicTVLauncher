@@ -118,6 +118,7 @@
     <string name="clean_title">نظّف تلفازك</string>
     <string name="clean_lead">أوقف الإعلانات والتتبّع والتطبيقات التي لا تستخدمها. لا يُحذف شيء، ويمكنك إعادة تشغيلها كلها.</string>
     <string name="clean_loading">جارٍ فحص ما على التلفاز…</string>
+    <string name="saving">جارٍ الحفظ على التلفاز…</string>
     <string name="clean_none">لا شيء للتنظيف: التلفاز نظيف بالفعل.</string>
     <string name="clean_offline">تعذّر تنزيل قائمة التنظيف. تحقّق من إنترنت الهاتف وحاول لاحقًا.</string>
     <string name="clean_button">أوقف %1$s</string>

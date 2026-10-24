@@ -120,6 +120,7 @@
     <string name="clean_title">Clean up your TV</string>
     <string name="clean_lead">Turn off ads, tracking and apps you don’t use. Nothing is uninstalled, and you can turn it all back on.</string>
     <string name="clean_loading">Checking what’s on the TV…</string>
+    <string name="saving">Saving on the TV…</string>
     <string name="clean_none">Nothing to clean: this TV is already tidy.</string>
     <string name="clean_offline">The cleanup list couldn’t be downloaded. Check the phone’s internet and try again later.</string>
     <string name="clean_button">Turn off %1$s</string>

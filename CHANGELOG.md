@@ -32,6 +32,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 - Installer: no longer hangs on "Installing Afnon". libadb 3.1.1 loses the TV's close of a stream that still
   has data queued, so a quick command (the first one, `getprop`) waited for ever; the installer now notices
   the close itself.
+- Installer: Continue on prayer times took about 10 s with nothing on screen. Its settings now go to the TV in
+  one ADB shell instead of one each, and the button says it is saving and takes no second tap.
 
 ## [0.5] - 2026-10-22
 

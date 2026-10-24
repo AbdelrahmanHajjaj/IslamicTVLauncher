@@ -122,12 +122,8 @@ final class Personalise {
         toggles.addView(toggle(R.string.remind_label, remind, on -> remind = on), Ui.wide(a, 12));
         a.add(toggles, 10);
 
-        a.foot(Ui.primary(a, a.getString(R.string.continue_), v -> save(() -> {
-            tv.set("city", city);
-            tv.set("locale", locale);
-            tv.set("adhan", adhan ? "on" : "off");
-            tv.set("remind_voice", remind ? "on" : "off");
-        }, this::favourites)));
+        a.foot(Ui.primary(a, a.getString(R.string.continue_), v -> save(v, () -> tv.set("city", city, "locale", locale,
+                "adhan", adhan ? "on" : "off", "remind_voice", remind ? "on" : "off"), this::favourites)));
         a.back = null;
     }
 
@@ -234,7 +230,7 @@ final class Personalise {
         }
         paint.run();
         loadIcons(tiles);
-        a.foot(Ui.primary(a, a.getString(R.string.continue_), v -> save(() -> {
+        a.foot(Ui.primary(a, a.getString(R.string.continue_), v -> save(v, () -> {
             if (!favourites.isEmpty()) tv.set("favourites", String.join(",", favourites));
         }, this::clean)));
         a.foot(Ui.secondary(a, a.getString(R.string.back), v -> a.go(this::prayer)));
@@ -670,7 +666,10 @@ final class Personalise {
     // Helpers
 
     /** Saves on the worker thread, then moves on. */
-    private void save(Job job, Runnable next) {
+    /** Runs the job on the worker, then next; the button says it is saving meanwhile, and takes no second tap. */
+    private void save(View button, Job job, Runnable next) {
+        button.setEnabled(false);
+        ((TextView) button).setText(R.string.saving);
         int g = ++a.gen;
         a.work.execute(() -> {
             try {
