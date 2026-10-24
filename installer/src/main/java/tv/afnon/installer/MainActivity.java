@@ -545,9 +545,10 @@ public final class MainActivity extends Activity {
                     if (!version.isEmpty()) leadView.setText(getString(R.string.install_lead_version, version));
                     timeline = timeline();
                     add(timeline, 20);
+                    add(Timeline.legend(this), 12);
                     if (current) {
-                        timeline.set(0, Timeline.State.SKIPPED);
-                        timeline.set(1, Timeline.State.SKIPPED);
+                        timeline.set(0, Timeline.State.CHECKED);
+                        timeline.set(1, Timeline.State.CHECKED);
                         timeline.note(1, getString(R.string.already_on_tv, version));
                     } else {
                         timeline.set(0, Timeline.State.WORKING);
@@ -582,7 +583,7 @@ public final class MainActivity extends Activity {
     /** On the worker thread: the APK into the TV, then the setup steps. */
     private void send(int g, Adb a, File apk, boolean replacing) throws IOException, InterruptedException {
         post(g, () -> {
-            timeline.set(0, Timeline.State.DONE);
+            timeline.set(0, Timeline.State.CHECKED);
             timeline.set(1, Timeline.State.WORKING);
         });
         if (replacing) a.shell("pm uninstall " + Setup.PACKAGE);
@@ -600,11 +601,16 @@ public final class MainActivity extends Activity {
             fail(g, getString(R.string.install_failed, result));
             return;
         }
-        post(g, () -> timeline.set(1, Timeline.State.DONE));
+        // Checked: the TV now reports the version just sent.
+        String now = tv.afnonVersion();
+        post(g, () -> timeline.set(1, version.equals(now) ? Timeline.State.CHECKED : Timeline.State.DONE));
         runSteps(g, a);
     }
 
-    /** On the worker thread: each setup step, then on to making it yours. */
+    /**
+     * On the worker thread: each setup step from init to checked. A step whose check already passes is checked
+     * as it stands; otherwise its command runs (done) and the check runs again (checked, or failed / not on this TV).
+     */
     private void runSteps(int g, Adb a) throws IOException, InterruptedException {
         boolean allRequired = true;
         for (int i = 0; i < steps.size(); i++) {
@@ -612,17 +618,34 @@ public final class MainActivity extends Activity {
             int row = i + 2;
             float at = 0.9f + 0.1f * (i + 1) / steps.size();
             post(g, () -> timeline.set(row, Timeline.State.WORKING));
-            boolean ok = a.shell(s.command).ok();
-            if (!ok && s.required) allRequired = false;
+            Timeline.State end;
+            if (s.check != null && a.shell(s.check).ok()) {
+                end = Timeline.State.CHECKED;
+                post(g, () -> timeline.note(row, getString(R.string.state_was_set)));
+            } else {
+                boolean ran = a.shell(s.command).ok();
+                if (s.check == null) {
+                    end = ran ? Timeline.State.DONE : s.required ? Timeline.State.FAILED : Timeline.State.SKIPPED;
+                } else {
+                    post(g, () -> timeline.set(row, Timeline.State.DONE));
+                    end = a.shell(s.check).ok() ? Timeline.State.CHECKED
+                            : s.required ? Timeline.State.FAILED : Timeline.State.SKIPPED;
+                }
+            }
+            if (end == Timeline.State.FAILED) allRequired = false;
+            Timeline.State shown = end;
             post(g, () -> {
-                timeline.set(row, ok ? Timeline.State.DONE
-                        : s.required ? Timeline.State.FAILED : Timeline.State.SKIPPED);
+                boolean keepNote = shown == Timeline.State.CHECKED && timeline.hasNote(row);
+                timeline.set(row, shown);
+                if (keepNote) timeline.note(row, getString(R.string.state_was_set));
+                if (shown == Timeline.State.SKIPPED) timeline.note(row, getString(R.string.state_not_here));
+                if (shown == Timeline.State.FAILED) timeline.note(row, getString(R.string.state_failed));
                 hero.progress(at);
             });
         }
         installedOk = allRequired;
         // A moment on the finished list, then the next stage.
-        Thread.sleep(700);
+        Thread.sleep(900);
         post(g, () -> new Personalise(this, tv).start());
     }
 
@@ -736,10 +759,15 @@ public final class MainActivity extends Activity {
                         getString(R.string.install_lead_version, "0.5"));
                 timeline = timeline();
                 add(timeline, 20);
-                timeline.set(0, Timeline.State.DONE);
-                timeline.set(1, Timeline.State.WORKING);
-                timeline.note(1, getString(R.string.mb_of, "12.4", "19.7"));
-                hero.progress(0.62f);
+                add(Timeline.legend(this), 12);
+                timeline.set(0, Timeline.State.CHECKED);
+                timeline.set(1, Timeline.State.CHECKED);
+                timeline.set(2, Timeline.State.CHECKED);
+                timeline.note(2, getString(R.string.state_was_set));
+                timeline.set(3, Timeline.State.CHECKED);
+                timeline.set(4, Timeline.State.DONE);
+                timeline.set(5, Timeline.State.WORKING);
+                hero.progress(0.94f);
                 break;
             }
             case "done":
@@ -747,7 +775,7 @@ public final class MainActivity extends Activity {
                 installedOk = screen.equals("done");
                 version = "0.5";
                 timeline = timeline();
-                for (int i = 0; i < steps.size() + 2; i++) timeline.set(i, Timeline.State.DONE);
+                for (int i = 0; i < steps.size() + 2; i++) timeline.set(i, Timeline.State.CHECKED);
                 if (!installedOk) timeline.set(3, Timeline.State.FAILED);
                 showDone(Arrays.asList(getString(R.string.sum_city, Ui.arabic(this) ? "القاهرة" : "Cairo"),
                         getString(R.string.sum_favourites, "YouTube, Shahid, Claude Code TV, BrowseHere"),
@@ -759,6 +787,7 @@ public final class MainActivity extends Activity {
             case "favourites":
             case "keys":
             case "clean":
+            case "cleaning":
                 new Personalise(this, null).demo(screen);
                 break;
             case "problem":

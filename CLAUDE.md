@@ -76,7 +76,8 @@ service. So filtering is off on TCL:
 
 A separate phone app (plain Java, libadb-android, Conscrypt) that installs and sets up Afnon over ADB. It keeps no
 copies of what changes: the APK and `tools/setup-steps.txt` come from the latest release's tag (so a new setup step
-goes in that file, which `tools/install.sh` also runs), the cleanup list from `tools/clean-catalog.tsv` on main, and
+goes in that file, which `tools/install.sh` also runs, with a `?|` check line that exits 0 once it is in place on
+the TV; both tools skip a step whose check passes and require it to pass after the command), the cleanup list from `tools/clean-catalog.tsv` on main, and
 cities, apps, icons and buttons from the TV through `SetupProvider` (`content query/read/insert`, guarded by DUMP).
 That provider is a contract: add to it, bump `SetupProvider.API`, never break what's there. Remote buttons are pref
 `keys` (`KEY=package`, KEY a keycode name or number), defaulting to `RemoteKeys.APP_KEYS`.

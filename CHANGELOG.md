@@ -18,7 +18,10 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 - Remote buttons are a setting now (pref `keys`, `KEY=package` pairs), defaulting to the old table; a new table
   applies at once, through TCL's remapping as before.
 - `tools/setup-steps.txt`: the setup after `adb install`, in one file that `tools/install.sh` runs and the phone
-  installer reads from the release's tag.
+  installer reads from the release's tag. Each step has a check (`?|` line) that both run before and after it.
+- The installer tracks what can be undone after setup in three states: not set, set, and checked on the TV.
+  Setup steps already in place are left alone; remote buttons are checked by pressing them and seeing the TV open
+  the app; cleaned apps are confirmed off, and ones a firmware update turned back on are offered again.
 - `tools/clean-catalog.tsv`, from cleanyourtv's per-TV debloat lists (MIT) by `tools/gen-clean-catalog.py`, and
   refreshed weekly by `.github/workflows/clean-catalog.yml`.
 

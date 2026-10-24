@@ -27,10 +27,11 @@ final class Setup {
     private static final String APK = LATEST + "/download/afnon.apk";
     private static final String RAW = "https://raw.githubusercontent.com/" + REPO + "/";
 
-    /** One setup command (a line of tools/setup-steps.txt). */
+    /** One setup command (a line of tools/setup-steps.txt) and its check ("?|" line after it), if any. */
     static final class Step {
         final boolean required;
         final String en, ar, command;
+        String check;
         Step(boolean required, String en, String ar, String command) {
             this.required = required;
             this.en = en;
@@ -40,14 +41,20 @@ final class Setup {
         String label(boolean arabic) { return arabic ? ar : en; }
     }
 
-    /** Used only when GitHub can't be reached, or for a release older than tools/setup-steps.txt (0.5). */
-    private static final String FALLBACK_STEPS =
-            "1|Afnon is the home screen|أفنون هو الشاشة الرئيسية|cmd package set-home-activity tv.afnon.home/.MainActivity\n"
+    /** tools/setup-steps.txt as of this installer, for when GitHub can't be reached or a release predates it. */
+    private static final String FALLBACK_STEPS = ""
+            + "1|Afnon is the home screen|أفنون هو الشاشة الرئيسية|cmd package set-home-activity tv.afnon.home/.MainActivity\n"
+            + "?|cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME | tail -n 1 | grep -q '^tv.afnon.home/'\n"
             + "1|Remote buttons and the call to prayer|أزرار جهاز التحكم والأذان|s=$(settings get secure enabled_accessibility_services); case \"$s\" in *tv.afnon.home/.RemoteKeys*) ;; ''|null) s=tv.afnon.home/.RemoteKeys ;; *) s=\"$s:tv.afnon.home/.RemoteKeys\" ;; esac; settings put secure enabled_accessibility_services \"$s\" && settings put secure accessibility_enabled 1\n"
+            + "?|settings get secure enabled_accessibility_services | grep -q 'tv.afnon.home/.RemoteKeys' && [ \"$(settings get secure accessibility_enabled)\" = 1 ]\n"
             + "0|Afnon screensaver|شاشة توقّف أفنون|settings put secure screensaver_components tv.afnon.home/.AfnonDream\n"
+            + "?|settings get secure screensaver_components | grep -q 'tv.afnon.home/.AfnonDream'\n"
             + "0|Starts by itself after a restart|يعمل وحده بعد إعادة التشغيل|appops set tv.afnon.home APP_AUTO_START allow 2>/dev/null; appops set tv.afnon.home APP_ASSOC_START allow 2>/dev/null; true\n"
+            + "?|o=$(appops get tv.afnon.home APP_AUTO_START 2>&1); case \"$o\" in *allow*) true ;; *) false ;; esac\n"
             + "0|Quran Radio level bars and sleep timer|مؤشّر صوت إذاعة القرآن ومؤقّت النوم|pm grant tv.afnon.home android.permission.RECORD_AUDIO && pm grant tv.afnon.home android.permission.WRITE_SECURE_SETTINGS\n"
-            + "0|Wi-Fi name in Settings|اسم الواي فاي في الإعدادات|pm grant tv.afnon.home android.permission.ACCESS_FINE_LOCATION\n";
+            + "?|d=$(dumpsys package tv.afnon.home); echo \"$d\" | grep -q 'RECORD_AUDIO: granted=true' && echo \"$d\" | grep -q 'WRITE_SECURE_SETTINGS: granted=true'\n"
+            + "0|Wi-Fi name in Settings|اسم الواي فاي في الإعدادات|pm grant tv.afnon.home android.permission.ACCESS_FINE_LOCATION\n"
+            + "?|dumpsys package tv.afnon.home | grep -q 'ACCESS_FINE_LOCATION: granted=true'\n";
 
     /** The setup steps for that release; never empty. */
     static List<Step> steps(String tag) {
@@ -61,6 +68,10 @@ final class Setup {
         if (text == null) return out;
         for (String line : text.split("\n")) {
             if (line.startsWith("#") || line.trim().isEmpty()) continue;
+            if (line.startsWith("?|")) {
+                if (!out.isEmpty()) out.get(out.size() - 1).check = line.substring(2);
+                continue;
+            }
             // The command may hold "|" itself: it is everything after the third one.
             String[] f = line.split("\\|", 4);
             if (f.length == 4 && !f[3].trim().isEmpty()) out.add(new Step("1".equals(f[0].trim()), f[1], f[2], f[3]));

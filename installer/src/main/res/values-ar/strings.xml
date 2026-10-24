@@ -137,7 +137,7 @@
     <string name="clean_button">أوقف %1$s</string>
     <string name="clean_more">أظهر %1$s أخرى</string>
     <string name="clean_kept">يحتفظ به بعض المالكين</string>
-    <string name="clean_earlier">أوقف تنظيف سابق %1$s</string>
+    <string name="clean_earlier">%1$s ما زالت متوقفة من تنظيف سابق</string>
     <string name="clean_undo">أعد تشغيلها</string>
     <string name="clean_credit">القوائم من cleanyourtv، كتبها مالكو ٢٦٠ طرازًا من أجهزة التلفاز.</string>
     <string name="kind_tracking">التتبّع والتحليلات</string>
@@ -153,4 +153,21 @@
     <string name="sum_favourites">المفضلة: %1$s</string>
     <string name="sum_keys">ضُبط %1$s من أزرار جهاز التحكم</string>
     <string name="sum_cleaned">أُوقف %1$s من التطبيقات</string>
+
+    <!-- Three states: not set, set, checked on the TV -->
+    <string name="state_init">غير مضبوط</string>
+    <string name="state_done">مضبوط</string>
+    <string name="state_checked">مُتحقَّق منه على التلفاز</string>
+    <string name="state_was_set">مضبوط على التلفاز من قبل</string>
+    <string name="state_not_here">غير متاح في هذا التلفاز</string>
+    <string name="state_failed">ضُبط، لكن التلفاز لا يُظهره</string>
+    <string name="keys_progress">تُحقِّق من %1$s من %2$s</string>
+    <string name="keys_checking">جارٍ مراقبة التلفاز…</string>
+    <string name="keys_press_to_check">مضبوط. اضغطه في جهاز التحكم للتحقّق</string>
+    <string name="keys_works">يعمل: فتحه التلفاز</string>
+    <string name="keys_choose_hint">اختر ما يفتحه</string>
+    <string name="keys_not_seen">ضُغط، لكن %1$s لم يُفتح. أعد المحاولة أو اختر تطبيقًا آخر</string>
+    <string name="clean_still_off">تحقّقنا الآن: ما زالت متوقفة على التلفاز.</string>
+    <string name="clean_back_on">عاد للعمل بعد آخر تنظيف</string>
+    <string name="cleaned_checked">تأكّد إيقاف %1$s من %2$s على التلفاز</string>
 </resources>

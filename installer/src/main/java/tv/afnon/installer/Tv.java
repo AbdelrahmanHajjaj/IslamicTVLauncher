@@ -94,16 +94,29 @@ final class Tv {
         return out;
     }
 
-    /** Packages the cleanup turned off earlier, still off now. */
-    List<String> cleaned() throws IOException, InterruptedException {
+    Set<String> disabledPackages() throws IOException, InterruptedException {
+        Set<String> out = new HashSet<>();
+        for (String line : adb.shell("pm list packages -d").out.split("\n")) {
+            line = line.trim();
+            if (line.startsWith("package:")) out.add(line.substring(8));
+        }
+        return out;
+    }
+
+    /** What earlier cleanups turned off: still off (checked), and back on since (a firmware update, say). */
+    static final class Cleaned {
+        final List<String> off = new ArrayList<>(), backOn = new ArrayList<>();
+    }
+
+    Cleaned cleaned() throws IOException, InterruptedException {
+        Cleaned out = new Cleaned();
         Set<String> listed = new LinkedHashSet<>();
         for (String line : adb.shell("cat " + CLEANED + " 2>/dev/null").out.split("\n")) {
             if (!line.trim().isEmpty()) listed.add(line.trim());
         }
-        if (listed.isEmpty()) return new ArrayList<>();
+        if (listed.isEmpty()) return out;
         Set<String> enabled = enabledPackages();
-        List<String> out = new ArrayList<>();
-        for (String p : listed) if (!enabled.contains(p)) out.add(p);
+        for (String p : listed) (enabled.contains(p) ? out.backOn : out.off).add(p);
         return out;
     }
 
@@ -111,12 +124,25 @@ final class Tv {
     boolean disable(String pkg) throws IOException, InterruptedException {
         Adb.Result r = adb.shell("pm disable-user --user 0 " + pkg);
         boolean ok = r.ok() && !r.out.contains("Exception");
-        if (ok) adb.shell("echo " + pkg + " >> " + CLEANED);
+        // Noted only once: the undo list holds each package one time.
+        if (ok) adb.shell("grep -qx '" + pkg + "' " + CLEANED + " 2>/dev/null || echo " + pkg + " >> " + CLEANED);
         return ok;
     }
 
     boolean enable(String pkg) throws IOException, InterruptedException {
         return adb.shell("pm enable " + pkg).ok();
+    }
+
+    /** The package of the app in front on the TV, or null. */
+    String foreground() throws IOException, InterruptedException {
+        String out = adb.shell("dumpsys activity activities | grep -m 1 -E 'mResumedActivity|topResumedActivity|ResumedActivity'").out;
+        Matcher m = Pattern.compile(" u\\d+ ([\\w.]+)/").matcher(out);
+        return m.find() ? m.group(1) : null;
+    }
+
+    /** Back to the TV's home screen (Afnon). */
+    void home() throws IOException, InterruptedException {
+        adb.shell("am start -a android.intent.action.MAIN -c android.intent.category.HOME");
     }
 
     void forgetCleaned() throws IOException, InterruptedException {

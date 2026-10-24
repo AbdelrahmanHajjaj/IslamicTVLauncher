@@ -12,9 +12,13 @@ import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/** The install steps as a list: each with a mark for waiting, working, done, failed, or skipped (optional). */
+/**
+ * Steps as a list, each with a mark. The three states that matter: WAITING (init: not set on the TV), DONE (set by
+ * the installer, not yet confirmed) and CHECKED (confirmed on the TV itself). Plus WORKING, FAILED, and SKIPPED
+ * for an optional step this TV has no use for.
+ */
 final class Timeline extends LinearLayout {
-    enum State { WAITING, WORKING, DONE, FAILED, SKIPPED }
+    enum State { WAITING, WORKING, DONE, CHECKED, FAILED, SKIPPED }
 
     private final Mark[] marks;
     private final TextView[] labels, notes;
@@ -53,15 +57,44 @@ final class Timeline extends LinearLayout {
 
     void set(int i, State s) {
         marks[i].set(s);
-        labels[i].setTextColor(s == State.WAITING ? Ui.MIST : s == State.FAILED ? Ui.CORAL : Ui.PLASTER);
+        labels[i].setTextColor(s == State.WAITING || s == State.SKIPPED ? Ui.MIST : s == State.FAILED ? Ui.CORAL : Ui.PLASTER);
         if (s != State.WORKING) note(i, null);
     }
 
     /** A lone spinning mark, for "waiting for…" lines. */
     static View spinner(Context c) {
+        return mark(c, State.WORKING);
+    }
+
+    /** A standalone mark, for rows that aren't in a Timeline (remote buttons); change it with {@link #setMark}. */
+    static View mark(Context c, State s) {
         Mark m = new Mark(c);
-        m.set(State.WORKING);
+        m.set(s);
         return m;
+    }
+
+    static void setMark(View mark, State s) {
+        if (mark instanceof Mark) ((Mark) mark).set(s);
+    }
+
+    /** "○ Not set · ◉ Set · ✓ Checked on the TV", so the marks read without guessing. */
+    static View legend(Context c) {
+        LinearLayout row = Ui.row(c);
+        row.setGravity(Gravity.CENTER);
+        State[] states = {State.WAITING, State.DONE, State.CHECKED};
+        int[] names = {R.string.state_init, R.string.state_done, R.string.state_checked};
+        for (int i = 0; i < states.length; i++) {
+            LayoutParams mp = new LayoutParams(Ui.dp(c, 14), Ui.dp(c, 14));
+            mp.setMarginStart(Ui.dp(c, i == 0 ? 0 : 14));
+            mp.setMarginEnd(Ui.dp(c, 6));
+            row.addView(mark(c, states[i]), mp);
+            row.addView(Ui.text(c, c.getString(names[i]), Ui.MIST, 12, Ui.medium()));
+        }
+        return row;
+    }
+
+    boolean hasNote(int i) {
+        return notes[i].getVisibility() == VISIBLE;
     }
 
     void note(int i, String text) {
@@ -122,6 +155,14 @@ final class Timeline extends LinearLayout {
                     c.drawArc(r, angle - 90, 100, false, p);
                     break;
                 case DONE:
+                    // Set, not yet confirmed: a gold ring with a dot.
+                    p.setStyle(Paint.Style.STROKE);
+                    p.setColor(Ui.GOLD_400);
+                    c.drawOval(r, p);
+                    p.setStyle(Paint.Style.FILL);
+                    c.drawCircle(w / 2f, h / 2f, w * 0.17f, p);
+                    break;
+                case CHECKED:
                     p.setStyle(Paint.Style.FILL);
                     p.setColor(Ui.GOLD_400);
                     c.drawOval(r, p);

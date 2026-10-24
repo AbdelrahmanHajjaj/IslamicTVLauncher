@@ -10,7 +10,7 @@ adb install -r "$APK" >/dev/null
 for loc in ar en; do
   adb shell cmd locale set-app-locales $PKG --locales $loc
   adb shell cmd locale get-app-locales $PKG
-  for s in guide find allow pair install prayer city favourites keys clean done partly problem; do
+  for s in guide find allow pair install prayer city favourites keys clean cleaning done partly problem; do
     adb shell am force-stop $PKG
     adb shell am start -W -n $PKG/.MainActivity --es screen $s >/dev/null
     sleep 3
