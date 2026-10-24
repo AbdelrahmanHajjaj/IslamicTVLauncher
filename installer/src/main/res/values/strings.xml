@@ -100,7 +100,7 @@
     <string name="skip">Skip</string>
     <string name="personal_title">Make it yours</string>
     <string name="personal_loading">Reading the TV’s apps and settings…</string>
-    <string name="personal_old">To choose the city, favourites and remote buttons from the phone, the TV needs the next Afnon release. Until then, set them in Afnon’s Settings on the TV.</string>
+    <string name="personal_old">To choose the city and favourites from the phone, the TV needs the next Afnon release. Until then, set them in Afnon’s Settings on the TV.</string>
     <string name="prayer_title">Prayer times</string>
     <string name="prayer_lead">Afnon shows the times for your city and calls the adhan by itself.</string>
     <string name="city_label">Your city</string>
