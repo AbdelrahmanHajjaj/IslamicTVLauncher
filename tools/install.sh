@@ -2,11 +2,12 @@
 # Builds Afnon, installs it over the running copy and brings it straight back as the home screen. Also sets
 # what Afnon needs from the system: HOME, the remote buttons service, the screensaver, TCL's auto-start
 # grants, two permissions the radio uses and location for the Wi-Fi name.
+# The phone installer runs the same steps: keep installer/.../Setup.java (STEPS) in step with this file.
 set -e
 . "$(dirname "$0")/env.sh"
 [ -n "$(ls "$ROOT/app/src/main/assets/adhan/"*.mp3 2>/dev/null)" ] || bash "$ROOT/tools/fetch-adhans.sh"
 [ -n "$(ls "$ROOT/app/src/main/assets/announce/"*.mp3 2>/dev/null)" ] || bash "$ROOT/tools/fetch-announce.sh" || true
-(cd "$ROOT" && ./gradlew assembleDebug -q)
+(cd "$ROOT" && ./gradlew :app:assembleDebug -q)
 adb install -r "$ROOT/app/build/outputs/apk/debug/app-debug.apk" | tail -1
 adb shell cmd package set-home-activity tv.afnon.home/.MainActivity >/dev/null
 adb shell settings put secure enabled_accessibility_services tv.afnon.home/.RemoteKeys

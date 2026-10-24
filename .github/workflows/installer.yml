@@ -1,0 +1,32 @@
+# Builds the phone installer (installer/) and keeps the APK as a workflow artifact.
+name: Installer
+
+on:
+  push:
+    branches: [main]
+    paths: ['installer/**', 'settings.gradle', 'build.gradle', 'gradle/**', '.github/workflows/installer.yml']
+  pull_request:
+    paths: ['installer/**', 'settings.gradle', 'build.gradle', 'gradle/**', '.github/workflows/installer.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Build
+        run: |
+          chmod +x gradlew
+          ./gradlew :installer:assembleDebug --no-daemon --stacktrace
+          cp installer/build/outputs/apk/debug/installer-debug.apk afnon-installer.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: afnon-installer
+          path: afnon-installer.apk

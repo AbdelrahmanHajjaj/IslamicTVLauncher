@@ -4,6 +4,16 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Added
+- Afnon Installer (`installer/`): an Android phone app that installs Afnon on a TV with no computer. It guides
+  the user through Developer options, finds the TV on the Wi-Fi (mDNS for classic network debugging, Wireless
+  debugging's random port and the pairing port, plus a sweep for port 5555, or an address typed by hand with a
+  port scan), connects with "Allow debugging?" or a pairing code, downloads the latest release and runs the
+  same setup as `tools/install.sh`. Arabic and English. Built by `.github/workflows/installer.yml`.
+
+### Changed
+- `tools/install.sh` and the release steps build `:app` only, now that the repo has a second module.
+
 ## [0.5] - 2026-10-22
 
 ### Added
