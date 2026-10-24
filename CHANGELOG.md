@@ -34,6 +34,9 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   the close itself.
 - Installer: Continue on prayer times took about 10 s with nothing on screen. Its settings now go to the TV in
   one ADB shell instead of one each, and the button says it is saving and takes no second tap.
+- Home rebuilds when the language, city or another setting changed while it was away and the Home key brings it
+  back. It used to reload the words but keep the old layout: half English, half Arabic, after the phone
+  installer or Afnon Settings changed the language.
 
 ## [0.5] - 2026-10-22
 
