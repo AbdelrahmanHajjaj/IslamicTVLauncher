@@ -153,7 +153,7 @@ final class Finder {
     @SuppressWarnings("deprecation") // getHost(): the replacement needs Android 14.
     private void found(NsdServiceInfo i) {
         InetAddress a = i.getHost();
-        if (!(a instanceof Inet4Address)) return;
+        if (!(a instanceof Inet4Address) || ownAddresses().contains(a.getHostAddress())) return;
         String type = i.getServiceType();
         synchronized (this) {
             Tv t = tv(a.getHostAddress());
@@ -172,10 +172,12 @@ final class Finder {
         String self = phoneAddress(context);
         if (self == null) return;
         String prefix = self.substring(0, self.lastIndexOf('.') + 1);
+        java.util.Set<String> mine = ownAddresses();
         sweep = Executors.newFixedThreadPool(48);
         for (int i = 1; i < 255; i++) {
             String host = prefix + i;
-            if (host.equals(self)) continue;
+            // The phone's own ADB (Wireless debugging on the phone) is not a TV.
+            if (mine.contains(host)) continue;
             sweep.execute(() -> {
                 if (open(host, CLASSIC_PORT, 500)) {
                     synchronized (Finder.this) { tv(host).classic = CLASSIC_PORT; }
@@ -214,6 +216,18 @@ final class Finder {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private static java.util.Set<String> ownAddresses() {
+        java.util.Set<String> out = new java.util.HashSet<>();
+        try {
+            for (java.net.NetworkInterface n : java.util.Collections.list(java.net.NetworkInterface.getNetworkInterfaces())) {
+                for (InetAddress a : java.util.Collections.list(n.getInetAddresses())) out.add(a.getHostAddress());
+            }
+        } catch (Exception ignored) {
+            // Nothing to exclude.
+        }
+        return out;
     }
 
     /** The phone's IPv4 address on Wi-Fi, or null when it isn't on one. */

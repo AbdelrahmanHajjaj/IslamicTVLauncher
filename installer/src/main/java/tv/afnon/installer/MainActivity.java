@@ -73,8 +73,7 @@ public final class MainActivity extends Activity {
     private void showDemo(String screen) {
         switch (screen) {
             case "find": {
-                showFind();
-                finder.stop();
+                showFind(false);
                 Finder.Tv wireless = new Finder.Tv("192.168.1.50");
                 wireless.tls = 41234;
                 wireless.pairing = 37019;
@@ -136,6 +135,10 @@ public final class MainActivity extends Activity {
     }
 
     private void showFind() {
+        showFind(true);
+    }
+
+    private void showFind(boolean search) {
         clear(R.string.find_title);
         if (Finder.phoneAddress(this) == null) {
             text(getString(R.string.not_wifi), RED, 15);
@@ -152,7 +155,7 @@ public final class MainActivity extends Activity {
         page.addView(tvList);
         button(R.string.manual_button, v -> askAddress(), false);
         button(R.string.back, v -> showGuide(), false);
-        finder.start();
+        if (search) finder.start();
     }
 
     private void showTvs(List<Finder.Tv> tvs) {
