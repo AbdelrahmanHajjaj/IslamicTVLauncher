@@ -116,8 +116,22 @@ final class Adb extends AbsAdbConnectionManager {
         return read(stream).trim();
     }
 
+    /** A command's raw output (exec: has no terminal, so binary comes through untouched): icons, for one. */
+    byte[] bytes(String command) throws IOException, InterruptedException {
+        return readBytes(openStream("exec:" + command));
+    }
+
+    /** A long-running command whose output is read as it comes; close the stream to stop it. */
+    AdbStream stream(String command) throws IOException, InterruptedException {
+        return openStream("shell:" + command);
+    }
+
     /** Everything the stream sends until the TV closes it. */
     private static String read(AdbStream stream) throws IOException {
+        return new String(readBytes(stream), StandardCharsets.UTF_8);
+    }
+
+    private static byte[] readBytes(AdbStream stream) throws IOException {
         ByteArrayOutputStream all = new ByteArrayOutputStream();
         byte[] buf = new byte[8192];
         try (InputStream in = stream.openInputStream()) {
@@ -128,6 +142,6 @@ final class Adb extends AbsAdbConnectionManager {
         } finally {
             if (!stream.isClosed()) stream.close();
         }
-        return new String(all.toByteArray(), StandardCharsets.UTF_8);
+        return all.toByteArray();
     }
 }

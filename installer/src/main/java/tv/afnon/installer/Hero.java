@@ -16,7 +16,7 @@ import android.view.animation.LinearInterpolator;
  * inside it. Search sends arch-shaped rings outward; progress fills a ring; done and problem show a mark.
  */
 final class Hero extends View {
-    enum Mode { TV, SEARCH, ALLOW, PAIR, PROGRESS, DONE, PROBLEM }
+    enum Mode { TV, SEARCH, ALLOW, PAIR, PROGRESS, DONE, PROBLEM, CITY, APPS, REMOTE, CLEAN }
 
     private Mode mode = Mode.TV;
     /** 0..1, or below 0 for "working, amount unknown". */
@@ -124,6 +124,10 @@ final class Hero extends View {
             case PROGRESS: ring(c, cx, cy); break;
             case DONE: check(c, cx, cy); break;
             case PROBLEM: problem(c, cx, cy); break;
+            case CITY: crescent(c, cx, cy); break;
+            case APPS: tiles(c, cx, cy); break;
+            case REMOTE: remote(c, cx, cy); break;
+            case CLEAN: sparkle(c, cx, cy); break;
         }
     }
 
@@ -250,6 +254,93 @@ final class Hero extends View {
         p.lineTo(cx - 18 * k, cy + 56 * k);
         p.lineTo(cx + 78 * k, cy - 52 * k);
         c.drawPath(p, ink);
+    }
+
+    /** A crescent and a star: the prayer day, for the city screen. */
+    private void crescent(Canvas c, float cx, float cy) {
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setColor(Ui.GOLD_400);
+        Path moon = new Path();
+        moon.addCircle(cx - 20 * k, cy, 120 * k, Path.Direction.CW);
+        Path bite = new Path();
+        bite.addCircle(cx + 30 * k, cy - 30 * k, 104 * k, Path.Direction.CW);
+        moon.op(bite, Path.Op.DIFFERENCE);
+        c.drawPath(moon, p);
+        float twinkle = (float) (0.6 + 0.4 * Math.sin(t * Math.PI * 2));
+        p.setColor(Ui.PLASTER);
+        p.setAlpha((int) (255 * twinkle));
+        c.drawPath(star(cx + 95 * k, cy - 60 * k, 34 * k), p);
+    }
+
+    private static Path star(float x, float y, float r) {
+        Path p = new Path();
+        for (int i = 0; i < 10; i++) {
+            double a = Math.PI / 2 + i * Math.PI / 5;
+            float rr = i % 2 == 0 ? r : r * 0.42f;
+            float px = x + (float) (rr * Math.cos(a)), py = y - (float) (rr * Math.sin(a));
+            if (i == 0) p.moveTo(px, py); else p.lineTo(px, py);
+        }
+        p.close();
+        return p;
+    }
+
+    /** Four app tiles, one lit at a time: the favourites. */
+    private void tiles(Canvas c, float cx, float cy) {
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        float s = 96 * k, gap = 26 * k;
+        int lit = (int) (t * 4) % 4;
+        for (int i = 0; i < 4; i++) {
+            float l = cx - s - gap / 2 + (i % 2) * (s + gap), top = cy - s - gap / 2 + (i / 2) * (s + gap) - 20 * k;
+            r.set(l, top, l + s, top + s);
+            p.setColor(i == lit ? Ui.GOLD_400 : Ui.LAPIS_700);
+            c.drawRoundRect(r, 20 * k, 20 * k, p);
+        }
+    }
+
+    /** A TV remote with one button pulsing. */
+    private void remote(Canvas c, float cx, float cy) {
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        float w = 150 * k, h = 330 * k;
+        r.set(cx - w / 2, cy - h / 2 - 10 * k, cx + w / 2, cy + h / 2 - 10 * k);
+        p.setColor(Ui.LAPIS_700);
+        c.drawRoundRect(r, 60 * k, 60 * k, p);
+        ink.setColor(Ui.PLASTER);
+        ink.setStrokeWidth(8 * k);
+        c.drawCircle(cx, r.top + 90 * k, 46 * k, ink);
+        p.setColor(Ui.PLASTER);
+        c.drawCircle(cx, r.top + 90 * k, 16 * k, p);
+        float pulse = (float) (0.5 + 0.5 * Math.sin(t * Math.PI * 4));
+        for (int i = 0; i < 4; i++) {
+            float bx = cx + (i % 2 == 0 ? -32 : 32) * k, by = r.top + (190 + (i / 2) * 64) * k;
+            boolean lit = i == 1;
+            p.setColor(lit ? Ui.GOLD_400 : 0x80efe7d6);
+            if (lit) p.setAlpha((int) (150 + 105 * pulse));
+            c.drawRoundRect(new RectF(bx - 24 * k, by - 16 * k, bx + 24 * k, by + 16 * k), 10 * k, 10 * k, p);
+        }
+    }
+
+    /** Sparkles: the cleanup. */
+    private void sparkle(Canvas c, float cx, float cy) {
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        float[][] stars = {{0, -10, 90}, {110, -110, 40}, {-105, 90, 34}, {95, 110, 26}};
+        for (int i = 0; i < stars.length; i++) {
+            float phase = (float) (0.55 + 0.45 * Math.sin((t + i * 0.25f) * Math.PI * 2));
+            p.setColor(i == 0 ? Ui.GOLD_400 : Ui.PLASTER);
+            p.setAlpha((int) (255 * (i == 0 ? 1f : phase)));
+            float rr = stars[i][2] * k * (i == 0 ? 1f : 0.8f + 0.2f * phase);
+            c.drawPath(sparkle(cx + stars[i][0] * k, cy + stars[i][1] * k, rr), p);
+        }
+    }
+
+    private static Path sparkle(float x, float y, float r) {
+        Path p = new Path();
+        p.moveTo(x, y - r);
+        p.quadTo(x, y, x + r, y);
+        p.quadTo(x, y, x, y + r);
+        p.quadTo(x, y, x - r, y);
+        p.quadTo(x, y, x, y - r);
+        p.close();
+        return p;
     }
 
     private void problem(Canvas c, float cx, float cy) {

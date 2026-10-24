@@ -1,5 +1,6 @@
 package tv.afnon.installer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,53 +9,99 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Downloading the latest Afnon release and what {@code tools/install.sh} does after {@code adb install}. Keep the
- * two in step: a new grant or setting there belongs in {@link #STEPS} here too.
+ * Everything the installer takes from GitHub at run time, so a new Afnon never needs a new installer: the latest
+ * release's APK, the setup steps that go with it (tools/setup-steps.txt at that release's tag, the same file
+ * tools/install.sh runs), and the clean catalogue (tools/clean-catalog.tsv on main, refreshed from cleanyourtv).
  */
 final class Setup {
     private Setup() {}
 
     static final String PACKAGE = "tv.afnon.home";
-    private static final String REPO = "https://github.com/egyjs/afnon-android-tv-launcher";
-    private static final String LATEST = REPO + "/releases/latest";
+    private static final String REPO = "egyjs/afnon-android-tv-launcher";
+    private static final String LATEST = "https://github.com/" + REPO + "/releases/latest";
     private static final String APK = LATEST + "/download/afnon.apk";
-    private static final String A11Y = PACKAGE + "/.RemoteKeys";
+    private static final String RAW = "https://raw.githubusercontent.com/" + REPO + "/";
 
-    /** One setup command, with whether its failure is worth stopping for. */
+    /** One setup command (a line of tools/setup-steps.txt). */
     static final class Step {
-        final int label;
-        final String command;
         final boolean required;
-        Step(int label, String command, boolean required) {
-            this.label = label;
-            this.command = command;
+        final String en, ar, command;
+        Step(boolean required, String en, String ar, String command) {
             this.required = required;
+            this.en = en;
+            this.ar = ar;
+            this.command = command;
+        }
+        String label(boolean arabic) { return arabic ? ar : en; }
+    }
+
+    /** Used only when GitHub can't be reached, or for a release older than tools/setup-steps.txt (0.5). */
+    private static final String FALLBACK_STEPS =
+            "1|Afnon is the home screen|أفنون هو الشاشة الرئيسية|cmd package set-home-activity tv.afnon.home/.MainActivity\n"
+            + "1|Remote buttons and the call to prayer|أزرار جهاز التحكم والأذان|s=$(settings get secure enabled_accessibility_services); case \"$s\" in *tv.afnon.home/.RemoteKeys*) ;; ''|null) s=tv.afnon.home/.RemoteKeys ;; *) s=\"$s:tv.afnon.home/.RemoteKeys\" ;; esac; settings put secure enabled_accessibility_services \"$s\" && settings put secure accessibility_enabled 1\n"
+            + "0|Afnon screensaver|شاشة توقّف أفنون|settings put secure screensaver_components tv.afnon.home/.AfnonDream\n"
+            + "0|Starts by itself after a restart|يعمل وحده بعد إعادة التشغيل|appops set tv.afnon.home APP_AUTO_START allow 2>/dev/null; appops set tv.afnon.home APP_ASSOC_START allow 2>/dev/null; true\n"
+            + "0|Quran Radio level bars and sleep timer|مؤشّر صوت إذاعة القرآن ومؤقّت النوم|pm grant tv.afnon.home android.permission.RECORD_AUDIO && pm grant tv.afnon.home android.permission.WRITE_SECURE_SETTINGS\n"
+            + "0|Wi-Fi name in Settings|اسم الواي فاي في الإعدادات|pm grant tv.afnon.home android.permission.ACCESS_FINE_LOCATION\n";
+
+    /** The setup steps for that release; never empty. */
+    static List<Step> steps(String tag) {
+        String text = tag == null ? null : fetch(RAW + tag + "/tools/setup-steps.txt");
+        List<Step> steps = parseSteps(text);
+        return steps.isEmpty() ? parseSteps(FALLBACK_STEPS) : steps;
+    }
+
+    static List<Step> parseSteps(String text) {
+        List<Step> out = new ArrayList<>();
+        if (text == null) return out;
+        for (String line : text.split("\n")) {
+            if (line.startsWith("#") || line.trim().isEmpty()) continue;
+            // The command may hold "|" itself: it is everything after the third one.
+            String[] f = line.split("\\|", 4);
+            if (f.length == 4 && !f[3].trim().isEmpty()) out.add(new Step("1".equals(f[0].trim()), f[1], f[2], f[3]));
+        }
+        return out;
+    }
+
+    /** One package the cleanup may offer (a line of tools/clean-catalog.tsv). */
+    static final class Bloat {
+        final String pkg, kind, note;
+        final int tvs, kept;
+        Bloat(String pkg, int tvs, int kept, String kind, String note) {
+            this.pkg = pkg;
+            this.tvs = tvs;
+            this.kept = kept;
+            this.kind = kind;
+            this.note = note;
+        }
+        /** Ticked for the user: tracking, ads or store demo that several TVs turn off and none keeps. */
+        boolean suggested() {
+            return tvs >= 2 && kept == 0 && (kind.equals("tracking") || kind.equals("ads") || kind.equals("demo"));
         }
     }
 
-    static final Step[] STEPS = {
-            new Step(R.string.step_home, "cmd package set-home-activity " + PACKAGE + "/.MainActivity", true),
-            // Added to the TV's other accessibility services rather than replacing them.
-            new Step(R.string.step_buttons,
-                    "s=$(settings get secure enabled_accessibility_services); "
-                            + "case \"$s\" in *" + A11Y + "*) ;; ''|null) s=" + A11Y + " ;; *) s=\"$s:" + A11Y + "\" ;; esac; "
-                            + "settings put secure enabled_accessibility_services \"$s\" && "
-                            + "settings put secure accessibility_enabled 1", true),
-            new Step(R.string.step_screensaver,
-                    "settings put secure screensaver_components " + PACKAGE + "/.AfnonDream", false),
-            // TCL blocks auto-start for sideloaded apps; other brands have no such appop.
-            new Step(R.string.step_autostart,
-                    "appops set " + PACKAGE + " APP_AUTO_START allow 2>/dev/null; "
-                            + "appops set " + PACKAGE + " APP_ASSOC_START allow 2>/dev/null; true", false),
-            new Step(R.string.step_radio,
-                    "pm grant " + PACKAGE + " android.permission.RECORD_AUDIO && "
-                            + "pm grant " + PACKAGE + " android.permission.WRITE_SECURE_SETTINGS", false),
-            new Step(R.string.step_wifi, "pm grant " + PACKAGE + " android.permission.ACCESS_FINE_LOCATION", false),
-            new Step(R.string.step_open,
-                    "am start -a android.intent.action.MAIN -c android.intent.category.HOME", false),
-    };
+    /** The clean catalogue; empty when GitHub can't be reached. */
+    static List<Bloat> catalogue() {
+        List<Bloat> out = new ArrayList<>();
+        String text = fetch(RAW + "main/tools/clean-catalog.tsv");
+        if (text == null) return out;
+        for (String line : text.split("\n")) {
+            if (line.startsWith("#") || line.trim().isEmpty()) continue;
+            String[] f = line.split("\t", 5);
+            if (f.length < 4) continue;
+            try {
+                out.add(new Bloat(f[0], Integer.parseInt(f[1]), Integer.parseInt(f[2]), f[3], f.length > 4 ? f[4] : ""));
+            } catch (NumberFormatException ignored) {
+                // A line from a future format; skip it.
+            }
+        }
+        return out;
+    }
 
     interface Progress { void on(long done, long total); }
 
@@ -105,5 +152,28 @@ final class Setup {
         if (apk.exists() && !apk.delete()) throw new IOException("Can't replace the old download");
         if (!part.renameTo(apk)) throw new IOException("Can't save the download");
         return apk;
+    }
+
+    /** A small text file from GitHub, or null. */
+    private static String fetch(String url) {
+        try {
+            HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+            c.setConnectTimeout(15_000);
+            c.setReadTimeout(20_000);
+            try {
+                if (c.getResponseCode() != 200) return null;
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                try (InputStream in = c.getInputStream()) {
+                    byte[] buf = new byte[16 * 1024];
+                    int n;
+                    while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                }
+                return new String(out.toByteArray(), StandardCharsets.UTF_8);
+            } finally {
+                c.disconnect();
+            }
+        } catch (IOException e) {
+            return null;
+        }
     }
 }

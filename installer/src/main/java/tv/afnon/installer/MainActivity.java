@@ -42,24 +42,25 @@ import io.github.muntashirakon.adb.AdbPairingRequiredException;
  * to the bottom.
  */
 public final class MainActivity extends Activity {
-    private static final int PREPARE = 0, CONNECT = 1, INSTALL = 2;
+    static final int PREPARE = 0, CONNECT = 1, INSTALL = 2, PERSONAL = 3;
 
-    private final ExecutorService work = Executors.newSingleThreadExecutor();
+    final ExecutorService work = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
     private Finder finder, pairFinder;
     private Adb adb;
 
-    private LinearLayout stages, content, footer;
+    private LinearLayout stages, footer;
+    LinearLayout content;
     private ScrollView scroll;
-    private Hero hero;
+    Hero hero;
     private int stage;
     /** What Back does on this screen; null while it must not be interrupted. */
-    private Runnable back;
+    Runnable back;
     /**
      * Bumped whenever the user moves to another screen, so a worker that finishes afterwards (a connect that
      * succeeds after the user went Back) leaves the screen alone.
      */
-    private int gen;
+    int gen;
     /** The TV list on the find screen, refreshed as the finder hears from TVs. */
     private LinearLayout tvList;
     private View help;
@@ -165,14 +166,21 @@ public final class MainActivity extends Activity {
             return;
         }
         frame(CONNECT, Hero.Mode.SEARCH, getString(R.string.find_title), getString(R.string.find_lead));
+        LinearLayout heading = Ui.row(this);
+        LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(dp(14), dp(14));
+        sp.setMarginEnd(dp(8));
+        heading.addView(Timeline.spinner(this), sp);
+        heading.addView(Ui.text(this, getString(R.string.found_heading), Ui.MIST, 13, Ui.medium()));
+        add(heading, 22);
         tvList = Ui.column(this);
-        add(tvList, 12);
+        add(tvList, 0);
         LinearLayout h = Ui.card(this);
         h.addView(Ui.label(this, getString(R.string.help_title)));
         h.addView(Ui.small(this, getString(R.string.help_body)), Ui.wide(this, 8));
         h.setVisibility(View.GONE);
         help = h;
-        add(h, 12);
+        add(h, 8);
+        add(addressCard(), 20);
         int g = gen;
         // Help only once a search has had time to turn something up.
         main.postDelayed(() -> {
@@ -182,7 +190,6 @@ public final class MainActivity extends Activity {
                 help.animate().alpha(1f).setDuration(300).start();
             }
         }, 8000);
-        foot(Ui.secondary(this, getString(R.string.manual_button), v -> askAddress()));
         if (search) finder.start();
     }
 
@@ -241,42 +248,66 @@ public final class MainActivity extends Activity {
         return row;
     }
 
-    private void askAddress() {
+    /**
+     * The TV's address, typed: "192.168.1.50" checks every port, "192.168.1.50:41234" goes straight there. The
+     * last address that worked is filled in, so a second run is one tap.
+     */
+    private View addressCard() {
+        LinearLayout card = Ui.card(this);
+        card.addView(Ui.label(this, getString(R.string.manual_title)));
+        card.addView(Ui.small(this, getString(R.string.manual_body)), Ui.wide(this, 6));
+        LinearLayout row = Ui.row(this);
         EditText field = new EditText(this);
         field.setHint(R.string.manual_hint);
+        field.setHintTextColor(0x809fb0cc);
+        field.setTextColor(Ui.PLASTER);
+        field.setTextSize(16);
+        field.setTypeface(Ui.medium());
+        field.setSingleLine();
         field.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+        field.setImeOptions(android.view.inputmethod.EditorInfo.IME_ACTION_GO);
+        field.setBackground(Ui.round(Ui.LAPIS_900, 12, this));
+        field.setPadding(dp(14), dp(12), dp(14), dp(12));
         Ui.latin(field);
-        LinearLayout box = Ui.column(this);
-        box.setPadding(dp(22), dp(4), dp(22), 0);
-        box.addView(field);
-        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle(R.string.manual_title)
-                .setMessage(R.string.manual_body)
-                .setView(box)
-                .setPositiveButton(R.string.connect, (d, w) -> {
-                    String s = field.getText().toString().trim();
-                    if (s.isEmpty()) return;
-                    int colon = s.lastIndexOf(':');
-                    if (colon > 0) {
-                        int port;
-                        try {
-                            port = Integer.parseInt(s.substring(colon + 1));
-                        } catch (NumberFormatException e) {
-                            return;
-                        }
-                        String host = s.substring(0, colon);
-                        if (port == Finder.CLASSIC_PORT) go(() -> connect(host, 0, port));
-                        else go(() -> connect(host, port, 0));
-                    } else {
-                        go(() -> scan(s));
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+        field.setText(getPreferences(MODE_PRIVATE).getString("last_tv", ""));
+        row.addView(field, Ui.fill(this));
+        TextView go = Ui.primary(this, getString(R.string.connect), v -> typed(field.getText().toString()));
+        go.setMinHeight(dp(46));
+        go.setPadding(dp(18), dp(10), dp(18), dp(10));
+        LinearLayout.LayoutParams gp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        gp.setMarginStart(dp(10));
+        row.addView(go, gp);
+        field.setOnEditorActionListener((v, action, e) -> {
+            typed(field.getText().toString());
+            return true;
+        });
+        card.addView(row, Ui.wide(this, 12));
+        return card;
+    }
+
+    private void typed(String text) {
+        String s = text.trim().replace(" ", "");
+        if (s.isEmpty()) return;
+        int colon = s.lastIndexOf(':');
+        if (colon > 0) {
+            int port;
+            try {
+                port = Integer.parseInt(s.substring(colon + 1));
+            } catch (NumberFormatException e) {
+                return;
+            }
+            String host = s.substring(0, colon);
+            if (port == Finder.CLASSIC_PORT) go(() -> connect(host, 0, port));
+            else go(() -> connect(host, port, 0));
+        } else {
+            go(() -> scan(s));
+        }
     }
 
     /** No port given: try 5555 and every port Wireless debugging may use. */
     private void scan(String host) {
+        this.host = host;
         stopFinders();
         frame(CONNECT, Hero.Mode.SEARCH, getString(R.string.scanning_title), getString(R.string.scanning, host));
         foot(Ui.secondary(this, getString(R.string.back), v -> go(this::showFind)));
@@ -319,6 +350,7 @@ public final class MainActivity extends Activity {
 
     /** Wireless debugging first (no prompt on the TV once paired), then classic with "Allow debugging?". */
     private void connect(String host, int tls, int classic) {
+        this.host = host;
         stopFinders();
         frame(CONNECT, Hero.Mode.SEARCH, getString(R.string.connecting_title), getString(R.string.connecting, host));
         foot(Ui.secondary(this, getString(R.string.back), v -> go(this::showFind)));
@@ -476,18 +508,26 @@ public final class MainActivity extends Activity {
     // Install
 
     private Timeline timeline;
-    private TextView titleView, leadView;
+    TextView titleView, leadView;
+    /** The setup steps for the release being installed (tools/setup-steps.txt at its tag). */
+    private List<Setup.Step> steps;
+    /** The release's version ("0.5"), and whether every required step went through. */
+    String version = "";
+    boolean installedOk;
+    /** The address of the TV this run is working on, remembered for next time. */
+    private String host;
+    private Tv tv;
 
     private void install() {
         stopFinders();
+        if (host != null) getPreferences(MODE_PRIVATE).edit().putString("last_tv", host).apply();
         frame(INSTALL, Hero.Mode.PROGRESS, getString(R.string.install_title), getString(R.string.install_lead));
         back = null;
-        timeline = timeline();
-        add(timeline, 20);
         int g = gen;
         work.execute(() -> {
             try {
                 Adb a = adb();
+                tv = new Tv(a);
                 Adb.Result sdk = a.shell("getprop ro.build.version.sdk");
                 int api = 0;
                 try { api = Integer.parseInt(sdk.out.trim()); } catch (NumberFormatException ignored) { }
@@ -496,17 +536,33 @@ public final class MainActivity extends Activity {
                     return;
                 }
                 String tag = Setup.latestTag();
-                String version = tag == null ? "" : tag.replaceFirst("^v", "");
+                version = tag == null ? "" : tag.replaceFirst("^v", "");
+                steps = Setup.steps(tag);
+                String onTv = tv.afnonVersion();
+                // Already the latest: nothing to download, but the setup runs again (it is safe to repeat).
+                boolean current = onTv != null && onTv.equals(version);
                 post(g, () -> {
                     if (!version.isEmpty()) leadView.setText(getString(R.string.install_lead_version, version));
-                    timeline.set(0, Timeline.State.WORKING);
+                    timeline = timeline();
+                    add(timeline, 20);
+                    if (current) {
+                        timeline.set(0, Timeline.State.SKIPPED);
+                        timeline.set(1, Timeline.State.SKIPPED);
+                        timeline.note(1, getString(R.string.already_on_tv, version));
+                    } else {
+                        timeline.set(0, Timeline.State.WORKING);
+                    }
                 });
+                if (current) {
+                    runSteps(g, a);
+                    return;
+                }
                 File apk = Setup.download(getCacheDir(), (done, total) -> post(g, () -> {
                     if (total <= 0) return;
                     hero.progress(0.45f * done / total);
                     timeline.note(0, getString(R.string.mb_of, mb(done), mb(total)));
                 }));
-                send(g, a, apk, version, false);
+                send(g, a, apk, false);
             } catch (Exception e) {
                 fail(g, getString(R.string.error_install, message(e)));
             }
@@ -514,16 +570,17 @@ public final class MainActivity extends Activity {
     }
 
     private Timeline timeline() {
-        List<String> steps = new ArrayList<>();
-        steps.add(getString(R.string.t_download));
-        steps.add(getString(R.string.t_send));
-        for (Setup.Step s : Setup.STEPS) steps.add(getString(s.label));
-        return new Timeline(this, steps.toArray(new String[0]));
+        if (steps == null) steps = Setup.steps(null);
+        List<String> labels = new ArrayList<>();
+        labels.add(getString(R.string.t_download));
+        labels.add(getString(R.string.t_send));
+        boolean ar = Ui.arabic(this);
+        for (Setup.Step s : steps) labels.add(s.label(ar));
+        return new Timeline(this, labels.toArray(new String[0]));
     }
 
-    /** On the worker thread: the APK into the TV, then the setup steps, then the done screen. */
-    private void send(int g, Adb a, File apk, String version, boolean replacing)
-            throws IOException, InterruptedException {
+    /** On the worker thread: the APK into the TV, then the setup steps. */
+    private void send(int g, Adb a, File apk, boolean replacing) throws IOException, InterruptedException {
         post(g, () -> {
             timeline.set(0, Timeline.State.DONE);
             timeline.set(1, Timeline.State.WORKING);
@@ -536,7 +593,7 @@ public final class MainActivity extends Activity {
         }));
         if (result.contains("INSTALL_FAILED_UPDATE_INCOMPATIBLE") && !replacing) {
             // A copy of Afnon signed with another key is on the TV; only removing it lets this one in.
-            post(g, () -> askReplace(g, a, apk, version));
+            post(g, () -> askReplace(g, a, apk));
             return;
         }
         if (!result.startsWith("Success")) {
@@ -544,11 +601,16 @@ public final class MainActivity extends Activity {
             return;
         }
         post(g, () -> timeline.set(1, Timeline.State.DONE));
+        runSteps(g, a);
+    }
+
+    /** On the worker thread: each setup step, then on to making it yours. */
+    private void runSteps(int g, Adb a) throws IOException, InterruptedException {
         boolean allRequired = true;
-        for (int i = 0; i < Setup.STEPS.length; i++) {
-            Setup.Step s = Setup.STEPS[i];
+        for (int i = 0; i < steps.size(); i++) {
+            Setup.Step s = steps.get(i);
             int row = i + 2;
-            float at = 0.9f + 0.1f * (i + 1) / Setup.STEPS.length;
+            float at = 0.9f + 0.1f * (i + 1) / steps.size();
             post(g, () -> timeline.set(row, Timeline.State.WORKING));
             boolean ok = a.shell(s.command).ok();
             if (!ok && s.required) allRequired = false;
@@ -558,17 +620,19 @@ public final class MainActivity extends Activity {
                 hero.progress(at);
             });
         }
-        boolean done = allRequired;
-        post(g, () -> showDone(done, version));
+        installedOk = allRequired;
+        // A moment on the finished list, then the next stage.
+        Thread.sleep(700);
+        post(g, () -> new Personalise(this, tv).start());
     }
 
-    private void askReplace(int g, Adb a, File apk, String version) {
+    private void askReplace(int g, Adb a, File apk) {
         new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(R.string.old_signature_title)
                 .setMessage(R.string.old_signature_body)
                 .setPositiveButton(R.string.remove_and_install, (d, w) -> work.execute(() -> {
                     try {
-                        send(g, a, apk, version, true);
+                        send(g, a, apk, true);
                     } catch (Exception e) {
                         fail(g, getString(R.string.error_install, message(e)));
                     }
@@ -578,21 +642,46 @@ public final class MainActivity extends Activity {
                 .show();
     }
 
-    private void showDone(boolean ok, String version) {
+    /** The end: what was set, and the tip about debugging. */
+    void showDone(List<String> summary, boolean oldAfnon) {
         Timeline steps = timeline;
-        if (steps.getParent() != null) ((ViewGroup) steps.getParent()).removeView(steps);
+        if (steps != null && steps.getParent() != null) ((ViewGroup) steps.getParent()).removeView(steps);
+        boolean ok = installedOk;
         String lead = !ok ? getString(R.string.done_partly_lead)
                 : version.isEmpty() ? getString(R.string.done_lead_plain) : getString(R.string.done_lead, version);
-        frame(INSTALL, ok ? Hero.Mode.DONE : Hero.Mode.PROBLEM,
+        frame(PERSONAL, ok ? Hero.Mode.DONE : Hero.Mode.PROBLEM,
                 getString(ok ? R.string.done_title : R.string.done_partly_title), lead);
-        if (!ok) add(steps, 20);
+        if (!ok && steps != null) add(steps, 20);
+        if (!summary.isEmpty()) {
+            LinearLayout card = Ui.card(this);
+            for (int i = 0; i < summary.size(); i++) {
+                LinearLayout row = Ui.row(this);
+                row.setGravity(Gravity.TOP);
+                TextView tick = Ui.text(this, "✓", Ui.GOLD_400, 15, Ui.semibold());
+                tick.setPadding(0, 0, dp(10), 0);
+                row.addView(tick);
+                row.addView(Ui.text(this, summary.get(i), Ui.PLASTER, 15, Ui.medium()), Ui.fill(this));
+                card.addView(row, Ui.wide(this, i == 0 ? 0 : 10));
+            }
+            add(card, 20);
+        }
+        if (oldAfnon) {
+            LinearLayout note = Ui.card(this);
+            note.addView(Ui.small(this, getString(R.string.personal_old)));
+            add(note, 12);
+        }
         LinearLayout tip = Ui.card(this);
         tip.addView(Ui.label(this, getString(R.string.tip_title)));
         tip.addView(Ui.small(this, getString(R.string.tip_body)), Ui.wide(this, 8));
-        add(tip, ok ? 20 : 12);
+        add(tip, 12);
         foot(Ui.primary(this, getString(R.string.finish), v -> finish()));
         foot(Ui.secondary(this, getString(R.string.another), v -> go(this::showGuide)));
         back = this::finish;
+    }
+
+    /** The connection, for a last command after the work is done; null if there is none. */
+    Adb adbOrNull() {
+        return adb;
     }
 
     // Problems
@@ -655,13 +744,23 @@ public final class MainActivity extends Activity {
             }
             case "done":
             case "partly": {
-                boolean ok = screen.equals("done");
+                installedOk = screen.equals("done");
+                version = "0.5";
                 timeline = timeline();
-                for (int i = 0; i < Setup.STEPS.length + 2; i++) timeline.set(i, Timeline.State.DONE);
-                if (!ok) timeline.set(3, Timeline.State.FAILED);
-                showDone(ok, "0.5");
+                for (int i = 0; i < steps.size() + 2; i++) timeline.set(i, Timeline.State.DONE);
+                if (!installedOk) timeline.set(3, Timeline.State.FAILED);
+                showDone(Arrays.asList(getString(R.string.sum_city, Ui.arabic(this) ? "القاهرة" : "Cairo"),
+                        getString(R.string.sum_favourites, "YouTube, Shahid, Claude Code TV, BrowseHere"),
+                        getString(R.string.sum_keys, "3"), getString(R.string.sum_cleaned, "14")), false);
                 break;
             }
+            case "prayer":
+            case "city":
+            case "favourites":
+            case "keys":
+            case "clean":
+                new Personalise(this, null).demo(screen);
+                break;
             case "problem":
                 fail(gen, getString(R.string.error_connect, "192.168.1.50"));
                 break;
@@ -673,19 +772,19 @@ public final class MainActivity extends Activity {
     // The frame
 
     /** Moves to another screen on the user's word: workers still running for the old one are ignored. */
-    private void go(Runnable screen) {
+    void go(Runnable screen) {
         gen++;
         screen.run();
     }
 
     /** Runs on the main thread if the user is still on the screen that started the work. */
-    private void post(int g, Runnable r) {
+    void post(int g, Runnable r) {
         runOnUiThread(() -> {
             if (g == gen) r.run();
         });
     }
 
-    private void frame(int stageNow, Hero.Mode mode, String title, String lead) {
+    void frame(int stageNow, Hero.Mode mode, String title, String lead) {
         stage = stageNow;
         tvList = null;
         help = null;
@@ -705,11 +804,11 @@ public final class MainActivity extends Activity {
         content.animate().alpha(1f).translationY(0).setDuration(220).start();
     }
 
-    private void add(View v, int topDp) {
+    void add(View v, int topDp) {
         content.addView(v, Ui.wide(this, topDp));
     }
 
-    private void foot(View v) {
+    void foot(View v) {
         footer.setVisibility(View.VISIBLE);
         footer.addView(v, Ui.wide(this, footer.getChildCount() == 0 ? 0 : 10));
     }
@@ -717,7 +816,7 @@ public final class MainActivity extends Activity {
     /** Prepare · Connect · Install: done in plaster, now in gold, to come in lapis. */
     private void stages(int now) {
         stages.removeAllViews();
-        int[] names = {R.string.stage_prepare, R.string.stage_connect, R.string.stage_install};
+        int[] names = {R.string.stage_prepare, R.string.stage_connect, R.string.stage_install, R.string.stage_personal};
         for (int i = 0; i < names.length; i++) {
             LinearLayout s = Ui.column(this);
             View bar = new View(this);
@@ -751,7 +850,7 @@ public final class MainActivity extends Activity {
     }
 
     /** A small spinning mark and a line of status, centred. */
-    private View waiting(String text) {
+    View waiting(String text) {
         LinearLayout row = Ui.row(this);
         row.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(18), dp(18));
