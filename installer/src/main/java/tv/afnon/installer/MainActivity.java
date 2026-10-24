@@ -2,6 +2,7 @@ package tv.afnon.installer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -59,7 +60,59 @@ public final class MainActivity extends Activity {
         scroll.addView(page);
         setContentView(scroll);
         finder = new Finder(this, tvs -> runOnUiThread(() -> showTvs(tvs)));
-        showGuide();
+        String demo = getIntent().getStringExtra("screen");
+        boolean debuggable = (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        if (demo != null && debuggable) showDemo(demo);
+        else showGuide();
+    }
+
+    /**
+     * Debug builds only: one screen with sample data, for screenshots and checking layouts without a TV.
+     * {@code adb shell am start -n tv.afnon.installer/.MainActivity --es screen find|pair|install|done|problem}
+     */
+    private void showDemo(String screen) {
+        switch (screen) {
+            case "find": {
+                showFind();
+                finder.stop();
+                Finder.Tv wireless = new Finder.Tv("192.168.1.50");
+                wireless.tls = 41234;
+                wireless.pairing = 37019;
+                Finder.Tv classic = new Finder.Tv("192.168.1.62");
+                classic.classic = Finder.CLASSIC_PORT;
+                if (tvList == null) {
+                    tvList = new LinearLayout(this);
+                    tvList.setOrientation(LinearLayout.VERTICAL);
+                    page.addView(tvList, 2);
+                }
+                showTvs(java.util.Arrays.asList(wireless, classic));
+                break;
+            }
+            case "pair":
+                showPair("192.168.1.50", 41234);
+                break;
+            case "install": {
+                clear(R.string.install_title);
+                text(getString(R.string.downloading, "0.5"), PLASTER, 15);
+                ProgressBar bar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+                bar.setMax(1000);
+                bar.setProgress(620);
+                page.addView(bar);
+                break;
+            }
+            case "done": {
+                LinearLayout steps = new LinearLayout(this);
+                steps.setOrientation(LinearLayout.VERTICAL);
+                for (Setup.Step st : Setup.STEPS) stepLine(steps, getString(st.label), true, st.required);
+                showDone(true, "0.5", steps);
+                break;
+            }
+            case "problem":
+                fail(getString(R.string.error_connect, "192.168.1.50"));
+                break;
+            default:
+                showGuide();
+        }
     }
 
     @Override
@@ -365,12 +418,8 @@ public final class MainActivity extends Activity {
             Adb.Result r = a.shell(s.command);
             boolean ok = r.ok();
             if (!ok && s.required) allRequired = false;
-            String line = (ok ? "✓  " : "✗  ") + getString(s.label);
-            runOnUiThread(() -> {
-                TextView t = text(line, ok ? GOLD : (s.required ? RED : DIM), 15);
-                page.removeView(t);
-                steps.addView(t);
-            });
+            String label = getString(s.label);
+            runOnUiThread(() -> stepLine(steps, label, ok, s.required));
         }
         boolean done = allRequired;
         runOnUiThread(() -> showDone(done, version, steps));
@@ -386,6 +435,12 @@ public final class MainActivity extends Activity {
     }
 
     // Helpers
+
+    private void stepLine(LinearLayout steps, String label, boolean ok, boolean required) {
+        TextView t = text((ok ? "✓  " : "✗  ") + label, ok ? GOLD : (required ? RED : DIM), 15);
+        page.removeView(t);
+        steps.addView(t);
+    }
 
     private synchronized Adb adb() throws Exception {
         if (adb == null) adb = new Adb(this);
