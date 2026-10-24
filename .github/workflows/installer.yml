@@ -40,12 +40,13 @@ jobs:
           (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         env:
           GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           tag=installer-preview
-          gh release view $tag >/dev/null 2>&1 || gh release create $tag --prerelease --target "$GITHUB_SHA" \
+          gh release view $tag >/dev/null 2>&1 || gh release create $tag --prerelease --target "$HEAD_SHA" \
             --title "Afnon Installer preview" --notes "Preview from the Installer workflow; not a release."
           gh release upload $tag afnon-installer.apk --clobber
-          gh release edit $tag --prerelease --notes "Built from ${GITHUB_HEAD_REF:-$GITHUB_REF_NAME} @ $(git rev-parse --short HEAD) by the Installer workflow; not a release."
+          gh release edit $tag --prerelease --notes "Built from ${GITHUB_HEAD_REF:-$GITHUB_REF_NAME} @ ${HEAD_SHA::7} by the Installer workflow; not a release."
 
   # Every screen in Arabic and English on an emulator, pushed to the installer-screenshots branch (not main).
   screenshots:
