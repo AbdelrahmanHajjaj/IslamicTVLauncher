@@ -34,7 +34,7 @@
     <string name="help_body">• Check that debugging is on (step 3).\n• Make sure both are on the same Wi-Fi.\n• Some routers hide devices from each other: type the TV’s address instead.</string>
     <string name="manual_title">Or type its address</string>
     <string name="manual_body">On the TV: Settings › Network › your Wi-Fi. For Wireless debugging, add the port it shows, like 192.168.1.50:41234.</string>
-    <string name="manual_hint">192.168.1.50 or 192.168.1.50:41234</string>
+    <string name="manual_hint">192.168.1.50</string>
     <string name="connect">Connect</string>
     <string name="not_wifi_title">Join the TV’s Wi-Fi</string>
     <string name="not_wifi">This phone isn’t on Wi-Fi. Connect to the same network as the TV, then try again.</string>
@@ -97,7 +97,7 @@
     <string name="back">Back</string>
 
     <!-- Make it yours -->
-    <string name="stage_personal">Make it yours</string>
+    <string name="stage_personal">Set up</string>
     <string name="found_heading">On your Wi-Fi</string>
     <string name="already_on_tv">Afnon %1$s is already on the TV</string>
     <string name="continue_">Continue</string>

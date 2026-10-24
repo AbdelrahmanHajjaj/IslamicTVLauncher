@@ -32,7 +32,7 @@
     <string name="help_body">• تأكّد أن التصحيح مفعّل (الخطوة ٣).\n• تأكّد أن الجهازين على شبكة الواي فاي نفسها.\n• بعض أجهزة الراوتر تُخفي الأجهزة عن بعضها: اكتب عنوان التلفاز بدلًا من ذلك.</string>
     <string name="manual_title">أو اكتب عنوانه</string>
     <string name="manual_body">على التلفاز: الإعدادات ‹ الشبكة ‹ شبكتك. وللتصحيح اللاسلكي أضف المنفذ الظاهر هناك، مثل 192.168.1.50:41234.</string>
-    <string name="manual_hint">192.168.1.50 أو 192.168.1.50:41234</string>
+    <string name="manual_hint">192.168.1.50</string>
     <string name="connect">اتصال</string>
     <string name="not_wifi_title">اتصل بشبكة التلفاز</string>
     <string name="not_wifi">هذا الهاتف غير متصل بالواي فاي. اتصل بشبكة التلفاز نفسها ثم أعد المحاولة.</string>

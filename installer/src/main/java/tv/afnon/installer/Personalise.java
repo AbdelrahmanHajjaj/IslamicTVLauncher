@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -779,16 +778,39 @@ final class Personalise {
     private View toggle(int label, boolean on, Flip flip) {
         LinearLayout row = Ui.row(a);
         row.addView(Ui.text(a, a.getString(label), Ui.PLASTER, 15, Ui.medium()), Ui.fill(a));
-        Switch s = new Switch(a);
-        s.setChecked(on);
-        android.content.res.ColorStateList thumb = new android.content.res.ColorStateList(
-                new int[][] {{android.R.attr.state_checked}, {}}, new int[] {Ui.GOLD_400, Ui.MIST});
-        android.content.res.ColorStateList track = new android.content.res.ColorStateList(
-                new int[][] {{android.R.attr.state_checked}, {}}, new int[] {0x80d8b46a, Ui.LAPIS_700});
-        s.setThumbTintList(thumb);
-        s.setTrackTintList(track);
-        s.setOnCheckedChangeListener((v, checked) -> flip.on(checked));
-        row.addView(s);
+        Toggle t = new Toggle(a, on);
+        row.addView(t, new LinearLayout.LayoutParams(Ui.dp(a, 48), Ui.dp(a, 28)));
+        row.setClickable(true);
+        row.setOnClickListener(v -> flip.on(t.flip()));
         return row;
+    }
+
+    /** An on/off pill in Afnon's colours; on sits at the end of the reading direction. */
+    private static final class Toggle extends View {
+        private boolean on;
+        private final android.graphics.Paint p = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        private final android.graphics.RectF r = new android.graphics.RectF();
+
+        Toggle(android.content.Context c, boolean on) {
+            super(c);
+            this.on = on;
+        }
+
+        boolean flip() {
+            on = !on;
+            invalidate();
+            return on;
+        }
+
+        @Override protected void onDraw(android.graphics.Canvas c) {
+            float w = getWidth(), h = getHeight();
+            r.set(0, h * 0.14f, w, h * 0.86f);
+            p.setColor(on ? 0x80d8b46a : Ui.LAPIS_700);
+            c.drawRoundRect(r, h, h, p);
+            boolean end = on != (getLayoutDirection() == LAYOUT_DIRECTION_RTL);
+            float rad = h * 0.42f;
+            p.setColor(on ? Ui.GOLD_400 : Ui.MIST);
+            c.drawCircle(end ? w - rad - h * 0.04f : rad + h * 0.04f, h / 2f, rad, p);
+        }
     }
 }
