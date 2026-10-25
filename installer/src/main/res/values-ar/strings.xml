@@ -153,4 +153,10 @@
 
     <string name="guide_both">قوائم التلفاز معروضة بالعربية والإنجليزية</string>
     <string name="g3_wireless">وإن وجدت هذا أيضًا ففعّله:</string>
+    <string name="signature_kept">توقيع النسخة المثبتة مختلف. احتفظنا بها لحماية الشاشة الرئيسية والإعدادات. استخدم نسخة بنفس مفتاح التوقيع.</string>
+    <string name="export_backup">حفظ نسخة الاستعادة</string>
+    <string name="restore_backup">استعادة إعدادات التلفزيون الأصلية</string>
+    <string name="restore_backup_help">استعادة الشاشة الرئيسية والتطبيقات والإعدادات المسجلة؟ سيبقى أفنون مثبتًا.</string>
+    <string name="backup_restored">تمت استعادة إعدادات التلفزيون الأصلية</string>
+    <string name="choose_local_apk">تثبيت نسخة أفنون من الهاتف</string>
 </resources>

@@ -36,6 +36,10 @@ Afnon started from [cleanyourtv](https://github.com/Gathin23/cleanyourtv):
 
 ---
 
+## Local improvements branch
+
+See [themes, screensavers and buttons](docs/THEMES.md) and [local setup and recovery](tools/device.md) for PC/phone backups, verified Home takeover and reversible stock-launcher disabling. The linked upstream releases do not contain this branch’s changes. Build locally; TCL 50C641K hardware testing is pending.
+
 ## Screens
 
 | | |
@@ -106,65 +110,34 @@ nothing from other sites except the station's stream when you press Play, and ke
 
 ## Install
 
-### Easiest: from your phone
+### This local branch
 
-No computer needed. Install [`afnon-installer.apk`](https://github.com/egyjs/afnon-android-tv-launcher/releases/latest/download/afnon-installer.apk)
-on an Android phone (8 or later) on the same Wi-Fi as the TV, open it and follow the screens:
+Build from this checkout with JDK 17 and Android SDK 34. The public release links above are upstream releases and do not include these local changes. See [the setup and recovery guide](tools/device.md) before disabling stock Home.
 
-1. **Prepare.** How to turn on Developer options and USB debugging (or Wireless debugging) on the TV.
-2. **Connect.** TVs on the Wi-Fi appear by themselves (mDNS for classic debugging, Wireless debugging's random
-   port and the pairing port, and a sweep for port 5555); or type the address, with or without a port. Then accept
-   "Allow USB debugging?" on the TV, or type the six-digit pairing code it shows.
-3. **Install.** The latest `afnon.apk` from this repo's releases (skipped when the TV already has it), then the
-   steps in [`tools/setup-steps.txt`](tools/setup-steps.txt) at that release's tag, the same file
-   `tools/install.sh` runs.
-4. **Make it yours.** The city and prayer settings, the four favourites (with the TV's own app icons) and a
-   cleanup: ads, tracking and preloaded apps, turned off (never uninstalled) from
-   [`tools/clean-catalog.tsv`](tools/clean-catalog.tsv), with an undo.
+Windows:
 
-The installer keeps no copies of what can change: the APK, the setup steps and the cleanup list come from GitHub,
-and the cities and apps from Afnon on the TV (`SetupProvider`), so a new Afnon release needs no new
-installer. Source in `installer/` (plain Java, an ADB client library and Conscrypt for TLS).
-
-### Quick: the APK
-
-Download [`afnon.apk`](https://github.com/egyjs/afnon-android-tv-launcher/releases/latest/download/afnon.apk) from the latest release, then:
-
-```bash
-export TV=192.168.1.50:5555
-adb connect $TV
-adb -s $TV install -r afnon.apk
-adb -s $TV shell cmd package set-home-activity tv.afnon.home/.MainActivity
-adb -s $TV shell settings put secure screensaver_components tv.afnon.home/.AfnonDream
-adb -s $TV shell pm grant tv.afnon.home android.permission.RECORD_AUDIO
-adb -s $TV shell pm grant tv.afnon.home android.permission.WRITE_SECURE_SETTINGS
-adb -s $TV shell pm grant tv.afnon.home android.permission.ACCESS_FINE_LOCATION
+```powershell
+adb connect 192.168.1.50:5555
+$env:TV = '192.168.1.50:5555'
+./tools/install.ps1
+python -S -B tools/device.py configure
 ```
 
-Then turn on **Afnon remote buttons** in the TV's Settings → Accessibility. The APK includes the adhan recordings.
+Local check results and pending TCL tests: [validation record](docs/LOCAL-VALIDATION.md).
 
-### From source
+Linux/macOS: set `TV`, connect with `adb`, then `bash tools/install.sh` and `python3 tools/device.py configure`. After verifying Home, Inputs and Settings, `python3 tools/device.py home --exclusive` disables known stock launcher packages reversibly. All paths preserve the selected screensaver and stop on failed checks. Nothing is uninstalled.
 
-You need a computer with **adb**, **JDK 17**, the Android SDK (platform 34), and the TV with
-**Developer options → USB / Network debugging** on.
+### From your phone
 
-```bash
-git clone https://github.com/egyjs/afnon-android-tv-launcher.git
-cd afnon-android-tv-launcher
-export TV=192.168.1.50:5555          # your TV's address
-adb connect $TV                      # accept the prompt on the TV
-bash tools/install.sh                # fetches the adhans, builds, installs, sets Afnon as home
-```
+Build `:installer:assembleDebug` and copy that APK to an Android phone. Open the installer and choose **Install a local Afnon APK**, selecting the launcher APK built from this branch. Follow Prepare and Connect, then approve the TV's debugging prompt. The installer saves a private recovery record before setup and uses its bundled setup policy. Export the recovery backup to phone storage before clearing installer data. Cities, apps and button choices come from the TV's guarded setup provider.
 
-`install.sh` runs `tools/fetch-adhans.sh` the first time. That script downloads the 14 recordings
-from [abodehq/Athan-MP3](https://github.com/abodehq/Athan-MP3). They aren't in this repo because
-that collection has no licence.
+The upstream-download option remains available. It installs the upstream release, which does not contain local branch features. The installer keeps Afnon installed if signing keys differ; use a build signed with the installed key.
 
-The spoken reminder and «حان الآن موعد صلاة …» are 12 short clips made on your machine: `install.sh` runs
-`tools/fetch-announce.sh` the first time, which reads `tools/announce-lines.txt` with a Microsoft neural Arabic voice
-through [edge-tts](https://github.com/rany2/edge-tts) (`pip install edge-tts`; `VOICE=` picks another) into
-`app/src/main/assets/announce/`. They aren't in this repo; the release APK includes them. Without them
-those two stay silent and everything else works.
+### Audio assets
+
+Run `bash tools/fetch-adhans.sh` before building to download the 14 adhan recordings for personal use. They are Git-ignored because the source collection has no licence. The local APK built during this work includes them.
+
+Optional spoken announcements use `tools/fetch-announce.sh` and `edge-tts`; those generated clips also stay out of Git. Without those clips, reminders display silently. Prayer calculation and radio do not depend on them.
 
 **Close network debugging when you're done.** Port 5555 is plain text, and on some firmware any
 device on your network can get a shell through it. Switch USB debugging and Network debugging off
@@ -177,11 +150,11 @@ in Developer options, revoke the USB debugging authorisations, reboot, and check
 |---|---|
 | Change favourites | All apps → hold **OK** on an app → *Put in favourites instead of…* |
 | Change city, method, adhan voice, radio options | The remote's **Settings** button, or the gear on Home |
-| Point a remote button at another app | Edit the table at the top of `RemoteKeys.java`, then `bash tools/install.sh` |
-| Change colours or the star pattern | `Tokens.java` (the design tokens) and `Ui.starLattice` |
-| Disable a stock app | `bash tools/disable.sh <package>` (reversible; logged to `state/disabled.log`) |
+| Point a remote button at another app or action | Settings → Device settings → Remote buttons |
+| Change colours or ambient background | Settings → Display & language; [custom JSON themes](docs/THEMES.md) |
+| Disable a stock app | `bash tools/disable.sh <package>` (reversible; recorded in a private recovery backup) |
 | Re-enable an app | `bash tools/enable.sh <package>`, or on the TV: Settings → Apps → See all apps → Show system apps → the app → Enable |
-| Go back to stock | `bash tools/restore.sh`, then reboot. Re-enables everything in the log, restores home, screensaver and sleep timer, and uninstalls Afnon. |
+| Go back to stock | `bash tools/restore.sh`, then verify Home and reboot. Restores recorded state while keeping Afnon installed. |
 
 ### Trying things without waiting for a prayer
 
@@ -242,7 +215,8 @@ app/src/main/java/tv/afnon/home/
   Announce            The spoken reminder and «حان الآن موعد صلاة …»
   PrayerDay, Prefs, Reminders, Adhans, Text, Tokens, Ui …
 installer/            The phone app that installs and sets up Afnon over ADB (Finder, Adb, Tv, Setup, Personalise)
-tools/setup-steps.txt What Afnon needs after install: one list for install.sh and the phone installer
+tools/device.py      Guarded PC setup, backup, Home takeover, themes and restore
+tools/setup-steps.txt Bundled phone installer setup policy
 tools/clean-catalog.tsv  The cleanup list, built weekly from cleanyourtv by tools/gen-clean-catalog.py
 tools/                install, restore, disable/enable, fetch-adhans, fetch-announce, screenshot
 docs/screenshots/     the images above, all from the real TV

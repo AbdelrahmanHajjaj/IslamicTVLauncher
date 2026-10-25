@@ -14,9 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Everything the installer takes from GitHub at run time, so a new Afnon never needs a new installer: the latest
- * release's APK, the setup steps that go with it (tools/setup-steps.txt at that release's tag, the same file
- * tools/install.sh runs), and the clean catalogue (tools/clean-catalog.tsv on main, refreshed from cleanyourtv).
+ * Optional upstream APK and clean catalogue downloads. Setup commands are bundled and never fetched for execution.
  */
 final class Setup {
     private Setup() {}
@@ -41,26 +39,12 @@ final class Setup {
         String label(boolean arabic) { return arabic ? ar : en; }
     }
 
-    /** tools/setup-steps.txt as of this installer, for when GitHub can't be reached or a release predates it. */
-    private static final String FALLBACK_STEPS = ""
-            + "1|Afnon is the home screen|أفنون هو الشاشة الرئيسية|cmd package set-home-activity tv.afnon.home/.MainActivity\n"
-            + "?|cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME | tail -n 1 | grep -q '^tv.afnon.home/'\n"
-            + "1|Remote buttons and the call to prayer|أزرار جهاز التحكم والأذان|s=$(settings get secure enabled_accessibility_services); case \"$s\" in *tv.afnon.home/.RemoteKeys*) ;; ''|null) s=tv.afnon.home/.RemoteKeys ;; *) s=\"$s:tv.afnon.home/.RemoteKeys\" ;; esac; settings put secure enabled_accessibility_services \"$s\" && settings put secure accessibility_enabled 1\n"
-            + "?|settings get secure enabled_accessibility_services | grep -q 'tv.afnon.home/.RemoteKeys' && [ \"$(settings get secure accessibility_enabled)\" = 1 ]\n"
-            + "0|Afnon screensaver|شاشة توقّف أفنون|settings put secure screensaver_components tv.afnon.home/.AfnonDream\n"
-            + "?|settings get secure screensaver_components | grep -q 'tv.afnon.home/.AfnonDream'\n"
-            + "0|Starts by itself after a restart|يعمل وحده بعد إعادة التشغيل|appops set tv.afnon.home APP_AUTO_START allow 2>/dev/null; appops set tv.afnon.home APP_ASSOC_START allow 2>/dev/null; true\n"
-            + "?|o=$(appops get tv.afnon.home APP_AUTO_START 2>&1); case \"$o\" in *allow*) true ;; *) false ;; esac\n"
-            + "0|Quran Radio level bars and sleep timer|مؤشّر صوت إذاعة القرآن ومؤقّت النوم|pm grant tv.afnon.home android.permission.RECORD_AUDIO && pm grant tv.afnon.home android.permission.WRITE_SECURE_SETTINGS\n"
-            + "?|d=$(dumpsys package tv.afnon.home); echo \"$d\" | grep -q 'RECORD_AUDIO: granted=true' && echo \"$d\" | grep -q 'WRITE_SECURE_SETTINGS: granted=true'\n"
-            + "0|Wi-Fi name in Settings|اسم الواي فاي في الإعدادات|pm grant tv.afnon.home android.permission.ACCESS_FINE_LOCATION\n"
-            + "?|dumpsys package tv.afnon.home | grep -q 'ACCESS_FINE_LOCATION: granted=true'\n";
+    /** Bundled commands, mirrored in tools/setup-steps.txt. */
+    private static final String FALLBACK_STEPS =
+            "1|Afnon is the home screen|أفنون هو الشاشة الرئيسية|am start -W -n tv.afnon.home/.MainActivity && cmd package set-home-activity --user 0 tv.afnon.home/.MainActivity\n?|cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME | tail -n 1 | grep -q '^tv.afnon.home/'\n0|Quran Radio level bars and sleep timer|مؤشّر صوت إذاعة القرآن ومؤقّت النوم|pm grant tv.afnon.home android.permission.RECORD_AUDIO && pm grant tv.afnon.home android.permission.WRITE_SECURE_SETTINGS\n?|d=$(dumpsys package tv.afnon.home); echo \"$d\" | grep -q 'RECORD_AUDIO: granted=true' && echo \"$d\" | grep -q 'WRITE_SECURE_SETTINGS: granted=true'\n1|Remote buttons and the call to prayer|أزرار جهاز التحكم والأذان|s=$(settings get secure enabled_accessibility_services); case \"$s\" in *tv.afnon.home/.RemoteKeys*|*tv.afnon.home/tv.afnon.home.RemoteKeys*) ;; ''|null) s=tv.afnon.home/.RemoteKeys ;; *) s=\"$s:tv.afnon.home/.RemoteKeys\" ;; esac; settings put secure enabled_accessibility_services \"$s\" && settings put secure accessibility_enabled 1\n?|settings get secure enabled_accessibility_services | grep -Eq 'tv[.]afnon[.]home/(tv[.]afnon[.]home)?[.]RemoteKeys' && [ \"$(settings get secure accessibility_enabled)\" = 1 ]\n0|Starts by itself after a restart|يعمل وحده بعد إعادة التشغيل|appops set tv.afnon.home APP_AUTO_START allow 2>/dev/null; appops set tv.afnon.home APP_ASSOC_START allow 2>/dev/null; true\n?|o=$(appops get tv.afnon.home APP_AUTO_START 2>&1); case \"$o\" in *allow*) true ;; *) false ;; esac\n0|Wi-Fi name in Settings|اسم الواي فاي في الإعدادات|pm grant tv.afnon.home android.permission.ACCESS_FINE_LOCATION\n?|dumpsys package tv.afnon.home | grep -q 'ACCESS_FINE_LOCATION: granted=true'\n";
 
-    /** The setup steps for that release; never empty. */
     static List<Step> steps(String tag) {
-        String text = tag == null ? null : fetch(RAW + tag + "/tools/setup-steps.txt");
-        List<Step> steps = parseSteps(text);
-        return steps.isEmpty() ? parseSteps(FALLBACK_STEPS) : steps;
+        return parseSteps(FALLBACK_STEPS);
     }
 
     static List<Step> parseSteps(String text) {

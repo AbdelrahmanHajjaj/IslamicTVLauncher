@@ -4,6 +4,18 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+- Remote settings: assign installed apps by selecting a named shortcut or capturing a complete physical button press; prevent duplicate aliases, preserve navigation keys, and offer named TCL shortcuts when firmware intercepts the press. Add a matching browser demo.
+
+- Add Mihrab/Aurora/Ember/Forest and validated JSON themes, panoramic/daylight ambient backgrounds, lighting and reduced-motion controls. Match the Arabic/English web preview.
+- Add default-Home, installed-screensaver, Inputs and remote-button controls; opt-in prayer-service recovery; refresh app tiles after package changes, including replacements with the same app count.
+- Fix three text-layout calls to support the declared Android 8 minimum.
+
+- Add local Windows/Python setup with verified Home takeover, private recovery backups, reversible stock-launcher disabling and simulated-TV checks.
+- Phone installer: local APK selection, private/exportable recovery records, stop cleanup after failed Home setup, protect essential packages, and keep an installed launcher when signatures differ.
+- Preserve the selected screensaver and unrelated accessibility services. Restore only Afnon-owned TCL button mappings; pass gamepad events through accessibility interception.
+- Safety and recovery patterns adapted from CleanYourTV, Copyright (c) 2026 Gathin, MIT; see `docs/CLEANYOURTV-LICENSE.txt`.
+
+
 ## [0.6] - 2026-10-25
 
 ### Added

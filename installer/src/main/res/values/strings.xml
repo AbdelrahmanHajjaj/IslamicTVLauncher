@@ -155,4 +155,10 @@
 
     <string name="guide_both">TV menus are shown in Arabic and English</string>
     <string name="g3_wireless">If you also see this, turn it on too:</string>
+    <string name="signature_kept">The installed copy uses a different signing key. It has been kept so Home and settings remain available. Install an APK built with the same key.</string>
+    <string name="export_backup">Save recovery backup</string>
+    <string name="restore_backup">Restore original TV setup</string>
+    <string name="restore_backup_help">Restore the recorded Home, disabled apps and settings? Afnon stays installed.</string>
+    <string name="backup_restored">Original TV setup restored</string>
+    <string name="choose_local_apk">Install a local Afnon APK</string>
 </resources>
