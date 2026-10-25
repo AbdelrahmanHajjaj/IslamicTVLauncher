@@ -105,6 +105,7 @@ nothing from other sites except the station's stream when you press Play, and ke
 | `INTERNET`, `WAKE_LOCK` | The radio stream, kept playing with the screen off |
 | `RECORD_AUDIO` | Required by Android's Visualizer, to read Afnon's **own** player for the level bars. It does not use the microphone. |
 | `WRITE_SECURE_SETTINGS` | Turns the TV's sleep timer off while the radio plays, and puts it back after. On TCL, also writes the remote button mappings (see TCL notes) |
+| `REQUEST_DELETE_PACKAGES` | Opens Android’s uninstall confirmation when requested from an app’s long-press menu |
 | `ACCESS_FINE_LOCATION` | Android 9+ hides the Wi-Fi name without it; Home shows the name. Afnon never reads the TV's location |
 | Accessibility service | Remote button mapping (see `RemoteKeys.java`) |
 
@@ -148,7 +149,10 @@ in Developer options, revoke the USB debugging authorisations, reboot, and check
 
 | I want to… | Do this |
 |---|---|
-| Change favourites | All apps → hold **OK** on an app → *Put in favourites instead of…* |
+| Change favourites | All apps → hold **OK** to add, reorder or replace up to nine favourites; replacement lets you choose a tile on Home |
+| Uninstall a removable app | All apps → hold **OK** → Uninstall → Android confirmation |
+| Prayer time offsets | Settings → Prayer times → Prayer time offsets (−30 to +30 minutes for each time) |
+| App-coloured lighting | Settings → Display & language → App focus lighting |
 | Change city, method, adhan voice, radio options | The remote's **Settings** button, or the gear on Home |
 | Point a remote button at another app or action | Settings → Device settings → Remote buttons |
 | Change colours or ambient background | Settings → Display & language; [custom JSON themes](docs/THEMES.md) |

@@ -36,3 +36,32 @@ class JavaChecks(unittest.TestCase):
                 str(ROOT / "app/src/main/java/tv/afnon/home/ButtonPress.java"),
                 str(ROOT / "tests/ButtonPressCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.ButtonPressCheck"], check=True, capture_output=True)
+
+    def test_prayer_offsets_and_next_day_across_clock_changes(self):
+        import os
+        cache = Path(os.environ.get("GRADLE_USER_HOME", Path.home() / ".gradle"))
+        jars = list((cache / "caches/modules-2/files-2.1/com.batoulapps.adhan/adhan/1.2.1").glob("*/*.jar"))
+        self.assertTrue(jars, "Build the launcher first to cache its prayer library")
+        with tempfile.TemporaryDirectory() as output:
+            out = Path(output)
+            # Android-only display/context pieces are stubbed; all prayer calculations use the real library.
+            sources = {
+                "Context.java": "package android.content; public class Context {}",
+                "IslamicCalendar.java": "package android.icu.util; public class IslamicCalendar extends java.util.GregorianCalendar { public static final int RAMADAN = 8; public enum CalculationType { ISLAMIC_UMALQURA } public void setCalculationType(CalculationType t) {} }",
+                "Prefs.java": "package tv.afnon.home; import android.content.Context; import com.batoulapps.adhan.*; final class Prefs { static final int MAX_PRAYER_OFFSET = 30; static Coordinates where(Context c) { return null; } static CalculationMethod method(Context c) { return null; } static Madhab madhab(Context c) { return null; } static int hijriOffset(Context c) { return 0; } static int[] prayerOffsets(Context c) { return new int[6]; } }",
+            }
+            for name, source in sources.items():
+                (out / name).write_text(source, encoding="utf-8")
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-cp", str(jars[0]), "-d", output,
+                *(str(out / name) for name in sources),
+                str(ROOT / "app/src/main/java/tv/afnon/home/PrayerDay.java"),
+                str(ROOT / "tests/PrayerDayCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + str(jars[0]),
+                "tv.afnon.home.PrayerDayCheck"], check=True, capture_output=True)
+
+    def test_home_favourite_replacement_and_navigation(self):
+        with tempfile.TemporaryDirectory() as output:
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+                str(ROOT / "app/src/main/java/tv/afnon/home/FavouriteChoice.java"),
+                str(ROOT / "tests/FavouriteChoiceCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.FavouriteChoiceCheck"], check=True, capture_output=True)

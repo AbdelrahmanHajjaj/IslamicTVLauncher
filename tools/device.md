@@ -2,7 +2,7 @@
 
 These tools install your locally built Afnon. They never fetch or push Git. Python 3.9+, JDK 17 and Android SDK 34 are required. The phone installer can also install an APK you copy to the phone: choose **Install a local Afnon APK**.
 
-Target for this branch: TCL 50C641K, expected Android 11 (API 30), firmware V8-R51MT02-LF1V903.021315. This device has not yet been tested. The tools read the actual API version and refuse anything below 26.
+Tested on TCL 50C641K, Android 11 (API 30), firmware V8-R51MT02-LF1V903.021315. Installation, exclusive Home and reboot passed; see [validation and remaining hardware checks](../docs/LOCAL-VALIDATION.md). The tools read the actual API version and refuse anything below 26.
 
 ## Install from Windows
 

@@ -192,6 +192,7 @@ final class Prefs {
         new City("ankara", "أنقرة", "Ankara", "تركيا", "Turkey", 39.9334, 32.8597, MWL),
 
         // Europe
+        new City("leamingtonspa", "ليمينغتون سبا", "Leamington Spa", "المملكة المتحدة", "United Kingdom", 52.2913, -1.5364, MWL),
         new City("london", "لندن", "London", "المملكة المتحدة", "United Kingdom", 51.5074, -0.1278, MWL),
         new City("birmingham", "برمنغهام", "Birmingham", "المملكة المتحدة", "United Kingdom", 52.4862, -1.8904, MWL),
         new City("manchester", "مانشستر", "Manchester", "المملكة المتحدة", "United Kingdom", 53.4808, -2.2426, MWL),
@@ -259,6 +260,24 @@ final class Prefs {
     static Coordinates where(Context c) {
         City city = city(c);
         return new Coordinates(city.lat, city.lng);
+    }
+
+    static final int MAX_PRAYER_OFFSET = 30;
+
+    static int prayerOffset(Context c, int prayer) {
+        return Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, of(c).getInt("prayer_offset_" + prayer, 0)));
+    }
+
+    static void setPrayerOffset(Context c, int prayer, int minutes) {
+        if (prayer < 0 || prayer >= 6 || Math.abs((long) minutes) > MAX_PRAYER_OFFSET)
+            throw new IllegalArgumentException("Invalid prayer offset");
+        of(c).edit().putInt("prayer_offset_" + prayer, minutes).apply();
+    }
+
+    static int[] prayerOffsets(Context c) {
+        int[] offsets = new int[6];
+        for (int i = 0; i < offsets.length; i++) offsets[i] = prayerOffset(c, i);
+        return offsets;
     }
 
     // ---------------------------------------------------------------- calculation
@@ -395,6 +414,6 @@ final class Prefs {
     static String key(Context c) {
         SharedPreferences p = of(c);
         return p.getString("locale", "") + "|" + p.getString("digits", "") + "|" + clock24(c) + "|" + cityIndex(c)
-            + "|" + method(c) + "|" + madhab(c) + "|" + hijriOffset(c) + "|" + p.getInt("facing", -1) + "|" + Appearance.key(c) + "|" + Appearance.reduced(c);
+            + "|" + method(c) + "|" + madhab(c) + "|" + java.util.Arrays.toString(prayerOffsets(c)) + "|" + hijriOffset(c) + "|" + p.getInt("facing", -1) + "|" + Appearance.key(c) + "|" + Appearance.reduced(c);
     }
 }

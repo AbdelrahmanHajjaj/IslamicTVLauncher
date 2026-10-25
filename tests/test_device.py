@@ -244,5 +244,36 @@ class RecoveryTest(unittest.TestCase):
         self.assertIn("com.gathin.tvhome", self.adb.enabled)
         self.assertIn("com.google.android.apps.tv.launcherx", self.adb.enabled)
 
+class ThemeCommandTest(unittest.TestCase):
+    def test_json_theme_passes_intact_and_requires_save_confirmation(self):
+        import json, shlex
+        from unittest.mock import patch
+        document = {"version": 1, "background": "panorama", "lighting": 35}
+        calls = []
+        class ThemeAdb:
+            target = "test-tv"
+            reply = "Bundle[{saved=true}]"
+            def __init__(self, *args): pass
+            def run(self, *args): return "device"
+            def shell(self, command):
+                calls.append(command)
+                parts = shlex.split(command)
+                if parts[:2] == ["content", "call"]:
+                    self_outer.assertEqual(json.loads(parts[parts.index("--arg") + 1]), document)
+                    return self.reply
+                return "Status: ok"
+        self_outer = self
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "theme.json"
+            path.write_text(json.dumps(document))
+            with patch.object(device, "Adb", ThemeAdb), patch("sys.stdout"), patch("sys.stderr"):
+                self.assertEqual(device.main(["--tv", "test-tv", "theme", str(path)]), 0)
+                self.assertTrue(any(c.startswith("am start") for c in calls))
+                calls.clear()
+                ThemeAdb.reply = "usage: content\n[ERROR] Binding not well formed"
+                self.assertEqual(device.main(["--tv", "test-tv", "theme", str(path)]), 1)
+                self.assertFalse(any(c.startswith("am start") for c in calls))
+
+
 if __name__ == "__main__":
     unittest.main()

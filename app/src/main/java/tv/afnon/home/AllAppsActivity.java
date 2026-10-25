@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * All apps (design/AllApps.dc.html): five columns, three rows in view, paging a row at a time. The info bar
  * names the focused app and its place in favourites. Hold OK arranges favourites: a favourite moves earlier or
- * later; any other app can take a favourite's place (Home always has four). The chip shows the next prayer and
+ * later; any other app can take a favourite's place (Home supports four to nine). The chip shows the next prayer and
  * opens Prayer day; Back returns Home.
  */
 public class AllAppsActivity extends Screen {
@@ -329,14 +329,29 @@ public class AllAppsActivity extends Screen {
         List<String> labels = new ArrayList<>();
         int at = favs.indexOf(pkg);
         if (at >= 0) {
+            if (favs.size() > 4) {
+                labels.add(t.removeFavourite());
+                menuActions.add(() -> { List<String> f = new ArrayList<>(favs); f.remove(pkg); Apps.saveFavourites(this, f); focusPkg = pkg; build(); });
+            }
             if (at > 0) { labels.add(t.moveEarlier()); menuActions.add(() -> swapFav(at, at - 1, pkg)); }
             if (at < favs.size() - 1) { labels.add(t.moveLater()); menuActions.add(() -> swapFav(at, at + 1, pkg)); }
         } else {
-            for (int j = 0; j < favs.size(); j++) {
-                final int slot = j;
-                labels.add(t.putInPlaceOf(Apps.name(this, t, favs.get(j))));
-                menuActions.add(() -> replaceFav(slot, pkg));
+            if (favs.size() < Apps.FAVOURITE_SLOTS) {
+                labels.add(t.addFavourite());
+                menuActions.add(() -> { List<String> f = new ArrayList<>(favs); f.add(pkg); Apps.saveFavourites(this, f); focusPkg = pkg; build(); });
             }
+            labels.add(t.replaceFavourite());
+            menuActions.add(() -> {
+                startActivity(new Intent(this, MainActivity.class).putExtra("replace_favourite", pkg));
+                finish();
+            });
+        }
+        if (Apps.canUninstall(this, pkg)) {
+            labels.add(t.uninstall());
+            menuActions.add(() -> {
+                if (Apps.canUninstall(this, pkg)) startSafely(new Intent(Intent.ACTION_UNINSTALL_PACKAGE,
+                    android.net.Uri.fromParts("package", pkg, null)));
+            });
         }
         labels.add(t.cancel());
         menuActions.add(null);
@@ -361,6 +376,13 @@ public class AllAppsActivity extends Screen {
         title.setTextDirection(Apps.isLatin(name) ? View.TEXT_DIRECTION_LTR : View.TEXT_DIRECTION_RTL);
         card.addView(title);
         lineHeight(title, 1.2f);
+        android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+        scroll.setClipToPadding(false);
+        scroll.setPadding(Ui.ipx(12), Ui.ipx(12), Ui.ipx(12), Ui.ipx(12));
+        LinearLayout choices = new LinearLayout(this);
+        choices.setOrientation(LinearLayout.VERTICAL);
+        scroll.addView(choices);
+        card.addView(scroll, new LinearLayout.LayoutParams(-1, Ui.ipx(Math.min(labels.size(), 6) * 90 + 36)));
         for (int i = 0; i < labels.size(); i++) {
             FocusTile item = new FocusTile(this, 36);
             item.setFocusScale(1.04f);
@@ -374,7 +396,7 @@ public class AllAppsActivity extends Screen {
             float r = FocusTile.REACH;
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, Ui.ipx(72 + 2 * r));
             lp.topMargin = Ui.ipx(i == 0 ? 24 - r : 12 - 2 * r);
-            card.addView(item, lp);
+            choices.addView(item, lp);
             menuItems.add(item);
         }
         menu.addView(card, new FrameLayout.LayoutParams(Ui.ipx(820), -2, Gravity.CENTER));
@@ -422,11 +444,4 @@ public class AllAppsActivity extends Screen {
         build();
     }
 
-    private void replaceFav(int slot, String pkg) {
-        List<String> f = new ArrayList<>(favs);
-        f.set(slot, pkg);
-        Apps.saveFavourites(this, f);
-        focusPkg = pkg;
-        build();
-    }
 }

@@ -33,11 +33,11 @@ import java.util.List;
  * content query --uri content://tv.afnon.home.setup/info     {"version","api","city","locale","adhan",...}
  * content query --uri content://tv.afnon.home.setup/cities   [{"id","ar","en","countryAr","countryEn","region"}]
  * content query --uri content://tv.afnon.home.setup/regions  [{"ar","en"}]
- * content query --uri content://tv.afnon.home.setup/apps     [{"p","ar","en","fav"}]   fav: slot 0-3, or -1
+ * content query --uri content://tv.afnon.home.setup/apps     [{"p","ar","en","fav"}]   fav: slot 0-8, or -1
  * content query --uri content://tv.afnon.home.setup/keys     [{"key","p"}]
  * content read  --uri content://tv.afnon.home.setup/icon/&lt;package&gt;   a 96 px PNG
  * content insert --uri content://tv.afnon.home.setup/settings --bind name:s:&lt;name&gt; --bind value:s:&lt;value&gt;
- *     city (an id from cities) · locale (ar|en|system) · favourites (packages, comma-separated, at most 4) ·
+ *     city (an id from cities) · locale (ar|en|system) · favourites (packages, comma-separated, at most 9) ·
  *     keys (KEY=package pairs, comma-separated; KEY is a keycode name or number) · adhan · remind_voice ·
  *     announce (on|off)
  * </pre>
@@ -85,6 +85,7 @@ public final class SetupProvider extends ContentProvider {
         return new JSONObject()
             .put("version", version)
             .put("api", API)
+            .put("favourite_slots", Apps.FAVOURITE_SLOTS)
             .put("city", Prefs.city(c).id)
             .put("locale", Prefs.of(c).getString("locale", "system"))
             .put("adhan", Prefs.adhan(c))
@@ -150,6 +151,9 @@ public final class SetupProvider extends ContentProvider {
                 Apps.saveFavourites(c, favs);
                 break;
             }
+            case "focus_lighting":
+                Prefs.of(c).edit().putBoolean("focus_lighting", on).apply();
+                break;
             case "remote_enabled":
                 Prefs.of(c).edit().putBoolean("remote_enabled", on).commit();
                 new Handler(Looper.getMainLooper()).post(RemoteKeys::reload);
@@ -203,6 +207,13 @@ public final class SetupProvider extends ContentProvider {
         if (c == null) return null;
         // ContentProvider.call does not enforce the manifest's read/write permission itself.
         c.enforceCallingOrSelfPermission("android.permission.DUMP", "ADB setup only");
+        if ("set_theme".equals(method)) {
+            try { Appearance.importTheme(c, arg == null ? "" : arg); }
+            catch (Exception e) { throw new IllegalArgumentException("Invalid theme", e); }
+            android.os.Bundle saved = new android.os.Bundle();
+            saved.putBoolean("saved", true);
+            return saved;
+        }
         if (!"restore_remote".equals(method)) return super.call(method, arg, extras);
         Prefs.of(c).edit().putBoolean("remote_enabled", false).putBoolean("repair_service", false).commit();
         android.os.Bundle result = new android.os.Bundle();

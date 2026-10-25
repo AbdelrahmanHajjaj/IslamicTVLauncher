@@ -22,7 +22,7 @@ final class Appearance {
 
     static String key(Context c) {
         return Prefs.of(c).getString("theme", "mihrab") + ":" + Prefs.of(c).getString("theme_json", "")
-            + ":" + Prefs.of(c).getString("background", "theme") + ":" + Prefs.of(c).getInt("lighting", -1);
+            + ":" + Prefs.of(c).getString("background", "theme") + ":" + Prefs.of(c).getInt("lighting", -1) + ":" + Prefs.of(c).getBoolean("focus_lighting", false);
     }
     static int tint(int color, Map<Integer, Integer> colors) {
         return (color & 0xff000000) | (colors.getOrDefault(color | 0xff000000, color) & 0xffffff);

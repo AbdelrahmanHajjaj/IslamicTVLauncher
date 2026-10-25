@@ -265,6 +265,16 @@ public class SettingsActivity extends Screen {
                     int selected() { return Prefs.madhab(c) == Madhab.HANAFI ? 1 : 0; }
                     void select(int i) { Prefs.setMadhab(c, i == 1 ? Madhab.HANAFI : Madhab.SHAFI); }
                 },
+                new Row(VALUE) {
+                    String label() { return t.prayerOffsets(); }
+                    String help() { return t.prayerOffsetsHelp(); }
+                    String value() {
+                        int changed = 0;
+                        for (int n : Prefs.prayerOffsets(c)) if (n != 0) changed++;
+                        return t.offsetCount(changed);
+                    }
+                    void open() { openPrayerOffsets(); }
+                },
                 new Row(STEP) {
                     String label() { return t.hijriAdjust(); }
                     String help() { return t.hijriToday(hijri(day)); }
@@ -415,6 +425,12 @@ public class SettingsActivity extends Screen {
                     int lowest() { return 0; } int highest() { return 100; }
                     String valueOf(int n) { return t.d(n + "%"); }
                     void setAmount(int n) { prefs().edit().putInt("lighting", n).apply(); }
+                },
+                new Row(TOGGLE) {
+                    String label() { return t.focusLighting(); }
+                    String help() { return t.focusLightingHelp(); }
+                    boolean on() { return prefs().getBoolean("focus_lighting", false); }
+                    void set(boolean on) { prefs().edit().putBoolean("focus_lighting", on).apply(); }
                 },
                 new Row(TOGGLE) {
                     String label() { return t.reduceMotion(); }
@@ -832,6 +848,21 @@ public class SettingsActivity extends Screen {
         }
         openChooser(country, names, sel, k -> { Prefs.setCity(this, found.get(k)); showSaved(); });
         chooserBack = back;
+    }
+
+    private void openPrayerOffsets() {
+        String[] names = t.prayerNames();
+        for (int i = 0; i < names.length; i++) names[i] += t.sep() + t.offsetMinutes(Prefs.prayerOffset(this, i));
+        openChooser(t.prayerOffsets(), names, -1, prayer -> root.post(() -> {
+            int limit = Prefs.MAX_PRAYER_OFFSET;
+            String[] choices = new String[2 * limit + 1];
+            for (int i = 0; i < choices.length; i++) choices[i] = t.offsetMinutes(i - limit);
+            openChooser(t.prayerNames()[prayer], choices, Prefs.prayerOffset(this, prayer) + limit, choice -> {
+                Prefs.setPrayerOffset(this, prayer, choice - limit);
+                showSaved();
+            });
+            chooserBack = this::openPrayerOffsets;
+        }));
     }
 
     /** Station's second step: the broadcast stations or the reciters. Playing radio moves to the pick. Back runs back. */

@@ -399,9 +399,10 @@ def main(argv=None):
         elif args.command == "theme":
             if args.file.stat().st_size > 16384: raise ValueError("Theme is too large")
             theme = json.loads(args.file.read_text(encoding="utf-8"))
-            result = adb.shell("content insert --uri content://tv.afnon.home.setup/settings --bind name:s:theme --bind "
-                               + shlex.quote("value:s:" + json.dumps(theme, separators=(",", ":"))))
-            if "Exception" in result or "Error" in result: raise ValueError("TV rejected the theme: " + result)
+            # Android 11's content --bind parser rejects JSON colons; --arg passes the document intact.
+            result = adb.shell("content call --uri content://tv.afnon.home.setup --method set_theme --arg "
+                               + shlex.quote(json.dumps(theme, separators=(",", ":"))))
+            if "saved=true" not in result: raise ValueError("TV did not save the theme: " + result)
             tv.start(HOME)
         elif args.command == "screensaver":
             if args.component: tv.screensaver(args.component)

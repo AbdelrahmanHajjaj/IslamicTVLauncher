@@ -24,7 +24,7 @@ import java.util.Set;
 final class Apps {
     private Apps() {}
 
-    static final int FAVOURITE_SLOTS = 4;
+    static final int FAVOURITE_SLOTS = FavouriteChoice.MAX;
 
     private static final String[] DEFAULT_FAVOURITES = {
         "com.google.android.youtube.tv", "net.mbc.shahidTV", "dev.ctv.tv", "com.tcl.browser"};
@@ -96,9 +96,10 @@ final class Apps {
 
     /** Home's "More" row: the preferred picks that are installed and not favourites, filled up from the rest. */
     static List<String> more(Context c, Text t, int count) {
-        List<String> favs = favourites(c);
+        List<String> favs = slots(c, t);
         List<String> all = installed(c);
         List<String> out = new ArrayList<>();
+        for (int i = 4; i < favs.size() && out.size() < count; i++) out.add(favs.get(i));
         for (String p : MORE_FIRST) if (out.size() < count && all.contains(p) && !favs.contains(p)) out.add(p);
         for (String p : sorted(c, t)) if (out.size() < count && !favs.contains(p) && !out.contains(p)) out.add(p);
         return out;
@@ -119,17 +120,21 @@ final class Apps {
         return out;
     }
 
-    /** Always four for Home: the saved favourites that are installed, topped up from the rest if some went away. */
+    /** Up to nine Home favourites, with at least four slots when enough apps are installed. */
     static List<String> slots(Context c, Text t) {
         List<String> installed = installed(c);
         List<String> out = new ArrayList<>();
-        for (String p : favourites(c)) if (installed.contains(p) && out.size() < FAVOURITE_SLOTS) out.add(p);
-        for (String p : sorted(c, t)) if (out.size() < FAVOURITE_SLOTS && !out.contains(p)) out.add(p);
+        List<String> saved = favourites(c);
+        int count = Math.min(FAVOURITE_SLOTS, Math.max(4, saved.size()));
+        for (String p : saved) if (installed.contains(p) && !out.contains(p) && out.size() < count) out.add(p);
+        for (String p : sorted(c, t)) if (out.size() < count && !out.contains(p)) out.add(p);
         return out;
     }
 
     static void saveFavourites(Context c, List<String> favs) {
-        prefs(c).edit().putString("favourites", TextUtils.join(",", favs)).apply();
+        List<String> clean = new ArrayList<>(new LinkedHashSet<>(favs));
+        if (clean.size() > FAVOURITE_SLOTS) clean = clean.subList(0, FAVOURITE_SLOTS);
+        prefs(c).edit().putString("favourites", TextUtils.join(",", clean)).apply();
     }
 
     // ---------------------------------------------------------------- one app
@@ -146,6 +151,7 @@ final class Apps {
     }
 
     static Drawable icon(Context c, String pkg) {
+        if (pkg == null) return null;
         try {
             return c.getPackageManager().getApplicationIcon(pkg);
         } catch (PackageManager.NameNotFoundException e) {
@@ -169,6 +175,15 @@ final class Apps {
         } catch (ActivityNotFoundException | SecurityException ignored) {
             // The app went away or refuses outside launches; stay where we are.
         }
+    }
+
+    static boolean canUninstall(Context c, String pkg) {
+        if (HIDDEN.contains(pkg)) return false;
+        try {
+            int flags = c.getPackageManager().getApplicationInfo(pkg, 0).flags;
+            return (flags & (android.content.pm.ApplicationInfo.FLAG_SYSTEM
+                | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == 0;
+        } catch (PackageManager.NameNotFoundException e) { return false; }
     }
 
     static boolean isLatin(String s) {

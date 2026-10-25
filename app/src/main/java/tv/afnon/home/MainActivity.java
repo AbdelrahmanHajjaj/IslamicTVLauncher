@@ -60,6 +60,9 @@ public class MainActivity extends Screen {
     private final TextView[] cellTag = new TextView[6], cellName = new TextView[6], cellTime = new TextView[6];
     private final View[] cell = new View[6];
     private final String[] nodeLabel = new String[NODES];
+    private final String[] nodePackage = new String[NODES];
+    private FocusGlow focusGlow;
+    private String replacementPackage;
 
     private TextView clock, gdate, hdate, wifiName;
     private LinearLayout hints;
@@ -86,6 +89,7 @@ public class MainActivity extends Screen {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        if (readReplacement(getIntent())) build();
         runTest(getIntent());
     }
 
@@ -93,10 +97,11 @@ public class MainActivity extends Screen {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         boolean changed = loadSettings(intent);
-        if (changed) build();
+        boolean replacementChanged = readReplacement(intent);
+        if (changed || replacementChanged) build();
         // Home key from anywhere: back to Home with focus on the arch (FocusMap: Home key). Posted, because the
         // window puts back its previously focused view when it regains focus after onNewIntent.
-        root.post(() -> nodes[ARCH].requestFocus());
+        root.post(() -> nodes[replacementPackage == null ? ARCH : F0].requestFocus());
         runTest(intent);
     }
 
@@ -170,6 +175,7 @@ public class MainActivity extends Screen {
     protected void onPause() {
         Reminders.home = null;
         Radio.unlisten(onRadio);
+        if (focusGlow != null) focusGlow.stop();
         super.onPause();
     }
 
@@ -185,6 +191,9 @@ public class MainActivity extends Screen {
     @Override
     void build() {
         newRoot();
+        java.util.Arrays.fill(nodePackage, null);
+        focusGlow = Prefs.of(this).getBoolean("focus_lighting", false) ? new FocusGlow(this) : null;
+        if (focusGlow != null) root.addView(focusGlow, new FrameLayout.LayoutParams(-1, -1));
         card = null;   // a reminder card went with the old root
         radioCard = null;
         buildArch(488, 26, 12, Palette.GOLD_200, 8);
@@ -250,16 +259,19 @@ public class MainActivity extends Screen {
         }
 
         TextView fav = caps(text(ui400, 22, Palette.MIST_400));
-        fav.setText(t.fav());
+        fav.setText(replacementPackage == null ? t.fav() : t.replaceWith(Apps.name(this, t, replacementPackage)));
+        fav.setSingleLine(true);
+        fav.setMaxWidth(Ui.ipx(Tokens.COURT_W));
+        fav.setEllipsize(TextUtils.TruncateAt.END);
         place(fav, Tokens.COURT_X, LABEL_ABOVE_FAV, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         float fw = (Tokens.COURT_W - 3 * 24) / 4f;
         List<String> favs = Apps.slots(this, t);
         for (int i = 0; i < 4; i++) {
-            nodes[F0 + i] = favouriteTile(favs.get(i), F0 + i, Tokens.COURT_X + i * (fw + 24), 520, fw);
+            nodes[F0 + i] = favouriteTile(i < favs.size() ? favs.get(i) : null, F0 + i, Tokens.COURT_X + i * (fw + 24), 520, fw);
         }
 
         TextView more = caps(text(ui400, 22, Palette.MIST_400));
-        more.setText(t.more());
+        more.setText(favs.size() > 4 ? t.moreFavourites() : t.more());
         place(more, Tokens.COURT_X, LABEL_ABOVE_MORE, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         float mw = (Tokens.COURT_W - 5 * 20) / 6f;
         List<String> moreApps = Apps.more(this, t, 5);
@@ -277,11 +289,19 @@ public class MainActivity extends Screen {
             nodes[i].setOnFocusChangeListener((v, has) -> { if (has) onNodeFocused(n); else if (n == ARCH) setArchFocused(false); });
         }
 
+        if (replacementPackage != null) {
+            for (int i = 0; i < NODES; i++) {
+                boolean candidate = nodePackage[i] != null && favs.contains(nodePackage[i]);
+                nodes[i].setFocusable(candidate);
+                nodes[i].setEnabled(candidate);
+                if (!candidate) nodes[i].setAlpha(.4f);
+            }
+        }
         setContentView(root);
         builtApps = appsKey();
         lastMinute = -1;
         render(true);
-        nodes[ARCH].requestFocus();
+        nodes[replacementPackage == null ? ARCH : F0].requestFocus();
     }
 
     private View archButton() {
@@ -365,8 +385,9 @@ public class MainActivity extends Screen {
         col.addView(label, new LinearLayout.LayoutParams(-1, -2));
         b.addView(col, new FrameLayout.LayoutParams(-1, -1));
         b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
-        b.setOnClickListener(v -> { if (pkg != null) Apps.launch(this, pkg); });
+        b.setOnClickListener(v -> activateApp(pkg));
         nodeLabel[node] = name;
+        nodePackage[node] = pkg;
         placeTile(b, x, y, w, 150);
         return b;
     }
@@ -382,8 +403,9 @@ public class MainActivity extends Screen {
         label.setGravity(Gravity.BOTTOM | Gravity.START);
         b.addView(label, new FrameLayout.LayoutParams(-1, -1));
         b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
-        b.setOnClickListener(v -> { if (pkg != null) Apps.launch(this, pkg); });
+        b.setOnClickListener(v -> activateApp(pkg));
         nodeLabel[node] = name;
+        nodePackage[node] = pkg;
         placeTile(b, x, y, w, 112);
         return b;
     }
@@ -493,6 +515,11 @@ public class MainActivity extends Screen {
     // ---------------------------------------------------------------- focus
 
     private void onNodeFocused(int n) {
+        if (focusGlow != null) focusGlow.show(nodePackage[n]);
+        if (replacementPackage != null) {
+            setHints(hints, java.util.Collections.singletonList(t.replaceHint()));
+            return;
+        }
         if (n >= F0 && n < M0) lastFav = n;
         setArchFocused(n == ARCH);
         List<String> h = new ArrayList<>();
@@ -777,6 +804,10 @@ public class MainActivity extends Screen {
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         int k = e.getKeyCode();
+        if (replacementPackage != null && k == KeyEvent.KEYCODE_BACK) {
+            if (e.getAction() == KeyEvent.ACTION_UP) { replacementPackage = null; build(); }
+            return true;
+        }
         // Source, where the firmware leaves it to the app in front (CVTE) and nothing else opens the source menu.
         if (k == KeyEvent.KEYCODE_TV_INPUT) {
             Intent source = new Intent(this, InputsActivity.class);
@@ -836,6 +867,14 @@ public class MainActivity extends Screen {
         if (rtl && key == KeyEvent.KEYCODE_DPAD_LEFT) key = KeyEvent.KEYCODE_DPAD_RIGHT;
         else if (rtl && key == KeyEvent.KEYCODE_DPAD_RIGHT) key = KeyEvent.KEYCODE_DPAD_LEFT;
         int from = currentNode();
+        if (replacementPackage != null) {
+            int slot = from >= F0 && from < M0 ? from - F0 : from >= M0 && from < ALL ? from - M0 + 4 : 0;
+            int to = FavouriteChoice.move(slot, Apps.slots(this, t).size(),
+                key == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : key == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0,
+                key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0);
+            if (to >= 0) nodes[to < 4 ? F0 + to : M0 + to - 4].requestFocus();
+            return;
+        }
         if (from < 0) { nodes[ARCH].requestFocus(); return; }
         boolean left = key == KeyEvent.KEYCODE_DPAD_LEFT, right = key == KeyEvent.KEYCODE_DPAD_RIGHT;
         boolean up = key == KeyEvent.KEYCODE_DPAD_UP, down = key == KeyEvent.KEYCODE_DPAD_DOWN;
@@ -869,6 +908,25 @@ public class MainActivity extends Screen {
     }
 
     // ---------------------------------------------------------------- apps
+
+    private boolean readReplacement(Intent intent) {
+        String next = intent == null ? null : intent.getStringExtra("replace_favourite");
+        if (intent != null) intent.removeExtra("replace_favourite");
+        if (next != null && (!Apps.installed(this).contains(next) || Apps.slots(this, t).contains(next))) next = null;
+        boolean changed = !java.util.Objects.equals(replacementPackage, next);
+        replacementPackage = next;
+        return changed;
+    }
+
+    private void activateApp(String pkg) {
+        if (replacementPackage == null) { if (pkg != null) Apps.launch(this, pkg); return; }
+        List<String> current = Apps.slots(this, t);
+        int at = current.indexOf(pkg);
+        if (at >= 0 && Apps.installed(this).contains(replacementPackage) && !current.contains(replacementPackage))
+            Apps.saveFavourites(this, FavouriteChoice.replace(current, at, replacementPackage));
+        replacementPackage = null;
+        build();
+    }
 
     private String appsKey() {
         return Apps.favourites(this) + "|" + Apps.installed(this).toString();

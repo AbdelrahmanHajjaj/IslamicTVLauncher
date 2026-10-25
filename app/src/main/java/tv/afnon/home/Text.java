@@ -39,6 +39,15 @@ final class Text {
     String cityName = "";
     String city() { return cityName; }
     String fav() { return ar ? "المفضلة" : "FAVOURITES"; }
+    String moreFavourites() { return ar ? "المزيد من المفضلة والتطبيقات" : "MORE FAVOURITES & APPS"; }
+    String addFavourite() { return ar ? "إضافة إلى المفضلة" : "Add to favourites"; }
+    String removeFavourite() { return ar ? "إزالة من المفضلة" : "Remove from favourites"; }
+    String replaceFavourite() { return ar ? "استبدال تطبيق في المفضلة" : "Replace a favourite"; }
+    String replaceWith(String name) { return (ar ? "اختر ما تريد استبداله بـ " : "CHOOSE A FAVOURITE TO REPLACE WITH ") + name; }
+    String replaceHint() { return ar ? "OK استبدال · رجوع للإلغاء" : "OK Replace selected favourite · Back Cancel"; }
+    String uninstall() { return ar ? "إلغاء التثبيت" : "Uninstall"; }
+    String focusLighting() { return ar ? "إضاءة حسب التطبيق" : "App focus lighting"; }
+    String focusLightingHelp() { return ar ? "تتغير إضاءة الخلفية قليلًا حسب التطبيق المحدد" : "Gently tint the background using the selected app's colours"; }
     String more() { return ar ? "المزيد" : "MORE"; }
     /** Home's tile: the label over the count. */
     String all(int n) { return d((ar ? "كل التطبيقات" : "All apps") + "\n" + n); }
@@ -159,7 +168,7 @@ final class Text {
     /** "Asr in", followed by the countdown. */
     String chip(String prayer) { return ar ? prayer + " بعد" : prayer + " in"; }
     String favNote(int position) {
-        String[] ord = {"الأول", "الثاني", "الثالث", "الرابع"};
+        String[] ord = {"الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع"};
         return ar ? "في المفضلة · " + ord[position - 1] : d("In favourites · position " + position);
     }
     String notFav() { return ar ? "اضغط مطولًا على OK لوضعه في المفضلة" : "Hold OK to put it in favourites"; }
@@ -355,6 +364,10 @@ final class Text {
     String homeSettings() { return ar ? "الشاشة الرئيسية الافتراضية" : "Default Home"; }
     String inputsTitle() { return ar ? "المداخل" : "Inputs"; }
     String inputsSystem() { return ar ? "قائمة مداخل التلفزيون" : "TV input menu"; }
+    String prayerOffsets() { return ar ? "تعديل مواقيت الصلاة بالدقائق" : "Prayer time offsets"; }
+    String prayerOffsetsHelp() { return ar ? "لكل صلاة: السالب أبكر والموجب لاحقًا · يشمل التذكير والأذان" : "Per prayer: minus is earlier, plus is later · includes reminders and adhan"; }
+    String offsetMinutes(int n) { return d((n > 0 ? "+" : "") + n + (ar ? " د" : " min")); }
+    String offsetCount(int n) { return d(n == 0 ? (ar ? "الكل 0 د" : "All 0 min") : n + (ar ? " معدّلة" : " adjusted")); }
     String remoteButtons() { return ar ? "تخصيص أزرار التحكم" : "Remote buttons"; }
     String pressButton() { return ar ? "اضغط زرًا لتخصيصه" : "Press a button to assign"; }
     String pressButtonHelp() { return ar ? "اضغط زر اختصار في جهاز التحكم ثم اختر التطبيق. أزرار التنقل والصوت والطاقة تبقى كما هي. إذا فتح الزر تطبيقًا آخر، ارجع واختر الزر من القائمة." : "Press a shortcut button on your remote, then choose an app. Navigation, volume and power keep their usual function. If the button opens another app, return and select it from the list."; }
