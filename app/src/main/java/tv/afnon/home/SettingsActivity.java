@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.batoulapps.adhan.CalculationMethod;
 import com.batoulapps.adhan.Madhab;
 
 import java.util.ArrayList;
@@ -333,7 +332,19 @@ public class SettingsActivity extends Screen {
                     void select(int i) { Prefs.setCallCloseMinutes(c, minutes[i]); }
                 },
                 voiceRow(false),
-                voiceRow(true));
+                voiceRow(true),
+                new Row(VALUE) {
+                    String label() { return t.testPrayerAlerts(); }
+                    String help() { return RemoteKeys.watch == null ? t.serviceHelp() : t.testPrayerHelp(); }
+                    void open() {
+                        if (RemoteKeys.watch == null) {
+                            SystemScreens.open(SettingsActivity.this, Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                            return;
+                        }
+                        openChooser(t.testPrayerAlerts(), t.testPrayerChoices(), 0,
+                            i -> { if (RemoteKeys.watch != null) RemoteKeys.watch.test(i == 0 ? "banner" : "call", 0); });
+                    }
+                });
             case RADIO: return Arrays.asList(
                 new Row(TOGGLE) {
                     String label() { return t.station(Radio.station(c)); }

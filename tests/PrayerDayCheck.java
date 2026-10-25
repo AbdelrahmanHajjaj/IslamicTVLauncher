@@ -9,13 +9,44 @@ import java.util.TimeZone;
 public final class PrayerDayCheck {
     private static PrayerDay day(Date now, int[] offsets) {
         return new PrayerDay(now, new Coordinates(52.2913, -1.5364),
-            CalculationMethod.MUSLIM_WORLD_LEAGUE, Madhab.SHAFI, 0, offsets);
+            PrayerMethod.MUSLIM_WORLD_LEAGUE, Madhab.SHAFI, 0, offsets);
     }
     private static void check(boolean ok, String message) {
         if (!ok) throw new AssertionError(message);
     }
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/London"));
+        check(PrayerMethod.values().length == 19, "All supported presets are exposed");
+        Coordinates here = new Coordinates(52.2913, -1.5364);
+        for (String date : new String[] {"2026-03-29", "2026-06-21", "2026-10-25", "2026-12-21"}) {
+            Date now = Date.from(LocalDate.parse(date).atStartOfDay(ZoneId.systemDefault()).toInstant());
+            for (PrayerMethod method : PrayerMethod.values()) {
+                PrayerDay result = new PrayerDay(now, here, method, Madhab.SHAFI, 0, new int[6]);
+                for (Date time : result.times) check(time != null && Math.abs(time.getTime() - now.getTime()) < 36 * 3_600_000L,
+                    method + " returns finite nearby times on " + date);
+                int[] adjust = {1, -2, 3, 1, 2, 4};
+                PrayerDay shifted = new PrayerDay(now, here, method, Madhab.SHAFI, 0, adjust);
+                for (int i = 0; i < 6; i++) check(shifted.times[i].getTime() - result.times[i].getTime() == adjust[i] * 60_000L,
+                    method + " preserves per-prayer offsets");
+            }
+            for (CalculationMethod old : CalculationMethod.values()) {
+                if (old == CalculationMethod.OTHER) continue;
+                PrayerTimes expected = new PrayerTimes(here, com.batoulapps.adhan.data.DateComponents.from(now), old.getParameters());
+                PrayerDay actual = new PrayerDay(now, here, PrayerMethod.valueOf(old.name()), Madhab.SHAFI, 0, new int[6]);
+                Date[] times = {expected.fajr, expected.sunrise, expected.dhuhr, expected.asr, expected.maghrib, expected.isha};
+                for (int i = 0; i < 6; i++) check(actual.times[i].getTime() == times[i].getTime() / 60_000 * 60_000,
+                    old + " existing times must not change");
+            }
+        }
+        Date winter = Date.from(LocalDate.parse("2026-12-21").atStartOfDay(ZoneId.systemDefault()).toInstant());
+        PrayerDay france = new PrayerDay(winter, here, PrayerMethod.FRANCE, Madhab.SHAFI, 0, new int[6]);
+        PrayerDay mwl = day(winter, new int[6]);
+        check(france.times[0].after(mwl.times[0]) && france.times[5].before(mwl.times[5]), "France's 12-degree twilight changes both times");
+        PrayerDay gulf = new PrayerDay(winter, here, PrayerMethod.GULF, Madhab.SHAFI, 0, new int[6]);
+        check(gulf.times[5].getTime() - gulf.times[4].getTime() == 90 * 60_000, "Gulf Isha follows Maghrib by 90 minutes");
+        PrayerDay turkey = new PrayerDay(winter, here, PrayerMethod.TURKEY, Madhab.SHAFI, 0, new int[6]);
+        check(turkey.times[1].getTime() - mwl.times[1].getTime() == -7 * 60_000, "Turkey sunrise adjustment");
+        check(turkey.times[4].getTime() - mwl.times[4].getTime() == 7 * 60_000, "Turkey Maghrib adjustment");
         int[] offsets = {3, -1, 2, 4, -2, 5};
         for (String date : new String[] {"2026-03-29", "2026-06-21", "2026-10-25", "2026-12-21"}) {
             Date midnight = Date.from(LocalDate.parse(date).atStartOfDay(ZoneId.systemDefault()).toInstant());

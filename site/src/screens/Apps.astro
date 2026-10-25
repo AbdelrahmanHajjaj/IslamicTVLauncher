@@ -21,7 +21,7 @@ const menuText = {
   done: t.ar ? 'على التلفاز يُحفظ هذا الترتيب' : 'On the TV this arranges your favourites',
 };
 ---
-<a class="ft back" href={href('', lang) + '#tv'} aria-label={t.s('back')} data-home data-name={t.s('back')} data-note={t.s('hintBackHome')}>
+<a class="ft back" href={href('', lang) + '#tv'} aria-label={t.s('back')} data-home data-name={t.s('back')}>
   <Icon name="back" size={32} stroke={2} />
 </a>
 <div class="head">
@@ -46,15 +46,6 @@ const menuText = {
   </button>
 ))}
 
-<div class="bar">
-  <div class="who">
-    <div class="who-name" data-info-name>{apps[0].name}</div>
-    <div class="who-note" data-info-note>{favNote(t, 1)}</div>
-  </div>
-  <div class="keys">
-    <span>{t.s('hintOpen')}</span><span>{t.s('hintHold')}</span><span>{t.s('hintBackHome')}</span>
-  </div>
-</div>
 
 <!-- Hold OK: arrange favourites (AllAppsActivity.openMenu). Items are filled in by the script. -->
 <div class="menu" data-menu hidden data-text={JSON.stringify(menuText)}>
@@ -75,14 +66,6 @@ const menuText = {
     live(appsModel);
 
     const $ = <T extends HTMLElement = HTMLElement>(s: string) => stage.querySelector<T>(s)!;
-    const name = $('[data-info-name]'), note = $('[data-info-note]');
-    stage.addEventListener('focusin', (e) => {
-      const el = (e.target as HTMLElement).closest<HTMLElement>('[data-name]');
-      if (!el || !el.dataset.note) return;
-      name.textContent = el.dataset.name!;
-      name.dir = /^[\x00-\x7F]*$/.test(el.dataset.name!) ? 'ltr' : 'rtl';
-      note.textContent = el.dataset.note;
-    });
 
     const toast = $('[data-toast-out]');
     let toastTimer = 0;

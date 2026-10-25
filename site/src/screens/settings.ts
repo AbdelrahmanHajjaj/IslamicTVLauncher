@@ -139,9 +139,6 @@ export function pick(c: Ctx, id: string, i: number): SPrefs | null {
 const chevron = '<svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
 export function rowHtml(t: Text, r: Row, i: number, editing = false) {
-  const hint = JSON.stringify(editing
-    ? [t.s('hintChange'), t.s('hintSave'), t.s('hintBackCancel')]
-    : [t.s('hintMove'), r.kind === 'value' ? t.s('hintChoose') : r.kind === 'toggle' ? t.s('hintSwitch') : t.s('hintEdit'), t.s('hintBackMenu')]);
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
   else if (r.kind === 'seg')
@@ -149,15 +146,14 @@ export function rowHtml(t: Text, r: Row, i: number, editing = false) {
   else if (r.kind === 'step')
     control = `<span class="stepb" data-step="-1">−</span><span class="stepv">${esc(r.value ?? '')}</span><span class="stepb" data-step="1">+</span>`;
   else control = `<span class="switch${r.on ? ' on' : ''}"><i></i></span>`;
-  return `<button class="ft row srow${editing ? ' editing' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:${112 + i * 98}px" data-hints="${esc(hint)}">`
+  return `<button class="ft row srow${editing ? ' editing' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:${112 + i * 98}px">`
     + `<span class="words"><span class="rl">${esc(r.label)}</span>${r.help ? `<span class="rh">${esc(r.help)}</span>` : ''}</span>`
     + `<span class="ctl">${control}</span></button>`;
 }
 
 export function navHtml(t: Text, section: number) {
-  const hint = esc(JSON.stringify([t.s('hintMove'), t.s('hintOpen'), t.s('hintBackHome')]));
   return Array.from({ length: SECTIONS }, (_, i) =>
-    `<button class="ft row nav${i === section ? ' open' : ''}" data-nav="${i}"${i === section ? ' data-focus-start' : ''} style="top:${152 + i * 86}px" data-hints="${hint}">${esc(sectionName(t, i))}</button>`).join('');
+    `<button class="ft row nav${i === section ? ' open' : ''}" data-nav="${i}"${i === section ? ' data-focus-start' : ''} style="top:${152 + i * 86}px">${esc(sectionName(t, i))}</button>`).join('');
 }
 
 /** The rows; the one being edited shows its draft. */
@@ -186,8 +182,7 @@ export const methodItems = (t: Text, p: Prefs): Item[] => METHODS.map((m) => ({ 
 export const stationsOf = (reciters: boolean) => STATIONS.filter((s) => !!s.reciter === reciters);
 
 export function chooserHtml(t: Text, title: string, items: Item[]) {
-  const hint = esc(JSON.stringify([t.s('hintMove'), t.s('hintChoose'), t.s('hintBackCancel')]));
   return `<div class="ch-card"><div class="ch-title display-bold">${esc(title)}</div><div class="ch-list">`
-    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}" data-hints="${hint}">${esc(it.label)}</button>`).join('')
+    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}">${esc(it.label)}</button>`).join('')
     + '</div></div>';
 }

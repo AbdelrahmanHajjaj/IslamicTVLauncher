@@ -1,6 +1,5 @@
 package tv.afnon.home;
 
-import com.batoulapps.adhan.CalculationMethod;
 import com.batoulapps.adhan.CalculationParameters;
 import com.batoulapps.adhan.Madhab;
 
@@ -130,6 +129,9 @@ final class Text {
         return ar ? new String[] {"مع شاشة التوقف", "بعدها بـ 15 د", "أبدًا"} : new String[] {"With screensaver", "15 min later", "Never"};
     }
 
+    String testPrayerAlerts() { return ar ? "تجربة التذكير والأذان" : "Test reminders & adhan"; }
+    String testPrayerHelp() { return ar ? "معاينة الشريط أو شاشة الأذان بإعداداتك الحالية" : "Preview the banner or adhan screen with your current settings"; }
+    String[] testPrayerChoices() { return ar ? new String[] {"شريط التذكير", "شاشة الأذان"} : new String[] {"Reminder banner", "Adhan popup"}; }
     String callCloseRow() { return ar ? "إغلاق شاشة الأذان" : "Close the call screen"; }
     String callCloseHelp() { return ar ? "ثم تعود إلى ما كنت تشاهده" : "Then back to what you were watching"; }
     /** In the order of the row's minutes: 0 (after the adhan), 1, 5, 10. */
@@ -165,7 +167,7 @@ final class Text {
         return ar ? "العصر: الجمهور (شافعي)" : "Asr: standard (Shafi‘i)";
     }
 
-    String methodName(CalculationMethod m) {
+    String methodName(PrayerMethod m) {
         switch (m) {
             case UMM_AL_QURA: return ar ? "أم القرى، مكة المكرمة" : "Umm al-Qura, Makkah";
             case MUSLIM_WORLD_LEAGUE: return ar ? "رابطة العالم الإسلامي" : "Muslim World League";
@@ -176,12 +178,21 @@ final class Text {
             case NORTH_AMERICA: return ar ? "الجمعية الإسلامية لأمريكا الشمالية" : "ISNA, North America";
             case MOON_SIGHTING_COMMITTEE: return ar ? "لجنة رؤية الهلال" : "Moonsighting Committee";
             case SINGAPORE: return ar ? "سنغافورة" : "Singapore";
+            case FRANCE: return ar ? "اتحاد المنظمات الإسلامية في فرنسا" : "France (UOIF)";
+            case TURKEY: return ar ? "تركيا — ديانت (حساب تقريبي)" : "Turkey / Diyanet (approximate)";
+            case RUSSIA: return ar ? "الإدارة الدينية لمسلمي روسيا" : "Spiritual Administration of Muslims of Russia";
+            case JAKIM: return ar ? "ماليزيا — جاكيم" : "Malaysia (JAKIM)";
+            case KEMENAG: return ar ? "وزارة الشؤون الدينية الإندونيسية" : "Indonesia (KEMENAG)";
+            case TUNISIA: return ar ? "تونس" : "Tunisia";
+            case ALGERIA: return ar ? "الجزائر" : "Algeria";
+            case MOROCCO: return ar ? "المغرب" : "Morocco";
+            case GULF: return ar ? "منطقة الخليج" : "Gulf region";
             default: return ar ? "الهيئة المصرية العامة للمساحة" : "Egyptian General Authority of Survey";
         }
     }
 
     /** "Fajr angle 19.5° · Isha 17.5°", or Isha as minutes after Maghrib where the method fixes it that way. */
-    String methodAngles(CalculationMethod m) {
+    String methodAngles(PrayerMethod m) {
         CalculationParameters p = m.getParameters();
         String fajr = (ar ? "زاوية الفجر " : "Fajr angle ") + trim(p.fajrAngle) + "°";
         String isha = p.ishaInterval > 0

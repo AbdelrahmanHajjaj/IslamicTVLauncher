@@ -13,7 +13,6 @@ const { ctx } = Astro.props;
 const { t, lang } = ctx;
 const m = homeModel(ctx);
 const ar = t.ar;
-const hints = (...h: string[]) => JSON.stringify(h);
 const station = stationOf(ctx.prefs);
 const cardHidden = ctx.mode !== 'reminder';
 
@@ -29,7 +28,7 @@ const allCount = 14;
 const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this opens' };
 ---
 <Arch ctx={ctx} infoTop={488} subSize={26} subGap={12} sub2Color="var(--color-gold-200)" sub2Gap={8} />
-<a class="ft arch-btn" href={href('prayer-day', lang) + '#tv'} {...(cardHidden ? { 'data-focus-start': '' } : {})} data-hints={hints(t.hintOk(t.s('today')), t.s('hintApps'))}>
+<a class="ft arch-btn" href={href('prayer-day', lang) + '#tv'} {...(cardHidden ? { 'data-focus-start': '' } : {})}>
   <Icon name="compass" /> <span>{t.s('today')}</span>
 </a>
 
@@ -40,16 +39,16 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 </div>
 
 <div class="pills">
-  <button class="ft pill radio-pill" data-open-radio data-hints={hints(t.hintOk(t.station(station)))}>
+  <button class="ft pill radio-pill" data-open-radio>
     <span class="radio-off"><Icon name="radio" stroke={2} /></span>
     <span class="bars mini" aria-hidden="true"><i></i><i></i><i></i></span>
     <span class="radio-label">{t.s('radio')}</span>
   </button>
-  <button class="ft pill" data-toast={t.s('network')} data-hints={hints(t.hintOk(t.s('network')))}>
+  <button class="ft pill" data-toast={t.s('network')}>
     <Icon name="wifi" stroke={2} /> <span dir="ltr">Wi-Fi</span>
   </button>
 </div>
-<a class="ft gear" href={href('settings', lang) + '#tv'} aria-label={t.s('settings')} data-hints={hints(t.hintOk(t.s('settings')))}>
+<a class="ft gear" href={href('settings', lang) + '#tv'} aria-label={t.s('settings')}>
   <Icon name="gear" size={34} />
 </a>
 
@@ -58,28 +57,24 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 <div class="label fav-label caps">{t.s('fav')}</div>
 {favs.map((f, i) => (
   <button class="ft fav" style={`inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + ${i} * (var(--layout-tile-favourite-width) + var(--layout-gap-favourites)))`}
-    data-nav-up=".radio-pill" data-toast={`${W.site} ${f.label}`} data-hints={hints(t.hintOk(t.s('open', { app: f.label })), t.s('hintMore'))}>
+    data-nav-up=".radio-pill" data-toast={`${W.site} ${f.label}`}>
     <Icon name={f.icon} size={44} />
     <span>{f.label}</span>
   </button>
 ))}
 
-<div class="label more-label caps">{t.s('more')}</div>
+<div class="label more-label caps">{ar ? 'تطبيقات' : 'Apps'}</div>
 {[...more, t.s('settings')].map((label, i) => {
   const style = `inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + ${i} * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))`;
-  const h = hints(t.hintOk(t.s('open', { app: label })), t.s('hintFavs'));
   return label === t.s('settings')
-    ? <a class="ft more" style={style} href={href('settings', lang) + '#tv'} data-hints={h}>{label}</a>
-    : <button class="ft more" style={style} data-toast={`${W.site} ${label}`} data-hints={h}>{label}</button>;
+    ? <a class="ft more" style={style} href={href('settings', lang) + '#tv'}>{label}</a>
+    : <button class="ft more" style={style} data-toast={`${W.site} ${label}`}>{label}</button>;
 })}
-<a class="ft more all" href={href('apps', lang) + '#tv'} style="inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + 5 * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))"
-  data-hints={hints(t.hintOk(t.s('allTitle')), t.s('hintFavs'))}>{t.all(allCount)}</a>
+<a class="ft more all" href={href('apps', lang) + '#tv'} style="inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + 5 * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))">{t.all(allCount)}</a>
 
-<div class="hints" data-hints-out></div>
 
 <!-- The reminder before a prayer (MainActivity.showReminder). -->
-<div class="card on-light" data-card data-a="card" data-for={m.attr!.card['data-for']} hidden={cardHidden} role="alertdialog" aria-label={t.s('apLabel')}
-  data-hints={hints(t.hintOk(t.s('apOk')), t.s('hintBackHome').replace(t.s('home'), t.s('dismiss')))}>
+<div class="card on-light" data-card data-a="card" data-for={m.attr!.card['data-for']} hidden={cardHidden} role="alertdialog" aria-label={t.s('apLabel')}>
   <div class="card-label caps"><Icon name="clock" size={26} stroke={2} /> {t.s('apLabel')}</div>
   <div class="card-title display-bold" data-k="cardTitle" set:html={m.html.cardTitle} />
   <div class="card-sub" data-k="cardSub" set:html={m.html.cardSub} />
@@ -90,7 +85,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 </div>
 
 <!-- Quran Radio card (MainActivity.openRadio): the real stream plays here too. -->
-<div class="radio-card" data-radio-card hidden data-hints={hints(t.hintOk(t.s('radioPlay')), t.s('hintClose'))}>
+<div class="radio-card" data-radio-card hidden>
   <div class="rc-head">
     <div>
       <div class="rc-label caps">{t.s('radio')}</div>
@@ -100,20 +95,19 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
     <span class="bars big" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
   </div>
   <div class="rc-buttons">
-    <button class="ft rc-btn play" data-radio-toggle data-hints={hints(t.hintOk(t.s('radioPlay')), t.s('hintClose'))}>
+    <button class="ft rc-btn play" data-radio-toggle>
       <span data-radio-play-label>{t.s('radioPlay')}</span> <Icon name="play" size={24} />
     </button>
-    <button class="ft rc-btn dark" data-screen-off data-hints={hints(t.hintOk(t.s('screenOff')), t.s('hintClose'))}>
+    <button class="ft rc-btn dark" data-screen-off>
       {t.s('screenOff')} <Icon name="moon" size={24} />
     </button>
     <button class="visually-hidden" data-back data-radio-close tabindex="-1">{t.s('dismiss')}</button>
   </div>
-  <p class="rc-note">{t.radioNote()}</p>
 </div>
 
 <div class="screen-off" data-screen-off-view hidden tabindex="-1">
   <span class="bars big" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
-  <p data-screen-off-note>{t.station(station)}<br />{t.screenOffNote()}</p>
+  <p data-screen-off-note>{t.station(station)}</p>
 </div>
 
 <div class="toast" data-toast-out hidden role="status"></div>
@@ -180,7 +174,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
     audio.addEventListener('playing', status);
     audio.addEventListener('pause', status);
     $('[data-station-name]').textContent = t.station(st);
-    $('[data-screen-off-note]').innerHTML = `${t.station(st)}<br>${t.screenOffNote()}`;
+    $('[data-screen-off-note]').innerHTML = `${t.station(st)}`;
     $('[data-open-radio]').addEventListener('click', () => {
       rc.hidden = false;
       $('[data-radio-toggle]').focus({ preventScroll: true });

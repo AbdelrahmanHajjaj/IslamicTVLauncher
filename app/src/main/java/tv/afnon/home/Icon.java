@@ -49,11 +49,13 @@ final class Icon extends View {
             p.setStyle(Paint.Style.FILL);
             c.drawCircle(12 * k, 19 * k, 1.2f * k, p);
         } else if (kind == GEAR) {
+            float[] pts = {9.71f, 4.96f, 10.26f, 2.15f, 13.74f, 2.15f, 14.29f, 4.96f, 15.36f, 5.41f, 17.74f, 3.81f, 20.19f, 6.26f, 18.59f, 8.64f, 19.04f, 9.71f, 21.85f, 10.26f, 21.85f, 13.74f, 19.04f, 14.29f, 18.59f, 15.36f, 20.19f, 17.74f, 17.74f, 20.19f, 15.36f, 18.59f, 14.29f, 19.04f, 13.74f, 21.85f, 10.26f, 21.85f, 9.71f, 19.04f, 8.64f, 18.59f, 6.26f, 20.19f, 3.81f, 17.74f, 5.41f, 15.36f, 4.96f, 14.29f, 2.15f, 13.74f, 2.15f, 10.26f, 4.96f, 9.71f, 5.41f, 8.64f, 3.81f, 6.26f, 6.26f, 3.81f, 8.64f, 5.41f};
+            path.reset();
+            path.moveTo(pts[0] * k, pts[1] * k);
+            for (int i = 2; i < pts.length; i += 2) path.lineTo(pts[i] * k, pts[i + 1] * k);
+            path.close();
+            c.drawPath(path, p);
             c.drawCircle(12 * k, 12 * k, 3.2f * k, p);
-            c.drawCircle(12 * k, 12 * k, 7.5f * k, p);
-            float[][] spokes = {{12, 1.8f, 12, 4.5f}, {12, 19.5f, 12, 22.2f}, {1.8f, 12, 4.5f, 12}, {19.5f, 12, 22.2f, 12},
-                    {4.8f, 4.8f, 6.7f, 6.7f}, {17.3f, 17.3f, 19.2f, 19.2f}, {4.8f, 19.2f, 6.7f, 17.3f}, {17.3f, 6.7f, 19.2f, 4.8f}};
-            for (float[] s : spokes) c.drawLine(s[0] * k, s[1] * k, s[2] * k, s[3] * k, p);
         } else if (kind == BELL) {
             // M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z · M10 21h4
             path.reset();
@@ -125,10 +127,26 @@ final class Icon extends View {
             float a = flip ? 24 - 15 : 15, b = flip ? 24 - 8 : 8;
             c.drawLine(a * k, 5 * k, b * k, 12 * k, p);
             c.drawLine(b * k, 12 * k, a * k, 19 * k, p);
-        } else {
+        } else if (kind == COMPASS) {
             c.drawCircle(12 * k, 12 * k, 9 * k, p);
-            c.drawLine(12 * k, 12 * k, 15.5f * k, 5.5f * k, p);
-            c.drawLine(12 * k, 12 * k, 8.5f * k, 18.5f * k, p);
+            c.drawLine(12 * k, 3 * k, 12 * k, 5 * k, p);
+            c.drawLine(12 * k, 19 * k, 12 * k, 21 * k, p);
+            c.drawLine(3 * k, 12 * k, 5 * k, 12 * k, p);
+            c.drawLine(19 * k, 12 * k, 21 * k, 12 * k, p);
+            path.reset();
+            path.moveTo(16 * k, 7 * k);
+            path.lineTo(14 * k, 14 * k);
+            path.lineTo(8 * k, 17 * k);
+            path.lineTo(10 * k, 10 * k);
+            path.close();
+            c.drawPath(path, p);
+            path.reset();
+            path.moveTo(16 * k, 7 * k);
+            path.lineTo(14 * k, 14 * k);
+            path.lineTo(10 * k, 10 * k);
+            path.close();
+            p.setStyle(Paint.Style.FILL);
+            c.drawPath(path, p);
         }
     }
 

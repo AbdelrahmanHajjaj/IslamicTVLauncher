@@ -46,6 +46,8 @@ Home supports up to nine favourites in two balanced rows. Below them, up to five
 
 **Display & language → Hide system apps in All apps** filters out preinstalled apps, including updated system apps. It is off by default. Home favourites and recent apps remain visible, and nothing is disabled or removed from the TV. All apps displays four rows and scrolls by row; tiles are created as they enter view. The Home, All apps, prayer and settings footer instructions and adhan dismissal hints have been removed; buttons and automatic dismissal still work.
 
+**Prayer times → Calculation method** offers [19 offline presets](PRAYER-METHODS.md), shared by all prayer displays and alerts. **Reminders & adhan → Test reminders & adhan** previews the reminder banner or adhan popup using the current sound settings, without changing scheduled alerts.
+
 **Prayer times → Prayer time offsets** sets each prayer (and the sunrise marker) from −30 to +30 minutes. Negative means earlier, positive means later, and zero restores the selected calculation method's time. Displays, reminders and adhan use the same offsets. Offsets are preserved when changing location or method, so review them then. A fixed offset is not a seasonal mosque timetable. Leamington Spa is available in the UK city list; location discovery is not implemented.
 
 These latest controls are implemented in the native TV app; the browser preview still shows the earlier four-slot layout.

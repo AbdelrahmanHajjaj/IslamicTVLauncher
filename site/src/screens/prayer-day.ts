@@ -91,7 +91,7 @@ export function prayerDayModel(c: Ctx): Model {
     html.qiblaHint = facingLine(t, facing);
     Object.assign(attr, dialAttrs(rel, (360 - facing) % 360));
   }
-  attr.room = { 'data-hints': JSON.stringify([t.hintOk(html.roomLabel), t.s('hintTimes')]) };
+  attr.room = {};
   return { html, attr };
 }
 

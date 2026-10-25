@@ -1,6 +1,7 @@
 // PrayerDay.java and Screen.java's clock helpers, on adhan-js (the JavaScript port of the app's adhan-java).
 import { CalculationMethod, Coordinates, Madhab, PrayerTimes, Qibla } from 'adhan';
 import type { Text } from './text';
+import extraPresets from '../data/method-presets.json';
 import { cityOf, methodOf, type Prefs } from './data';
 
 export const FAJR = 0, SUNRISE = 1, DHUHR = 2, ASR = 3, MAGHRIB = 4, ISHA = 5;
@@ -17,8 +18,18 @@ const METHOD: Record<string, () => ReturnType<typeof CalculationMethod.Egyptian>
   NORTH_AMERICA: CalculationMethod.NorthAmerica,
   MOON_SIGHTING_COMMITTEE: CalculationMethod.MoonsightingCommittee,
   SINGAPORE: CalculationMethod.Singapore,
+  TURKEY: CalculationMethod.Turkey,
 };
-export const methodParams = (m: string) => (METHOD[m] ?? METHOD.EGYPTIAN)();
+export const methodParams = (m: string) => {
+  if (METHOD[m]) return METHOD[m]();
+  const extra = (extraPresets as Record<string, { fajr: number; isha: number; interval: number }>)[m];
+  if (!extra) return METHOD.EGYPTIAN();
+  const params = CalculationMethod.Other();
+  params.fajrAngle = extra.fajr;
+  params.ishaAngle = extra.isha;
+  params.ishaInterval = extra.interval;
+  return params;
+};
 
 const minute = (d: Date) => new Date(Math.floor(d.getTime() / 60000) * 60000);
 const addDays = (d: Date, n: number) => { const c = new Date(d); c.setDate(c.getDate() + n); return c; };

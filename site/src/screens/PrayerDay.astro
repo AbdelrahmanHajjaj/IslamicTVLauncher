@@ -13,8 +13,6 @@ const { t, lang, day } = ctx;
 const m = prayerDayModel(ctx);
 const archM = { left: 0, html: m.html as any, attr: m.attr as any };
 const pm = pickerModel(ctx, 0);
-const hints = (...h: string[]) => JSON.stringify(h);
-const rowHints = hints(t.hintOk(t.s('bellToggle')), t.s('hintQibla'), t.s('hintBackHome'));
 // Toward the Qibla side (the end side) is Right in English and Left in Arabic.
 const toEnd = t.ar ? 'data-nav-left' : 'data-nav-right';
 const toStart = t.ar ? 'data-nav-right' : 'data-nav-left';
@@ -41,13 +39,13 @@ const dial = (needle: string, north: string, a: Record<string, Record<string, st
   <div class="dates" data-k="dates" set:html={m.html.dates} />
 </div>
 
-<a class="ft home-pill" href={href('', lang) + '#tv'} data-home data-nav-down='[data-row="0"]' data-nav-up=".home-pill" {...{ [toEnd]: '.home-pill', [toStart]: '[data-row="0"]' }} data-hints={hints(t.hintOk(t.s('home')))}>
+<a class="ft home-pill" href={href('', lang) + '#tv'} data-home data-nav-down='[data-row="0"]' data-nav-up=".home-pill" {...{ [toEnd]: '.home-pill', [toStart]: '[data-row="0"]' }}>
   <Icon name="back" size={28} stroke={2} class="back-icon" /> <span>{t.s('home')}</span>
 </a>
 
 {day.times.map((_, i) => (
   <button class="ft row day-row" data-row={i} data-a={'r' + i} data-state={m.attr!['r' + i]['data-state']} data-bell={m.attr!['r' + i]['data-bell']}
-    aria-label={m.attr!['r' + i]['aria-label']} style={`top:${236 + i * 116}px`} data-hints={rowHints}
+    aria-label={m.attr!['r' + i]['aria-label']} style={`top:${236 + i * 116}px`}
     {...{ [toEnd]: '.room-btn', [toStart]: `[data-row="${i}"]` }} {...(i === day.times.length - 1 ? { 'data-nav-down': `[data-row="${i}"]` } : {})} {...(i === 0 ? { 'data-nav-up': '.home-pill' } : {})} {...(i === day.nextIndex ? { 'data-focus-start': '' } : {})}>
     <span class="r-name" data-k={'n' + i} set:html={m.html['n' + i]} />
     <span class="r-status" data-k={'s' + i} set:html={m.html['s' + i]} />
@@ -68,7 +66,6 @@ const dial = (needle: string, north: string, a: Record<string, Record<string, st
   <span data-k="roomLabel" set:html={m.html.roomLabel} />
 </button>
 
-<div class="hints" style="top:976px" data-hints-out></div>
 
 <!-- Room direction picker: ◀▶ 5°, ▲▼ 45°, OK saves, Back cancels. -->
 <div class="picker" data-picker hidden tabindex="-1" role="dialog" aria-label={t.s('roomTitle')}>

@@ -58,7 +58,7 @@ export function makeText(lang: Lang, eastern = lang === 'ar') {
       !ar && minutes < 60
         ? d(`${prayer} in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`)
         : prayer + ' ' + inMinutes(minutes, hoursAndMinutes),
-    apSub: (time: string) => d((ar ? 'الأذان ' : 'Adhan at ') + time + (ar ? ' · رجوع للإغلاق' : ' · Back to dismiss')),
+    apSub: (time: string) => d((ar ? 'الأذان ' : 'Adhan at ') + time),
     bannerSub: (time: string, seconds: number) =>
       d((ar ? 'الأذان ' : 'Adhan ') + time + (ar ? ` · يختفي خلال ${seconds} ث` : ` · hides in ${seconds} s`)),
     station, stationWhere,
@@ -83,6 +83,15 @@ export function makeText(lang: Lang, eastern = lang === 'ar') {
         NORTH_AMERICA: ar ? 'الجمعية الإسلامية لأمريكا الشمالية' : 'ISNA, North America',
         MOON_SIGHTING_COMMITTEE: ar ? 'لجنة رؤية الهلال' : 'Moonsighting Committee',
         SINGAPORE: ar ? 'سنغافورة' : 'Singapore',
+        FRANCE: ar ? 'اتحاد المنظمات الإسلامية في فرنسا' : 'France (UOIF)',
+        TURKEY: ar ? 'تركيا — ديانت (حساب تقريبي)' : 'Turkey / Diyanet (approximate)',
+        RUSSIA: ar ? 'الإدارة الدينية لمسلمي روسيا' : 'Spiritual Administration of Muslims of Russia',
+        JAKIM: ar ? 'ماليزيا — جاكيم' : 'Malaysia (JAKIM)',
+        KEMENAG: ar ? 'وزارة الشؤون الدينية الإندونيسية' : 'Indonesia (KEMENAG)',
+        TUNISIA: ar ? 'تونس' : 'Tunisia',
+        ALGERIA: ar ? 'الجزائر' : 'Algeria',
+        MOROCCO: ar ? 'المغرب' : 'Morocco',
+        GULF: ar ? 'منطقة الخليج' : 'Gulf region',
       })[m] ?? (ar ? 'الهيئة المصرية العامة للمساحة' : 'Egyptian General Authority of Survey'),
     place: (city: string, country: string) => city + (ar ? '، ' : ', ') + country,
     days: (n: number) => {

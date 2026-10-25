@@ -6,7 +6,7 @@
 
 <p dir="rtl"><b>أفنون: شاشة رئيسية لتلفاز أندرويد، تدور حول يوم الصلاة: المواقيت والقبلة والأذان وإذاعة القرآن الكريم.</b></p>
 
-Arabic first (RTL) and English · Offline prayer times for 136 cities · 14 adhan voices · Qibla · 16 Quran radio stations and reciters
+Arabic first (RTL) and English · Offline prayer times for 137 cities · 14 adhan voices · Qibla · 16 Quran radio stations and reciters
 
 **[⬇ Download the APK](https://github.com/egyjs/afnon-android-tv-launcher/releases/latest/download/afnon.apk)** · [Releases](https://github.com/egyjs/afnon-android-tv-launcher/releases) · **[Try it in your browser](https://egyjs.github.io/afnon-android-tv-launcher/)**
 
@@ -38,7 +38,7 @@ Afnon started from [cleanyourtv](https://github.com/Gathin23/cleanyourtv):
 
 ## Local improvements branch
 
-See [themes, screensavers and buttons](docs/THEMES.md) and [local setup and recovery](tools/device.md) for PC/phone backups, verified Home takeover and reversible stock-launcher disabling. The linked upstream releases do not contain this branch’s changes. Build locally; TCL 50C641K hardware testing is pending.
+See [themes, screensavers and buttons](docs/THEMES.md) and [local setup and recovery](tools/device.md) for PC/phone backups, verified Home takeover and reversible stock-launcher disabling. The linked upstream releases do not contain this branch’s changes. Build locally; completed TCL 50C641K checks and remaining tests are recorded in [local validation](docs/LOCAL-VALIDATION.md).
 
 ## Screens
 
@@ -58,10 +58,10 @@ See [themes, screensavers and buttons](docs/THEMES.md) and [local setup and reco
 ## Features
 
 - **Prayer times, fully offline.** Calculated on the TV with
-  [adhan-java](https://github.com/batoulapps/adhan-java). It ships with 136 cities in 43 countries across
+  [adhan-java](https://github.com/batoulapps/adhan-java). It ships with 137 cities in 43 countries across
   the Arab world, Asia, Europe, the Americas, Africa and Oceania, picked by region, then country, then city. Each
-  city starts on the method and Asr school its mosques use; you can still choose the calculation method (Egyptian,
-  Umm al-Qura, MWL, Karachi and more), the Asr school (Shafi'i or Hanafi) and a Hijri date offset. The Hijri date and Ramadan mode always use the
+  city starts on the method and Asr school its mosques use; you can still choose from [19 calculation methods](docs/PRAYER-METHODS.md) (Egyptian,
+  Umm al-Qura, MWL, Karachi and regional presets), the Asr school (Shafi'i or Hanafi) and a Hijri date offset. The Hijri date and Ramadan mode always use the
   Umm al-Qura calendar, so where local moon sighting differs (the United States, for one) set the offset.
 - **Qibla and room direction.** The Qibla bearing from your city, and a one-time "which way does
   the TV face" setting, so the screen can say *"Qibla is behind you"*.
@@ -153,6 +153,8 @@ in Developer options, revoke the USB debugging authorisations, reboot, and check
 | Recent apps | Up to five apps opened through Afnon, below the two favourite rows |
 | Hide preinstalled apps | Settings → Display & language → **Hide system apps in All apps**; Home favourites stay visible |
 | Uninstall a removable app | All apps → hold **OK** → Uninstall → Android confirmation |
+| Calculation method | Settings → Prayer times → Calculation method; [19 offline presets](docs/PRAYER-METHODS.md) |
+| Test the banner or adhan | Settings → Reminders & adhan → **Test reminders & adhan** |
 | Prayer time offsets | Settings → Prayer times → Prayer time offsets (−30 to +30 minutes for each time) |
 | App-coloured lighting | Settings → Display & language → App focus lighting |
 | Change city, method, adhan voice, radio options | The remote's **Settings** button, or the gear on Home |
@@ -163,6 +165,8 @@ in Developer options, revoke the USB debugging authorisations, reboot, and check
 | Go back to stock | `bash tools/restore.sh`, then verify Home and reboot. Restores recorded state while keeping Afnon installed. |
 
 ### Trying things without waiting for a prayer
+
+On the TV, **Settings → Reminders & adhan → Test reminders & adhan** previews the reminder banner or adhan popup with your current settings. It does not consume a scheduled alert. The ADB shortcuts below also remain available.
 
 ```bash
 adb shell am start -n tv.afnon.home/.MainActivity --es test friday    # or ramadan, now (back to today)
@@ -237,7 +241,7 @@ docs/screenshots/     the images above, all from the real TV
 **أفنون** شاشة رئيسية لتلفاز أندرويد، تبدأ من يوم الصلاة. الصلاة القادمة والعدّ التنازلي في قلب
 محراب، ومواقيت اليوم الستة في الأعلى، وتطبيقاتك المفضلة تحتها. ويأتي الأذان إلى التلفاز وحده في وقته.
 
-- **مواقيت بلا إنترنت**: تُحسب على التلفاز نفسه، مع ١٣٦ مدينة في ٤٣ دولة تُختار بالمنطقة ثم الدولة ثم المدينة، وعدة طرق حساب، والمذهب الشافعي أو الحنفي في
+- **مواقيت بلا إنترنت**: تُحسب على التلفاز نفسه، مع ١٣٧ مدينة في ٤٣ دولة تُختار بالمنطقة ثم الدولة ثم المدينة، وعدة طرق حساب، والمذهب الشافعي أو الحنفي في
   العصر، وتعديل التاريخ الهجري. التاريخ الهجري ووضع رمضان يعتمدان دائمًا على تقويم أم القرى، فإن اختلفت رؤية الهلال
   المحلية (كما في الولايات المتحدة) فاضبط التعديل.
 - **القبلة واتجاه الغرفة**: اتجاه القبلة من مدينتك، وإعداد لمرة واحدة لاتجاه التلفاز، فتقول لك الشاشة
