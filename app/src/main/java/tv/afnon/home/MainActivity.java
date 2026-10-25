@@ -253,7 +253,7 @@ public class MainActivity extends Screen {
         float fw = (Tokens.COURT_W - 3 * 24) / 4f;
         List<String> favs = Apps.slots(this, t);
         for (int i = 0; i < 4; i++) {
-            nodes[F0 + i] = favouriteTile(favs.get(i), F0 + i, Tokens.COURT_X + i * (fw + 24), 520, fw);
+            nodes[F0 + i] = favouriteTile(i < favs.size() ? favs.get(i) : null, F0 + i, Tokens.COURT_X + i * (fw + 24), 520, fw);
         }
 
         TextView more = caps(text(ui400, 22, Tokens.MIST_400));

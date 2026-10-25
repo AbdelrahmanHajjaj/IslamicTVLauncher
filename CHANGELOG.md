@@ -4,6 +4,10 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Fixed
+- Home no longer crashes on start on a TV with fewer than four apps besides Afnon (found on a stock Android TV
+  9 emulator); the missing favourites show as empty tiles.
+
 ## [0.6] - 2026-10-25
 
 ### Added
