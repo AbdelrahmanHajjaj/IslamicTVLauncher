@@ -658,7 +658,14 @@ public final class MainActivity extends Activity {
             }
             if (end == Timeline.State.FAILED) {
                 installedOk = false;
-                post(g, () -> showDone(new ArrayList<>(), false));
+                post(g, () -> {
+                    timeline.set(row, Timeline.State.FAILED);
+                    timeline.note(row, getString(R.string.state_failed));
+                    hero.set(Hero.Mode.PROBLEM);
+                    titleView.setText(R.string.done_partly_title);
+                    leadView.setText(R.string.steps_failed_lead);
+                    foot(Ui.primary(this, getString(R.string.try_again), v -> go(this::install)));
+                });
                 return;
             }
             Timeline.State shown = end;
