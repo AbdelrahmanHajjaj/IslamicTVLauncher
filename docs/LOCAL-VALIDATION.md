@@ -1,6 +1,6 @@
 # Local validation — 25 October 2026
 
-Tested on TCL 50C641K, Android 11/API 30 confirmed over ADB, firmware V8-R51MT02-LF1V903.021315. All work stayed local; no push, fetch, pull or other network Git operation was performed. Existing CleanYourTV working changes were left alone.
+Tested on TCL 50C641K, Android 11/API 30 confirmed over ADB, firmware V8-R51MT02-LF1V903.021315. This is a chronological record: counts and selections below describe each increment, not necessarily the latest state. Work was initially local-only; a later explicitly authorised fetch/merge is recorded below. No push or PR was made. Existing CleanYourTV working changes were left alone.
 
 ## Passed locally
 
@@ -129,3 +129,13 @@ Not rechecked: screensaver idle/wake on the TV, a fresh physical Blue/volume tes
 - Final checks kept Afnon as Home, its prayer/button helper present, all 13 previously disabled packages unchanged and Google Backdrop selected. The original language, two-row layout, favourites, offsets, filter, bar placement and theme were preserved; the default system clock choice is now explicitly stored. The private preference backup was refreshed and the TV left at Home.
 
 Not tested in this increment: the phone installer on a physical phone, a full performance benchmark, screensaver idle/wake, or live HDMI/tuner picture and sound. No TV reboot or force-stop was performed.
+
+## Screensaver activation and documentation refresh
+
+- The existing dream-service label already uses the same app-name resource as the launcher: **IslamicTVLauncher (Afnon)**. Selected it through the guarded setup tool, preserving the previous saver in the private recovery record.
+- Started the installed Android dream service and verified `tv.afnon.home/tv.afnon.home.AfnonDream` was the active dream. Captured its dim clock/next-prayer display. Automatic idle start and physical-remote wake were not verified in this pass.
+- README and Unreleased changelog now describe the implemented fork features; the city reference lists the catalog and explicitly marks the new city's official timetable comparison as pending. Browser intro totals follow the catalog.
+- Refreshed real-TV screenshots in English/Arabic from the feature checks. Home city text is redacted; private originals, backups and device identifiers remain outside the commit. See `screenshots/README.md` for capture scope.
+- `CONTRIBUTION-PLAN.md` records focused upstream scopes and remaining checks, including shared-token adoption, browser parity and new vector warnings. The whole feature branch is not declared upstream-ready.
+- Documentation checks passed: 32 existing automated tests, all 18 browser routes and token consistency. Catalog assertions verified 137 unique bilingual city IDs, 43 countries, six regions, valid coordinates/methods and parity with native source and the city reference. English/Arabic rendered intro totals, 59 local documentation links and all 13 screenshot dimensions also passed.
+- No native code changed during the documentation refresh, so the Android APK was not rebuilt or reinstalled and no TV settings were changed. Native build/lint counts above remain the last recorded results, not a new run.
