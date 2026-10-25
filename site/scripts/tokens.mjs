@@ -74,6 +74,16 @@ ${body}
 });
 
 StyleDictionary.registerFormat({
+  name: 'afnon/palette',
+  format: ({ dictionary }) => {
+    const colors = dictionary.allTokens.filter(t => t.path[0] === 'color');
+    const fields = colors.map(t => `    static int ${constName(t)} = Tokens.${constName(t)};`).join('\n');
+    const assign = colors.map(t => `        ${constName(t)} = Appearance.tint(Tokens.${constName(t)}, colors);`).join('\n');
+    return `package tv.afnon.home;\n\n// ${HEADER}\nfinal class Palette {\n${fields}\n    static void apply(java.util.Map<Integer, Integer> colors) {\n${assign}\n    }\n}\n`;
+  },
+});
+
+StyleDictionary.registerFormat({
   name: 'afnon/android-colors',
   format: ({ dictionary }) => {
     const rows = dictionary.allTokens
@@ -96,7 +106,7 @@ const sd = new StyleDictionary({
     java: {
       transforms: ['attribute/cti', 'name/constant', 'color/hex8android'],
       buildPath: resolve(root, 'app/src/main/java/tv/afnon/home') + '/',
-      files: [{ destination: 'Tokens.java', format: 'afnon/java' }],
+      files: [{ destination: 'Tokens.java', format: 'afnon/java' }, { destination: 'Palette.java', format: 'afnon/palette' }],
     },
     android: {
       transforms: ['attribute/cti', 'name/snake', 'color/hex8android'],

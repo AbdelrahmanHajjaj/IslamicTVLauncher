@@ -46,10 +46,16 @@ abstract class Screen extends Activity {
     TextView archLabel, archName, archCount, archSub, archSub2;
     /** {@link Prefs#key} when the screen was last built. */
     private String builtSettings;
+    private String backgroundKey;
 
     private final Runnable everySecond = new Runnable() {
         @Override
         public void run() {
+            String key = Appearance.backgroundKey(Screen.this);
+            if (root != null && !key.equals(backgroundKey)) {
+                root.setBackground(Appearance.background(Screen.this));
+                backgroundKey = key;
+            }
             onTick();
             long now = System.currentTimeMillis();
             tick.postDelayed(this, 1000 - (now % 1000) + 5);
@@ -97,6 +103,23 @@ abstract class Screen extends Activity {
         super.onPause();
     }
 
+    private final android.content.BroadcastReceiver appChanges = new android.content.BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            Apps.invalidate();
+            if (Screen.this instanceof MainActivity || Screen.this instanceof AllAppsActivity) build();
+        }
+    };
+    @Override protected void onStart() {
+        super.onStart();
+        android.content.IntentFilter filter = new android.content.IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED); filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_CHANGED); filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        filter.addDataScheme("package");
+        if (android.os.Build.VERSION.SDK_INT >= 33) registerReceiver(appChanges, filter, Context.RECEIVER_NOT_EXPORTED);
+        else registerReceiver(appChanges, filter);
+    }
+    @Override protected void onStop() { unregisterReceiver(appChanges); super.onStop(); }
+
     // ---------------------------------------------------------------- settings
 
     /**
@@ -108,6 +131,7 @@ abstract class Screen extends Activity {
      *     Settings, or the phone installer through SetupProvider) and Home brought it back through onNewIntent
      */
     boolean loadSettings(Intent i) {
+        Appearance.load(this);
         SharedPreferences p = prefs();
         String built = builtSettings;
         boolean changed = false;
@@ -169,7 +193,8 @@ abstract class Screen extends Activity {
 
         root = new FrameLayout(this);
         root.setLayoutDirection(rtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
-        root.setBackground(Ui.starLattice(this));
+        root.setBackground(Appearance.background(this));
+        backgroundKey = Appearance.backgroundKey(this);
         root.setClipChildren(false);
     }
 
@@ -181,32 +206,32 @@ abstract class Screen extends Activity {
         arch = new ArchView(this);
         place(arch, Tokens.ARCH_X, Tokens.ARCH_Y, Tokens.ARCH_W, Tokens.ARCH_H);
 
-        TextView verse = text(sacred, 32, Tokens.GOLD_400);
+        TextView verse = text(sacred, 32, Palette.GOLD_400);
         verse.setText("إِنَّ الصَّلَاةَ كَانَتْ\nعَلَى الْمُؤْمِنِينَ\nكِتَابًا مَّوْقُوتًا");
         verse.setGravity(Gravity.CENTER_HORIZONTAL);
         verse.setTextDirection(View.TEXT_DIRECTION_RTL);
-        verse.setLineHeight(Ui.ipx(32 * 1.55f));
+        lineHeightPixels(verse, Ui.ipx(32 * 1.55f));
         place(verse, 156, 238, 480, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        TextView ref = text(ui400, 20, Tokens.MIST_400);
+        TextView ref = text(ui400, 20, Palette.MIST_400);
         ref.setText(t.ref());
         ref.setGravity(Gravity.CENTER_HORIZONTAL);
         place(ref, 156, 410, 480, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         View rule = new View(this);
-        rule.setBackgroundColor(Tokens.GOLD_400);
+        rule.setBackgroundColor(Palette.GOLD_400);
         rule.setAlpha(0.6f);
         place(rule, 336, 460, 120, 2);
 
         LinearLayout info = new LinearLayout(this);
         info.setOrientation(LinearLayout.VERTICAL);
         info.setGravity(Gravity.CENTER_HORIZONTAL);
-        archLabel = caps(text(ui400, 22, Tokens.MIST_400));
-        archName = text(displayBold, 88, Tokens.GOLD_400);
-        archCount = text(display, 150, Tokens.PLASTER_100);
+        archLabel = caps(text(ui400, 22, Palette.MIST_400));
+        archName = text(displayBold, 88, Palette.GOLD_400);
+        archCount = text(display, 150, Palette.PLASTER_100);
         archCount.setTextDirection(View.TEXT_DIRECTION_LTR);
         archCount.setFontFeatureSettings("tnum");
-        archSub = text(ui400, subSize, Tokens.MIST_400);
+        archSub = text(ui400, subSize, Palette.MIST_400);
         archSub2 = text(ui400, 24, sub2Color);
         for (TextView v : new TextView[] {archLabel, archName, archCount, archSub, archSub2}) {
             v.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -288,7 +313,7 @@ abstract class Screen extends Activity {
     void setHints(LinearLayout hints, List<String> h) {
         hints.removeAllViews();
         for (int i = 0; i < h.size(); i++) {
-            TextView v = text(ui400, 22, Tokens.MIST_400);
+            TextView v = text(ui400, 22, Palette.MIST_400);
             v.setText(h.get(i));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
             if (i > 0) lp.setMarginStart(Ui.ipx(40));
@@ -334,6 +359,10 @@ abstract class Screen extends Activity {
      * lh × size. Android keeps the font's full ascent and descent instead, which for Amiri is far taller than the
      * design, so negative margins take back the difference. Safe to call again after the text size changes.
      */
+    static void lineHeightPixels(TextView v, int height) {
+        v.setLineSpacing(height - v.getPaint().getFontMetricsInt(null), 1f);
+    }
+
     static void lineHeight(TextView v, float lh) {
         v.setIncludeFontPadding(false);
         android.graphics.Paint.FontMetricsInt fm = v.getPaint().getFontMetricsInt();

@@ -346,4 +346,33 @@ final class Text {
     }
 
     String hijriSuffix() { return ar ? " هـ" : " AH"; }
+    String themeRow() { return ar ? "السمة" : "Theme"; }
+    String backgroundRow() { return ar ? "الخلفية" : "Background"; }
+    String lightingRow() { return ar ? "الإضاءة المحيطية" : "Ambient light"; }
+    String reduceMotion() { return ar ? "تقليل الحركة" : "Reduce motion"; }
+    String screensaver() { return ar ? "شاشة التوقف" : "Screensaver"; }
+    String saverSystem() { return ar ? "إعدادات شاشة التوقف والصور" : "Screensaver and photo settings"; }
+    String homeSettings() { return ar ? "الشاشة الرئيسية الافتراضية" : "Default Home"; }
+    String inputsTitle() { return ar ? "المداخل" : "Inputs"; }
+    String inputsSystem() { return ar ? "قائمة مداخل التلفزيون" : "TV input menu"; }
+    String remoteButtons() { return ar ? "تخصيص أزرار التحكم" : "Remote buttons"; }
+    String pressButton() { return ar ? "اضغط زرًا لتخصيصه" : "Press a button to assign"; }
+    String pressButtonHelp() { return ar ? "اضغط زر اختصار في جهاز التحكم ثم اختر التطبيق. أزرار التنقل والصوت والطاقة تبقى كما هي. إذا فتح الزر تطبيقًا آخر، ارجع واختر الزر من القائمة." : "Press a shortcut button on your remote, then choose an app. Navigation, volume and power keep their usual function. If the button opens another app, return and select it from the list."; }
+    String buttonPreviewHelp() { return ar ? "على التلفزيون، اضغط زر جهاز التحكم هنا. هذه المعاينة تعرض أزرارًا وتطبيقات تجريبية فقط." : "On your TV, press the remote button here. This preview shows example buttons and apps only."; }
+    String enableButtons() { return ar ? "تفعيل خدمة أزرار التحكم" : "Enable the remote button service"; }
+    String buttonsFailed() { return ar ? "تعذّر حفظ الأزرار أو استعادتها. حاول مرة أخرى." : "Could not save or restore the buttons. Please try again."; }
+    String buttonAppMissing() { return ar ? "هذا التطبيق لم يعد متاحًا. اختر تطبيقًا آخر." : "This app is no longer available. Choose another app."; }
+    String buttonNumber(int code) { return (ar ? "زر " : "Button ") + d(String.valueOf(code)); }
+    String[] buttonNames() { return ar ? new String[] {"اختصار الإعدادات", "الإعدادات", "التلفزيون", "المعلومات", "الويب"} : new String[] {"Settings shortcut", "Settings", "TV", "Info", "Web"}; }
+    String restoreButtons() { return ar ? "استعادة أزرار التلفزيون الأصلية" : "Restore original TV buttons"; }
+    String serviceHealth() { return ar ? "خدمة الأذان والتذكير" : "Prayer and reminder service"; }
+    String serviceHelp() { return ar ? "إيقاف الخدمة يوقف تنبيهات الصلاة" : "Prayer alerts need this service enabled"; }
+    String serviceRunning() { return ar ? "تعمل" : "Running"; }
+    String serviceStopped() { return ar ? "متوقفة — فتح الإعدادات" : "Stopped — open settings"; }
+    String repairService() { return ar ? "استعادة خدمة الصلاة تلقائيًا" : "Recover prayer service"; }
+    String repairHelp() { return ar ? "عند العودة للرئيسية بعد إيقاف التطبيق" : "When Home opens after the app was stopped"; }
+    String systemUnavailable() { return ar ? "هذه الصفحة غير متاحة على التلفزيون" : "This settings page is unavailable on this TV"; }
+    String[] themeNames() { return ar ? new String[] {"محراب", "شفق", "جمر", "غابة", "مخصصة"} : new String[] {"Mihrab", "Aurora", "Ember", "Forest", "Custom"}; }
+    String[] backgroundNames() { return ar ? new String[] {"حسب السمة", "زخرفة", "سادة", "بانوراما", "ضوء النهار"} : new String[] {"Theme", "Lattice", "Solid", "Panorama", "Daylight"}; }
+    String[] buttonActions() { return ar ? new String[] {"الأصلي", "الرئيسية", "التطبيقات", "المداخل", "الإعدادات"} : new String[] {"Original", "Home", "All apps", "Inputs", "Settings"}; }
 }

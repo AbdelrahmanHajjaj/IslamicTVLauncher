@@ -17,6 +17,7 @@ final class Ui {
     static float scale = 1f;
 
     static void init(Context c) {
+        Appearance.load(c);
         scale = c.getResources().getDisplayMetrics().widthPixels / 1920f;
     }
 
@@ -35,11 +36,11 @@ final class Ui {
         int s = Math.max(1, ipx(96));
         Bitmap b = Bitmap.createBitmap(s, s, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(b);
-        cv.drawColor(Tokens.LAPIS_900);
+        cv.drawColor(Palette.LAPIS_900);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
         p.setStyle(Paint.Style.STROKE);
         p.setStrokeWidth(px(1.5f));
-        p.setColor(Tokens.PATTERN_LINE);
+        p.setColor(Palette.PATTERN_LINE);
         float k = s / 96f;
         cv.drawRect(28 * k, 28 * k, 68 * k, 68 * k, p);
         cv.save();

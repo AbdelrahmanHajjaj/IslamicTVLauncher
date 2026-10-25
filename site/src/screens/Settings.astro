@@ -35,6 +35,7 @@ const { t, lang } = ctx;
   import { live } from '../scripts/live';
   import { href } from '../lib/site';
   import { CITIES, METHODS, cityOf, stationOf } from '../lib/data';
+  import { APPS } from './apps';
   import type { Ctx } from '../lib/ctx';
   import type { Lang } from '../lib/text';
   import {
@@ -189,6 +190,33 @@ const { t, lang } = ctx;
         (i) => save({ ...p(), [key]: VOICES[i].id }));
     };
 
+    // Example assignments stay in this browser. Android uses the TV's installed-app list.
+    const remoteDefaults: Record<string, string> = { youtube: 'app:0', netflix: 'app:1', web: 'app:3', settings: '@settings', inputs: '@inputs', apps: '@apps' };
+    const remoteKeys = Object.keys(remoteDefaults);
+    const remoteLabel = (key: string) => ({ youtube: 'YouTube', netflix: 'Netflix', web: ctx.t.list('buttonNames')[4],
+      settings: ctx.t.list('buttonNames')[0], inputs: ctx.t.s('inputsTitle'), apps: ctx.t.list('buttonActions')[2] })[key] ?? key;
+    const remoteValues = ['@default', '@home', '@apps', '@inputs', '@settings'];
+    const assignmentLabel = (value: string) => value.startsWith('app:')
+      ? APPS[Number(value.slice(4))]?.[ctx.t.ar ? 'ar' : 'en'] ?? value
+      : ctx.t.list('buttonActions')[remoteValues.indexOf(value)] ?? value;
+    const openRemoteButtons = () => {
+      const bindings = ctx.prefs.remoteButtons ?? remoteDefaults;
+      const labels = [ctx.t.s('pressButton'), ...remoteKeys.map(key => `${remoteLabel(key)} · ${assignmentLabel(bindings[key] ?? '@default')}`), ctx.t.s('restoreButtons')];
+      open(ctx.t.s('remoteButtons'), labels.map(label => ({ label, chosen: false })), i => {
+        if (i === 0) open(ctx.t.s('pressButton'), [{ label: ctx.t.s('buttonPreviewHelp'), chosen: false }], openRemoteButtons, openRemoteButtons);
+        else if (i <= remoteKeys.length) openRemoteApps(remoteKeys[i - 1]);
+        else { save({ ...p(), remoteButtons: Object.fromEntries(remoteKeys.map(key => [key, '@default'])) }); openRemoteButtons(); }
+      });
+    };
+    const openRemoteApps = (key: string) => {
+      const values = [...remoteValues, ...APPS.map((_, i) => `app:${i}`)];
+      const current = (ctx.prefs.remoteButtons ?? remoteDefaults)[key] ?? '@default';
+      open(remoteLabel(key), values.map(value => ({ label: assignmentLabel(value), chosen: current === value })), i => {
+        save({ ...p(), remoteButtons: { ...(ctx.prefs.remoteButtons ?? remoteDefaults), [key]: values[i] } });
+        openRemoteButtons();
+      }, openRemoteButtons);
+    };
+
     // ------------------------------------------------------------ rows
     const W = lang === 'ar' ? 'على التلفاز يفتح هذا' : 'On the TV this opens';
     const goLang = (i: number) => {
@@ -214,9 +242,17 @@ const { t, lang } = ctx;
       if (!r) return;
       if (r.kind === 'seg' || r.kind === 'step') setEdit({ row: i, draft: savedDraft(ctx, r) });
       else if (r.id === 'radio') setRadio(!radioOn);
+      else if (r.id === 'reduceMotion') save({ ...p(), reduceMotion: !ctx.prefs.reduceMotion });
+      else if (r.id === 'repairService') save({ ...p(), repairService: !ctx.prefs.repairService });
       else if (r.id === 'adhan') save({ ...p(), adhan: !ctx.prefs.adhan });
       else if (r.kind === 'value') {
-        if (r.id === 'city') openRegions();
+        if (r.id === 'theme' || r.id === 'background') {
+          const values = r.id === 'theme' ? ['mihrab','aurora','ember','forest'] : ['theme','lattice','solid','panorama','daylight'];
+          const labels = ctx.t.list(r.id === 'theme' ? 'themeNames' : 'backgroundNames');
+          open(r.label, values.map((v, i) => ({ label: labels[i], chosen: v === (r.id === 'theme' ? ctx.prefs.theme ?? 'mihrab' : ctx.prefs.background ?? 'theme') })),
+            i => save(r.id === 'theme' ? { ...p(), theme: values[i], background: 'theme', lighting: 35 } : { ...p(), background: values[i] }));
+        } else if (r.id === 'remoteButtons') openRemoteButtons();
+        else if (r.id === 'city') openRegions();
         else if (r.id === 'method') {
           open(ctx.t.s('method'), methodItems(ctx.t, ctx.prefs), (k) => save({ ...p(), method: METHODS[k] }));
         } else if (r.id === 'remind') {

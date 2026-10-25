@@ -50,6 +50,12 @@ public class AllAppsActivity extends Screen {
     /** The tile the menu was opened from, focused again when it closes without a change. */
     private int menuFrom;
 
+    @Override protected void onResume() {
+        Apps.invalidate();
+        super.onResume();
+        if (!apps.equals(Apps.sorted(this, t)) || !favs.equals(Apps.slots(this, t))) build();
+    }
+
     @Override
     void build() {
         newRoot();
@@ -58,10 +64,10 @@ public class AllAppsActivity extends Screen {
         tiles.clear();
 
         backButton = new FocusTile(this, 36);
-        backButton.setRest(Tokens.LAPIS_800, Tokens.LINE_SOFT, 2);
+        backButton.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
         Icon back = new Icon(this, Icon.BACK, 2f);
         backButton.addView(back, new FrameLayout.LayoutParams(Ui.ipx(32), Ui.ipx(32), Gravity.CENTER));
-        backButton.setLook(f -> back.setColor(f ? Tokens.LAPIS_900 : Tokens.PLASTER_100));
+        backButton.setLook(f -> back.setColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         backButton.setContentDescription(t.back());
         backButton.setOnClickListener(v -> finish());
         backButton.setOnFocusChangeListener((v, has) -> { if (has) info(t.back(), t.hintBackHome()); });
@@ -69,9 +75,9 @@ public class AllAppsActivity extends Screen {
 
         LinearLayout head = new LinearLayout(this);
         head.setGravity(Gravity.CENTER_VERTICAL);
-        TextView title = text(displayBold, 64, Tokens.PLASTER_100);
+        TextView title = text(displayBold, 64, Palette.PLASTER_100);
         title.setText(t.allTitle());
-        count = text(ui400, 26, Tokens.MIST_400);
+        count = text(ui400, 26, Palette.MIST_400);
         count.setText(t.d(String.valueOf(apps.size())));
         head.addView(title);
         LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-2, -2);
@@ -84,13 +90,13 @@ public class AllAppsActivity extends Screen {
         place(head, 96 + 72 + 28, 56, ViewGroup.LayoutParams.WRAP_CONTENT, 72);
 
         chip = new FocusTile(this, 36);
-        chip.setRest(0, Tokens.GOLD_400, 2);
+        chip.setRest(0, Palette.GOLD_400, 2);
         LinearLayout cr = new LinearLayout(this);
         cr.setGravity(Gravity.CENTER_VERTICAL);
         cr.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
         Icon mihrab = new Icon(this, Icon.MIHRAB, 2f);
-        chipLabel = text(ui400, 26, Tokens.GOLD_400);
-        chipTime = text(display, 32, Tokens.PLASTER_100);
+        chipLabel = text(ui400, 26, Palette.GOLD_400);
+        chipTime = text(display, 32, Palette.PLASTER_100);
         chipTime.setTextDirection(View.TEXT_DIRECTION_LTR);
         chipTime.setIncludeFontPadding(false);
         cr.addView(mihrab, new LinearLayout.LayoutParams(Ui.ipx(26), Ui.ipx(26)));
@@ -102,9 +108,9 @@ public class AllAppsActivity extends Screen {
         cr.addView(chipTime, lp2);
         chip.addView(cr, new FrameLayout.LayoutParams(-2, -1));
         chip.setLook(f -> {
-            chipLabel.setTextColor(f ? Tokens.LAPIS_900 : Tokens.GOLD_400);
-            chipTime.setTextColor(f ? Tokens.LAPIS_900 : Tokens.PLASTER_100);
-            mihrab.setColor(f ? Tokens.LAPIS_900 : Tokens.GOLD_400);
+            chipLabel.setTextColor(f ? Palette.LAPIS_900 : Palette.GOLD_400);
+            chipTime.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100);
+            mihrab.setColor(f ? Palette.LAPIS_900 : Palette.GOLD_400);
         });
         chip.setOnClickListener(v -> startActivity(new Intent(this, PrayerDayActivity.class)));
         chip.setOnFocusChangeListener((v, has) -> { if (has) info(t.today(), t.hintOk(t.today())); });
@@ -120,14 +126,14 @@ public class AllAppsActivity extends Screen {
         // Info bar: the focused app on the start side, key hints on the end side.
         FrameLayout bar = new FrameLayout(this);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Tokens.LAPIS_800);
+        bg.setColor(Palette.LAPIS_800);
         bg.setCornerRadius(Ui.px(18));
         bar.setBackground(bg);
         bar.setPadding(Ui.ipx(32), Ui.ipx(24), Ui.ipx(32), Ui.ipx(24));
         LinearLayout who = new LinearLayout(this);
         who.setOrientation(LinearLayout.VERTICAL);
-        infoName = text(ui500, 30, Tokens.PLASTER_100);
-        infoNote = text(ui400, 22, Tokens.MIST_400);
+        infoName = text(ui500, 30, Palette.PLASTER_100);
+        infoNote = text(ui400, 22, Palette.MIST_400);
         who.addView(infoName);
         who.addView(infoNote);
         ((LinearLayout.LayoutParams) infoNote.getLayoutParams()).topMargin = Ui.ipx(6);
@@ -138,7 +144,7 @@ public class AllAppsActivity extends Screen {
         h.add(t.hintHold());
         h.add(t.hintBackHome());
         for (int i = 0; i < h.size(); i++) {
-            TextView k = text(ui400, 22, Tokens.MIST_400);
+            TextView k = text(ui400, 22, Palette.MIST_400);
             k.setText(h.get(i));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
             if (i > 0) lp.setMarginStart(Ui.ipx(36));
@@ -178,7 +184,7 @@ public class AllAppsActivity extends Screen {
             top.addView(star, new FrameLayout.LayoutParams(Ui.ipx(26), Ui.ipx(26), Gravity.END | Gravity.TOP));
         }
         String name = Apps.name(this, t, pkg);
-        TextView label = text(ui500, 26, Tokens.PLASTER_100);
+        TextView label = text(ui500, 26, Palette.PLASTER_100);
         label.setText(name);
         label.setSingleLine(true);
         label.setEllipsize(TextUtils.TruncateAt.END);
@@ -189,12 +195,12 @@ public class AllAppsActivity extends Screen {
 
         final Icon starIcon = star;
         b.setLook(f -> {
-            int fg = f ? Tokens.LAPIS_900 : Tokens.PLASTER_100;
+            int fg = f ? Palette.LAPIS_900 : Palette.PLASTER_100;
             label.setTextColor(fg);
-            if (starIcon != null) starIcon.setColor(f ? Tokens.LAPIS_900 : Tokens.GOLD_400);
+            if (starIcon != null) starIcon.setColor(f ? Palette.LAPIS_900 : Palette.GOLD_400);
             GradientDrawable g = new GradientDrawable();
             g.setCornerRadius(Ui.px(14));
-            g.setColor(f ? Tokens.LAPIS_900 : Tokens.LAPIS_700);
+            g.setColor(f ? Palette.LAPIS_900 : Palette.LAPIS_700);
             mono.setBackground(g);
         });
         b.setOnClickListener(v -> Apps.launch(this, pkg));
@@ -336,7 +342,7 @@ public class AllAppsActivity extends Screen {
         menuActions.add(null);
 
         menu = new FrameLayout(this);
-        menu.setBackgroundColor(Tokens.SCRIM_MENU);
+        menu.setBackgroundColor(Palette.SCRIM_MENU);
         menu.setClickable(true);
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
@@ -345,11 +351,11 @@ public class AllAppsActivity extends Screen {
         card.setClipToPadding(false);
         card.setPadding(Ui.ipx(48), Ui.ipx(40), Ui.ipx(48), Ui.ipx(40));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Tokens.LAPIS_800);
+        bg.setColor(Palette.LAPIS_800);
         bg.setCornerRadius(Ui.px(24));
-        bg.setStroke(Ui.ipx(2), Tokens.GOLD_400_60);
+        bg.setStroke(Ui.ipx(2), Palette.GOLD_400_60);
         card.setBackground(bg);
-        TextView title = text(displayBold, 48, Tokens.GOLD_400);
+        TextView title = text(displayBold, 48, Palette.GOLD_400);
         String name = Apps.name(this, t, pkg);
         title.setText(name);
         title.setTextDirection(Apps.isLatin(name) ? View.TEXT_DIRECTION_LTR : View.TEXT_DIRECTION_RTL);
@@ -358,13 +364,13 @@ public class AllAppsActivity extends Screen {
         for (int i = 0; i < labels.size(); i++) {
             FocusTile item = new FocusTile(this, 36);
             item.setFocusScale(1.04f);
-            item.setRest(Tokens.LAPIS_700, 0, 0);
-            TextView l = text(ui400, 26, Tokens.PLASTER_100);
+            item.setRest(Palette.LAPIS_700, 0, 0);
+            TextView l = text(ui400, 26, Palette.PLASTER_100);
             l.setText(labels.get(i));
             l.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
             l.setPadding(Ui.ipx(32), 0, Ui.ipx(32), 0);
             item.addView(l, new FrameLayout.LayoutParams(-1, -1));
-            item.setLook(f -> l.setTextColor(f ? Tokens.LAPIS_900 : Tokens.PLASTER_100));
+            item.setLook(f -> l.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
             float r = FocusTile.REACH;
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, Ui.ipx(72 + 2 * r));
             lp.topMargin = Ui.ipx(i == 0 ? 24 - r : 12 - 2 * r);

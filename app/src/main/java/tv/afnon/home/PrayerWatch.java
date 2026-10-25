@@ -147,9 +147,9 @@ final class PrayerWatch {
         card.setLayoutDirection(t.ar ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         card.setPadding(Ui.ipx(28), Ui.ipx(24), Ui.ipx(28), 0);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Tokens.LAPIS_900);
+        bg.setColor(Palette.LAPIS_900);
         bg.setCornerRadius(Ui.px(24));
-        bg.setStroke(Ui.ipx(2), Tokens.GOLD_400);
+        bg.setStroke(Ui.ipx(2), Palette.GOLD_400);
         card.setBackground(bg);
         card.setClipToOutline(true);
         card.setClipToPadding(false);
@@ -157,18 +157,18 @@ final class PrayerWatch {
         LinearLayout row = new LinearLayout(service);
         row.setGravity(Gravity.CENTER_VERTICAL);
         Icon mihrab = new Icon(service, Icon.MIHRAB, 1.2f);
-        mihrab.setColor(Tokens.GOLD_400);
+        mihrab.setColor(Palette.GOLD_400);
         row.addView(mihrab, new LinearLayout.LayoutParams(Ui.ipx(56), Ui.ipx(72)));
         LinearLayout words = new LinearLayout(service);
         words.setOrientation(LinearLayout.VERTICAL);
         String[] names = t.prayerNames();
         if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
         long minutes = Reminders.minutesLeft(day, now);
-        TextView label = text(ui, 20, Tokens.MIST_400, t.apLabel());
+        TextView label = text(ui, 20, Palette.MIST_400, t.apLabel());
         if (!t.ar) label.setLetterSpacing(0.2f);
-        TextView title = text(display, 44, Tokens.PLASTER_100,
+        TextView title = text(display, 44, Palette.PLASTER_100,
             t.apTitle(names[day.nextIndex], minutes, Screen.duration(Screen.secondsUntil(day.nextTime, now), false)));
-        TextView sub = text(ui, 22, Tokens.MIST_400, t.bannerSub(Screen.clock(t, day.nextTime, h24, 1f), BANNER_SECONDS));
+        TextView sub = text(ui, 22, Palette.MIST_400, t.bannerSub(Screen.clock(t, day.nextTime, h24, 1f), BANNER_SECONDS));
         words.addView(label);
         words.addView(title);
         words.addView(sub);
@@ -181,9 +181,9 @@ final class PrayerWatch {
 
         // The time left before it hides, emptying toward the start side.
         FrameLayout track = new FrameLayout(service);
-        track.setBackgroundColor(Tokens.BANNER_TRACK);
+        track.setBackgroundColor(Palette.BANNER_TRACK);
         View fill = new View(service);
-        fill.setBackgroundColor(Tokens.GOLD_400);
+        fill.setBackgroundColor(Palette.GOLD_400);
         track.addView(fill, new FrameLayout.LayoutParams(-1, -1));
         LinearLayout.LayoutParams tlp = new LinearLayout.LayoutParams(-1, Ui.ipx(6));
         tlp.topMargin = Ui.ipx(18);

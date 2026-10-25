@@ -22,6 +22,10 @@
 
     <!-- Android 11+ package visibility, so the app tiles can resolve the apps they launch. -->
     <queries>
+        <intent><action android:name="android.service.dreams.DreamService" /></intent>
+        <intent><action android:name="com.android.tv.action.VIEW_INPUTS" /></intent>
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>
+        <intent><action android:name="android.intent.action.VIEW" /><data android:mimeType="vnd.android.cursor.dir/channel" /></intent>
         <!-- CVTE firmwares answer the remote's buttons in this service; FirmwareKeys then leaves keys alone. -->
         <intent>
             <action android:name="android.intent.action.HOTKEYSERVICE" />
@@ -71,6 +75,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".InputsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
+        <activity android:name=".RemoteButtonsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
         <activity
             android:name=".AllAppsActivity"
             android:exported="false"

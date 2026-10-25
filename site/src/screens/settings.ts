@@ -90,9 +90,17 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
       { id: 'lang', kind: 'seg', label: t.s('language'), help: t.s('languageHelp'), segs: [t.ar ? 'التلفاز' : 'TV', 'العربية', 'English'], selected: t.ar ? 1 : 2 },
       { id: 'digits', kind: 'seg', label: t.s('digits'), help: '', segs: ['0123', '٠١٢٣'], selected: t.eastern ? 1 : 0 },
       { id: 'clock', kind: 'seg', label: t.s('clockRow'), help: t.s('clockHelp'), segs: t.list('clocks').map(t.d), selected: Math.max(0, CLOCKS.indexOf(p.clock)) },
+      { id: 'theme', kind: 'value', label: t.s('themeRow'), help: '', value: t.list('themeNames')[Math.max(0, ['mihrab','aurora','ember','forest'].indexOf(p.theme ?? 'mihrab'))] },
+      { id: 'background', kind: 'value', label: t.s('backgroundRow'), help: '', value: t.list('backgroundNames')[Math.max(0, ['theme','lattice','solid','panorama','daylight'].indexOf(p.background ?? 'theme'))] },
+      { id: 'lighting', kind: 'step', label: t.s('lightingRow'), help: '', value: t.d(`${p.lighting ?? 35}%`) },
+      { id: 'reduceMotion', kind: 'toggle', label: t.s('reduceMotion'), help: '', on: p.reduceMotion ?? false },
     ];
     case NETWORK: return [{ id: 'network', kind: 'value', label: t.s('networkRow'), help: t.s('networkHelp'), value: '' }];
-    default: return [{ id: 'device', kind: 'value', label: t.s('deviceRow'), help: t.s('deviceHelp'), value: '' }];
+    default: return [
+      { id: 'device', kind: 'value', label: t.s('deviceRow'), help: t.s('deviceHelp'), value: '' },
+      ...['homeSettings', 'inputsTitle', 'screensaver', 'remoteButtons', 'serviceHealth'].map(id => ({ id, kind: 'value' as Kind, label: t.s(id), help: id === 'serviceHealth' ? t.s('serviceHelp') : '', value: '' })),
+      { id: 'repairService', kind: 'toggle', label: t.s('repairService'), help: t.s('repairHelp'), on: p.repairService ?? false },
+    ];
   }
 }
 
@@ -100,16 +108,16 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
 export type Edit = { row: number; draft: number };
 
 /** What editing starts from: the chosen segment, or the Hijri offset. */
-export const savedDraft = (c: Ctx, row: Row) => (row.kind === 'seg' ? row.selected! : (c.prefs as SPrefs).hijriOffset);
+export const savedDraft = (c: Ctx, row: Row) => (row.kind === 'seg' ? row.selected! : row.id === 'lighting' ? c.prefs.lighting ?? 35 : (c.prefs as SPrefs).hijriOffset);
 
 /** ◀▶ while editing (d = +1 toward the end), held to the row's range. */
 export const moveDraft = (row: Row, draft: number, d: number) =>
-  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : Math.max(-2, Math.min(2, draft + d));
+  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : row.id === 'lighting' ? Math.max(0, Math.min(100, draft + d)) : Math.max(-2, Math.min(2, draft + d));
 
 /** OK while editing: the new prefs, or null when the draft is what is already saved. 'lang' is the page's. */
 export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
   if (draft === savedDraft(c, row)) return null;
-  return row.kind === 'seg' ? pick(c, row.id, draft) : { ...(c.prefs as SPrefs), hijriOffset: draft };
+  return row.kind === 'seg' ? pick(c, row.id, draft) : row.id === 'lighting' ? { ...c.prefs, lighting: draft } : { ...(c.prefs as SPrefs), hijriOffset: draft };
 }
 
 /** Choosing item i of a seg row. 'lang' is handled by the page (it moves to the other language's page). */
@@ -156,7 +164,7 @@ export function navHtml(t: Text, section: number) {
 export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null) =>
   rowsFor(c, section, radioOn).map((r, i) => {
     if (edit?.row !== i) return rowHtml(c.t, r, i);
-    const shown = r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: c.t.days(edit.draft) };
+    const shown = r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
     return rowHtml(c.t, shown, i, true);
   }).join('');
 export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);

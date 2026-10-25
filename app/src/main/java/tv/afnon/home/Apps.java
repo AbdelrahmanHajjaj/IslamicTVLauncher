@@ -55,6 +55,8 @@ final class Apps {
     private static List<String> cached;
     private static long cachedAt;
 
+    static synchronized void invalidate() { cached = null; }
+
     /**
      * Every app that has a TV or a phone-style launcher entry, one per package, not hidden. Cached for two
      * seconds: one screen build asks several times, and each query is slow on this TV.
@@ -71,6 +73,7 @@ final class Apps {
             }
         }
         cached = new ArrayList<>(found);
+        java.util.Collections.sort(cached);
         cachedAt = now;
         return new ArrayList<>(cached);
     }

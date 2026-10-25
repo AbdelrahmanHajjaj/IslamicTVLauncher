@@ -19,10 +19,10 @@ final class ArchView extends View {
 
     ArchView(Context c) {
         super(c);
-        fill.setColor(Tokens.LAPIS_800);
+        fill.setColor(Palette.LAPIS_800);
         stroke.setStyle(Paint.Style.STROKE);
         inner.setStyle(Paint.Style.STROKE);
-        inner.setColor(Tokens.ARCH_INNER);
+        inner.setColor(Palette.ARCH_INNER);
         inner.setStrokeWidth(Ui.px(1.5f));
     }
 
@@ -56,13 +56,13 @@ final class ArchView extends View {
     protected void onDraw(Canvas c) {
         // border.arch-rest / arch-focused / arch-approaching
         if (state == APPROACHING) {
-            stroke.setColor(Tokens.GOLD_200);
+            stroke.setColor(Palette.GOLD_200);
             stroke.setStrokeWidth(Ui.px(6));
         } else if (state == FOCUSED) {
-            stroke.setColor(Tokens.PLASTER_100);
+            stroke.setColor(Palette.PLASTER_100);
             stroke.setStrokeWidth(Ui.px(5));
         } else {
-            stroke.setColor(Tokens.GOLD_400);
+            stroke.setColor(Palette.GOLD_400);
             stroke.setStrokeWidth(Ui.px(3));
         }
         c.drawPath(outer, fill);

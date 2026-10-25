@@ -42,7 +42,6 @@ public class SettingsActivity extends Screen {
 
     private static final int PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, NETWORK = 4, DEVICE = 5, SECTIONS = 6;
     private static final int VALUE = 0, SEG = 1, STEP = 2, TOGGLE = 3;
-    private static final int SIDEBAR = Tokens.LAPIS_950;
     private static final float ROWS_TOP = 112, ROW_H = 88, ROW_GAP = 10;
     private static final float NAV_TOP = 152, NAV_H = 76, NAV_GAP = 10;
 
@@ -102,7 +101,7 @@ public class SettingsActivity extends Screen {
     private TextView sectionLabel, previewValue;
     private LinearLayout hints;
     private TextView saved;
-    private final Runnable hideSaved = () -> saved.animate().alpha(0).setDuration(Tokens.MOTION_OVERLAY_FADE_MS);
+    private final Runnable hideSaved = () -> saved.animate().alpha(0).setDuration(Appearance.motion(Tokens.MOTION_OVERLAY_FADE_MS));
     /** The SEG or STEP row being edited (null: none) and its unsaved choice or amount. */
     private Row editing;
     private int draft;
@@ -122,19 +121,19 @@ public class SettingsActivity extends Screen {
         chooserBack = null;
         editing = null;
         newRoot();
-        root.setBackgroundColor(Tokens.LAPIS_900);
+        root.setBackgroundColor(Palette.LAPIS_900);
         readClockFormat();
 
         View side = new View(this);
-        side.setBackgroundColor(SIDEBAR);
+        side.setBackgroundColor(Palette.LAPIS_950);
         place(side, 0, 0, Tokens.LAYOUT_SETTINGS_SIDEBAR_WIDTH, 1080);
 
         LinearLayout head = new LinearLayout(this);
         head.setGravity(Gravity.CENTER_VERTICAL);
         Icon mihrab = new Icon(this, Icon.MIHRAB, 1.3f);
-        mihrab.setColor(Tokens.GOLD_400);
+        mihrab.setColor(Palette.GOLD_400);
         head.addView(mihrab, new LinearLayout.LayoutParams(Ui.ipx(36), Ui.ipx(46)));
-        TextView title = text(displayBold, 52, Tokens.PLASTER_100);
+        TextView title = text(displayBold, 52, Palette.PLASTER_100);
         title.setText(t.settings());
         LinearLayout.LayoutParams tlp = new LinearLayout.LayoutParams(-2, -2);
         tlp.setMarginStart(Ui.ipx(16));
@@ -148,17 +147,17 @@ public class SettingsActivity extends Screen {
         LinearLayout preview = new LinearLayout(this);
         preview.setOrientation(LinearLayout.VERTICAL);
         preview.setPadding(Ui.ipx(24), Ui.ipx(20), Ui.ipx(24), Ui.ipx(20));
-        preview.setBackground(round(Tokens.LAPIS_800, 16));
-        TextView pl = text(ui400, 20, Tokens.MIST_400);
+        preview.setBackground(round(Palette.LAPIS_800, 16));
+        TextView pl = text(ui400, 20, Palette.MIST_400);
         pl.setText(t.preview());
-        previewValue = text(display, Tokens.FONT_SIZE_DISPLAY_XS, Tokens.GOLD_400);
+        previewValue = text(display, Tokens.FONT_SIZE_DISPLAY_XS, Palette.GOLD_400);
         preview.addView(pl);
         preview.addView(previewValue);
         lineHeight(previewValue, 1.2f);
         ((LinearLayout.LayoutParams) previewValue.getLayoutParams()).topMargin += Ui.ipx(6);
         place(preview, 96, 1080 - 56 - 124, 424, 124);
 
-        sectionLabel = caps(text(ui400, 22, Tokens.MIST_400));
+        sectionLabel = caps(text(ui400, 22, Palette.MIST_400));
         sectionLabel.setAllCaps(!t.ar);
         place(sectionLabel, 640, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -167,7 +166,7 @@ public class SettingsActivity extends Screen {
         place(hints, 640, 976, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // ✓ Saved: on the hint line, at the rows' end edge, so the hints never shift when it comes and goes.
-        saved = text(ui500, 22, Tokens.GOLD_400);
+        saved = text(ui500, 22, Palette.GOLD_400);
         saved.setText(t.saved());
         saved.setAlpha(0);
         placeEnd(saved, 1920 - 640 - Tokens.LAYOUT_SETTINGS_ROW_WIDTH, 976,
@@ -200,7 +199,7 @@ public class SettingsActivity extends Screen {
     private FocusTile navItem(int i) {
         FocusTile b = new FocusTile(this, 14);
         b.setFocusScale(1.04f);
-        TextView v = text(ui400, 26, Tokens.MIST_400);
+        TextView v = text(ui400, 26, Palette.MIST_400);
         v.setText(sectionName(i));
         v.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
         v.setPadding(Ui.ipx(24), 0, Ui.ipx(24), 0);
@@ -216,8 +215,8 @@ public class SettingsActivity extends Screen {
     private void styleNav(int i) {
         boolean focused = nav[i] != null && nav[i].isFocused();
         boolean open = i == section;
-        if (nav[i] != null) nav[i].setRest(open ? Tokens.LAPIS_800 : 0, Tokens.GOLD_400, open ? 2 : 0);
-        navLabel[i].setTextColor(focused ? Tokens.LAPIS_900 : (open ? Tokens.PLASTER_100 : Tokens.MIST_400));
+        if (nav[i] != null) nav[i].setRest(open ? Palette.LAPIS_800 : 0, Palette.GOLD_400, open ? 2 : 0);
+        navLabel[i].setTextColor(focused ? Palette.LAPIS_900 : (open ? Palette.PLASTER_100 : Palette.MIST_400));
     }
 
     private void showSection() {
@@ -389,19 +388,79 @@ public class SettingsActivity extends Screen {
                     String[] segs() { return digits(t.clocks()); }
                     int selected() { return Math.max(0, Arrays.asList(values).indexOf(Prefs.clock(c))); }
                     void select(int i) { prefs().edit().putString("clock", values[i]).apply(); readClockFormat(); }
+                },
+                new Row(VALUE) {
+                    String label() { return t.themeRow(); }
+                    String value() { return t.themeNames()[Math.max(0, Arrays.asList(Appearance.PRESETS).indexOf(prefs().getString("theme", "mihrab")))]; }
+                    void open() {
+                        String[] names = Arrays.copyOf(t.themeNames(), prefs().contains("theme_json") ? 5 : 4);
+                        openChooser(label(), names, Math.max(0, Arrays.asList(Appearance.PRESETS).indexOf(prefs().getString("theme", "mihrab"))), i -> {
+                            prefs().edit().putString("theme", Appearance.PRESETS[i]).remove("background").remove("lighting").apply();
+                            root.post(SettingsActivity.this::relaunch);
+                        });
+                    }
+                },
+                new Row(VALUE) {
+                    final String[] values = {"theme", "lattice", "solid", "panorama", "daylight"};
+                    String label() { return t.backgroundRow(); }
+                    int selected() { return Math.max(0, Arrays.asList(values).indexOf(prefs().getString("background", "theme"))); }
+                    String value() { return t.backgroundNames()[selected()]; }
+                    void open() { openChooser(label(), t.backgroundNames(), selected(), i -> {
+                        prefs().edit().putString("background", values[i]).apply(); root.post(SettingsActivity.this::relaunch);
+                    }); }
+                },
+                new Row(STEP) {
+                    String label() { return t.lightingRow(); }
+                    int amount() { return prefs().getInt("lighting", 35); }
+                    int lowest() { return 0; } int highest() { return 100; }
+                    String valueOf(int n) { return t.d(n + "%"); }
+                    void setAmount(int n) { prefs().edit().putInt("lighting", n).apply(); }
+                },
+                new Row(TOGGLE) {
+                    String label() { return t.reduceMotion(); }
+                    boolean on() { return Appearance.reduced(c); }
+                    void set(boolean on) { prefs().edit().putBoolean("reduce_motion", on).apply(); Appearance.load(c); }
                 });
             case NETWORK: return Arrays.asList(
                 new Row(VALUE) {
                     String label() { return t.networkRow(); }
                     String help() { return t.networkHelp(); }
                     String value() { String s = ssid(); return s == null ? "" : s; }
-                    void open() { startSafely(new Intent(Settings.ACTION_WIFI_SETTINGS)); }
+                    void open() { SystemScreens.open(SettingsActivity.this, Settings.ACTION_WIFI_SETTINGS); }
                 });
             default: return Arrays.asList(
                 new Row(VALUE) {
                     String label() { return t.deviceRow(); }
                     String help() { return t.deviceHelp(); }
-                    void open() { startSafely(new Intent(Settings.ACTION_SETTINGS)); }
+                    void open() { SystemScreens.open(SettingsActivity.this, Settings.ACTION_SETTINGS); }
+                },
+                new Row(VALUE) {
+                    String label() { return t.homeSettings(); }
+                    void open() { SystemScreens.home(SettingsActivity.this); }
+                },
+                new Row(VALUE) {
+                    String label() { return t.inputsTitle(); }
+                    void open() { startSafely(new Intent(c, InputsActivity.class)); }
+                },
+                new Row(VALUE) {
+                    String label() { return t.screensaver(); }
+                    void open() { SystemScreens.dreams(SettingsActivity.this); }
+                },
+                new Row(VALUE) {
+                    String label() { return t.remoteButtons(); }
+                    void open() { startSafely(new Intent(c, RemoteButtonsActivity.class)); }
+                },
+                new Row(VALUE) {
+                    String label() { return t.serviceHealth(); }
+                    String help() { return t.serviceHelp(); }
+                    String value() { return RemoteKeys.watch == null ? t.serviceStopped() : t.serviceRunning(); }
+                    void open() { SystemScreens.open(SettingsActivity.this, Settings.ACTION_ACCESSIBILITY_SETTINGS); }
+                },
+                new Row(TOGGLE) {
+                    String label() { return t.repairService(); }
+                    String help() { return t.repairHelp(); }
+                    boolean on() { return prefs().getBoolean("repair_service", false); }
+                    void set(boolean on) { prefs().edit().putBoolean("repair_service", on).apply(); }
                 });
         }
     }
@@ -455,14 +514,14 @@ public class SettingsActivity extends Screen {
     private void addRow(Row r, int i) {
         r.tile = new FocusTile(this, 16);
         r.tile.setFocusScale(Tokens.FOCUS_SCALE_SETTINGS_ROW);
-        r.tile.setRest(Tokens.LAPIS_800, 0, 0);
+        r.tile.setRest(Palette.LAPIS_800, 0, 0);
         LinearLayout line = new LinearLayout(this);
         line.setGravity(Gravity.CENTER_VERTICAL);
         line.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
         LinearLayout words = new LinearLayout(this);
         words.setOrientation(LinearLayout.VERTICAL);
-        r.label = text(ui500, 26, Tokens.PLASTER_100);
-        r.help = text(ui400, 20, Tokens.PLASTER_100);
+        r.label = text(ui500, 26, Palette.PLASTER_100);
+        r.help = text(ui400, 20, Palette.PLASTER_100);
         r.help.setSingleLine(true);
         words.addView(r.label);
         words.addView(r.help);
@@ -488,7 +547,7 @@ public class SettingsActivity extends Screen {
 
     private void render(Row r, boolean focused) {
         if (day == null) return;
-        int ink = focused ? Tokens.LAPIS_900 : Tokens.PLASTER_100;
+        int ink = focused ? Palette.LAPIS_900 : Palette.PLASTER_100;
         r.label.setText(r.label());
         r.label.setTextColor(ink);
         String help = r.help();
@@ -501,7 +560,7 @@ public class SettingsActivity extends Screen {
         if (edit) {
             // Editing: a lapis ring around the control on the gold row.
             GradientDrawable ring = round(0, 34);
-            ring.setStroke(Ui.ipx(3), Tokens.LAPIS_900);
+            ring.setStroke(Ui.ipx(3), Palette.LAPIS_900);
             r.control.setBackground(ring);
             int pad = Ui.ipx(6);
             r.control.setPadding(pad, pad, pad, pad);
@@ -525,17 +584,17 @@ public class SettingsActivity extends Screen {
                 LinearLayout track = new LinearLayout(this);
                 int pad = Ui.ipx(6);
                 track.setPadding(pad, pad, pad, pad);
-                track.setBackground(round(focused ? Tokens.SEG_TRACK_FOCUSED : Tokens.LAPIS_900, 30));
+                track.setBackground(round(focused ? Palette.SEG_TRACK_FOCUSED : Palette.LAPIS_900, 30));
                 String[] segs = r.segs();
                 for (int i = 0; i < segs.length; i++) {
                     boolean chosen = i == (edit ? draft : r.selected());
-                    TextView s = text(ui400, 22, chosen ? (focused ? Tokens.PLASTER_100 : Tokens.LAPIS_900) : (focused ? Tokens.LAPIS_900 : Tokens.MIST_400));
+                    TextView s = text(ui400, 22, chosen ? (focused ? Palette.PLASTER_100 : Palette.LAPIS_900) : (focused ? Palette.LAPIS_900 : Palette.MIST_400));
                     s.setText(segs[i]);
                     s.setGravity(Gravity.CENTER);
                     s.setPadding(Ui.ipx(24), 0, Ui.ipx(24), 0);
                     if (chosen) {
-                        GradientDrawable bg = round(focused ? Tokens.LAPIS_900 : Tokens.PLASTER_100, 26);
-                        if (focused) bg.setStroke(Ui.ipx(3), Tokens.PLASTER_100);
+                        GradientDrawable bg = round(focused ? Palette.LAPIS_900 : Palette.PLASTER_100, 26);
+                        if (focused) bg.setStroke(Ui.ipx(3), Palette.PLASTER_100);
                         s.setBackground(bg);
                     }
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, Ui.ipx(52));
@@ -564,11 +623,11 @@ public class SettingsActivity extends Screen {
     }
 
     private TextView stepButton(String sign) {
-        TextView b = text(ui400, 26, Tokens.PLASTER_100);
+        TextView b = text(ui400, 26, Palette.PLASTER_100);
         b.setText(sign);
         b.setGravity(Gravity.CENTER);
         b.setIncludeFontPadding(false);
-        b.setBackground(round(Tokens.LAPIS_700, 24));
+        b.setBackground(round(Palette.LAPIS_700, 24));
         return b;
     }
 
@@ -635,7 +694,7 @@ public class SettingsActivity extends Screen {
     /** ✓ Saved fades in at the end of the hint line, then out; a new save restarts it. */
     private void showSaved() {
         saved.removeCallbacks(hideSaved);
-        saved.animate().alpha(1).setDuration(Tokens.MOTION_OVERLAY_FADE_MS);
+        saved.animate().alpha(1).setDuration(Appearance.motion(Tokens.MOTION_OVERLAY_FADE_MS));
         saved.postDelayed(hideSaved, Tokens.MOTION_SAVED_LIFETIME_MS);
     }
 
@@ -682,7 +741,6 @@ public class SettingsActivity extends Screen {
         if (onNav) {
             if (vertical) navTo(section + up);
             else if (ok && section == NETWORK) startSafely(new Intent(Settings.ACTION_WIFI_SETTINGS));
-            else if (ok && section == DEVICE) startSafely(new Intent(Settings.ACTION_SETTINGS));
             else if ((ok || toEnd) && !rows.isEmpty()) focusRow(0);
             return true;
         }
@@ -800,18 +858,18 @@ public class SettingsActivity extends Screen {
     /** onFocus, if given, hears each item as focus reaches it (the adhan list plays that voice). */
     private void openChooser(String title, String[] items, int selected, IntConsumer pick, IntConsumer onFocus) {
         chooser = new FrameLayout(this);
-        chooser.setBackgroundColor(Tokens.SCRIM_MENU);
+        chooser.setBackgroundColor(Palette.SCRIM_MENU);
         chooser.setClickable(true);
 
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(Ui.ipx(48), Ui.ipx(40), Ui.ipx(48), Ui.ipx(32));
-        GradientDrawable bg = round(Tokens.LAPIS_800, 24);
-        bg.setStroke(Ui.ipx(2), Tokens.GOLD_400_60);
+        GradientDrawable bg = round(Palette.LAPIS_800, 24);
+        bg.setStroke(Ui.ipx(2), Palette.GOLD_400_60);
         card.setBackground(bg);
         card.setClipChildren(true);
 
-        TextView head = text(displayBold, Tokens.FONT_SIZE_DISPLAY_S, Tokens.GOLD_400);
+        TextView head = text(displayBold, Tokens.FONT_SIZE_DISPLAY_S, Palette.GOLD_400);
         head.setText(title);
         card.addView(head);
         lineHeight(head, 1.2f);
@@ -831,14 +889,14 @@ public class SettingsActivity extends Screen {
             boolean chosen = i == selected;
             FocusTile item = new FocusTile(this, 14);
             item.setFocusScale(1f);   // the list scrolls, so a grown tile would be clipped at its edges
-            item.setRest(chosen ? Tokens.LAPIS_700 : 0, 0, 0);
-            TextView v = text(chosen ? ui500 : ui400, 26, Tokens.PLASTER_100);
+            item.setRest(chosen ? Palette.LAPIS_700 : 0, 0, 0);
+            TextView v = text(chosen ? ui500 : ui400, 26, Palette.PLASTER_100);
             v.setText(items[i]);
             v.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
             v.setPadding(Ui.ipx(24), 0, Ui.ipx(24), 0);
             item.addView(v, new FrameLayout.LayoutParams(-1, -1));
             item.setLook(f -> {
-                v.setTextColor(f ? Tokens.LAPIS_900 : (chosen ? Tokens.GOLD_400 : Tokens.PLASTER_100));
+                v.setTextColor(f ? Palette.LAPIS_900 : (chosen ? Palette.GOLD_400 : Palette.PLASTER_100));
                 if (f && onFocus != null) onFocus.accept(index);
             });
             item.setOnClickListener(x -> {
@@ -927,13 +985,13 @@ public class SettingsActivity extends Screen {
         @Override
         protected void onDraw(Canvas c) {
             float w = getWidth(), h = getHeight(), r = h / 2;
-            p.setColor(on ? (focused ? Tokens.LAPIS_900 : Tokens.GOLD_400) : Tokens.LAPIS_700);
+            p.setColor(on ? (focused ? Palette.LAPIS_900 : Palette.GOLD_400) : Palette.LAPIS_700);
             c.drawRoundRect(0, 0, w, h, r, r, p);
             float knob = h * 18 / 48, inset = h * 6 / 48;
             boolean atEnd = on;
             boolean rtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
             float cx = (atEnd != rtl) ? w - inset - knob : inset + knob;
-            p.setColor(on ? (focused ? Tokens.GOLD_400 : Tokens.LAPIS_900) : Tokens.MIST_400);
+            p.setColor(on ? (focused ? Palette.GOLD_400 : Palette.LAPIS_900) : Palette.MIST_400);
             c.drawCircle(cx, r, knob, p);
         }
     }

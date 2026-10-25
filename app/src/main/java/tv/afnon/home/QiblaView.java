@@ -42,25 +42,25 @@ final class QiblaView extends View {
         c.save();
         c.scale(k, k);
         p.setStyle(Paint.Style.FILL);
-        p.setColor(Tokens.LAPIS_900);
+        p.setColor(Palette.LAPIS_900);
         c.drawCircle(180, 180, 160, p);
         p.setStyle(Paint.Style.STROKE);
         p.setStrokeWidth(2);
-        p.setColor(Tokens.LINE_SOFT);
+        p.setColor(Palette.LINE_SOFT);
         c.drawCircle(180, 180, 160, p);
         p.setStrokeWidth(1.5f);
-        p.setColor(Tokens.QIBLA_RING);
+        p.setColor(Palette.QIBLA_RING);
         c.drawCircle(180, 180, 120, p);
         // Cardinal ticks.
         p.setStrokeWidth(3);
-        p.setColor(Tokens.QIBLA_TICK);
+        p.setColor(Palette.QIBLA_TICK);
         c.drawLine(180, 20, 180, 38, p);
         c.drawLine(180, 322, 180, 340, p);
         c.drawLine(20, 180, 38, 180, p);
         c.drawLine(322, 180, 340, 180, p);
         // North marker.
         p.setStyle(Paint.Style.FILL);
-        p.setColor(Tokens.PLASTER_100);
+        p.setColor(Palette.PLASTER_100);
         tri.reset();
         tri.moveTo(180, 34);
         tri.lineTo(170, 56);
@@ -70,7 +70,7 @@ final class QiblaView extends View {
         if (!Double.isNaN(north)) {
             c.save();
             c.rotate((float) north, 180, 180);
-            p.setColor(Tokens.MIST_400);
+            p.setColor(Palette.MIST_400);
             tri.reset();
             tri.moveTo(180, 66);
             tri.lineTo(173, 82);
@@ -85,12 +85,12 @@ final class QiblaView extends View {
         p.setStyle(Paint.Style.STROKE);
         p.setStrokeWidth(6);
         p.setStrokeCap(Paint.Cap.ROUND);
-        p.setColor(Tokens.GOLD_400);
+        p.setColor(Palette.GOLD_400);
         c.drawLine(180, 180, 180, 30, p);
         p.setStyle(Paint.Style.FILL);
         c.drawRoundRect(167, 14, 193, 40, 3, 3, p);
         c.restore();
-        p.setColor(Tokens.PLASTER_100);
+        p.setColor(Palette.PLASTER_100);
         c.drawCircle(180, 180, 10, p);
         c.restore();
     }

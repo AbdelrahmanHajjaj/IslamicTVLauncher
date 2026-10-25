@@ -45,7 +45,7 @@ public class NowActivity extends Screen {
         time = new Date(getIntent().getLongExtra("time", System.currentTimeMillis()));
         readClockFormat();
         newRoot();
-        root.setBackgroundColor(Tokens.SCRIM);
+        root.setBackgroundColor(Palette.SCRIM);
 
         ArchView frame = new ArchView(this);
         frame.setState(ArchView.APPROACHING);
@@ -56,16 +56,16 @@ public class NowActivity extends Screen {
         col.setGravity(Gravity.CENTER_HORIZONTAL);
         col.setClipChildren(false);
 
-        TextView verse = text(sacred, 54, Tokens.GOLD_400);
+        TextView verse = text(sacred, 54, Palette.GOLD_400);
         verse.setText("حَيَّ عَلَى الصَّلَاةِ");
         verse.setTextDirection(View.TEXT_DIRECTION_RTL);
-        TextView label = caps(text(ui400, 22, Tokens.MIST_400));
+        TextView label = caps(text(ui400, 22, Palette.MIST_400));
         label.setText(t.nowLabel());
         String[] names = t.prayerNames();
         if (prayer == PrayerDay.DHUHR && new PrayerDay(this, time).friday) names[PrayerDay.DHUHR] = t.jumuah();
-        TextView name = text(displayBold, 128, Tokens.PLASTER_100);
+        TextView name = text(displayBold, 128, Palette.PLASTER_100);
         name.setText(names[prayer]);
-        TextView when = text(display, 64, Tokens.GOLD_400);
+        TextView when = text(display, 64, Palette.GOLD_400);
         when.setText(time(time, 0.5f));
         when.setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
         for (TextView v : new TextView[] {verse, label, name, when}) {
@@ -77,7 +77,7 @@ public class NowActivity extends Screen {
         lineHeight(name, 1.1f);
         lineHeight(when, 1.2f);
 
-        playButton = pill(Tokens.GOLD_400, 0);
+        playButton = pill(Palette.GOLD_400, 0);
         playLabel = (TextView) playButton.getChildAt(0);
         playButton.setOnClickListener(v -> {
             if (player != null) stopAdhan();
@@ -97,7 +97,7 @@ public class NowActivity extends Screen {
         dlp.topMargin = Ui.ipx(18 - 2 * r);
         col.addView(dismissButton, dlp);
 
-        TextView hint = text(ui400, 22, Tokens.MIST_400);
+        TextView hint = text(ui400, 22, Palette.MIST_400);
         hint.setText(t.nowHint(Prefs.callCloseMinutes(this)));
         LinearLayout.LayoutParams hlp = new LinearLayout.LayoutParams(-2, -2);
         hlp.topMargin = Ui.ipx(20 - r);
@@ -129,11 +129,11 @@ public class NowActivity extends Screen {
     /** A 420×76 pill: gold when focused; at rest the given fill, or a soft outline. */
     private FocusTile pill(int restFill, float border) {
         FocusTile b = new FocusTile(this, 38);
-        b.setRest(restFill == 0 ? 0 : Tokens.LAPIS_800, Tokens.LINE_SOFT, border);
-        TextView v = text(ui500, 28, Tokens.PLASTER_100);
+        b.setRest(restFill == 0 ? 0 : Palette.LAPIS_800, Palette.LINE_SOFT, border);
+        TextView v = text(ui500, 28, Palette.PLASTER_100);
         v.setGravity(Gravity.CENTER);
         b.addView(v, new FrameLayout.LayoutParams(-1, -1));
-        b.setLook(f -> v.setTextColor(f ? Tokens.LAPIS_900 : Tokens.PLASTER_100));
+        b.setLook(f -> v.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         return b;
     }
 

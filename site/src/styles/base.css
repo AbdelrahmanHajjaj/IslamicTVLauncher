@@ -90,3 +90,23 @@ h1, h2, h3 { font-family: var(--display); font-weight: var(--display-weight); li
 .hints { position: absolute; inset-inline-start: var(--layout-courtyard-inset-inline-start); top: 962px; display: flex; gap: 40px; font-size: var(--font-size-label); color: var(--color-mist-400); white-space: pre; }
 
 @media (prefers-reduced-motion: reduce) { .ft { transition: none; } }
+
+/* Same static panorama and quiet focus choices as the TV. */
+.tv[data-background="panorama"], .tv[data-background="daylight"] {
+  background: radial-gradient(ellipse at 75% 70%, color-mix(in srgb, var(--color-gold-400) var(--ambient-light, 10%), transparent), transparent 65%),
+    linear-gradient(135deg, var(--color-lapis-950), var(--color-lapis-900));
+}
+.tv[data-background="solid"] { background-image: none; }
+.tv[data-reduced="true"] *, .tv[data-reduced="true"] *::before, .tv[data-reduced="true"] *::after { animation: none !important; transition: none !important; }
+.tv[data-reduced="true"] .ft:focus { transform: none; }
+
+.tv[data-background]:not([data-background="lattice"]) > .lattice { display: none; }
+.tv[data-ground="black"] { background: var(--color-screensaver-ground) !important; }
+
+.tv { --focus-fill: var(--color-gold-400); --focus-text: var(--color-lapis-900);
+  --focus-ring-color: var(--color-plaster-100); --focus-pressed-fill: var(--color-gold-200);
+  --focus-on-light-fill: var(--color-lapis-900); --focus-on-light-text: var(--color-plaster-100);
+  --focus-on-light-ring-color: var(--color-gold-400); }
+.ambient-ridge { position: absolute; inset: 0; pointer-events: none; fill: color-mix(in srgb, var(--color-lapis-950) 82%, var(--color-gold-400)); }
+.tv:not([data-background="panorama"]):not([data-background="daylight"]) > .ambient-ridge,
+.tv[data-ground="black"] > .ambient-ridge { display: none; }
