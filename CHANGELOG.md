@@ -13,6 +13,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   on Google TV) behind a safety switch on the TV that turns it back on after 5 minutes unless Afnon came up and
   stayed up, puts it back at once if Afnon didn't, and notes it for the cleanup's undo. Installers already out
   get this from the release's `tools/setup-steps.txt`.
+- When a required setup step fails, the installer stays on the step list with Try again and Continue, instead of
+  moving on to the city after a second and showing the red step only at the very end.
 
 ## [0.6] - 2026-10-25
 
