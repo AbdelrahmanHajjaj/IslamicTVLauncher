@@ -23,7 +23,8 @@ public final class RemoteButtonsActivity extends Activity {
             if (RemoteKeys.allowedCode(code)) mappings.put(code, item[1]);
         }
         for (int code : new int[]{KeyEvent.KEYCODE_NOTIFICATION, KeyEvent.KEYCODE_SETTINGS,
-                KeyEvent.KEYCODE_TV_INPUT, KeyEvent.KEYCODE_TV, KeyEvent.KEYCODE_ALL_APPS})
+                KeyEvent.KEYCODE_TV_INPUT, KeyEvent.KEYCODE_TV, KeyEvent.KEYCODE_ALL_APPS,
+                KeyEvent.KEYCODE_PROG_RED, KeyEvent.KEYCODE_PROG_GREEN, KeyEvent.KEYCODE_PROG_YELLOW, KeyEvent.KEYCODE_PROG_BLUE})
             mappings.putIfAbsent(code, RemoteKeys.defaultAction(code));
         if (getPackageManager().hasSystemFeature("com.tcl.software.tinput_shortcut_config"))
             for (int code : new int[]{4062, 4065, 4159}) mappings.putIfAbsent(code, "@default");
@@ -53,6 +54,10 @@ public final class RemoteButtonsActivity extends Activity {
 
     private String buttonName(int code) {
         switch (code) {
+            case KeyEvent.KEYCODE_PROG_RED: return t.colourButtons()[0];
+            case KeyEvent.KEYCODE_PROG_GREEN: return t.colourButtons()[1];
+            case KeyEvent.KEYCODE_PROG_YELLOW: return t.colourButtons()[2];
+            case KeyEvent.KEYCODE_PROG_BLUE: return t.colourButtons()[3];
             case KeyEvent.KEYCODE_NOTIFICATION: return t.buttonNames()[0];
             case KeyEvent.KEYCODE_SETTINGS: return t.buttonNames()[1];
             case KeyEvent.KEYCODE_TV_INPUT: return t.inputsTitle();
@@ -71,14 +76,14 @@ public final class RemoteButtonsActivity extends Activity {
     }
 
     private String label(String value) {
-        String[] values = {"@default", "@home", "@apps", "@inputs", "@settings"};
+        String[] values = {"@default", "@home", "@apps", "@inputs", "@settings", "@dock"};
         for (int i = 0; i < values.length; i++) if (values[i].equals(value)) return t.buttonActions()[i];
         return Apps.name(this, t, value);
     }
 
     private void choose(int key) {
         Apps.invalidate();
-        List<String> values = new ArrayList<>(Arrays.asList("@default", "@home", "@apps", "@inputs", "@settings"));
+        List<String> values = new ArrayList<>(Arrays.asList("@default", "@home", "@apps", "@inputs", "@settings", "@dock"));
         values.addAll(Apps.sorted(this, t));
         String current = Prefs.of(this).getBoolean("remote_enabled", true) ? mappings.getOrDefault(key, "@default") : "@default";
         String[] labels = new String[values.size()];

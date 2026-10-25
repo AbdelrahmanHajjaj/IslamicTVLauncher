@@ -51,3 +51,24 @@ Home supports up to nine favourites in two balanced rows. Below them, up to five
 **Prayer times → Prayer time offsets** shows one **− / number / +** row per prayer (including the sunrise marker), matching Hijri date adjustment. Press OK to edit, Left/Right to adjust between −30 and +30 minutes, OK to save or Back to cancel. Back again returns to Prayer times. Negative means earlier, positive means later, and zero restores the selected calculation method's time. Displays, reminders and adhan use the same offsets. Offsets are preserved when changing location or method, so review them then. A fixed offset is not a seasonal mosque timetable. Leamington Spa is available in the UK city list; location discovery is not implemented.
 
 The browser preview includes the new theme page and scenes. Its app layout and prayer-offset controls still reflect the earlier preview; the native TV app has the complete controls described above.
+
+
+## Quick controls and prayer bar
+
+Home has Inputs, Radio and Wi-Fi icons beside Settings. **Display & language → Quick control labels** shows their text labels when enabled; icons are the default. All apps also has a Settings cog beside the next-prayer chip.
+
+**Inputs** lists Home, the TV's visible HDMI/passthrough sources and its hardware Live TV tuner. Connected HDMI-CEC devices replace their parent port entry to avoid duplicates. **TV input menu** opens the firmware's source chooser as a fallback. This uses the TV's registered inputs rather than assuming a number of HDMI ports. Home returns to the first favourite; Down moves through favourites and recent apps, then highlights All apps. Left from the first column reaches Today & Qibla. Returning from an app can retain the previous tile when Home has not rebuilt.
+
+**Wi-Fi** opens Android's network panel directly, with Wi-Fi settings as a fallback on older TVs. The panel shows the connected network and available networks and handles passwords. Android restricts network names and scans when location is off; the system panel works without enabling location for the launcher. Afnon does not scan in the background or save network credentials.
+
+The prayer/button accessibility service hosts a slim, full-width **Prayer bar** above other apps and TV inputs. Its expanded view shows six prayer times, Home, Inputs, Wi-Fi, Settings and a **−** minimize button. Back also minimizes it; Back from its Inputs list returns to the bar. Settings are under **Display & language**:
+
+- **Hidden until opened** (default): no bar until its assigned button is pressed.
+- **Small prayer tab**: a thin strip with the next prayer and time while another app/input is visible. It cannot receive focus, touches or remote navigation.
+- **Off**: disables the bar, independently of reminders and adhan.
+- **Prayer bar position → Top / Bottom**: applies to both the strip and expanded bar; Bottom is the default.
+- **Open prayer bar**: opens it from Settings, or opens accessibility settings if its service is unavailable.
+
+Under **Device settings → Remote buttons**, assign Red, Green, Yellow, Blue or another supported shortcut to **Prayer bar**. There is no universal default button; a device's saved assignment survives updates. Essential Home, Back, power, volume and navigation keys remain protected. The bar reuses the existing prayer clock check and refreshes its text once per minute; it adds no idle animation or new service.
+
+Reminder banners continue over the current app/input, and adhan opens its existing call screen. Back from the call returns to the previous activity. An external HDMI device is separate from Android: whether its sound is ducked or mixed during adhan depends on the TV's audio routing and needs a live-source test. Apps can also restrict overlays. The browser preview demonstrates quick controls and settings; it cannot show an Android overlay or operate a TV input/network.

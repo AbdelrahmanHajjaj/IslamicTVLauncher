@@ -8,7 +8,7 @@ import android.view.View;
 
 /** Stroke icons on a 24px grid in the current colour, so they follow focus (README: Iconography). */
 final class Icon extends View {
-    static final int WIFI = 0, GEAR = 1, COMPASS = 2, BELL = 3, BACK = 4, STAR = 5, MIHRAB = 6, RADIO = 7, PLAY = 8, STOP = 9, MOON = 10;
+    static final int WIFI = 0, GEAR = 1, COMPASS = 2, BELL = 3, BACK = 4, STAR = 5, MIHRAB = 6, RADIO = 7, PLAY = 8, STOP = 9, MOON = 10, INPUT = 11, MINUS = 12;
 
     private int kind;
     private final float strokeOn24;
@@ -48,6 +48,15 @@ final class Icon extends View {
             arc(c, k, 12, 19.07f, 5f);
             p.setStyle(Paint.Style.FILL);
             c.drawCircle(12 * k, 19 * k, 1.2f * k, p);
+        } else if (kind == MINUS) {
+            c.drawLine(5*k, 12*k, 19*k, 12*k, p);
+        } else if (kind == INPUT) {
+            r.set(3*k, 4*k, 21*k, 18*k); c.drawRoundRect(r, 2*k, 2*k, p);
+            c.drawLine(8*k, 22*k, 16*k, 22*k, p);
+            c.drawLine(12*k, 18*k, 12*k, 22*k, p);
+            c.drawLine(7*k, 11*k, 17*k, 11*k, p);
+            c.drawLine(14*k, 8*k, 17*k, 11*k, p);
+            c.drawLine(14*k, 14*k, 17*k, 11*k, p);
         } else if (kind == GEAR) {
             float[] pts = {9.71f, 4.96f, 10.26f, 2.15f, 13.74f, 2.15f, 14.29f, 4.96f, 15.36f, 5.41f, 17.74f, 3.81f, 20.19f, 6.26f, 18.59f, 8.64f, 19.04f, 9.71f, 21.85f, 10.26f, 21.85f, 13.74f, 19.04f, 14.29f, 18.59f, 15.36f, 20.19f, 17.74f, 17.74f, 20.19f, 15.36f, 18.59f, 14.29f, 19.04f, 13.74f, 21.85f, 10.26f, 21.85f, 9.71f, 19.04f, 8.64f, 18.59f, 6.26f, 20.19f, 3.81f, 17.74f, 5.41f, 15.36f, 4.96f, 14.29f, 2.15f, 13.74f, 2.15f, 10.26f, 4.96f, 9.71f, 5.41f, 8.64f, 3.81f, 6.26f, 6.26f, 3.81f, 8.64f, 5.41f};
             path.reset();

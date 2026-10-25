@@ -28,7 +28,7 @@ const allCount = 14;
 const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this opens' };
 ---
 <Arch ctx={ctx} infoTop={488} subSize={26} subGap={12} sub2Color="var(--color-gold-200)" sub2Gap={8} />
-<a class="ft arch-btn" href={href('prayer-day', lang) + '#tv'} {...(cardHidden ? { 'data-focus-start': '' } : {})}>
+<a class="ft arch-btn" href={href('prayer-day', lang) + '#tv'}>
   <Icon name="compass" /> <span>{t.s('today')}</span>
 </a>
 
@@ -38,14 +38,15 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   <div class="gdate" data-k="gdate" set:html={m.html.gdate} />
 </div>
 
-<div class="pills">
-  <button class="ft pill radio-pill" data-open-radio>
+<div class:list={["pills", {"icons-only": !ctx.prefs.quickLabels}]}>
+  <button class="ft pill" data-open-inputs aria-label={t.s('inputsTitle')}><Icon name="input" stroke={2} /> <span class="pill-label">{t.s('inputsTitle')}</span></button>
+  <button class="ft pill radio-pill" data-open-radio aria-label={t.s('radio')}>
     <span class="radio-off"><Icon name="radio" stroke={2} /></span>
     <span class="bars mini" aria-hidden="true"><i></i><i></i><i></i></span>
-    <span class="radio-label">{t.s('radio')}</span>
+    <span class="radio-label pill-label">{t.s('radio')}</span>
   </button>
-  <button class="ft pill" data-toast={t.s('network')}>
-    <Icon name="wifi" stroke={2} /> <span dir="ltr">Wi-Fi</span>
+  <button class="ft pill" data-open-wifi data-toast={`${W.site} Wi-Fi`} aria-label="Wi-Fi">
+    <Icon name="wifi" stroke={2} /> <span class="pill-label" dir="ltr">Wi-Fi</span>
   </button>
 </div>
 <a class="ft gear" href={href('settings', lang) + '#tv'} aria-label={t.s('settings')}>
@@ -56,7 +57,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
 <div class="label fav-label caps">{t.s('fav')}</div>
 {favs.map((f, i) => (
-  <button class="ft fav" style={`inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + ${i} * (var(--layout-tile-favourite-width) + var(--layout-gap-favourites)))`}
+  <button class="ft fav" {...(cardHidden && i === 0 ? { 'data-focus-start': '' } : {})} style={`inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + ${i} * (var(--layout-tile-favourite-width) + var(--layout-gap-favourites)))`}
     data-nav-up=".radio-pill" data-toast={`${W.site} ${f.label}`}>
     <Icon name={f.icon} size={44} />
     <span>{f.label}</span>
@@ -84,7 +85,13 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   </div>
 </div>
 
-<!-- Quran Radio card (MainActivity.openRadio): the real stream plays here too. -->
+<div class="quick-card" data-quick="inputs" hidden role="dialog" aria-label={t.s('inputsTitle')}>
+  <div class="quick-title">{t.s('inputsTitle')}</div>
+  <button class="ft quick-item" data-quick-home>{t.s('home')}</button>
+  {['HDMI 1', 'HDMI 2', 'HDMI 3', t.s('liveTv'), t.s('inputsSystem')].map(name =>
+    <button class="ft quick-item" data-toast={`${W.site} ${name}`}>{name}</button>)}
+  <button class="visually-hidden" data-back data-quick-close tabindex="-1">{t.s('back')}</button>
+</div>
 <div class="radio-card" data-radio-card hidden>
   <div class="rc-head">
     <div>
@@ -132,11 +139,12 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
       if (card.hidden === !show) return;
       card.hidden = !show;
       // The card takes the default focus while it shows, as on the TV.
-      $(show ? '.arch-btn' : '[data-card-ok]').removeAttribute('data-focus-start');
-      $(show ? '[data-card-ok]' : '.arch-btn').setAttribute('data-focus-start', '');
+      $(show ? '.fav' : '[data-card-ok]').removeAttribute('data-focus-start');
+      $(show ? '[data-card-ok]' : '.fav').setAttribute('data-focus-start', '');
       if (show && stage.contains(document.activeElement)) $('[data-card-ok]').focus({ preventScroll: true });
     };
     live(homeModel, (c) => {
+      $('.pills').classList.toggle('icons-only', !c.prefs.quickLabels);
       const left = Math.ceil((c.day.nextTime.getTime() - c.now.getTime()) / 1000);
       const remind = c.prefs.remind * 60;
       const due = (forced || (remind > 0 && left > 0 && left <= remind)) && card.dataset.for !== dismissedFor;
@@ -145,7 +153,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
     $('[data-card-ok]').addEventListener('click', () => {
       dismissedFor = card.dataset.for ?? '';
       showCard(false);
-      $('.arch-btn').focus({ preventScroll: true });
+      $('.fav').focus({ preventScroll: true });
     });
 
     // Toasts stand in for launching apps.
@@ -162,6 +170,31 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
     // Quran Radio: the chosen station's live stream.
     const audio = $<HTMLAudioElement>('[data-audio]');
+    let quickTrigger: HTMLElement | null = null;
+    const closeQuick = () => {
+      stage.querySelectorAll<HTMLElement>('[data-quick]').forEach(panel => panel.hidden = true);
+      quickTrigger?.focus({ preventScroll: true });
+    };
+    for (const name of ['inputs']) {
+      const trigger = $(`[data-open-${name}]`), panel = $(`[data-quick="${name}"]`);
+      trigger.addEventListener('click', () => {
+        closeQuick(); $('[data-radio-card]').hidden = true;
+        quickTrigger = trigger; panel.hidden = false;
+        panel.querySelector<HTMLElement>('.quick-item')?.focus({ preventScroll: true });
+      });
+      panel.querySelector('[data-quick-close]')?.addEventListener('click', closeQuick);
+      panel.querySelector('[data-quick-home]')?.addEventListener('click', closeQuick);
+      panel.addEventListener('keydown', (event) => {
+        if (['Escape','Backspace'].includes(event.key)) { event.preventDefault(); event.stopPropagation(); closeQuick(); }
+        if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key)) {
+          event.preventDefault(); event.stopPropagation();
+          const rows = [...panel.querySelectorAll<HTMLElement>('.quick-item')];
+          const at = rows.indexOf(document.activeElement as HTMLElement);
+          const step = event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0;
+          rows[Math.max(0, Math.min(rows.length - 1, at + step))]?.focus({ preventScroll: true });
+        }
+      });
+    }
     const rc = $('[data-radio-card]');
     const st = stationOf(prefs);
     const status = () => {
@@ -200,6 +233,12 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 </script>
 
 <style>
+  .quick-card { position:absolute; inset-inline-end:96px; top:152px; width:640px; padding:24px 28px; border:2px solid var(--color-gold-400-60); border-radius:24px; background:var(--color-lapis-900); display:flex; flex-direction:column; gap:8px; }
+  .quick-card[hidden] { display:none; }
+  .quick-title { color:var(--color-gold-400); font-size:28px; margin-bottom:12px; }
+  .quick-card p { font-size:24px; }
+  .quick-item { position:relative; width:100%; min-height:68px; padding:16px 22px; font-size:24px; border-radius:22px; --rest-fill:var(--color-lapis-800); }
+
   .arch-btn {
     inset-inline-start: 176px; top: 904px; width: 440px; height: var(--layout-button-height);
     border-radius: calc(var(--layout-button-height) / 2); align-items: center; justify-content: center; gap: 14px;
@@ -214,6 +253,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   .pills { position: absolute; top: 56px; inset-inline-end: calc(1920px - var(--layout-courtyard-inset-inline-start) - var(--layout-courtyard-width) + 72px + 20px); display: flex; gap: 20px; }
   .pill { position: relative; height: 72px; padding: 0 28px; border-radius: 36px; align-items: center; gap: 14px; font-size: 24px; --rest-border: var(--color-line-soft); --rest-border-width: var(--border-chip-width); }
   .gear { inset-inline-start: calc(var(--layout-courtyard-inset-inline-start) + var(--layout-courtyard-width) - 72px); top: 56px; width: 72px; height: 72px; border-radius: 36px; align-items: center; justify-content: center; --rest-border: var(--color-line-soft); --rest-border-width: var(--border-chip-width); }
+  .icons-only .pill-label { display: none; }
   .radio-pill .bars { display: none; }
   :global(.tv.radio-on) .radio-pill .bars { display: inline-flex; }
   :global(.tv.radio-on) .radio-pill .radio-off { display: none; }

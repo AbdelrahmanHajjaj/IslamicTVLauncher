@@ -42,6 +42,8 @@ Afnon started from [cleanyourtv](https://github.com/Gathin23/cleanyourtv):
 
 See [themes, screensavers and buttons](docs/THEMES.md) and [local setup and recovery](tools/device.md) for PC/phone backups, verified Home takeover and reversible stock-launcher disabling. The linked upstream releases do not contain this branch’s changes. Build locally; completed TCL 50C641K checks and remaining tests are recorded in [local validation](docs/LOCAL-VALIDATION.md).
 
+Home also provides quick input switching and a Wi-Fi network panel. An optional, remotely opened prayer bar stays available over other apps and inputs; see [quick controls and prayer bar](docs/THEMES.md#quick-controls-and-prayer-bar).
+
 ## Screens
 
 | | |

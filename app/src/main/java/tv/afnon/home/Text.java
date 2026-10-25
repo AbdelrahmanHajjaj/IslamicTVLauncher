@@ -339,6 +339,16 @@ final class Text {
     String screensaver() { return ar ? "شاشة التوقف" : "Screensaver"; }
     String saverSystem() { return ar ? "إعدادات شاشة التوقف والصور" : "Screensaver and photo settings"; }
     String homeSettings() { return ar ? "الشاشة الرئيسية الافتراضية" : "Default Home"; }
+    String prayerDock() { return ar ? "شريط الصلاة" : "Prayer bar"; }
+    String openDock() { return ar ? "فتح شريط الصلاة" : "Open prayer bar"; }
+    String quickLabels() { return ar ? "أسماء أزرار الوصول السريع" : "Quick control labels"; }
+    String dockPosition() { return ar ? "موضع شريط الصلاة" : "Prayer bar position"; }
+    String[] dockPositions() { return ar ? new String[] {"أعلى", "أسفل"} : new String[] {"Top", "Bottom"}; }
+    String collapseDock() { return ar ? "طي" : "Collapse"; }
+    String dockDisabled() { return ar ? "شريط الصلاة مغلق في الإعدادات" : "Prayer bar is off in Settings"; }
+    String[] dockModes() { return ar ? new String[] {"مخفي حتى فتحه", "تبويب صغير", "مغلق"} : new String[] {"Hidden until opened", "Small prayer tab", "Off"}; }
+    String[] colourButtons() { return ar ? new String[] {"الأحمر", "الأخضر", "الأصفر", "الأزرق"} : new String[] {"Red", "Green", "Yellow", "Blue"}; }
+    String liveTv() { return ar ? "التلفزيون المباشر" : "Live TV"; }
     String inputsTitle() { return ar ? "المداخل" : "Inputs"; }
     String inputsSystem() { return ar ? "قائمة مداخل التلفزيون" : "TV input menu"; }
     String prayerOffsets() { return ar ? "تعديل مواقيت الصلاة بالدقائق" : "Prayer time offsets"; }
@@ -367,5 +377,5 @@ final class Text {
     String sectionAppearance() { return ar ? "السمات والخلفيات" : "Themes & backgrounds"; }
     String[] themeNames() { return ar ? new String[] {"محراب", "شفق", "جمر", "غابة", "منتصف الليل", "وردي", "رمال", "أردوازي", "مخصصة"} : new String[] {"Mihrab", "Aurora", "Ember", "Forest", "Midnight", "Rose", "Sand", "Slate", "Custom"}; }
     String[] backgroundNames() { return ar ? new String[] {"حسب السمة", "زخرفة", "سادة", "بانوراما", "ضوء النهار", "جبال", "كثبان", "هالة", "سماء الليل"} : new String[] {"Theme", "Lattice", "Solid", "Panorama", "Daylight", "Mountains", "Dunes", "Halo", "Night sky"}; }
-    String[] buttonActions() { return ar ? new String[] {"الأصلي", "الرئيسية", "التطبيقات", "المداخل", "الإعدادات"} : new String[] {"Original", "Home", "All apps", "Inputs", "Settings"}; }
+    String[] buttonActions() { return ar ? new String[] {"الأصلي", "الرئيسية", "التطبيقات", "المداخل", "الإعدادات", "شريط الصلاة"} : new String[] {"Original", "Home", "All apps", "Inputs", "Settings", "Prayer bar"}; }
 }

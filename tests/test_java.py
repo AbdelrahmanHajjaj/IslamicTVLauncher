@@ -72,6 +72,20 @@ class JavaChecks(unittest.TestCase):
                 str(ROOT / "tests/AppFilterCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.AppFilterCheck"], check=True, capture_output=True)
 
+    def test_live_tv_prefers_hardware_and_digital_tuners(self):
+        with tempfile.TemporaryDirectory() as output:
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+                str(ROOT / "app/src/main/java/tv/afnon/home/InputOrder.java"),
+                str(ROOT / "tests/InputOrderCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.InputOrderCheck"], check=True, capture_output=True)
+
+    def test_prayer_bar_stays_out_of_home_settings_sleep_and_saver(self):
+        with tempfile.TemporaryDirectory() as output:
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+                str(ROOT / "app/src/main/java/tv/afnon/home/DockPolicy.java"),
+                str(ROOT / "tests/DockPolicyCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.DockPolicyCheck"], check=True, capture_output=True)
+
     def test_home_favourite_replacement_and_navigation(self):
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,

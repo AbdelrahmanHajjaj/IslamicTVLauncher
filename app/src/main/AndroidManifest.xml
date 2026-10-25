@@ -28,6 +28,7 @@
         <intent><action android:name="com.android.tv.action.VIEW_INPUTS" /></intent>
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>
         <intent><action android:name="android.intent.action.VIEW" /><data android:mimeType="vnd.android.cursor.dir/channel" /></intent>
+        <intent><action android:name="android.intent.action.VIEW" /><data android:mimeType="vnd.android.cursor.item/channel" /></intent>
         <!-- CVTE firmwares answer the remote's buttons in this service; FirmwareKeys then leaves keys alone. -->
         <intent>
             <action android:name="android.intent.action.HOTKEYSERVICE" />
@@ -77,7 +78,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".InputsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
+        <activity android:name=".InputsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" android:theme="@style/Theme.Afnon.Call" android:taskAffinity="tv.afnon.home.inputs" android:launchMode="singleInstance" />
+        <activity android:name=".DockActivity" android:exported="false" android:excludeFromRecents="true" android:noHistory="true" android:theme="@android:style/Theme.NoDisplay" />
         <activity android:name=".RemoteButtonsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
         <activity
             android:name=".AllAppsActivity"

@@ -53,7 +53,7 @@ const { t, lang } = ctx;
   import type { Ctx } from '../lib/ctx';
   import type { Lang } from '../lib/text';
   import {
-    APPEARANCE, REMIND, VOICES, chooserHtml, citiesOf, commit, countries, methodItems, regionOf, moveDraft, pick, previewHtml, rowsFor, rowsHtml,
+    APPEARANCE, DOCK_MODES, REMIND, VOICES, chooserHtml, citiesOf, commit, countries, methodItems, regionOf, moveDraft, pick, previewHtml, rowsFor, rowsHtml,
     savedDraft, sectionName, stationChoice, stationsOf, type Edit, type SPrefs,
   } from './settings';
 
@@ -215,11 +215,11 @@ const { t, lang } = ctx;
     };
 
     // Example assignments stay in this browser. Android uses the TV's installed-app list.
-    const remoteDefaults: Record<string, string> = { youtube: 'app:0', netflix: 'app:1', web: 'app:3', settings: '@settings', inputs: '@inputs', apps: '@apps' };
+    const remoteDefaults: Record<string, string> = { youtube: 'app:0', netflix: 'app:1', web: 'app:3', settings: '@settings', inputs: '@inputs', apps: '@apps', red: '@default', green: '@default', yellow: '@default', blue: '@default' };
     const remoteKeys = Object.keys(remoteDefaults);
     const remoteLabel = (key: string) => ({ youtube: 'YouTube', netflix: 'Netflix', web: ctx.t.list('buttonNames')[4],
-      settings: ctx.t.list('buttonNames')[0], inputs: ctx.t.s('inputsTitle'), apps: ctx.t.list('buttonActions')[2] })[key] ?? key;
-    const remoteValues = ['@default', '@home', '@apps', '@inputs', '@settings'];
+      settings: ctx.t.list('buttonNames')[0], inputs: ctx.t.s('inputsTitle'), apps: ctx.t.list('buttonActions')[2], red: ctx.t.list('colourButtons')[0], green: ctx.t.list('colourButtons')[1], yellow: ctx.t.list('colourButtons')[2], blue: ctx.t.list('colourButtons')[3] })[key] ?? key;
+    const remoteValues = ['@default', '@home', '@apps', '@inputs', '@settings', '@dock'];
     const assignmentLabel = (value: string) => value.startsWith('app:')
       ? APPS[Number(value.slice(4))]?.[ctx.t.ar ? 'ar' : 'en'] ?? value
       : ctx.t.list('buttonActions')[remoteValues.indexOf(value)] ?? value;
@@ -268,11 +268,13 @@ const { t, lang } = ctx;
       else if (r.kind === 'carousel') return;
       else if (r.kind === 'seg' || r.kind === 'step') setEdit({ row: i, draft: savedDraft(rowCtx(), r) });
       else if (r.id === 'radio') setRadio(!radioOn);
+      else if (r.id === 'quickLabels') save({ ...p(), quickLabels: !p().quickLabels });
       else if (r.id === 'reduceMotion') save({ ...p(), reduceMotion: !p().reduceMotion });
       else if (r.id === 'repairService') save({ ...p(), repairService: !ctx.prefs.repairService });
       else if (r.id === 'adhan') save({ ...p(), adhan: !ctx.prefs.adhan });
       else if (r.kind === 'value') {
         if (r.id === 'remoteButtons') openRemoteButtons();
+        else if (r.id === 'dockMode') open(ctx.t.s('prayerDock'), ctx.t.list('dockModes').map((label, k) => ({ label, chosen: DOCK_MODES[k] === (ctx.prefs.dockMode ?? 'hidden') })), k => save({ ...p(), dockMode: DOCK_MODES[k] }));
         else if (r.id === 'city') openRegions();
         else if (r.id === 'method') {
           open(ctx.t.s('method'), methodItems(ctx.t, ctx.prefs), (k) => save({ ...p(), method: METHODS[k] }));

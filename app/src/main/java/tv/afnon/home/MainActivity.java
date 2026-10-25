@@ -52,7 +52,7 @@ public class MainActivity extends Screen {
     // Leave space between the section label and the first row's focus ring.
     private static final int LABEL_ABOVE_FAV = 468;
 
-    private static final int ARCH = 0, WIFI = 1, SETTINGS = 2, F0 = 3, M0 = 12, ALL = 17, RADIO = 18, NODES = 19;
+    private static final int ARCH = 0, WIFI = 1, SETTINGS = 2, F0 = 3, M0 = 12, ALL = 17, RADIO = 18, INPUTS = 19, NODES = 20;
 
     private final View[] nodes = new View[NODES];
     private final TextView[] cellTag = new TextView[6], cellName = new TextView[6], cellTime = new TextView[6];
@@ -78,6 +78,7 @@ public class MainActivity extends Screen {
     private RadioBars pillBars, cardBars;
     private TextView radioLabel, cardStatus, playLabel;
     private LinearLayout radioCard;
+    private android.widget.PopupWindow quickMenu;
     private FocusTile cardPlay, cardDark;
     private final Radio.Listener onRadio = state -> styleRadio();
     /** Test only (shiftTo): how far Home's clock is moved. */
@@ -96,9 +97,9 @@ public class MainActivity extends Screen {
         boolean changed = loadSettings(intent);
         boolean replacementChanged = readReplacement(intent);
         if (changed || replacementChanged) build();
-        // Home key from anywhere: back to Home with focus on the arch (FocusMap: Home key). Posted, because the
+        // Home starts at the first app. Posted, because the
         // window puts back its previously focused view when it regains focus after onNewIntent.
-        root.post(() -> nodes[replacementPackage == null ? ARCH : F0].requestFocus());
+        root.post(() -> firstApp().requestFocus());
         runTest(intent);
     }
 
@@ -170,6 +171,7 @@ public class MainActivity extends Screen {
 
     @Override
     protected void onPause() {
+        if (quickMenu != null) { quickMenu.dismiss(); quickMenu = null; }
         Reminders.home = null;
         Radio.unlisten(onRadio);
         if (focusGlow != null) focusGlow.stop();
@@ -217,13 +219,17 @@ public class MainActivity extends Screen {
         when.setClipChildren(false);
         place(when, Tokens.COURT_X, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        // Radio and Wi-Fi side by side, ending 20px before the Settings button.
+        // Quick controls end beside Settings; the clock keeps its own space.
+        nodes[INPUTS] = inputPill();
         nodes[RADIO] = radioPill();
         nodes[WIFI] = wifiPill();
         LinearLayout pills = new LinearLayout(this);
         pills.setClipChildren(false);
         float reach = FocusTile.REACH;
-        pills.addView(nodes[RADIO], new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach)));
+        pills.addView(nodes[INPUTS], new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach)));
+        LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach));
+        rlp.setMarginStart(Ui.ipx(16 - 2 * reach));
+        pills.addView(nodes[RADIO], rlp);
         LinearLayout.LayoutParams wlp = new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach));
         wlp.setMarginStart(Ui.ipx(20 - 2 * reach));
         pills.addView(nodes[WIFI], wlp);
@@ -301,7 +307,7 @@ public class MainActivity extends Screen {
         builtApps = appsKey();
         lastMinute = -1;
         render(true);
-        nodes[replacementPackage == null ? ARCH : F0].requestFocus();
+        firstApp().requestFocus();
     }
 
     private View archButton() {
@@ -327,6 +333,34 @@ public class MainActivity extends Screen {
         return b;
     }
 
+    private View inputPill() {
+        return quickPill(t.inputsTitle(), Icon.INPUT, () -> openQuick(true));
+    }
+
+    private View quickPill(String name, int kind, Runnable action) {
+        FocusTile b = new FocusTile(this, 36);
+        b.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
+        LinearLayout row = new LinearLayout(this); row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(Ui.ipx(24), 0, Ui.ipx(24), 0);
+        Icon icon = new Icon(this, kind, 2f);
+        TextView label = text(ui400, 24, Palette.PLASTER_100); label.setText(name);
+        row.addView(icon, new LinearLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30)));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2); lp.setMarginStart(Ui.ipx(12));
+        label.setVisibility(Prefs.quickLabels(this) ? View.VISIBLE : View.GONE);
+        b.setContentDescription(name);
+        row.addView(label, lp); b.addView(row, new FrameLayout.LayoutParams(-2, -1));
+        b.setLook(f -> { int color = f ? Palette.LAPIS_900 : Palette.PLASTER_100; label.setTextColor(color); icon.setColor(color); });
+        b.setOnClickListener(v -> action.run()); return b;
+    }
+
+    private void openQuick(boolean inputs) {
+        if (quickMenu != null) quickMenu.dismiss();
+        closeRadioCard(false);
+        if (card != null) dismissReminder();
+        if (inputs) quickMenu = QuickMenus.show(this, nodes[INPUTS]);
+        else SystemScreens.wifi(this);
+    }
+
     private View wifiPill() {
         FocusTile b = new FocusTile(this, 36);
         b.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
@@ -336,9 +370,13 @@ public class MainActivity extends Screen {
         Icon icon = new Icon(this, Icon.WIFI, 2f);
         wifiName = text(ui400, 24, Palette.PLASTER_100);
         wifiName.setTextDirection(View.TEXT_DIRECTION_LTR);
+        wifiName.setSingleLine(true); wifiName.setMaxWidth(Ui.ipx(180));
+        wifiName.setEllipsize(TextUtils.TruncateAt.END);
         row.addView(icon, new LinearLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30)));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
         lp.setMarginStart(Ui.ipx(14));
+        wifiName.setVisibility(Prefs.quickLabels(this) ? View.VISIBLE : View.GONE);
+        b.setContentDescription("Wi-Fi");
         row.addView(wifiName, lp);
         b.addView(row, new FrameLayout.LayoutParams(-2, -1));
         b.setLook(f -> {
@@ -346,7 +384,7 @@ public class MainActivity extends Screen {
             wifiName.setTextColor(c);
             icon.setColor(c);
         });
-        b.setOnClickListener(v -> startSafely(new Intent(Settings.ACTION_WIFI_SETTINGS)));
+        b.setOnClickListener(v -> openQuick(false));
         return b;
     }
 
@@ -538,6 +576,8 @@ public class MainActivity extends Screen {
         row.addView(glyph, new LinearLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30)));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
         lp.setMarginStart(Ui.ipx(14));
+        radioLabel.setVisibility(Prefs.quickLabels(this) ? View.VISIBLE : View.GONE);
+        b.setContentDescription(t.radio());
         row.addView(radioLabel, lp);
         b.addView(row, new FrameLayout.LayoutParams(-2, -1));
         nodes[RADIO] = b;
@@ -673,6 +713,7 @@ public class MainActivity extends Screen {
 
     /** "Asr in 13 minutes" at the bottom end, over the apps; it takes focus until Got it, Today's prayers or Back. */
     private void showReminder() {
+        if (quickMenu != null) { quickMenu.dismiss(); quickMenu = null; }
         if (card != null) dismissReminder();
         closeRadioCard(false);
         Appearance.load(this);
@@ -751,7 +792,7 @@ public class MainActivity extends Screen {
         root.removeView(card);
         card = null;
         for (View n : nodes) if (n != null) n.setFocusable(true);
-        nodes[ARCH].requestFocus();
+        firstApp().requestFocus();
     }
 
     @Override
@@ -803,8 +844,8 @@ public class MainActivity extends Screen {
             return super.dispatchKeyEvent(e);
         }
         if (k == KeyEvent.KEYCODE_BACK) {
-            // Back on Home returns focus to the arch and never leaves Home.
-            if (e.getAction() == KeyEvent.ACTION_UP) nodes[ARCH].requestFocus();
+            // Back on Home returns to the first app and never leaves Home.
+            if (e.getAction() == KeyEvent.ACTION_UP) firstApp().requestFocus();
             return true;
         }
         if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT
@@ -828,13 +869,14 @@ public class MainActivity extends Screen {
             if (to >= 0) nodes[F0 + to].requestFocus();
             return;
         }
-        if (from < 0) { nodes[ARCH].requestFocus(); return; }
+        if (from < 0) { firstApp().requestFocus(); return; }
         boolean left = key == KeyEvent.KEYCODE_DPAD_LEFT, right = key == KeyEvent.KEYCODE_DPAD_RIGHT;
         boolean up = key == KeyEvent.KEYCODE_DPAD_UP, down = key == KeyEvent.KEYCODE_DPAD_DOWN;
         int to = -1;
         switch (from) {
-            case ARCH: to = right ? F0 : up ? RADIO : -1; break;
-            case RADIO: to = left ? ARCH : right ? WIFI : down ? F0 : -1; break;
+            case ARCH: to = right ? F0 : up ? INPUTS : -1; break;
+            case INPUTS: to = left ? ARCH : right ? RADIO : down ? F0 : -1; break;
+            case RADIO: to = left ? INPUTS : right ? WIFI : down ? F0 : -1; break;
             case WIFI: to = left ? RADIO : right ? SETTINGS : down ? F0 + columns / 2 : -1; break;
             case SETTINGS: to = left ? WIFI : down ? F0 + columns - 1 : -1; break;
             default:
@@ -851,9 +893,17 @@ public class MainActivity extends Screen {
                     if (left) to = from == ALL ? (recentCount == 0 ? ARCH : M0 + recentCount - 1) : from == M0 ? ARCH : from - 1;
                     else if (right) to = from == ALL ? -1 : from < M0 + recentCount - 1 ? from + 1 : ALL;
                     else if (up) to = Math.min(F0 + favouriteCount - 1, lastFav);
+                    else if (down) to = ALL;
                 }
         }
         if (to >= 0 && nodes[to] != null) nodes[to].requestFocus();
+    }
+
+    private View firstApp() {
+        View first = nodes[favouriteCount > 0 ? F0 : recentCount > 0 ? M0 : ALL];
+        // A mouse/touch app can leave Android in touch mode when Home is pressed.
+        first.setFocusableInTouchMode(true);
+        return first;
     }
 
     private int currentNode() {

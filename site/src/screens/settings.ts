@@ -58,6 +58,7 @@ export const placeOf = (t: Text, c: (typeof CITIES)[number]) => (t.ar ? t.place(
 /** Settings → Reminders, in the order of Text.remindChoices (a list on the TV: six are too many for a seg). */
 export const REMIND = [5, 10, 15, 20, 30, 0];
 const remindIndex = (p: SPrefs) => (REMIND.indexOf(p.remind) < 0 ? 2 : REMIND.indexOf(p.remind));
+export const DOCK_MODES = ['hidden', 'tab', 'off'] as const;
 const DARK = [0, 15, -1];
 const CLOCKS = ['system', '12', '24'] as const;
 
@@ -91,6 +92,10 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
       { id: 'lang', kind: 'seg', label: t.s('language'), help: t.s('languageHelp'), segs: [t.ar ? 'التلفاز' : 'TV', 'العربية', 'English'], selected: t.ar ? 1 : 2 },
       { id: 'digits', kind: 'seg', label: t.s('digits'), help: '', segs: ['0123', '٠١٢٣'], selected: t.eastern ? 1 : 0 },
       { id: 'clock', kind: 'seg', label: t.s('clockRow'), help: t.s('clockHelp'), segs: t.list('clocks').map(t.d), selected: Math.max(0, CLOCKS.indexOf(p.clock)) },
+      { id: 'quickLabels', kind: 'toggle', label: t.s('quickLabels'), help: '', on: p.quickLabels ?? false },
+      { id: 'dockMode', kind: 'value', label: t.s('prayerDock'), help: '', value: t.list('dockModes')[DOCK_MODES.indexOf(p.dockMode ?? 'hidden')] },
+      { id: 'dockPosition', kind: 'seg', label: t.s('dockPosition'), help: '', segs: t.list('dockPositions'), selected: p.dockPosition === 'top' ? 0 : 1 },
+
     ];
     case APPEARANCE: return [
       { id: 'theme', kind: 'carousel', label: t.s('themeRow'), help: '', segs: t.list('themeNames').slice(0, THEMES.length), selected: Math.max(0, THEMES.indexOf(p.theme ?? 'mihrab')) },
@@ -135,6 +140,7 @@ export function pick(c: Ctx, id: string, i: number): SPrefs | null {
     case 'resume': return { ...p, radioResume: i === 0 };
     case 'dark': return { ...p, radioDark: DARK[i] };
     case 'digits': return { ...p, digits: i === 1 ? 'eastern' : 'western' };
+    case 'dockPosition': return { ...p, dockPosition: i === 0 ? 'top' : 'bottom' };
     case 'clock': return { ...p, clock: CLOCKS[i] };
     default: return null;
   }

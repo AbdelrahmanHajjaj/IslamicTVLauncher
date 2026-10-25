@@ -66,6 +66,7 @@ final class PrayerWatch {
         PowerManager pm = service.getSystemService(PowerManager.class);
         Date now = new Date();
         boolean asleep = pm != null && !pm.isInteractive();
+        RemoteKeys.tickDock(now, asleep);
         // Asleep: nothing to show, unless the radio plays with the screen off (TCL Audio Only); then the call
         // still comes, waking the screen.
         if (asleep && !Radio.on()) return;
@@ -105,6 +106,7 @@ final class PrayerWatch {
     }
 
     void openCall(int prayer, Date time) {
+        RemoteKeys.hideDock();
         hideBanner();
         wakeScreen();
         Intent i = new Intent(service, NowActivity.class)
@@ -246,7 +248,9 @@ final class PrayerWatch {
         handler.postDelayed(() -> {
             Date now = new Date();
             PrayerDay day = new PrayerDay(service, now);
-            if ("call".equals(kind)) {
+            if ("dock".equals(kind)) { RemoteKeys.toggleDock(); }
+            else if ("inputs".equals(kind)) { RemoteKeys.showInputs(); }
+            else if ("call".equals(kind)) {
                 openCall(day.nextIndex, day.nextTime);
             } else if ("announce".equals(kind)) {
                 Announce.now(service, day.nextIndex, day.friday);

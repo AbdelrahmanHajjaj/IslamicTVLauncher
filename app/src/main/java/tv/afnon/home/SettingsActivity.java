@@ -430,6 +430,28 @@ public class SettingsActivity extends Screen {
                     String help() { return t.hideSystemAppsHelp(); }
                     boolean on() { return prefs().getBoolean("hide_system_apps", false); }
                     void set(boolean on) { prefs().edit().putBoolean("hide_system_apps", on).apply(); }
+                },
+                new Row(TOGGLE) {
+                    String label() { return t.quickLabels(); }
+                    boolean on() { return Prefs.quickLabels(c); }
+                    void set(boolean on) { prefs().edit().putBoolean("quick_labels", on).apply(); }
+                },
+                new Row(VALUE) {
+                    final String[] modes = {"hidden", "tab", "off"};
+                    String label() { return t.prayerDock(); }
+                    int selected() { return Math.max(0, Arrays.asList(modes).indexOf(prefs().getString("dock_mode", "hidden"))); }
+                    String value() { return t.dockModes()[selected()]; }
+                    void open() { openChooser(label(), t.dockModes(), selected(), i -> { prefs().edit().putString("dock_mode", modes[i]).apply(); showSaved(); }); }
+                },
+                new Row(SEG) {
+                    String label() { return t.dockPosition(); }
+                    String[] segs() { return t.dockPositions(); }
+                    int selected() { return "top".equals(prefs().getString("dock_position", "bottom")) ? 0 : 1; }
+                    void select(int i) { prefs().edit().putString("dock_position", i == 0 ? "top" : "bottom").apply(); }
+                },
+                new Row(VALUE) {
+                    String label() { return t.openDock(); }
+                    void open() { if (!RemoteKeys.toggleDock()) SystemScreens.open(c, Settings.ACTION_ACCESSIBILITY_SETTINGS); }
                 });
             case APPEARANCE: return Arrays.asList(
                 new Row(CAROUSEL) {

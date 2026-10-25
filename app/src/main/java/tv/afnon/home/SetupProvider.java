@@ -151,6 +151,14 @@ public final class SetupProvider extends ContentProvider {
                 Apps.saveFavourites(c, favs);
                 break;
             }
+            case "dock_position":
+                if (!DockPolicy.validPosition(value)) throw new IllegalArgumentException("Invalid prayer bar position");
+                Prefs.of(c).edit().putString("dock_position", value).apply();
+                break;
+            case "dock_mode":
+                if (!DockPolicy.validMode(value)) throw new IllegalArgumentException("Invalid prayer bar mode");
+                Prefs.of(c).edit().putString("dock_mode", value).apply();
+                break;
             case "focus_lighting":
                 Prefs.of(c).edit().putBoolean("focus_lighting", on).apply();
                 break;

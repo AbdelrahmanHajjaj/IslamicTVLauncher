@@ -27,12 +27,12 @@ public class AllAppsActivity extends Screen {
 
     private static final int COLS = 5, VISIBLE_ROWS = 4;
     private static final float GRID_TOP = 200, TILE_H = 168, GAP = 32;
-    private static final int BACK_BTN = -2, CHIP = -3, NONE = -1;
+    private static final int BACK_BTN = -2, CHIP = -3, SETTINGS = -4, NONE = -1;
 
     private final List<FocusTile> tiles = new ArrayList<>();
     private List<String> apps = new ArrayList<>();
     private List<String> favs = new ArrayList<>();
-    private FocusTile backButton, chip;
+    private FocusTile backButton, chip, settingsButton;
     private TextView chipLabel, chipTime, count;
     private boolean resumed;
     private int topRow;
@@ -114,7 +114,15 @@ public class AllAppsActivity extends Screen {
             mihrab.setColor(f ? Palette.LAPIS_900 : Palette.GOLD_400);
         });
         chip.setOnClickListener(v -> startActivity(new Intent(this, PrayerDayActivity.class)));
-        placeEnd(chip, 96, 56, ViewGroup.LayoutParams.WRAP_CONTENT, 72);
+        placeEnd(chip, 188, 56, ViewGroup.LayoutParams.WRAP_CONTENT, 72);
+        settingsButton = new FocusTile(this, 36);
+        settingsButton.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
+        Icon gear = new Icon(this, Icon.GEAR, 1.8f);
+        settingsButton.addView(gear, new FrameLayout.LayoutParams(Ui.ipx(34), Ui.ipx(34), Gravity.CENTER));
+        settingsButton.setLook(f -> gear.setColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
+        settingsButton.setContentDescription(t.settings());
+        settingsButton.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+        placeEnd(settingsButton, 96, 56, 72, 72);
 
         // Build only the rows on screen; hidden app icons and views can wait until scrolling.
         for (int i = 0; i < apps.size(); i++) tiles.add(null);
@@ -214,6 +222,7 @@ public class AllAppsActivity extends Screen {
         if (f == null) return NONE;
         if (f == backButton) return BACK_BTN;
         if (f == chip) return CHIP;
+        if (f == settingsButton) return SETTINGS;
         return tiles.indexOf(f);
     }
 
@@ -240,6 +249,10 @@ public class AllAppsActivity extends Screen {
             else if (k == KeyEvent.KEYCODE_DPAD_DOWN) focusTile(topRow * COLS);
         } else if (from == CHIP) {
             if (k == KeyEvent.KEYCODE_DPAD_LEFT) backButton.requestFocus();
+            else if (k == KeyEvent.KEYCODE_DPAD_RIGHT) settingsButton.requestFocus();
+            else if (k == KeyEvent.KEYCODE_DPAD_DOWN) focusTile(Math.min(tiles.size() - 1, topRow * COLS + COLS - 1));
+        } else if (from == SETTINGS) {
+            if (k == KeyEvent.KEYCODE_DPAD_LEFT) chip.requestFocus();
             else if (k == KeyEvent.KEYCODE_DPAD_DOWN) focusTile(Math.min(tiles.size() - 1, topRow * COLS + COLS - 1));
         } else if (from == NONE) {
             focusTile(0);
@@ -250,7 +263,7 @@ public class AllAppsActivity extends Screen {
             else if (k == KeyEvent.KEYCODE_DPAD_DOWN && from + COLS < tiles.size()) focusTile(from + COLS);
             else if (k == KeyEvent.KEYCODE_DPAD_DOWN && from / COLS < (tiles.size() - 1) / COLS) focusTile(tiles.size() - 1);
             else if (k == KeyEvent.KEYCODE_DPAD_UP && from >= COLS) focusTile(from - COLS);
-            else if (k == KeyEvent.KEYCODE_DPAD_UP) (col < 3 ? backButton : chip).requestFocus();
+            else if (k == KeyEvent.KEYCODE_DPAD_UP) (col < 3 ? backButton : col == COLS - 1 ? settingsButton : chip).requestFocus();
         }
         return true;
     }

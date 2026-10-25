@@ -10,12 +10,16 @@ import java.util.*;
 
 /** User-selected system screens with vendor fallbacks; no shell or hidden API in the launcher. */
 final class SystemScreens {
-    static void open(Activity a, String action) {
+    static void open(Context a, String action) {
         for (Intent i : new Intent[]{new Intent(action), new Intent(Settings.ACTION_SETTINGS),
                 new Intent(Intent.ACTION_MAIN).setPackage("com.android.tv.settings").addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)}) {
-            try { a.startActivity(i); return; } catch (ActivityNotFoundException | SecurityException ignored) { }
+            try { if (!(a instanceof Activity)) i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); a.startActivity(i); return; } catch (ActivityNotFoundException | SecurityException ignored) { }
         }
         Toast.makeText(a, Screen.loadText(a).systemUnavailable(), Toast.LENGTH_LONG).show();
+    }
+    static void wifi(Context c) {
+        if (android.os.Build.VERSION.SDK_INT >= 29 && InputSources.launch(c, new Intent(Settings.Panel.ACTION_WIFI))) return;
+        open(c, Settings.ACTION_WIFI_SETTINGS);
     }
     static void home(Activity a) {
         if (android.os.Build.VERSION.SDK_INT >= 29) {

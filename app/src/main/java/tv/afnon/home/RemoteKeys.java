@@ -48,11 +48,19 @@ public class RemoteKeys extends AccessibilityService {
     static PrayerWatch watch;
     /** The running service, so a new button table applies at once; null while the service is off. */
     private static RemoteKeys running;
+    private PrayerDock dock;
+
+    static boolean toggleDock() { if (running == null || running.dock == null) return false; running.dock.toggle(); return true; }
+    static boolean showInputs() { if (running == null || running.dock == null) return false; running.dock.inputs(); return true; }
+    static void hideDock() { if (running != null && running.dock != null) running.dock.hide(); }
+    static void tickDock(java.util.Date now, boolean asleep) { if (running != null && running.dock != null) running.dock.update(now, asleep); }
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         running = this;
+        if (dock != null) dock.stop();
+        dock = new PrayerDock(this);
         ServiceRepair.connected(this);
         applyKeys();
         // The radio may have left the TV's sleep timer off (a crash, a reboot mid-listen): put it back.
@@ -110,6 +118,7 @@ public class RemoteKeys extends AccessibilityService {
 
     static Intent target(android.content.Context c, String value) {
         switch (value) {
+            case "@dock": return new Intent(c, DockActivity.class);
             case "@home": return new Intent(c, MainActivity.class);
             case "@apps": return new Intent(c, AllAppsActivity.class);
             case "@inputs": return new Intent(c, InputsActivity.class);
@@ -145,13 +154,14 @@ public class RemoteKeys extends AccessibilityService {
             String[] parts = pair.split("=", -1);
             if (parts.length != 2 || !allowedCode(code(parts[0])) ||
                     !(parts[1].matches("[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+")
-                    || java.util.Arrays.asList("@home", "@apps", "@inputs", "@settings", "@default").contains(parts[1])))
+                    || java.util.Arrays.asList("@home", "@apps", "@inputs", "@settings", "@dock", "@default").contains(parts[1])))
                 throw new IllegalArgumentException("Invalid button mapping");
         }
     }
 
     @Override
     public void onDestroy() {
+        if (dock != null) { dock.stop(); dock = null; }
         if (running == this) running = null;
         if (watch != null) watch.stop();
         watch = null;
@@ -177,6 +187,10 @@ public class RemoteKeys extends AccessibilityService {
         if (app != null ? target(this, app) == null : open == null || explicit(new Intent(open)) == null) return false;
         // Act on release only, and swallow the press too so the app underneath never sees half a key.
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+            if ("@dock".equals(app)) { toggleDock(); return true; }
+            if ("@inputs".equals(app) || (app == null && (code == KeyEvent.KEYCODE_TV || code == KeyEvent.KEYCODE_TV_INPUT))) {
+                if (showInputs()) return true;
+            }
             if (app != null) {
                 try { startActivity(target(this, app).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); Apps.remember(this, app); }
                 catch (RuntimeException ignored) { }
@@ -234,6 +248,7 @@ public class RemoteKeys extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        if (dock != null) dock.onWindow(event);
         Redirects.onWindowChanged(this, event);
     }
 

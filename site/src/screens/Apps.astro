@@ -34,6 +34,8 @@ const menuText = {
   <span class="chip-time display num" dir="ltr" data-k="chipTime" set:html={m.html.chipTime} />
 </a>
 
+<a class="ft settings" href={href('settings', lang) + '#tv'} aria-label={t.s('settings')}><Icon name="gear" size={34}/></a>
+
 {apps.map((a, i) => (
   <button class="ft tile" data-app={i} data-fav={a.fav} data-name={a.name} data-note={a.fav ? favNote(t, a.fav) : t.s('notFav')}
     {...(i === 0 ? { 'data-focus-start': '' } : {})} data-toast={`${site} ${a.name}`}
@@ -144,7 +146,8 @@ const menuText = {
   .head { position: absolute; inset-inline-start: calc(var(--space-safe-inline) + 72px + 28px); top: var(--space-safe-block); height: 72px; display: flex; align-items: center; gap: 28px; }
   .title { font-size: var(--font-size-title-l); line-height: var(--font-line-height-display); }
   .count { font-size: var(--font-size-body); color: var(--color-mist-400); }
-  .chip { inset-inline-end: var(--space-safe-inline); top: var(--space-safe-block); height: 72px; padding: 0 28px; border-radius: 36px; align-items: center; gap: 16px; color: var(--color-gold-400); font-size: var(--font-size-body); --rest-fill: transparent; --rest-border: var(--color-gold-400); --rest-border-width: 2px; }
+  .settings { inset-inline-end:96px; top:56px; width:72px; height:72px; border-radius:36px; align-items:center; justify-content:center; --rest-border:var(--color-line-soft); --rest-border-width:2px; }
+  .chip { inset-inline-end: calc(var(--space-safe-inline) + 92px); top: var(--space-safe-block); height: 72px; padding: 0 28px; border-radius: 36px; align-items: center; gap: 16px; color: var(--color-gold-400); font-size: var(--font-size-body); --rest-fill: transparent; --rest-border: var(--color-gold-400); --rest-border-width: 2px; }
   .chip-time { font-size: 32px; color: var(--color-plaster-100); }
   .chip:focus .chip-time { color: inherit; }
 
