@@ -4,6 +4,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-25
+
 ### Fixed
 - Home no longer crashes on start on a TV with fewer than four apps besides Afnon (found on a stock Android TV
   9 emulator); the missing favourites show as empty tiles.
@@ -200,7 +202,8 @@ First public release.
 - Screensaver, on-TV settings and remote button mapping.
 - Arabic (RTL) first, with English.
 
-[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.6...HEAD
+[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.6...v0.6.1
 [0.6]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.5...v0.6
 [0.5]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.4...v0.5
 [0.4]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.3.1...v0.4

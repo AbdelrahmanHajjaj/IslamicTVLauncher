@@ -143,6 +143,10 @@ adb -s $TV shell pm grant tv.afnon.home android.permission.ACCESS_FINE_LOCATION
 
 Then turn on **Afnon remote buttons** in the TV's Settings → Accessibility. The APK includes the adhan recordings.
 
+If Home still opens the stock launcher (stock Android TV and Google TV keep theirs ahead of any app), use the
+phone installer or `tools/install.sh`: they turn the stock launcher off behind a safety switch that turns it back
+on if Afnon doesn't come up, and the installer's cleanup can undo it.
+
 ### From source
 
 You need a computer with **adb**, **JDK 17**, the Android SDK (platform 34), and the TV with
