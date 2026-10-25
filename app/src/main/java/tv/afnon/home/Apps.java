@@ -97,7 +97,10 @@ final class Apps {
     static List<String> allApps(Context c, Text t) {
         List<String> apps = sorted(c, t);
         if (prefs(c).getBoolean("hide_system_apps", false)) apps.removeIf(pkg -> {
-            try { return (info(c, pkg).flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0; }
+            try {
+                ApplicationInfo app = info(c, pkg);
+                return AppFilter.hideSystem(pkg, app.flags, app.category);
+            }
             catch (PackageManager.NameNotFoundException gone) { return true; }
         });
         return apps;

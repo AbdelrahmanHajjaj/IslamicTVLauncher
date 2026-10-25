@@ -1,4 +1,4 @@
-"""Run pure Java guards without Android or a TV."""
+"""Run pure Java guards without an Android runtime or a TV."""
 from pathlib import Path
 import shutil
 import subprocess
@@ -27,7 +27,8 @@ class JavaChecks(unittest.TestCase):
             subprocess.run([java, "-cp", output, "tv.afnon.home.ThemeCheck"], check=True, capture_output=True)
             for path in (ROOT / "app/src/main/assets/themes").glob("*.json"):
                 with self.subTest(theme=path.stem):
-                    values = list(json.loads(path.read_text(encoding="utf-8"))["colors"].values())
+                    preset = json.loads(path.read_text(encoding="utf-8"))
+                    values = [*preset["colors"].values(), preset["background"]]
                     subprocess.run([java, "-cp", output, "tv.afnon.home.ThemeCheck", *values], check=True, capture_output=True)
 
     def test_remote_capture_waits_for_a_complete_press(self):
@@ -59,6 +60,17 @@ class JavaChecks(unittest.TestCase):
                 str(ROOT / "tests/PrayerDayCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + str(jars[0]),
                 "tv.afnon.home.PrayerDayCheck"], check=True, capture_output=True)
+
+    def test_system_filter_keeps_media_games_and_store(self):
+        import os
+        sdk = Path(os.environ.get("ANDROID_HOME", os.environ.get("ANDROID_SDK_ROOT", Path.home() / "AppData/Local/Android/Sdk")))
+        android = sdk / "platforms/android-34/android.jar"
+        self.assertTrue(android.is_file(), "Set ANDROID_HOME to an SDK with Android platform 34")
+        with tempfile.TemporaryDirectory() as output:
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-cp", str(android), "-d", output,
+                str(ROOT / "app/src/main/java/tv/afnon/home/AppFilter.java"),
+                str(ROOT / "tests/AppFilterCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.AppFilterCheck"], check=True, capture_output=True)
 
     def test_home_favourite_replacement_and_navigation(self):
         with tempfile.TemporaryDirectory() as output:

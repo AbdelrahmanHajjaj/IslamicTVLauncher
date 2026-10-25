@@ -675,6 +675,7 @@ public class MainActivity extends Screen {
     private void showReminder() {
         if (card != null) dismissReminder();
         closeRadioCard(false);
+        Appearance.load(this);
         Date now = new Date();
         day = new PrayerDay(this, now);
         cardFor = day.nextTime;
@@ -684,20 +685,20 @@ public class MainActivity extends Screen {
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(Ui.ipx(36), Ui.ipx(32), Ui.ipx(36), Ui.ipx(32));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Palette.PLASTER_100);
+        bg.setColor(Palette.LAPIS_900);
         bg.setCornerRadius(Ui.px(24));
-        bg.setStroke(Ui.ipx(6), Palette.ON_PLASTER_BORDER);
+        bg.setStroke(Ui.ipx(2), Palette.GOLD_400);
         card.setBackground(bg);
         card.setClipChildren(false);
         card.setClipToPadding(false);
 
         String[] names = t.prayerNames();
         if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
-        TextView label = caps(text(ui400, 20, Palette.ON_PLASTER_LABEL));
+        TextView label = caps(text(ui400, 20, Palette.GOLD_400));
         label.setText(t.apLabel());
-        TextView title = text(displayBold, 52, Palette.LAPIS_900);
+        TextView title = text(displayBold, 52, Palette.PLASTER_100);
         title.setText(t.apTitle(names[day.nextIndex], Reminders.minutesLeft(day, now), duration(secondsUntil(day.nextTime, now), false)));
-        TextView sub = text(ui400, 24, Palette.ON_PLASTER_SECONDARY);
+        TextView sub = text(ui400, 24, Palette.MIST_400);
         sub.setText(t.apSub(time(day.nextTime, 1f)));
         card.addView(label);
         card.addView(title);
@@ -732,16 +733,16 @@ public class MainActivity extends Screen {
         cardOk.requestFocus();
     }
 
-    /** A 68px pill on the cream card: lapis (Got it) or outlined; gold when focused. */
+    /** A 68px pill on the reminder card, using the same focus colours as Home. */
     private FocusTile cardButton(String label, boolean filled) {
         FocusTile b = new FocusTile(this, 34);
-        b.setRest(filled ? Palette.LAPIS_900 : 0, Palette.ON_PLASTER_BUTTON_BORDER, filled ? 0 : 2);
-        TextView v = text(ui400, 24, filled ? Palette.PLASTER_100 : Palette.LAPIS_900);
+        b.setRest(filled ? Palette.LAPIS_800 : 0, Palette.LINE_SOFT, filled ? 0 : 2);
+        TextView v = text(ui400, 24, Palette.PLASTER_100);
         v.setText(label);
         v.setGravity(Gravity.CENTER);
         v.setPadding(Ui.ipx(32), 0, Ui.ipx(32), 0);
         b.addView(v, new FrameLayout.LayoutParams(-2, -1));
-        b.setLook(f -> v.setTextColor(f ? Palette.LAPIS_900 : (filled ? Palette.PLASTER_100 : Palette.LAPIS_900)));
+        b.setLook(f -> v.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         return b;
     }
 

@@ -4,13 +4,14 @@ import java.util.Map;
 
 /** Bounds and readability checks, independent of Android for local tests. */
 final class ThemeSpec {
+    static final String[] BACKGROUNDS = {"lattice", "solid", "panorama", "daylight", "mountains", "dunes", "halo", "night_sky"};
     static final String[] COLORS = {"lapis-950", "lapis-900", "lapis-800", "lapis-700", "gold-400", "gold-200", "plaster-100", "mist-400"};
     static int color(String value) {
         if (value == null || !value.matches("#[0-9a-fA-F]{6}")) throw new IllegalArgumentException("Use #RRGGBB colours");
         return (int)(0xff000000L | Long.parseLong(value.substring(1), 16));
     }
     static void validate(Map<String, Integer> colors, String background, int light) {
-        if (!java.util.Arrays.asList("lattice", "solid", "panorama", "daylight").contains(background))
+        if (!java.util.Arrays.asList(BACKGROUNDS).contains(background))
             throw new IllegalArgumentException("Unknown background");
         if (light < 0 || light > 100) throw new IllegalArgumentException("Lighting must be 0..100");
         for (String key : colors.keySet()) if (!java.util.Arrays.asList(COLORS).contains(key))

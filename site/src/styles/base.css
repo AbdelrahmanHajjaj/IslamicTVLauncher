@@ -110,3 +110,6 @@ h1, h2, h3 { font-family: var(--display); font-weight: var(--display-weight); li
 .ambient-ridge { position: absolute; inset: 0; pointer-events: none; fill: color-mix(in srgb, var(--color-lapis-950) 82%, var(--color-gold-400)); }
 .tv:not([data-background="panorama"]):not([data-background="daylight"]) > .ambient-ridge,
 .tv[data-ground="black"] > .ambient-ridge { display: none; }
+
+.tv[data-background]:not([data-background="lattice"]):not([data-background="solid"]) { background: var(--scene-image) center / cover; }
+.tv[data-background] > .ambient-ridge { display: none; }

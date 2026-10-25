@@ -74,7 +74,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
 
 <!-- The reminder before a prayer (MainActivity.showReminder). -->
-<div class="card on-light" data-card data-a="card" data-for={m.attr!.card['data-for']} hidden={cardHidden} role="alertdialog" aria-label={t.s('apLabel')}>
+<div class="card" data-card data-a="card" data-for={m.attr!.card['data-for']} hidden={cardHidden} role="alertdialog" aria-label={t.s('apLabel')}>
   <div class="card-label caps"><Icon name="clock" size={26} stroke={2} /> {t.s('apLabel')}</div>
   <div class="card-title display-bold" data-k="cardTitle" set:html={m.html.cardTitle} />
   <div class="card-sub" data-k="cardSub" set:html={m.html.cardSub} />
@@ -238,15 +238,15 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   .all { white-space: pre-line; padding: 12px; --rest-fill: transparent; --rest-border: var(--color-line-dash); --rest-border-width: 0; border: 2px dashed var(--color-line-dash); }
   .all:focus { border-color: transparent; }
 
-  .card { position: absolute; inset-inline-end: var(--space-safe-inline); bottom: var(--space-safe-block); width: var(--layout-toast-width); padding: 32px 36px; border-radius: var(--radius-panel); background: var(--color-plaster-100); color: var(--color-lapis-900); display: flex; flex-direction: column; gap: 10px; box-shadow: 0 0 0 6px var(--color-on-plaster-border); --spatial-navigation-contain: contain; }
+  .card { position: absolute; inset-inline-end: var(--space-safe-inline); bottom: var(--space-safe-block); width: var(--layout-toast-width); padding: 32px 36px; border-radius: var(--radius-panel); background: var(--color-lapis-900); color: var(--color-plaster-100); display: flex; flex-direction: column; gap: 10px; box-shadow: 0 0 0 2px var(--color-gold-400); --spatial-navigation-contain: contain; }
   .card[hidden] { display: none; }
-  .card-label { display: flex; align-items: center; gap: 12px; font-size: var(--font-size-caption); color: var(--color-on-plaster-label); }
+  .card-label { display: flex; align-items: center; gap: 12px; font-size: var(--font-size-caption); color: var(--color-gold-400); }
   .card-title { font-size: var(--font-size-title); line-height: var(--font-line-height-title); }
-  .card-sub { font-size: 24px; color: var(--color-on-plaster-secondary); }
+  .card-sub { font-size: 24px; color: var(--color-mist-400); }
   .card-buttons { display: flex; gap: 16px; margin-top: 14px; }
-  .card-btn { position: relative; height: 68px; padding: 0 32px; border-radius: 34px; align-items: center; font-size: 24px; --rest-fill: transparent; --rest-border: var(--color-on-plaster-button-border); --rest-border-width: 2px; color: var(--color-lapis-900); }
-  .card-btn.filled { --rest-fill: var(--color-lapis-900); --rest-border-width: 0; color: var(--color-plaster-100); }
-  .card .card-btn:focus { background: var(--focus-fill); color: var(--focus-text); outline-color: var(--color-lapis-900); outline-offset: var(--focus-on-light-ring-offset); }
+  .card-btn { position: relative; height: 68px; padding: 0 32px; border-radius: 34px; align-items: center; font-size: 24px; --rest-fill: transparent; --rest-border: var(--color-line-soft); --rest-border-width: 2px; color: var(--color-plaster-100); }
+  .card-btn.filled { --rest-fill: var(--color-lapis-800); --rest-border-width: 0; color: var(--color-plaster-100); }
+  .card .card-btn:focus { background: var(--focus-fill); color: var(--focus-text); outline-color: var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 
   .radio-card { position: absolute; inset-inline-end: calc(1920px - var(--layout-courtyard-inset-inline-start) - var(--layout-courtyard-width)); top: 152px; width: 720px; padding: 32px 36px 28px; border-radius: var(--radius-panel); background: var(--color-lapis-800); box-shadow: inset 0 0 0 var(--border-chip-width) var(--color-line-dash); display: flex; flex-direction: column; gap: 20px; --spatial-navigation-contain: contain; }
   .radio-card[hidden] { display: none; }

@@ -22,6 +22,20 @@ const { t, lang } = ctx;
     </div>
   </aside>
   <div class="label caps" data-label>{sectionName(t, PRAYER)}</div>
+  <div class="appearance-preview" data-appearance-preview hidden>
+    <svg class="appearance-home" viewBox="0 0 480 270" role="img" aria-label={t.s('appearancePreview')}>
+      <rect x="22" y="35" width="136" height="213" rx="68" fill="var(--color-lapis-800)" stroke="var(--color-gold-400)"/>
+      <text x="60" y="136" font-size="24" class="display" fill="var(--color-plaster-100)">{t.d('12:34')}</text>
+      <rect x="190" y="52" width="140" height="4" rx="2" fill="var(--color-mist-400)"/>
+      <rect x="190" y="66" width="70" height="4" rx="2" fill="var(--color-gold-400)"/>
+      {Array.from({length:9}, (_,i) => <g transform={`translate(${190 + i % 3 * 87} ${96 + Math.floor(i / 3) * 50})`}>
+        <rect width="77" height="40" rx="5" fill={i === 0 ? 'var(--color-gold-400)' : 'var(--color-lapis-800)'}/>
+        <rect x="12" y="13" width="14" height="14" rx="3" fill={i === 0 ? 'var(--color-lapis-900)' : 'var(--color-mist-400)'}/>
+        <rect x="34" y="18" width="31" height="3" rx="1" fill={i === 0 ? 'var(--color-lapis-900)' : 'var(--color-mist-400)'}/>
+      </g>)}
+    </svg>
+    <div class="appearance-caption"><span>{t.s('appearancePreview')}</span><h3 data-theme-name></h3><div class="swatches">{['lapis-950','lapis-800','gold-400','plaster-100'].map(c => <i style={`background:var(--color-${c})`}/>)}</div></div>
+  </div>
   <div class="rows" data-rows set:html={rowsHtml(ctx, PRAYER)} />
   <div class="saved" data-saved role="status">{t.s('saved')}</div>
   <div class="chooser" data-chooser hidden></div>
@@ -31,6 +45,7 @@ const { t, lang } = ctx;
 </div>
 
 <script>
+  import { appearance, THEMES }  from '../scripts/appearance';
   import { live } from '../scripts/live';
   import { href } from '../lib/site';
   import { CITIES, METHODS, cityOf, stationOf } from '../lib/data';
@@ -38,7 +53,7 @@ const { t, lang } = ctx;
   import type { Ctx } from '../lib/ctx';
   import type { Lang } from '../lib/text';
   import {
-    REMIND, VOICES, chooserHtml, citiesOf, commit, countries, methodItems, regionOf, moveDraft, pick, previewHtml, rowsFor, rowsHtml,
+    APPEARANCE, REMIND, VOICES, chooserHtml, citiesOf, commit, countries, methodItems, regionOf, moveDraft, pick, previewHtml, rowsFor, rowsHtml,
     savedDraft, sectionName, stationChoice, stationsOf, type Edit, type SPrefs,
   } from './settings';
 
@@ -56,6 +71,8 @@ const { t, lang } = ctx;
     const FOCUS = 'afnon-settings-focus';
 
     let section = 0;
+    let appearanceDraft: SPrefs | null = null;
+    const rowCtx = () => appearanceDraft && section === APPEARANCE ? { ...ctx, prefs: appearanceDraft } : ctx;
     let edit: Edit | null = null;
     let lastRows = rowsEl.innerHTML;
     let radioOn = false;
@@ -68,7 +85,10 @@ const { t, lang } = ctx;
 
     // The rows are re-rendered only when their HTML changes (a pref, the date), keeping focus on the same row.
     const rerender = () => {
-      const h = rowsHtml(ctx, section, radioOn, edit);
+      $('[data-appearance-preview]').hidden = section !== APPEARANCE;
+      if (appearanceDraft) appearance($('[data-appearance-preview]'), appearanceDraft);
+      $('[data-theme-name]').textContent = ctx.t.list('themeNames')[Math.max(0, THEMES.indexOf(rowCtx().prefs.theme ?? 'mihrab'))];
+      const h = rowsHtml(rowCtx(), section, radioOn, edit);
       if (h === lastRows) return;
       const fi = focusedRow();
       rowsEl.innerHTML = h;
@@ -85,11 +105,16 @@ const { t, lang } = ctx;
       clearTimeout(savedTimer);
       savedTimer = window.setTimeout(() => savedEl.classList.remove('on'), lifetime);
     };
-    const save = (p: SPrefs | null) => { if (p) { update(p); showSaved(); } };
+    const save = (p: SPrefs | null) => {
+      if (!p) return;
+      if (section === APPEARANCE) { appearanceDraft = p; rerender(); }
+      else { update(p); showSaved(); }
+    };
 
     const setSection = (n: number) => {
       if (n === section) return;
       section = n;
+      appearanceDraft = n === APPEARANCE ? { ...ctx.prefs } : null;
       edit = null;
       navs.forEach((b, i) => {
         b.classList.toggle('open', i === n);
@@ -152,7 +177,7 @@ const { t, lang } = ctx;
       if (chooser === before) close(false); // picking may open the next step instead
     };
 
-    const p = () => ({ ...(ctx.prefs as SPrefs) });
+    const p = () => ({ ...(rowCtx().prefs as SPrefs) });
     // Region, then country, then city, as on the TV.
     const openRegions = () => {
       const t = ctx.t, mine = regionOf(cityOf(ctx.prefs));
@@ -228,29 +253,26 @@ const { t, lang } = ctx;
     const setEdit = (e: Edit | null) => { edit = e; rerender(); };
     const endEdit = (keep: boolean) => {
       if (!edit) return;
-      const r = rowsFor(ctx, section, radioOn)[edit.row], draft = edit.draft;
+      const r = rowsFor(rowCtx(), section, radioOn)[edit.row], draft = edit.draft;
       setEdit(null);
       if (!keep) return;
       if (r.id === 'lang') { if (draft !== r.selected) goLang(draft); }
-      else save(commit(ctx, r, draft));
+      else save(commit(rowCtx(), r, draft));
     };
 
-    /** OK on row i: the only key that changes anything. */
+    /** OK opens or edits a row; carousels preview directly with Left/Right. */
     const act = (i: number) => {
-      const r = rowsFor(ctx, section, radioOn)[i];
+      const r = rowsFor(rowCtx(), section, radioOn)[i];
       if (!r) return;
-      if (r.kind === 'seg' || r.kind === 'step') setEdit({ row: i, draft: savedDraft(ctx, r) });
+      if (r.id === 'apply' && appearanceDraft) { update(appearanceDraft); showSaved(); }
+      else if (r.kind === 'carousel') return;
+      else if (r.kind === 'seg' || r.kind === 'step') setEdit({ row: i, draft: savedDraft(rowCtx(), r) });
       else if (r.id === 'radio') setRadio(!radioOn);
-      else if (r.id === 'reduceMotion') save({ ...p(), reduceMotion: !ctx.prefs.reduceMotion });
+      else if (r.id === 'reduceMotion') save({ ...p(), reduceMotion: !p().reduceMotion });
       else if (r.id === 'repairService') save({ ...p(), repairService: !ctx.prefs.repairService });
       else if (r.id === 'adhan') save({ ...p(), adhan: !ctx.prefs.adhan });
       else if (r.kind === 'value') {
-        if (r.id === 'theme' || r.id === 'background') {
-          const values = r.id === 'theme' ? ['mihrab','aurora','ember','forest'] : ['theme','lattice','solid','panorama','daylight'];
-          const labels = ctx.t.list(r.id === 'theme' ? 'themeNames' : 'backgroundNames');
-          open(r.label, values.map((v, i) => ({ label: labels[i], chosen: v === (r.id === 'theme' ? ctx.prefs.theme ?? 'mihrab' : ctx.prefs.background ?? 'theme') })),
-            i => save(r.id === 'theme' ? { ...p(), theme: values[i], background: 'theme', lighting: 35 } : { ...p(), background: values[i] }));
-        } else if (r.id === 'remoteButtons') openRemoteButtons();
+        if (r.id === 'remoteButtons') openRemoteButtons();
         else if (r.id === 'city') openRegions();
         else if (r.id === 'method') {
           open(ctx.t.s('method'), methodItems(ctx.t, ctx.prefs), (k) => save({ ...p(), method: METHODS[k] }));
@@ -301,15 +323,19 @@ const { t, lang } = ctx;
         if (back) endEdit(false);
         else if (ok) endEdit(true);
         else if (horiz) {
-          const draft = moveDraft(rowsFor(ctx, section, radioOn)[edit.row], edit.draft, toEnd);
+          const draft = moveDraft(rowsFor(rowCtx(), section, radioOn)[edit.row], edit.draft, toEnd);
           if (draft !== edit.draft) setEdit({ ...edit, draft });
         }
         return;
       }
-      // The arrows only move: toward the start goes back to the sections.
+      // Carousels consume Left/Right; other rows return to sections toward the start.
       if (back) focusNav();
       else if (vert) focusRow(+row + vert);
-      else if (horiz) { if (toEnd < 0) focusNav(); }
+      else if (horiz) {
+        const r = rowsFor(rowCtx(), section, radioOn)[+row];
+        if (r.kind === 'carousel') save(pick(rowCtx(), r.id, Math.max(0, Math.min(r.segs!.length - 1, r.selected! + toEnd))));
+        else if (toEnd < 0) focusNav();
+      }
       else act(+row);
     });
 
@@ -336,11 +362,11 @@ const { t, lang } = ctx;
       const i = +rowEl.dataset.row!;
       const seg = el.closest<HTMLElement>('[data-seg]');
       const step = el.closest<HTMLElement>('[data-step]');
-      const r = rowsFor(ctx, section, radioOn)[i];
-      if (seg && r.kind === 'seg') {
+      const r = rowsFor(rowCtx(), section, radioOn)[i];
+      if (seg && (r.kind === 'seg' || r.kind === 'carousel')) {
         if (r.id === 'lang') goLang(+seg.dataset.seg!);
-        else save(pick(ctx, r.id, +seg.dataset.seg!));
-      } else if (step) save(commit(ctx, r, moveDraft(r, savedDraft(ctx, r), +step.dataset.step!)));
+        else save(pick(rowCtx(), r.id, +seg.dataset.seg!));
+      } else if (step) save(commit(rowCtx(), r, moveDraft(r, savedDraft(rowCtx(), r), +step.dataset.step!)));
       else act(i);
     });
 
@@ -354,6 +380,17 @@ const { t, lang } = ctx;
 </script>
 
 <style is:global>
+  .settings .slide { width: 190px; height: 52px; padding: 0 12px; display: grid; place-items: center; overflow: hidden; white-space: nowrap; font-size: 22px; opacity: .65; }
+  .settings .slide.on { border-radius: 26px; background: var(--color-lapis-700); color: var(--color-plaster-100); opacity: 1; }
+
+  .settings .appearance-preview { position: absolute; inset-inline-start: 640px; top: 112px; width: 1184px; height: 270px; display: flex; align-items: center; gap: 204px; }
+  .settings .appearance-preview[hidden] { display: none; }
+  .settings .appearance-home { width: 480px; height: 270px; flex: none; background: var(--scene-image); background-color: var(--color-lapis-900); background-size: cover; }
+  .settings .appearance-caption { font-size: 22px; color: var(--color-mist-400); }
+  .settings .appearance-caption h3 { font-size: 42px; color: var(--color-plaster-100); margin: 12px 0 24px; }
+  .settings .swatches { display: flex; gap: 14px; }
+  .settings .swatches i { width: 48px; height: 48px; border-radius: 50%; }
+
   .settings { position: absolute; inset: 0; }
   .settings .side { position: absolute; inset-block: 0; inset-inline-start: 0; width: var(--layout-settings-sidebar-width); background: var(--color-lapis-950); }
   .settings .head { position: absolute; inset-inline-start: 96px; top: 56px; display: flex; align-items: center; gap: var(--space-3); }

@@ -46,7 +46,7 @@ final class Text {
     String focusLighting() { return ar ? "إضاءة حسب التطبيق" : "App focus lighting"; }
     String focusLightingHelp() { return ar ? "تتغير إضاءة الخلفية قليلًا حسب التطبيق المحدد" : "Gently tint the background using the selected app's colours"; }
     String hideSystemApps() { return ar ? "إخفاء تطبيقات النظام من كل التطبيقات" : "Hide system apps in All apps"; }
-    String hideSystemAppsHelp() { return ar ? "تبقى تطبيقاتك المفضلة ظاهرة في الرئيسية" : "Home favourites stay visible"; }
+    String hideSystemAppsHelp() { return ar ? "تبقى الوسائط والألعاب ومتجر Play ظاهرة" : "Media apps, games and Play Store stay visible"; }
     String recentApps() { return ar ? "التطبيقات الأخيرة" : "RECENT APPS"; }
     /** Home's tile: the label over the count. */
     String all(int n) { return d((ar ? "كل التطبيقات" : "All apps") + "\n" + n); }
@@ -362,7 +362,10 @@ final class Text {
     String repairService() { return ar ? "استعادة خدمة الصلاة تلقائيًا" : "Recover prayer service"; }
     String repairHelp() { return ar ? "عند العودة للرئيسية بعد إيقاف التطبيق" : "When Home opens after the app was stopped"; }
     String systemUnavailable() { return ar ? "هذه الصفحة غير متاحة على التلفزيون" : "This settings page is unavailable on this TV"; }
-    String[] themeNames() { return ar ? new String[] {"محراب", "شفق", "جمر", "غابة", "مخصصة"} : new String[] {"Mihrab", "Aurora", "Ember", "Forest", "Custom"}; }
-    String[] backgroundNames() { return ar ? new String[] {"حسب السمة", "زخرفة", "سادة", "بانوراما", "ضوء النهار"} : new String[] {"Theme", "Lattice", "Solid", "Panorama", "Daylight"}; }
+    String applyAppearance() { return ar ? "تطبيق التغييرات" : "Apply changes"; }
+    String appearancePreview() { return ar ? "معاينة الرئيسية" : "Home preview"; }
+    String sectionAppearance() { return ar ? "السمات والخلفيات" : "Themes & backgrounds"; }
+    String[] themeNames() { return ar ? new String[] {"محراب", "شفق", "جمر", "غابة", "منتصف الليل", "وردي", "رمال", "أردوازي", "مخصصة"} : new String[] {"Mihrab", "Aurora", "Ember", "Forest", "Midnight", "Rose", "Sand", "Slate", "Custom"}; }
+    String[] backgroundNames() { return ar ? new String[] {"حسب السمة", "زخرفة", "سادة", "بانوراما", "ضوء النهار", "جبال", "كثبان", "هالة", "سماء الليل"} : new String[] {"Theme", "Lattice", "Solid", "Panorama", "Daylight", "Mountains", "Dunes", "Halo", "Night sky"}; }
     String[] buttonActions() { return ar ? new String[] {"الأصلي", "الرئيسية", "التطبيقات", "المداخل", "الإعدادات"} : new String[] {"Original", "Home", "All apps", "Inputs", "Settings"}; }
 }

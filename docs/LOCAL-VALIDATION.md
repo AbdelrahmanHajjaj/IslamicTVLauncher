@@ -53,9 +53,22 @@ The checkout folder and Gradle project are now `IslamicTVLauncher`, on `feature/
 
 The TV label is **IslamicTVLauncher (Afnon)**. Package `tv.afnon.home` and signing identity were preserved. The renamed checkout built and linted successfully (0 errors, 64 warnings); the APK installed successfully through the corrected ordinary-update path. Native Android App info displayed the new label. Afnon still resolved as Home, its helper was bound, CleanYourTV/Google TV/BrowseHere stayed disabled, and saved user preferences matched the post-recovery backup. The TV was returned to Home.
 
+## Theme previews, offsets and everyday apps
+
+- All 28 local checks passed, including the new system-app classification regression and every theme's contrast/background bounds. The final native build and lint passed with 0 errors and 64 warnings. The browser build produced all 18 routes and generated-token validation passed.
+- **Prayer time offsets** now uses six minus/value/plus rows. On the TCL, Fajr +1 saved, cancelling a second draft preserved +1, and the original zero offset was restored. Back returned to the parent Prayer settings row.
+- **Themes & backgrounds** is a separate section. Theme and background rows are horizontal selectors. Drafts update only the miniature preview; **Apply changes** saves the page. Leaving the section or returning from Home discards unapplied choices. Native preference assertions verified previewing did not save, applying Sand did save, and applying Custom restored the original imported theme. Prayer settings, favourites, room bearing, app filtering and motion choices were preserved.
+- Added Midnight, Rose, Sand and Slate palettes with generated night sky, halo, dunes and mountains backgrounds. All four rendered on the TV. They use the existing static 480×270 drawing path and introduce no wallpaper assets, downloads, runtime dependencies or idle animation loop. This is not an overall performance benchmark.
+- Browser checks verified draft and active colours differ while previewing, navigation away restores the saved choice, Apply updates the active colours, and Arabic Left/Right selection follows the reading direction. The browser's older app layout and prayer controls remain documented limitations.
+- **Hide system apps** now preserves media/image apps, games and Play Store, with tested package fallbacks for common preloads lacking categories. A native filtered screenshot showed 21 entries, including YouTube, Netflix, Play Store, Play Games and Play Movies. The setting was returned to off; it never disables or removes packages.
+- The Home reminder card and the banner over Settings both used the saved custom palette in real-TV screenshots. Test alerts left saved preferences unchanged.
+- The Qibla arrow and room bearing matched before, during and after opening the room-direction editor; the reported intermittent restart issue was not reproduced. No Qibla logic was changed and no new TV reboot was performed in this pass.
+- Final checks confirmed Afnon as Home, its helper bound, the same 13 disabled packages and preserved prayer/favourite/theme settings. The private preference backup was refreshed.
+- Re-authored the seven local feature commits using the user's requested main identity and updated local/global Git identity. The corresponding trees, messages and author dates were verified unchanged; upstream history was preserved. The old local history remains on a recovery branch. No remote Git operations were performed.
+
 ## Outputs and recovery
 
-- Launcher: `app/build/outputs/apk/debug/app-debug.apk` (19,776,768 bytes with the local audio).
+- Launcher: `app/build/outputs/apk/debug/app-debug.apk` (19,927,781 bytes with the local audio).
 - Phone installer: `installer/build/outputs/apk/debug/installer-debug.apk` (13,177,857 bytes). Choose **Install a local Afnon APK** to install this branch's launcher; upstream downloads contain upstream code.
 - Audio and APKs remain ignored by Git. See [setup and recovery](../tools/device.md) and [themes and buttons](THEMES.md).
 - `tools/device.py restore` with the same private backup folder restores the previous CleanYourTV setup, including only packages/settings changed by this setup. It does not undo the earlier cleanup or uninstall Afnon.

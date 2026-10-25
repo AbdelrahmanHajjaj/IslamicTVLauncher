@@ -153,7 +153,7 @@ in Developer options, revoke the USB debugging authorisations, reboot, and check
 |---|---|
 | Change favourites | All apps → hold **OK** to add, reorder or replace up to nine favourites; replacement lets you choose a tile on Home |
 | Recent apps | Up to five apps opened through Afnon, below the two favourite rows |
-| Hide preinstalled apps | Settings → Display & language → **Hide system apps in All apps**; Home favourites stay visible |
+| Hide system utilities | Settings → Display & language → **Hide system apps in All apps**; media apps, games and Play Store stay visible |
 | Uninstall a removable app | All apps → hold **OK** → Uninstall → Android confirmation |
 | Calculation method | Settings → Prayer times → Calculation method; [19 offline presets](docs/PRAYER-METHODS.md) |
 | Test the banner or adhan | Settings → Reminders & adhan → **Test reminders & adhan** |

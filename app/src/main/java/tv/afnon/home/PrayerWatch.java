@@ -136,6 +136,7 @@ final class PrayerWatch {
 
     void showBanner(PrayerDay day, Date now) {
         hideBanner();
+        Appearance.load(service);
         Ui.init(service);
         Text t = Screen.loadText(service);
         boolean h24 = Prefs.clock24(service);

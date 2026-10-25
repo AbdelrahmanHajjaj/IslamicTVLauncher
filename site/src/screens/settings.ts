@@ -1,5 +1,6 @@
 // Settings (SettingsActivity): sections, each section's rows and the Asr preview, as HTML strings so the same
 // code renders the page at build time and re-renders it in the browser after every change.
+import { THEMES, BACKGROUNDS } from '../scripts/appearance';
 import voicesJson from '../data/adhans.json';
 import type { Ctx } from '../lib/ctx';
 import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
@@ -7,8 +8,8 @@ import { ASR, clock, hijri, methodParams } from '../lib/prayer';
 import type { Text } from '../lib/text';
 import { loadFacing } from './prayer-day';
 
-export const PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, NETWORK = 4, DEVICE = 5, SECTIONS = 6;
-export type Kind = 'value' | 'seg' | 'step' | 'toggle';
+export const PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, APPEARANCE = 4, NETWORK = 5, DEVICE = 6, SECTIONS = 7;
+export type Kind = 'value' | 'seg' | 'step' | 'toggle' | 'carousel';
 export const VOICES = voicesJson;
 
 /** Every saved setting is in Prefs; the room direction is the Prayer Day screen's (loadFacing). */
@@ -25,7 +26,7 @@ const trim = (v: number) => String(+v.toFixed(2));
 // ---------------------------------------------------------------- Text.java methods with logic, ported
 
 export const sectionName = (t: Text, i: number) =>
-  [t.s('sectionPrayer'), t.s('sectionReminders'), t.s('sectionRadio'), t.s('sectionDisplay'), t.ar ? 'الشبكة' : 'Network', t.s('sectionDevice')][i];
+  [t.s('sectionPrayer'), t.s('sectionReminders'), t.s('sectionRadio'), t.s('sectionDisplay'), t.s('sectionAppearance'), t.ar ? 'الشبكة' : 'Network', t.s('sectionDevice')][i];
 
 function locationHelp(t: Text, lat: number, lng: number) {
   const ns = lat >= 0 ? (t.ar ? 'ش' : 'N') : t.ar ? 'ج' : 'S';
@@ -90,10 +91,13 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
       { id: 'lang', kind: 'seg', label: t.s('language'), help: t.s('languageHelp'), segs: [t.ar ? 'التلفاز' : 'TV', 'العربية', 'English'], selected: t.ar ? 1 : 2 },
       { id: 'digits', kind: 'seg', label: t.s('digits'), help: '', segs: ['0123', '٠١٢٣'], selected: t.eastern ? 1 : 0 },
       { id: 'clock', kind: 'seg', label: t.s('clockRow'), help: t.s('clockHelp'), segs: t.list('clocks').map(t.d), selected: Math.max(0, CLOCKS.indexOf(p.clock)) },
-      { id: 'theme', kind: 'value', label: t.s('themeRow'), help: '', value: t.list('themeNames')[Math.max(0, ['mihrab','aurora','ember','forest'].indexOf(p.theme ?? 'mihrab'))] },
-      { id: 'background', kind: 'value', label: t.s('backgroundRow'), help: '', value: t.list('backgroundNames')[Math.max(0, ['theme','lattice','solid','panorama','daylight'].indexOf(p.background ?? 'theme'))] },
+    ];
+    case APPEARANCE: return [
+      { id: 'theme', kind: 'carousel', label: t.s('themeRow'), help: '', segs: t.list('themeNames').slice(0, THEMES.length), selected: Math.max(0, THEMES.indexOf(p.theme ?? 'mihrab')) },
+      { id: 'background', kind: 'carousel', label: t.s('backgroundRow'), help: '', segs: t.list('backgroundNames'), selected: Math.max(0, BACKGROUNDS.indexOf(p.background ?? 'theme')) },
       { id: 'lighting', kind: 'step', label: t.s('lightingRow'), help: '', value: t.d(`${p.lighting ?? 35}%`) },
       { id: 'reduceMotion', kind: 'toggle', label: t.s('reduceMotion'), help: '', on: p.reduceMotion ?? false },
+      { id: 'apply', kind: 'value', label: t.s('applyAppearance'), help: '' },
     ];
     case NETWORK: return [{ id: 'network', kind: 'value', label: t.s('networkRow'), help: t.s('networkHelp'), value: '' }];
     default: return [
@@ -124,6 +128,8 @@ export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
 export function pick(c: Ctx, id: string, i: number): SPrefs | null {
   const p = { ...(c.prefs as SPrefs) };
   switch (id) {
+    case 'theme': return { ...p, theme: THEMES[i] };
+    case 'background': return { ...p, background: BACKGROUNDS[i] };
     case 'school': return { ...p, hanafi: i === 1 };
     case 'remind': return { ...p, remind: REMIND[i] };
     case 'resume': return { ...p, radioResume: i === 0 };
@@ -138,15 +144,17 @@ export function pick(c: Ctx, id: string, i: number): SPrefs | null {
 
 const chevron = '<svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
-export function rowHtml(t: Text, r: Row, i: number, editing = false) {
+export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 112) {
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
+  else if (r.kind === 'carousel')
+    control = [r.selected! - 1, r.selected!, r.selected! + 1].map(k => `<span class="slide${k === r.selected ? ' on' : ''}" ${k >= 0 && k < r.segs!.length ? `data-seg="${k}"` : ''}>${esc(r.segs![k] ?? '')}</span>`).join('');
   else if (r.kind === 'seg')
     control = `<span class="track">${r.segs!.map((s, k) => `<span class="seg${k === r.selected ? ' on' : ''}" data-seg="${k}">${esc(s)}</span>`).join('')}</span>`;
   else if (r.kind === 'step')
     control = `<span class="stepb" data-step="-1">−</span><span class="stepv">${esc(r.value ?? '')}</span><span class="stepb" data-step="1">+</span>`;
   else control = `<span class="switch${r.on ? ' on' : ''}"><i></i></span>`;
-  return `<button class="ft row srow${editing ? ' editing' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:${112 + i * 98}px">`
+  return `<button class="ft row srow${editing ? ' editing' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:${top + i * 98}px">`
     + `<span class="words"><span class="rl">${esc(r.label)}</span>${r.help ? `<span class="rh">${esc(r.help)}</span>` : ''}</span>`
     + `<span class="ctl">${control}</span></button>`;
 }
@@ -159,9 +167,9 @@ export function navHtml(t: Text, section: number) {
 /** The rows; the one being edited shows its draft. */
 export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null) =>
   rowsFor(c, section, radioOn).map((r, i) => {
-    if (edit?.row !== i) return rowHtml(c.t, r, i);
+    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE ? 410 : 112);
     const shown = r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
-    return rowHtml(c.t, shown, i, true);
+    return rowHtml(c.t, shown, i, true, section === APPEARANCE ? 410 : 112);
   }).join('');
 export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);
 
