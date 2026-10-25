@@ -4,7 +4,7 @@ Tested on TCL 50C641K, Android 11/API 30 confirmed over ADB, firmware V8-R51MT02
 
 ## Passed locally
 
-- `python -S -B -m unittest discover -s tests -v`: 26 tests. Covers package/Home guards, failed and partial handovers, durable backups, interrupted settings writes, preserving later user choices, exported setting order, Java safety rules, theme bounds/contrast, complete remote-button press capture, prayer offsets across UK clock changes, favourite navigation/replacement and Android 11 theme-import failure reporting.
+- `python -S -B -m unittest discover -s tests -v`: 27 tests. Covers package/Home guards, failed and partial handovers, durable backups, interrupted settings writes, preserving later user choices, exported setting order, Java safety rules, theme bounds/contrast, complete remote-button press capture, prayer offsets across UK clock changes, favourite navigation/replacement and Android 11 theme-import failure reporting.
 - `./gradlew --offline --no-daemon :app:assembleDebug :installer:assembleDebug :app:lintDebug :installer:lintDebug`: both APKs built; lint reports 0 errors (65 launcher warnings and 14 installer warnings remain). The final launcher build was rebuilt and linted separately: 0 errors, 64 warnings.
 - In `site/`, `npm run build` and `npm run tokens:check`: passed. Local browser review covered English/Arabic theme and device controls; the latest offsets, app-lighting and favourite controls were tested in the native TV app instead. The preview still has its earlier four-slot layout.
 - Shell syntax checked for install/disable/enable/restore/env scripts; Windows install script parsed successfully.
@@ -38,6 +38,14 @@ Tested on TCL 50C641K, Android 11/API 30 confirmed over ADB, firmware V8-R51MT02
 - **Reminders & adhan → Test reminders & adhan** opened both chooser actions. The banner appeared over Settings; the adhan popup displayed its playback controls, and Back returned to Settings. Tests use the existing alert path and do not write the scheduled-alert markers. Actual YouTube/Netflix pause and resume behaviour was not tested in this pass.
 - Replaced the Today & Qibla symbol with a compass, and the Settings sun-like symbol with a toothed cog, in the native app and preview. Checked a real-TV Home screenshot. Private screenshots of Home, both previews and the method chooser remain outside Git.
 - Current method, Asr, offsets and favourites were checked against the pre-test snapshot, and the private preference backup was refreshed. TV was returned to Home. Debugging remains enabled at the user's request.
+
+## Update check recovery
+
+During the final icon APK update, Google's Backdrop was active. The APK installed, but the repeated Home check failed and the PC tool attempted the original setup rollback. This temporarily selected CleanYourTV, enabled BrowseHere and stopped Afnon's helper. No reboot was issued by the assistant.
+
+After waking the TV, the existing setup tools restored Afnon as exclusive Home, re-enabled its helper and disabled BrowseHere again. Read-back checks confirmed the same 13 disabled packages, Afnon as Home, the bound helper and unchanged user prayer/favourite/theme settings. The recovery path added an explicit `repair_service=false`, matching its previous default. The private preference backup was refreshed.
+
+An ordinary update now detects that Afnon is already Home and verifies it without repeating the original handover/rollback. A regression test failed before this fix and passed afterwards; the complete suite passes 27 tests. The corrected existing-Home path also passed on the TV. The initial exclusive-handover safety checks remain in place. A new full reboot and physical-remote check after this recovery have not been performed.
 
 ## Outputs and recovery
 

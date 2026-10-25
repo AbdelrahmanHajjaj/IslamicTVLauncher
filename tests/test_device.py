@@ -130,6 +130,26 @@ class RecoveryTest(unittest.TestCase):
             self.tv.activate(exclusive=True)
         self.assertIn("com.google.android.apps.tv.launcherx", self.adb.enabled)
 
+    def test_existing_home_update_keeps_previous_cleanup_and_service(self):
+        self.tv.activate(exclusive=True)
+        self.tv.configure()
+        self.tv.disable("com.example.optional")
+        enabled, disabled, settings = set(self.adb.enabled), set(self.adb.disabled), dict(self.adb.settings)
+        shell = self.adb.shell
+        starts = []
+        def sleeping_tv(command):
+            if command.startswith("am start -W"):
+                starts.append(command)
+                if len(starts) == 2: return "Error: Activity did not become visible"
+            return shell(command)
+        self.adb.shell = sleeping_tv
+        self.tv.activate()
+        self.assertEqual(len(starts), 1)
+        self.assertEqual(self.adb.current_home, device.HOME)
+        self.assertEqual(self.adb.enabled, enabled)
+        self.assertEqual(self.adb.disabled, disabled)
+        self.assertEqual(self.adb.settings, settings)
+
     def test_exclusive_home_then_restore(self):
         original = self.adb.current_home
         self.tv.activate(exclusive=True)

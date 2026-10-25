@@ -23,7 +23,7 @@ After checking Home, Settings, HDMI and the remote, disable known stock Home pac
 python -S -B tools/device.py home --exclusive
 ```
 
-An initial install can also use `./tools/install.ps1 -Exclusive`. A handover failure attempts to restore the original Home. Unknown launchers, CVTE boards and TVs without a verified foreground Afnon are refused. On CVTE, verify Home and ADB after a reboot before enabling any helper. Package removal is never used.
+An initial install can also use `./tools/install.ps1 -Exclusive`. A handover failure attempts to restore the original Home. When Afnon is already Home, an ordinary update verifies it without repeating the original handover or restoring earlier cleanup/helper settings. Wake the TV and leave Home visible during installation; a failed visibility check stops the command. Unknown launchers, CVTE boards and TVs without a verified foreground Afnon are refused. On CVTE, verify Home and ADB after a reboot before enabling any helper. Package removal is never used.
 
 ## Back up and undo
 

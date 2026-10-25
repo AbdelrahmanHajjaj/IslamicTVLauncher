@@ -212,6 +212,10 @@ class Device:
             raise ValueError("Afnon needs Android 8/API 26 or newer; the TV version could not be accepted.")
         self.backup()
         before = self.home()
+        if not exclusive and before.partition("/")[0] == PACKAGE:
+            # An update must not roll back cleanup and helpers from earlier setup sessions.
+            self.start(HOME)
+            return
         installed = packages(self.adb.shell("pm list packages --user 0"))
         if exclusive and any(p.startswith("com.cvte.") for p in installed):
             raise ValueError("CVTE: leave stock enabled, verify Afnon Home and reboot before any remote helper changes.")
