@@ -4,7 +4,7 @@ import java.util.Map;
 
 /** Bounds and readability checks, independent of Android for local tests. */
 final class ThemeSpec {
-    static final String[] BACKGROUNDS = {"lattice", "solid", "panorama", "daylight", "mountains", "dunes", "halo", "night_sky"};
+    static final String[] BACKGROUNDS = {"lattice", "solid", "panorama", "daylight", "mountains", "dunes", "halo", "night_sky", "arches", "eight_point_stars", "mashrabiya", "arabesque", "star_tiles", "rosettes", "octagon_lattice", "corner_medallions"};
     static final String[] COLORS = {"lapis-950", "lapis-900", "lapis-800", "lapis-700", "gold-400", "gold-200", "plaster-100", "mist-400"};
     static int color(String value) {
         if (value == null || !value.matches("#[0-9a-fA-F]{6}")) throw new IllegalArgumentException("Use #RRGGBB colours");

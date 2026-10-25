@@ -6,10 +6,11 @@ import midnight from '../../../app/src/main/assets/themes/midnight.json';
 import rose from '../../../app/src/main/assets/themes/rose.json';
 import sand from '../../../app/src/main/assets/themes/sand.json';
 import slate from '../../../app/src/main/assets/themes/slate.json';
+import patterns from '../data/background-patterns.json';
 import type { Prefs } from '../lib/data';
 const presets: Record<string, typeof aurora> = { aurora, ember, forest, midnight, rose, sand, slate };
 export const THEMES = ['mihrab', ...Object.keys(presets)];
-export const BACKGROUNDS = ['theme', 'lattice', 'solid', 'panorama', 'daylight', 'mountains', 'dunes', 'halo', 'night_sky'];
+export const BACKGROUNDS = ['theme', 'lattice', 'solid', 'panorama', 'daylight', 'mountains', 'dunes', 'halo', 'night_sky', ...Object.keys(patterns)];
 const rendered = new WeakMap<HTMLElement, string>();
 export function appearance(stage: HTMLElement, prefs: Prefs) {
   const theme = presets[prefs.theme ?? 'mihrab'];
@@ -29,7 +30,9 @@ export function appearance(stage: HTMLElement, prefs: Prefs) {
   const daylight = mode === 'daylight' ? Math.max(.15, Math.sin((hour - 6) / 12 * Math.PI)) : .7;
   const light = (prefs.lighting ?? theme?.lighting ?? 35) / 100 * daylight;
   let art = '';
-  if (mode === 'mountains') {
+  const pattern = patterns[mode as keyof typeof patterns];
+  if (pattern) art = `<path d="${pattern.path}" fill="none" stroke="${accent}" stroke-width="${pattern.stroke}" stroke-linecap="round" stroke-linejoin="round" opacity="${(18 + Math.floor((prefs.lighting ?? theme?.lighting ?? 35) / 4)) / 255}"/>`;
+  else if (mode === 'mountains') {
     for (let layer = 0; layer < 3; layer++) {
       let points = '0,270 ';
       for (let x = 0; x <= 480; x += 40) points += `${x},${125 + layer * 38 + ((x / 40 * 37 + layer * 17) % 67)} `;

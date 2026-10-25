@@ -37,7 +37,7 @@ final class PrayerIcon extends ReplacementSpan {
         view.setContentDescription(text);
     }
 
-    private float size(Paint paint) { return Math.min(paint.getTextSize() * .85f, Ui.px(32)); }
+    private float size(Paint paint) { return Math.min(paint.getTextSize(), Ui.px(38)); }
 
     @Override public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt metrics) {
         if (metrics != null) paint.getFontMetricsInt(metrics);

@@ -113,14 +113,14 @@ final class Appearance {
         if ("lattice".equals(current.mode)) return Ui.starLattice(c);
         if ("solid".equals(current.mode)) return new android.graphics.drawable.ColorDrawable(current.colors[1]);
         String key = backgroundKey(c);
-        if (bitmap == null || !key.equals(bitmapKey)) { bitmap = scene(current); bitmapKey = key; }
+        if (bitmap == null || !key.equals(bitmapKey)) { bitmap = scene(c, current); bitmapKey = key; }
         return drawable(c, bitmap);
     }
 
     static Drawable preview(Context c, Style style) {
         if ("lattice".equals(style.mode)) return Ui.starLattice(c, style.colors[1], (style.colors[4] & 0xffffff) | 0x12000000, 24);
         if ("solid".equals(style.mode)) return new android.graphics.drawable.ColorDrawable(style.colors[1]);
-        return drawable(c, scene(style));
+        return drawable(c, scene(c, style));
     }
 
     private static Drawable drawable(Context c, Bitmap bitmap) {
@@ -129,7 +129,7 @@ final class Appearance {
         return result;
     }
 
-    private static Bitmap scene(Style style) {
+    private static Bitmap scene(Context c, Style style) {
         Bitmap next = Bitmap.createBitmap(480, 270, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(next);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -141,6 +141,23 @@ final class Appearance {
         p.setShader(new RadialGradient(360, 190, 210, glow, 0, Shader.TileMode.CLAMP));
         canvas.drawRect(0, 0, 480, 270, p);
         p.setShader(null);
+        int pattern = 0;
+        switch (style.mode) {
+            case "arches": pattern = R.drawable.bg_arches; break;
+            case "eight_point_stars": pattern = R.drawable.bg_eight_point_stars; break;
+            case "mashrabiya": pattern = R.drawable.bg_mashrabiya; break;
+            case "arabesque": pattern = R.drawable.bg_arabesque; break;
+            case "star_tiles": pattern = R.drawable.bg_star_tiles; break;
+            case "rosettes": pattern = R.drawable.bg_rosettes; break;
+            case "octagon_lattice": pattern = R.drawable.bg_octagon_lattice; break;
+            case "corner_medallions": pattern = R.drawable.bg_corner_medallions; break;
+        }
+        if (pattern != 0) {
+            Drawable lines = c.getDrawable(pattern).mutate();
+            lines.setTint(style.colors[4]); lines.setAlpha(18 + style.lighting / 4);
+            lines.setBounds(0, 0, 480, 270); lines.draw(canvas);
+            return next;
+        }
         p.setColor(blend(style.colors[0], glow, .18f));
         if ("mountains".equals(style.mode)) {
             for (int layer = 0; layer < 3; layer++) {

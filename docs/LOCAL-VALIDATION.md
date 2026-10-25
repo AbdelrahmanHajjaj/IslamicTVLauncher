@@ -108,3 +108,11 @@ Remaining: live HDMI/tuner picture and sound, HDMI-CEC device labels with an att
 - Final checks confirmed Afnon as Home, its helper bound, and the same 13 disabled packages. Saved settings, favourites and button assignments matched the pre-update snapshot; recent apps reflect test navigation, and the default system language is now explicitly saved. The private recovery backup was refreshed. The TV was left at Home. No reboot, remote Git operation or push was performed.
 
 Not rechecked: screensaver idle/wake on the TV, a fresh physical Blue/volume test, live HDMI/tuner picture and sound, or each streaming app's overlay restrictions. The earlier physical remote confirmation still applies to the unchanged key handling.
+
+
+## Larger icons and geometric backgrounds (25 October 2026)
+
+- Prayer glyphs are approximately 18% larger in the shared native span and browser component, preserving text metrics, theme tint and RTL spacing. Native Home and the compact bar were inspected in English and Arabic.
+- Added eight static line patterns with matching Arabic labels and shared native/browser paths. All 32 Python/Java checks passed, including pattern/translation coverage and native/browser catalogue order. The launcher built; lint reported 0 errors and 85 warnings. Sixteen new warnings concern vector size/path complexity: these backgrounds are rasterized on appearance changes and reuse the existing bitmap between redraws. No new runtime dependency or animation loop was added.
+- The browser built all 18 routes and generated-token validation passed. The first four patterns were previewed across all eight palettes (32 combinations), with theme-coloured strokes and unchanged active settings until Apply. Their native preview, Apply and Home rendering were tested; the original background was restored. Arabic preview navigation and larger icon spacing were also checked.
+- Additional Star tiles, Rosettes, Octagon lattice and Corner medallions were visually inspected in a local gallery. Final merged-build TV checks are recorded separately below. Private screenshots and preference snapshots remain outside Git.

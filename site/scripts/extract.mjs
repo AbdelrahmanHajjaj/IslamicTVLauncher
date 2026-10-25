@@ -205,3 +205,12 @@ const prayerIcons = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(n
   return path;
 });
 write('prayer-icons.json', prayerIcons);
+
+const backgroundPatterns = Object.fromEntries(['arches', 'eight_point_stars', 'mashrabiya', 'arabesque', 'star_tiles', 'rosettes', 'octagon_lattice', 'corner_medallions'].map(name => {
+  const xml = readFileSync(resolve(root, `app/src/main/res/drawable/bg_${name}.xml`), 'utf8');
+  const path = /android:pathData="([^"]+)"/.exec(xml)?.[1];
+  const stroke = /android:strokeWidth="([^"]+)"/.exec(xml)?.[1];
+  if (!path || !stroke) throw new Error(`Missing background pattern: ${name}`);
+  return [name, { path, stroke: Number(stroke) }];
+}));
+write('background-patterns.json', backgroundPatterns);

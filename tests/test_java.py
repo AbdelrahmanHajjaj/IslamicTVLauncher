@@ -26,6 +26,31 @@ class JavaChecks(unittest.TestCase):
         self.assertTrue(all(paths))
         self.assertEqual(len(set(paths)), 6, "Each prayer needs a distinct glyph")
 
+    def test_background_patterns_and_translations(self):
+        import re
+        import xml.etree.ElementTree as ET
+        ns = "{http://schemas.android.com/apk/res/android}"
+        java = ROOT / "app/src/main/java/tv/afnon/home"
+        modes = re.findall(r'"([^"\n]+)"', re.search(r'BACKGROUNDS = \{([^}]+)', (java / "ThemeSpec.java").read_text()).group(1))
+        labels = re.search(r'String\[\] backgroundNames\(\).*', (java / "Text.java").read_text(encoding="utf-8")).group(0)
+        for language in re.findall(r'new String\[\] \{([^}]+)', labels):
+            self.assertEqual(len(re.findall(r'"[^"]+"', language)), len(modes) + 1)
+        mappings = re.findall(r'case "([^"]+)": pattern = R.drawable.(bg_\w+)', (java / "Appearance.java").read_text())
+        self.assertEqual(len(mappings), 8)
+        extractor = (ROOT / "site/scripts/extract.mjs").read_text()
+        extracted = re.findall(r"'([^']+)'", re.search(r"const backgroundPatterns = Object.fromEntries\(\[([^]]+)", extractor).group(1))
+        self.assertEqual(extracted, [mode for mode, _ in mappings])
+        for mode, resource in mappings:
+            self.assertIn(mode, modes)
+            vector = ET.parse(ROOT / f"app/src/main/res/drawable/{resource}.xml").getroot()
+            self.assertEqual((vector.get(ns + "viewportWidth"), vector.get(ns + "viewportHeight")), ("480", "270"))
+            path = vector.find("path")
+            self.assertEqual(path.get(ns + "fillColor"), "#00000000")
+            self.assertTrue(path.get(ns + "pathData"))
+            # Oversized strings compile as STRING_TOO_LARGE and crash VectorDrawable on Android 11.
+            self.assertLess(len(path.get(ns + "pathData").encode("utf-8")), 30000)
+            self.assertGreater(float(path.get(ns + "strokeWidth")), 0)
+
     def test_phone_package_and_home_guards(self):
         javac, java = shutil.which("javac"), shutil.which("java")
         self.assertIsNotNone(javac, "JDK 17 is required for local checks")
