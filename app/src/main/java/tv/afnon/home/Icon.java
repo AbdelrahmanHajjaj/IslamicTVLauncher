@@ -8,7 +8,7 @@ import android.view.View;
 
 /** Stroke icons on a 24px grid in the current colour, so they follow focus (README: Iconography). */
 final class Icon extends View {
-    static final int WIFI = 0, GEAR = 1, COMPASS = 2, BELL = 3, BACK = 4, STAR = 5, MIHRAB = 6, RADIO = 7, PLAY = 8, STOP = 9, MOON = 10, INPUT = 11, MINUS = 12;
+    static final int WIFI = 0, GEAR = 1, COMPASS = 2, BELL = 3, BACK = 4, STAR = 5, MIHRAB = 6, RADIO = 7, PLAY = 8, STOP = 9, MOON = 10, INPUT = 11, MINUS = 12, HOME = 13, MORE = 14;
 
     private int kind;
     private final float strokeOn24;
@@ -48,6 +48,14 @@ final class Icon extends View {
             arc(c, k, 12, 19.07f, 5f);
             p.setStyle(Paint.Style.FILL);
             c.drawCircle(12 * k, 19 * k, 1.2f * k, p);
+        } else if (kind == HOME) {
+            path.reset(); path.moveTo(3*k, 11*k); path.lineTo(12*k, 3*k); path.lineTo(21*k, 11*k);
+            path.moveTo(5*k, 10*k); path.lineTo(5*k, 21*k); path.lineTo(10*k, 21*k);
+            path.lineTo(10*k, 15*k); path.lineTo(14*k, 15*k); path.lineTo(14*k, 21*k);
+            path.lineTo(19*k, 21*k); path.lineTo(19*k, 10*k); c.drawPath(path, p);
+        } else if (kind == MORE) {
+            p.setStyle(Paint.Style.FILL);
+            for (int x = 5; x <= 19; x += 7) c.drawCircle(x*k, 12*k, 1.6f*k, p);
         } else if (kind == MINUS) {
             c.drawLine(5*k, 12*k, 19*k, 12*k, p);
         } else if (kind == INPUT) {

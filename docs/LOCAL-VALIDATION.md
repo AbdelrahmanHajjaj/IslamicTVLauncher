@@ -96,3 +96,15 @@ A three-launch local All apps check measured a baseline of 549/372/512 ms (media
 - Left at Home with the bar hidden until opened, Bottom selected, icon labels off, and Blue assigned. Debugging remains enabled at the user's request. No reboot, package disabling, remote Git operation or push was performed in this increment.
 
 Remaining: live HDMI/tuner picture and sound, HDMI-CEC device labels with an attached device, and overlay behavior in each streaming app. The previously listed broader recovery, saver and phone-installer checks remain outstanding.
+
+## Shared controls, prayer icons and Arabic bar (25 October 2026)
+
+- All 31 Python/Java checks passed, including vector coverage and order. The launcher build and lint passed with 0 errors and 69 warnings. Browser build generated 18 routes; generated-token validation passed. Six small vector resources add no runtime dependency or permission.
+- The expanded prayer bar is now a single full-width row, approximately 100 pixels high on the TCL. Bordered prayer tiles fill the available space; Now uses a light fill and Next uses the theme border. Controls sit at the right in English and the left in Arabic. Both icon-only and labelled layouts were inspected on the real TV and fit without overlap.
+- Quick control labels was toggled through Settings in both languages and verified on Home and the bar. The original icon-only choice was restored. The user's Top placement and hidden-until-opened mode were preserved.
+- The Inputs popup starts on Home. Up selects the new Advanced inputs button beside the title, and OK opens TCL's source chooser. Arabic mirrors the popup, aligns HDMI labels to the right and keeps the firmware-provided source names. The bar's Inputs/Back and minimize navigation were exercised in Arabic.
+- Prayer icons were inspected on native Home, Today & Qibla, All apps, offsets, settings preview, the bar, reminder banner and adhan screen. Text and icons follow the theme and focus colours. Arabic icon spacing and icon-only Home tags were corrected after visual checks. A test adhan opened NowActivity and Back returned to Settings. The alert tests did not change prayer schedules.
+- English/Arabic browser checks found all expected icons on prayer day, All apps, call, settings and screensaver routes, with no console warnings/errors. Both Inputs menus and Advanced inputs focus were checked. The browser reads the same vector paths as Android.
+- Final checks confirmed Afnon as Home, its helper bound, and the same 13 disabled packages. Saved settings, favourites and button assignments matched the pre-update snapshot; recent apps reflect test navigation, and the default system language is now explicitly saved. The private recovery backup was refreshed. The TV was left at Home. No reboot, remote Git operation or push was performed.
+
+Not rechecked: screensaver idle/wake on the TV, a fresh physical Blue/volume test, live HDMI/tuner picture and sound, or each streaming app's overlay restrictions. The earlier physical remote confirmation still applies to the unchanged key handling.

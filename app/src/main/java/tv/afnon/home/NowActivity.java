@@ -64,7 +64,7 @@ public class NowActivity extends Screen {
         String[] names = t.prayerNames();
         if (prayer == PrayerDay.DHUHR && new PrayerDay(this, time).friday) names[PrayerDay.DHUHR] = t.jumuah();
         TextView name = text(displayBold, 128, Palette.PLASTER_100);
-        name.setText(names[prayer]);
+        PrayerIcon.set(name, prayer, names[prayer]);
         TextView when = text(display, 64, Palette.GOLD_400);
         when.setText(time(time, 0.5f));
         when.setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);

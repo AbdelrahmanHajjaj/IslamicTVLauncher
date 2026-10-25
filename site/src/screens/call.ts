@@ -1,3 +1,4 @@
+import { prayerLabel } from '../lib/prayer-icon';
 // The call (NowActivity): the prayer whose time has come, with its time. The page's clock starts 2 s past it.
 import tokens from '../../../afnon-mihrab/tokens.json';
 import type { Ctx, Model } from '../lib/ctx';
@@ -15,7 +16,7 @@ export function callModel(c: Ctx): Model {
   const i = day.nowIndex >= 0 ? day.nowIndex : day.nextIndex;
   return {
     html: {
-      name: prayerNames(c)[i],
+      name: prayerLabel(i, prayerNames(c)[i]),
       time: clock(t, day.times[i], h24, 0.5),
     },
   };

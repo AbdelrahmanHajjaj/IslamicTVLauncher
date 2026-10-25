@@ -318,13 +318,13 @@ public class PrayerDayActivity extends Screen {
         String[] names = t.prayerNames();
         if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
         archLabel.setText(day.friday && day.nextIndex == PrayerDay.DHUHR ? t.jumuahLabel() : t.nextPrayer());
-        archName.setText(names[day.nextIndex]);
+        PrayerIcon.set(archName, day.nextIndex, names[day.nextIndex]);
         archSub.setText(t.methodName(Prefs.method(this)));
         archSub2.setText(t.school(Prefs.madhab(this)));
 
         for (int i = 0; i < ROWS; i++) {
             state[i] = i == day.nowIndex ? 1 : (i != day.nextIndex && !day.times[i].after(now) ? 0 : 2);
-            rowName[i].setText(names[i]);
+            PrayerIcon.set(rowName[i], i, names[i]);
             rowTime[i].setText(time(day.times[i], 0.55f));
             paintRow(i);
         }

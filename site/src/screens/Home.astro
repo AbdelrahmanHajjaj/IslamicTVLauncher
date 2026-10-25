@@ -86,9 +86,9 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 </div>
 
 <div class="quick-card" data-quick="inputs" hidden role="dialog" aria-label={t.s('inputsTitle')}>
-  <div class="quick-title">{t.s('inputsTitle')}</div>
+  <div class="quick-head"><div class="quick-title">{t.s('inputsTitle')}</div><button class="ft quick-more" aria-label={t.s('advancedInputs')} data-toast={`${W.site} ${t.s('inputsSystem')}`}><Icon name="more"/></button></div>
   <button class="ft quick-item" data-quick-home>{t.s('home')}</button>
-  {['HDMI 1', 'HDMI 2', 'HDMI 3', t.s('liveTv'), t.s('inputsSystem')].map(name =>
+  {['HDMI 1', 'HDMI 2', 'HDMI 3', t.s('liveTv')].map(name =>
     <button class="ft quick-item" data-toast={`${W.site} ${name}`}>{name}</button>)}
   <button class="visually-hidden" data-back data-quick-close tabindex="-1">{t.s('back')}</button>
 </div>
@@ -188,7 +188,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
         if (['Escape','Backspace'].includes(event.key)) { event.preventDefault(); event.stopPropagation(); closeQuick(); }
         if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key)) {
           event.preventDefault(); event.stopPropagation();
-          const rows = [...panel.querySelectorAll<HTMLElement>('.quick-item')];
+          const rows = [...panel.querySelectorAll<HTMLElement>('.quick-more, .quick-item')];
           const at = rows.indexOf(document.activeElement as HTMLElement);
           const step = event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0;
           rows[Math.max(0, Math.min(rows.length - 1, at + step))]?.focus({ preventScroll: true });
@@ -235,6 +235,8 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 <style>
   .quick-card { position:absolute; inset-inline-end:96px; top:152px; width:640px; padding:24px 28px; border:2px solid var(--color-gold-400-60); border-radius:24px; background:var(--color-lapis-900); display:flex; flex-direction:column; gap:8px; }
   .quick-card[hidden] { display:none; }
+  .quick-head { display:flex; align-items:center; justify-content:space-between; }
+  .quick-more { position:relative; width:72px; height:72px; border-radius:36px; justify-content:center; align-items:center; --rest-fill:var(--color-lapis-800); }
   .quick-title { color:var(--color-gold-400); font-size:28px; margin-bottom:12px; }
   .quick-card p { font-size:24px; }
   .quick-item { position:relative; width:100%; min-height:68px; padding:16px 22px; font-size:24px; border-radius:22px; --rest-fill:var(--color-lapis-800); }

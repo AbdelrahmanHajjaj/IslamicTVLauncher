@@ -8,6 +8,24 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 class JavaChecks(unittest.TestCase):
+    def test_prayer_vectors_cover_each_prayer_in_order(self):
+        import re
+        import xml.etree.ElementTree as ET
+        ns = "{http://schemas.android.com/apk/res/android}"
+        names = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"]
+        source = (ROOT / "app/src/main/java/tv/afnon/home/PrayerIcon.java").read_text()
+        self.assertEqual(re.findall(r"R.drawable.ic_prayer_(\w+)", source), names)
+        paths = []
+        for name in names:
+            icon = ET.parse(ROOT / f"app/src/main/res/drawable/ic_prayer_{name}.xml").getroot()
+            self.assertEqual((icon.get(ns + "viewportWidth"), icon.get(ns + "viewportHeight")), ("24", "24"))
+            path = icon.find("path")
+            self.assertEqual(path.get(ns + "fillColor"), "#00000000")
+            self.assertGreater(float(path.get(ns + "strokeWidth")), 0)
+            paths.append(path.get(ns + "pathData"))
+        self.assertTrue(all(paths))
+        self.assertEqual(len(set(paths)), 6, "Each prayer needs a distinct glyph")
+
     def test_phone_package_and_home_guards(self):
         javac, java = shutil.which("javac"), shutil.which("java")
         self.assertIsNotNone(javac, "JDK 17 is required for local checks")

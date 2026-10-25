@@ -113,3 +113,5 @@ h1, h2, h3 { font-family: var(--display); font-weight: var(--display-weight); li
 
 .tv[data-background]:not([data-background="lattice"]):not([data-background="solid"]) { background: var(--scene-image) center / cover; }
 .tv[data-background] > .ambient-ridge { display: none; }
+
+.prayer-icon { display: inline-block; width: min(.85em, 32px); height: min(.85em, 32px); vertical-align: -.08em; margin-inline-end: .24em; }

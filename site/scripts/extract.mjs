@@ -196,3 +196,12 @@ for (const m of block.matchAll(/new Station\(|Station\.reciter\(/g)) {
   }
 }
 write('stations.json', allStations);
+
+
+const prayerIcons = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(name => {
+  const xml = readFileSync(resolve(root, `app/src/main/res/drawable/ic_prayer_${name}.xml`), 'utf8');
+  const path = /android:pathData="([^"]+)"/.exec(xml)?.[1];
+  if (!path) throw new Error(`Missing prayer icon: ${name}`);
+  return path;
+});
+write('prayer-icons.json', prayerIcons);

@@ -350,6 +350,7 @@ final class Text {
     String[] colourButtons() { return ar ? new String[] {"الأحمر", "الأخضر", "الأصفر", "الأزرق"} : new String[] {"Red", "Green", "Yellow", "Blue"}; }
     String liveTv() { return ar ? "التلفزيون المباشر" : "Live TV"; }
     String inputsTitle() { return ar ? "المداخل" : "Inputs"; }
+    String advancedInputs() { return ar ? "المداخل المتقدمة" : "Advanced inputs"; }
     String inputsSystem() { return ar ? "قائمة مداخل التلفزيون" : "TV input menu"; }
     String prayerOffsets() { return ar ? "تعديل مواقيت الصلاة بالدقائق" : "Prayer time offsets"; }
     String prayerOffsetsHelp() { return ar ? "لكل صلاة: السالب أبكر والموجب لاحقًا · يشمل التذكير والأذان" : "Per prayer: minus is earlier, plus is later · includes reminders and adhan"; }

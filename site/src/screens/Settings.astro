@@ -2,6 +2,7 @@
 // Settings (SettingsActivity): the section sidebar with the Asr preview, the open section's rows, and a list
 // chooser over the screen. The rows really change this browser's prefs, so Home and the rest follow them.
 import Icon from '../components/Icon.astro';
+import { prayerLabel } from '../lib/prayer-icon';
 import type { Ctx } from '../lib/ctx';
 import { href } from '../lib/site';
 import { navHtml, previewHtml, rowsHtml, sectionName, PRAYER } from './settings';
@@ -17,7 +18,7 @@ const { t, lang } = ctx;
     </div>
     <div data-navs set:html={navHtml(t, PRAYER)} />
     <div class="preview">
-      <span class="pl">{t.s('preview')}</span>
+      <span class="pl" set:html={prayerLabel(3, t.s('preview'))} />
       <span class="pv display num" data-k="preview" set:html={previewHtml(ctx)} />
     </div>
   </aside>

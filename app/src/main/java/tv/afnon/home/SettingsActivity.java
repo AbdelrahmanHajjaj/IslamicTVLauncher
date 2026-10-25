@@ -55,6 +55,7 @@ public class SettingsActivity extends Screen {
         }
 
         abstract String label();
+        int prayer() { return -1; }
 
         String help() { return ""; }
 
@@ -156,7 +157,7 @@ public class SettingsActivity extends Screen {
         preview.setPadding(Ui.ipx(24), Ui.ipx(20), Ui.ipx(24), Ui.ipx(20));
         preview.setBackground(round(Palette.LAPIS_800, 16));
         TextView pl = text(ui400, 20, Palette.MIST_400);
-        pl.setText(t.preview());
+        PrayerIcon.set(pl, PrayerDay.ASR, t.preview());
         previewValue = text(display, Tokens.FONT_SIZE_DISPLAY_XS, Palette.GOLD_400);
         preview.addView(pl);
         preview.addView(previewValue);
@@ -636,7 +637,8 @@ public class SettingsActivity extends Screen {
     private void render(Row r, boolean focused) {
         if (day == null) return;
         int ink = focused ? Palette.LAPIS_900 : Palette.PLASTER_100;
-        r.label.setText(r.label());
+        if (r.prayer() >= 0) PrayerIcon.set(r.label, r.prayer(), r.label());
+        else r.label.setText(r.label());
         r.label.setTextColor(ink);
         String help = r.help();
         r.help.setText(help);
@@ -947,6 +949,7 @@ public class SettingsActivity extends Screen {
             final int prayer = i;
             result.add(new Row(STEP) {
                 String label() { return t.prayerNames()[prayer]; }
+                int prayer() { return prayer; }
                 int amount() { return Prefs.prayerOffset(SettingsActivity.this, prayer); }
                 void setAmount(int n) { Prefs.setPrayerOffset(SettingsActivity.this, prayer, n); }
                 int lowest() { return -Prefs.MAX_PRAYER_OFFSET; }

@@ -159,9 +159,6 @@ final class PrayerWatch {
 
         LinearLayout row = new LinearLayout(service);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        Icon mihrab = new Icon(service, Icon.MIHRAB, 1.2f);
-        mihrab.setColor(Palette.GOLD_400);
-        row.addView(mihrab, new LinearLayout.LayoutParams(Ui.ipx(56), Ui.ipx(72)));
         LinearLayout words = new LinearLayout(service);
         words.setOrientation(LinearLayout.VERTICAL);
         String[] names = t.prayerNames();
@@ -171,6 +168,7 @@ final class PrayerWatch {
         if (!t.ar) label.setLetterSpacing(0.2f);
         TextView title = text(display, 44, Palette.PLASTER_100,
             t.apTitle(names[day.nextIndex], minutes, Screen.duration(Screen.secondsUntil(day.nextTime, now), false)));
+        PrayerIcon.set(title, day.nextIndex, title.getText());
         TextView sub = text(ui, 22, Palette.MIST_400, t.apSub(Screen.clock(t, day.nextTime, h24, 1f)));
         words.addView(label);
         words.addView(title);
@@ -178,7 +176,6 @@ final class PrayerWatch {
         Screen.lineHeight(title, 1.1f);
         ((LinearLayout.LayoutParams) sub.getLayoutParams()).topMargin = Ui.ipx(4);
         LinearLayout.LayoutParams wlp = new LinearLayout.LayoutParams(0, -2, 1);
-        wlp.setMarginStart(Ui.ipx(20));
         row.addView(words, wlp);
         card.addView(row);
 

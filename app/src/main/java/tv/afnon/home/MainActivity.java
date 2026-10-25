@@ -338,19 +338,7 @@ public class MainActivity extends Screen {
     }
 
     private View quickPill(String name, int kind, Runnable action) {
-        FocusTile b = new FocusTile(this, 36);
-        b.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
-        LinearLayout row = new LinearLayout(this); row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(Ui.ipx(24), 0, Ui.ipx(24), 0);
-        Icon icon = new Icon(this, kind, 2f);
-        TextView label = text(ui400, 24, Palette.PLASTER_100); label.setText(name);
-        row.addView(icon, new LinearLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30)));
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2); lp.setMarginStart(Ui.ipx(12));
-        label.setVisibility(Prefs.quickLabels(this) ? View.VISIBLE : View.GONE);
-        b.setContentDescription(name);
-        row.addView(label, lp); b.addView(row, new FrameLayout.LayoutParams(-2, -1));
-        b.setLook(f -> { int color = f ? Palette.LAPIS_900 : Palette.PLASTER_100; label.setTextColor(color); icon.setColor(color); });
-        b.setOnClickListener(v -> action.run()); return b;
+        return QuickMenus.iconButton(this, name, kind, Prefs.quickLabels(this), action);
     }
 
     private void openQuick(boolean inputs) {
@@ -499,7 +487,7 @@ public class MainActivity extends Screen {
             }
         }
         archLabel.setText(label);
-        archName.setText(name);
+        PrayerIcon.set(archName, day.nextIndex, name);
         archSub.setText(t.d(sub));
         archSub2.setText(t.d(sub2));
         archSub2.setVisibility(sub2.isEmpty() ? View.GONE : View.VISIBLE);
@@ -520,7 +508,7 @@ public class MainActivity extends Screen {
             g.setColor(bg);
             if (ring != 0) g.setStroke(Ui.ipx(3), ring);
             cell[i].setBackground(g);
-            cellTag[i].setText(tag);
+            PrayerIcon.set(cellTag[i], i, tag);
             cellName[i].setText(names[i]);
             // English 12-hour ("12:41 PM") is too wide for a cell at 34px; Arabic's ص/م is narrow enough.
             float timeSize = Ui.px(!h24 && !t.ar ? 30 : 34);
@@ -738,7 +726,7 @@ public class MainActivity extends Screen {
         TextView label = caps(text(ui400, 20, Palette.GOLD_400));
         label.setText(t.apLabel());
         TextView title = text(displayBold, 52, Palette.PLASTER_100);
-        title.setText(t.apTitle(names[day.nextIndex], Reminders.minutesLeft(day, now), duration(secondsUntil(day.nextTime, now), false)));
+        PrayerIcon.set(title, day.nextIndex, t.apTitle(names[day.nextIndex], Reminders.minutesLeft(day, now), duration(secondsUntil(day.nextTime, now), false)));
         TextView sub = text(ui400, 24, Palette.MIST_400);
         sub.setText(t.apSub(time(day.nextTime, 1f)));
         card.addView(label);

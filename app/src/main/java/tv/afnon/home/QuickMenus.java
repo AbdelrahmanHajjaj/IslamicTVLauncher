@@ -43,13 +43,30 @@ final class QuickMenus {
         b.setFocusableInTouchMode(true);
         b.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 1);
         TextView text = text(c, label, 24, Palette.PLASTER_100);
-        text.setGravity(Gravity.CENTER_VERTICAL);
+        text.setGravity(Gravity.CENTER_VERTICAL); text.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         text.setPadding(Ui.ipx(22), 0, Ui.ipx(22), 0);
         text.setSingleLine(true); text.setEllipsize(android.text.TextUtils.TruncateAt.END);
         b.addView(text, new FrameLayout.LayoutParams(-1, -1));
         b.setLook(f -> text.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> action.run());
         return b;
+    }
+
+    static FocusTile iconButton(Context c, String label, int kind, boolean showLabel, Runnable action) {
+        FocusTile b = new FocusTile(c, 36);
+        b.setFocusableInTouchMode(true);
+        b.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
+        b.setContentDescription(label);
+        LinearLayout row = new LinearLayout(c); row.setGravity(Gravity.CENTER);
+        row.setPadding(Ui.ipx(24), 0, Ui.ipx(24), 0);
+        Icon icon = new Icon(c, kind, 2f);
+        row.addView(icon, new LinearLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30)));
+        TextView text = text(c, label, 24, Palette.PLASTER_100);
+        text.setSingleLine(true); text.setVisibility(showLabel ? View.VISIBLE : View.GONE);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2); lp.setMarginStart(Ui.ipx(12));
+        row.addView(text, lp); b.addView(row, new FrameLayout.LayoutParams(-2, -1));
+        b.setLook(f -> { int color = f ? Palette.LAPIS_900 : Palette.PLASTER_100; icon.setColor(color); text.setTextColor(color); });
+        b.setOnClickListener(v -> action.run()); return b;
     }
 
     static void row(LinearLayout panel, String label, Runnable action) {
@@ -60,11 +77,18 @@ final class QuickMenus {
 
     static View inputs(Context c, Runnable close) {
         Text t = Screen.loadText(c);
-        LinearLayout panel = panel(c, t.inputsTitle());
+        LinearLayout panel = panel(c, null);
+        LinearLayout header = new LinearLayout(c); header.setGravity(Gravity.CENTER_VERTICAL);
+        TextView title = text(c, t.inputsTitle(), 28, Palette.GOLD_400);
+        title.setPaddingRelative(Ui.ipx(10), 0, 0, 0);
+        header.addView(title, new LinearLayout.LayoutParams(0, -2, 1));
+        FocusTile advanced = iconButton(c, t.advancedInputs(), Icon.MORE, false, () -> { close.run(); InputSources.open(c, null); });
+        header.addView(advanced, new LinearLayout.LayoutParams(-2, Ui.ipx(72)));
+        panel.addView(header);
         row(panel, t.home(), () -> { close.run(); InputSources.launch(c, new android.content.Intent(c, MainActivity.class)); });
+        panel.getChildAt(1).setFocusedByDefault(true);
         for (InputSources.Source source : InputSources.list(c))
             row(panel, source.label, () -> { close.run(); InputSources.open(c, source.intent); });
-        row(panel, t.inputsSystem(), () -> { close.run(); InputSources.open(c, null); });
         ScrollView scroll = new ScrollView(c);
         scroll.setFillViewport(false); scroll.setClipToPadding(false);
         scroll.addView(panel);
@@ -73,6 +97,8 @@ final class QuickMenus {
 
     static void focusFirst(View content) {
         content.post(() -> {
+            for (View v : content.getFocusables(View.FOCUS_FORWARD))
+                if (v.isFocusedByDefault() && v.requestFocus()) return;
             for (View v : content.getFocusables(View.FOCUS_FORWARD))
                 if (v instanceof FocusTile && v.requestFocus()) break;
         });

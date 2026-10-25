@@ -95,14 +95,11 @@ public class AllAppsActivity extends Screen {
         LinearLayout cr = new LinearLayout(this);
         cr.setGravity(Gravity.CENTER_VERTICAL);
         cr.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
-        Icon mihrab = new Icon(this, Icon.MIHRAB, 2f);
         chipLabel = text(ui400, 26, Palette.GOLD_400);
         chipTime = text(display, 32, Palette.PLASTER_100);
         chipTime.setTextDirection(View.TEXT_DIRECTION_LTR);
         chipTime.setIncludeFontPadding(false);
-        cr.addView(mihrab, new LinearLayout.LayoutParams(Ui.ipx(26), Ui.ipx(26)));
         LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(-2, -2);
-        lp1.setMarginStart(Ui.ipx(16));
         cr.addView(chipLabel, lp1);
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(-2, -2);
         lp2.setMarginStart(Ui.ipx(16));
@@ -111,7 +108,6 @@ public class AllAppsActivity extends Screen {
         chip.setLook(f -> {
             chipLabel.setTextColor(f ? Palette.LAPIS_900 : Palette.GOLD_400);
             chipTime.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100);
-            mihrab.setColor(f ? Palette.LAPIS_900 : Palette.GOLD_400);
         });
         chip.setOnClickListener(v -> startActivity(new Intent(this, PrayerDayActivity.class)));
         placeEnd(chip, 188, 56, ViewGroup.LayoutParams.WRAP_CONTENT, 72);
@@ -186,7 +182,7 @@ public class AllAppsActivity extends Screen {
             day = new PrayerDay(this, arrived ? new Date(now.getTime() + 1000) : now);
             String[] names = t.prayerNames();
             if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
-            chipLabel.setText(t.chip(names[day.nextIndex]));
+            PrayerIcon.set(chipLabel, day.nextIndex, t.chip(names[day.nextIndex]));
         }
         chipTime.setText(t.d(duration(secondsUntil(day.nextTime, now), false)));
     }
