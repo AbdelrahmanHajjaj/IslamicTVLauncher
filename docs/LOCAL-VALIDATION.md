@@ -1,6 +1,6 @@
 # Local validation — 25 October 2026
 
-Tested on TCL 50C641K, Android 11/API 30 confirmed over ADB, firmware V8-R51MT02-LF1V903.021315. All work stayed local; no push, fetch, pull or other remote Git operation was performed. Existing CleanYourTV working changes were left alone.
+Tested on TCL 50C641K, Android 11/API 30 confirmed over ADB, firmware V8-R51MT02-LF1V903.021315. All work stayed local; no push, fetch, pull or other network Git operation was performed. Existing CleanYourTV working changes were left alone.
 
 ## Passed locally
 
@@ -47,9 +47,15 @@ After waking the TV, the existing setup tools restored Afnon as exclusive Home, 
 
 An ordinary update now detects that Afnon is already Home and verifies it without repeating the original handover/rollback. A regression test failed before this fix and passed afterwards; the complete suite passes 27 tests. The corrected existing-Home path also passed on the TV. The initial exclusive-handover safety checks remain in place. A new full reboot and physical-remote check after this recovery have not been performed.
 
+## Fork name and local checkout
+
+The checkout folder and Gradle project are now `IslamicTVLauncher`, on `feature/improvements_and_cleanup`. After explicit approval, local `origin` was changed to [the user's fork](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher), with the original repository retained as `upstream`; future pushes default to `origin`. No fetch, pull or push was run.
+
+The TV label is **IslamicTVLauncher (Afnon)**. Package `tv.afnon.home` and signing identity were preserved. The renamed checkout built and linted successfully (0 errors, 64 warnings); the APK installed successfully through the corrected ordinary-update path. Native Android App info displayed the new label. Afnon still resolved as Home, its helper was bound, CleanYourTV/Google TV/BrowseHere stayed disabled, and saved user preferences matched the post-recovery backup. The TV was returned to Home.
+
 ## Outputs and recovery
 
-- Launcher: `app/build/outputs/apk/debug/app-debug.apk` (19,806,249 bytes with the local audio).
+- Launcher: `app/build/outputs/apk/debug/app-debug.apk` (19,776,768 bytes with the local audio).
 - Phone installer: `installer/build/outputs/apk/debug/installer-debug.apk` (13,177,857 bytes). Choose **Install a local Afnon APK** to install this branch's launcher; upstream downloads contain upstream code.
 - Audio and APKs remain ignored by Git. See [setup and recovery](../tools/device.md) and [themes and buttons](THEMES.md).
 - `tools/device.py restore` with the same private backup folder restores the previous CleanYourTV setup, including only packages/settings changed by this setup. It does not undo the earlier cleanup or uninstall Afnon.

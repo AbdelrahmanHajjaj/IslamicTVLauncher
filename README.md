@@ -1,6 +1,6 @@
 <div align="center">
 
-# Afnon · أفنون
+# IslamicTVLauncher (Afnon) · أفنون
 
 **An Android TV home screen built around the prayer day.**
 
@@ -8,7 +8,7 @@
 
 Arabic first (RTL) and English · Offline prayer times for 137 cities · 14 adhan voices · Qibla · 16 Quran radio stations and reciters
 
-**[⬇ Download the APK](https://github.com/egyjs/afnon-android-tv-launcher/releases/latest/download/afnon.apk)** · [Releases](https://github.com/egyjs/afnon-android-tv-launcher/releases) · **[Try it in your browser](https://egyjs.github.io/afnon-android-tv-launcher/)**
+**[Upstream Afnon APK](https://github.com/egyjs/afnon-android-tv-launcher/releases/latest/download/afnon.apk)** · [Releases](https://github.com/egyjs/afnon-android-tv-launcher/releases) · **[Upstream browser preview](https://egyjs.github.io/afnon-android-tv-launcher/)**
 
 ![Afnon home screen in Arabic](docs/screenshots/home-ar.png)
 
@@ -36,7 +36,9 @@ Afnon started from [cleanyourtv](https://github.com/Gathin23/cleanyourtv):
 
 ---
 
-## Local improvements branch
+## This fork
+
+[IslamicTVLauncher](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher) builds on [Afnon](https://github.com/egyjs/afnon-android-tv-launcher). The TV app is labelled **IslamicTVLauncher (Afnon)**. Its Android identity remains `tv.afnon.home`, so compatible signed updates preserve existing preferences and the Home assignment. This is an update to Afnon, not a separate side-by-side installation.
 
 See [themes, screensavers and buttons](docs/THEMES.md) and [local setup and recovery](tools/device.md) for PC/phone backups, verified Home takeover and reversible stock-launcher disabling. The linked upstream releases do not contain this branch’s changes. Build locally; completed TCL 50C641K checks and remaining tests are recorded in [local validation](docs/LOCAL-VALIDATION.md).
 
