@@ -114,6 +114,7 @@ public class SettingsActivity extends Screen {
     private Row editing;
     private int draft;
     private FrameLayout chooser;
+    private boolean horizontalChooser;
     /** What Back in the open chooser goes back to (the city list returns to the countries); null closes it. */
     private Runnable chooserBack;
     /** The voice being previewed in the adhan list. */
@@ -126,6 +127,7 @@ public class SettingsActivity extends Screen {
         // old root; left set, it would swallow every key while nothing shows.
         stopPreview();
         chooser = null;
+        horizontalChooser = false;
         chooserBack = null;
         editing = null;
         newRoot();
@@ -453,6 +455,14 @@ public class SettingsActivity extends Screen {
                 new Row(VALUE) {
                     String label() { return t.openDock(); }
                     void open() { if (!RemoteKeys.toggleDock()) SystemScreens.open(c, Settings.ACTION_ACCESSIBILITY_SETTINGS); }
+                },
+                new Row(VALUE) {
+                    String label() { return t.homeLayout(); }
+                    int selected() { return Prefs.classicHome(c) ? 1 : 0; }
+                    String value() { return t.homeLayouts()[selected()]; }
+                    void open() { openChooser(label(), t.homeLayouts(), selected(), i -> {
+                        prefs().edit().putString("home_layout", i == 1 ? "classic" : "two_rows").apply(); showSaved();
+                    }, null, true); }
                 });
             case APPEARANCE: return Arrays.asList(
                 new Row(CAROUSEL) {
@@ -609,12 +619,14 @@ public class SettingsActivity extends Screen {
         LinearLayout words = new LinearLayout(this);
         words.setOrientation(LinearLayout.VERTICAL);
         r.label = text(ui500, 26, Palette.PLASTER_100);
-        r.help = text(ui400, 20, Palette.PLASTER_100);
+        r.help = text(r.prayer() >= 0 ? ui500 : ui400, r.prayer() >= 0 ? 30 : 20, Palette.PLASTER_100);
         r.help.setSingleLine(true);
+        if (r.prayer() >= 0) r.help.setTextDirection(View.TEXT_DIRECTION_LTR);
         words.addView(r.label);
-        words.addView(r.help);
+        if (r.prayer() < 0) words.addView(r.help);
         lineHeight(r.label, 1.25f);
-        lineHeight(r.help, 1.35f);
+        if (r.prayer() < 0) lineHeight(r.help, 1.35f);
+        else r.help.setIncludeFontPadding(false);
         line.addView(words, new LinearLayout.LayoutParams(0, -2, 1));
         r.control = new LinearLayout(this);
         r.control.setGravity(Gravity.CENTER_VERTICAL);
@@ -622,6 +634,10 @@ public class SettingsActivity extends Screen {
         clp.setMarginStart(Ui.ipx(24));
         line.addView(r.control, clp);
         r.tile.addView(line, new FrameLayout.LayoutParams(-1, -1));
+        if (r.prayer() >= 0) {
+            r.help.setGravity(Gravity.CENTER);
+            r.tile.addView(r.help, new FrameLayout.LayoutParams(Ui.ipx(280), -2, Gravity.CENTER));
+        }
         r.tile.setLook(f -> render(r, f));
         placeTile(r.tile, 640, (section == APPEARANCE ? 410 : ROWS_TOP) + i * (ROW_H + ROW_GAP), Tokens.LAYOUT_SETTINGS_ROW_WIDTH, ROW_H);
     }
@@ -644,7 +660,7 @@ public class SettingsActivity extends Screen {
         r.help.setText(help);
         r.help.setVisibility(help.isEmpty() ? View.GONE : View.VISIBLE);
         r.help.setTextColor(ink);
-        r.help.setAlpha(0.75f);
+        r.help.setAlpha(r.prayer() >= 0 ? 1f : 0.75f);
         r.control.removeAllViews();
         boolean edit = r == editing;
         if (edit) {
@@ -811,7 +827,9 @@ public class SettingsActivity extends Screen {
                 }
                 return true;
             }
-            if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
+            if (horizontalChooser) {
+                if (k == KeyEvent.KEYCODE_DPAD_UP || k == KeyEvent.KEYCODE_DPAD_DOWN) return true;
+            } else if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
             return super.dispatchKeyEvent(e);
         }
         if (k == KeyEvent.KEYCODE_BACK) {
@@ -950,6 +968,10 @@ public class SettingsActivity extends Screen {
             result.add(new Row(STEP) {
                 String label() { return t.prayerNames()[prayer]; }
                 int prayer() { return prayer; }
+                String help() {
+                    int change = editing == this ? draft - amount() : 0;
+                    return time(new Date(day.times[prayer].getTime() + change * 60_000L), 1f).toString();
+                }
                 int amount() { return Prefs.prayerOffset(SettingsActivity.this, prayer); }
                 void setAmount(int n) { Prefs.setPrayerOffset(SettingsActivity.this, prayer, n); }
                 int lowest() { return -Prefs.MAX_PRAYER_OFFSET; }
@@ -1044,6 +1066,11 @@ public class SettingsActivity extends Screen {
 
     /** onFocus, if given, hears each item as focus reaches it (the adhan list plays that voice). */
     private void openChooser(String title, String[] items, int selected, IntConsumer pick, IntConsumer onFocus) {
+        openChooser(title, items, selected, pick, onFocus, false);
+    }
+
+    private void openChooser(String title, String[] items, int selected, IntConsumer pick, IntConsumer onFocus, boolean horizontal) {
+        horizontalChooser = horizontal;
         chooser = new FrameLayout(this);
         chooser.setBackgroundColor(Palette.SCRIM_MENU);
         chooser.setClickable(true);
@@ -1061,14 +1088,15 @@ public class SettingsActivity extends Screen {
         card.addView(head);
         lineHeight(head, 1.2f);
 
-        ScrollView scroll = new ScrollView(this);
+        FrameLayout scroll = horizontal ? new android.widget.HorizontalScrollView(this) : new ScrollView(this);
         scroll.setVerticalScrollBarEnabled(false);
+        scroll.setHorizontalScrollBarEnabled(false);
         int reach = Ui.ipx(FocusTile.REACH);
         scroll.setPadding(reach, reach, reach, reach);
         scroll.setClipToPadding(true);
         scroll.setClipChildren(true);
         LinearLayout list = new LinearLayout(this);
-        list.setOrientation(LinearLayout.VERTICAL);
+        list.setOrientation(horizontal ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
         list.setClipChildren(false);
         FocusTile first = null;
         for (int i = 0; i < items.length; i++) {
@@ -1081,7 +1109,12 @@ public class SettingsActivity extends Screen {
             v.setText(items[i]);
             v.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
             v.setPadding(Ui.ipx(24), 0, Ui.ipx(24), 0);
-            item.addView(v, new FrameLayout.LayoutParams(-1, -1));
+            item.addView(v, new FrameLayout.LayoutParams(-1, horizontal ? Ui.ipx(76) : -1, Gravity.BOTTOM));
+            if (horizontal) {
+                FrameLayout.LayoutParams preview = new FrameLayout.LayoutParams(-1, Ui.ipx(302), Gravity.TOP);
+                preview.setMargins(Ui.ipx(20), Ui.ipx(18), Ui.ipx(20), 0);
+                item.addView(layoutPreview(index == 1), preview);
+            }
             item.setLook(f -> {
                 v.setTextColor(f ? Palette.LAPIS_900 : (chosen ? Palette.GOLD_400 : Palette.PLASTER_100));
                 if (f && onFocus != null) onFocus.accept(index);
@@ -1090,24 +1123,55 @@ public class SettingsActivity extends Screen {
                 pick.accept(index);
                 closeChooser();
             });
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, Ui.ipx(68 + 2 * FocusTile.REACH));
-            if (i > 0) lp.topMargin = Ui.ipx(6 - 2 * FocusTile.REACH);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(horizontal ? Ui.ipx(640) : -1, Ui.ipx(horizontal ? 400 : 68 + 2 * FocusTile.REACH));
+            if (i > 0) { if (horizontal) lp.setMarginStart(Ui.ipx(24)); else lp.topMargin = Ui.ipx(6 - 2 * FocusTile.REACH); }
             list.addView(item, lp);
             if (chosen || first == null) first = item;
         }
         scroll.addView(list);
-        float listH = Math.min(items.length, 8) * 74 + 2 * FocusTile.REACH;
+        float listH = horizontal ? 400 + 2 * FocusTile.REACH : Math.min(items.length, 8) * 74 + 2 * FocusTile.REACH;
         LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(-1, Ui.ipx(listH));
         slp.topMargin = Ui.ipx(20 - FocusTile.REACH);
         slp.setMarginStart(-reach);
         slp.setMarginEnd(-reach);
         card.addView(scroll, slp);
 
-        chooser.addView(card, new FrameLayout.LayoutParams(Ui.ipx(900), -2, Gravity.CENTER));
+        chooser.addView(card, new FrameLayout.LayoutParams(Ui.ipx(horizontal ? 1200 : 900), -2, Gravity.CENTER));
         setRowsFocusable(false);
         root.addView(chooser, new FrameLayout.LayoutParams(-1, -1));
         FocusTile start = first;
         if (start != null) root.post(start::requestFocus);
+    }
+
+    private View layoutPreview(boolean classic) {
+        View preview = new View(this) {
+            final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            @Override protected void onDraw(Canvas canvas) {
+                canvas.save(); canvas.scale(getWidth() / 480f, getHeight() / 270f);
+                if (rtl) canvas.scale(-1, 1, 240, 135);
+                paint.setColor(Palette.LAPIS_800); canvas.drawRoundRect(22, 30, 158, 248, 68, 68, paint);
+                paint.setColor(Palette.GOLD_400); canvas.drawRoundRect(52, 130, 128, 134, 2, 2, paint);
+                paint.setColor(Palette.PLASTER_100); canvas.drawRoundRect(190, 30, 285, 37, 3, 3, paint);
+                paint.setColor(Palette.MIST_400); canvas.drawRoundRect(190, 46, 330, 49, 1, 1, paint);
+                for (int i = 0; i < 6; i++) {
+                    paint.setColor(i == 0 ? Palette.GOLD_400 : Palette.LAPIS_800);
+                    canvas.drawRoundRect(190 + i * 44, 64, 230 + i * 44, 95, 4, 4, paint);
+                }
+                int columns = classic ? 4 : 3, count = classic ? 4 : 6;
+                float width = classic ? 60 : 82, height = classic ? 64 : 36;
+                for (int i = 0; i < count; i++) {
+                    float x = 190 + i % columns * (width + 6), y = 116 + i / columns * 42;
+                    paint.setColor(i == 0 ? Palette.GOLD_400 : Palette.LAPIS_800);
+                    canvas.drawRoundRect(x, y, x + width, y + height, 5, 5, paint);
+                }
+                paint.setColor(Palette.LAPIS_700);
+                for (int i = 0; i < 6; i++) canvas.drawRoundRect(190 + i * 44, 220, 230 + i * 44, 244, 3, 3, paint);
+                canvas.restore();
+            }
+        };
+        preview.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        preview.setBackground(Appearance.background(this));
+        return preview;
     }
 
     private void closeChooser() {

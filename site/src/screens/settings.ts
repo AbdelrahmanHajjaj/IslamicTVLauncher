@@ -94,6 +94,7 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
       { id: 'clock', kind: 'seg', label: t.s('clockRow'), help: t.s('clockHelp'), segs: t.list('clocks').map(t.d), selected: Math.max(0, CLOCKS.indexOf(p.clock)) },
       { id: 'quickLabels', kind: 'toggle', label: t.s('quickLabels'), help: '', on: p.quickLabels ?? false },
       { id: 'dockMode', kind: 'value', label: t.s('prayerDock'), help: '', value: t.list('dockModes')[DOCK_MODES.indexOf(p.dockMode ?? 'hidden')] },
+      { id: 'homeLayout', kind: 'value', label: t.s('homeLayout'), help: '', value: t.list('homeLayouts')[p.homeLayout === 'classic' ? 1 : 0] },
       { id: 'dockPosition', kind: 'seg', label: t.s('dockPosition'), help: '', segs: t.list('dockPositions'), selected: p.dockPosition === 'top' ? 0 : 1 },
 
     ];
@@ -195,8 +196,17 @@ export const citiesOf = (t: Text, country: string) => CITIES.filter((c) => (t.ar
 export const methodItems = (t: Text, p: Prefs): Item[] => METHODS.map((m) => ({ label: t.methodName(m), chosen: m === methodOf(p) }));
 export const stationsOf = (reciters: boolean) => STATIONS.filter((s) => !!s.reciter === reciters);
 
-export function chooserHtml(t: Text, title: string, items: Item[]) {
+function layoutPreview(classic: boolean) {
+  const columns = classic ? 4 : 3, count = classic ? 4 : 6, width = classic ? 60 : 82;
+  const tile = (x: number, y: number, w: number, h: number, color: string) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="var(--color-${color})"/>`;
+  return `<svg viewBox="0 0 480 270" aria-hidden="true"><rect x="22" y="30" width="136" height="218" rx="68" fill="var(--color-lapis-800)"/>${tile(52,130,76,4,'gold-400')}${tile(190,30,95,7,'plaster-100')}${tile(190,46,140,3,'mist-400')}`
+    + Array.from({length:6},(_,i)=>tile(190+i*44,64,40,31,i===0?'gold-400':'lapis-800')).join('')
+    + Array.from({length:count},(_,i)=>tile(190+i%columns*(width+6),116+Math.floor(i/columns)*42,width,classic?64:36,i===0?'gold-400':'lapis-800')).join('')
+    + Array.from({length:6},(_,i)=>tile(190+i*44,220,40,24,'lapis-700')).join('')+'</svg>';
+}
+
+export function chooserHtml(t: Text, title: string, items: Item[], horizontal = false) {
   return `<div class="ch-card"><div class="ch-title display-bold">${esc(title)}</div><div class="ch-list">`
-    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}">${esc(it.label)}</button>`).join('')
+    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}">${horizontal ? layoutPreview(i === 1) : ""}${esc(it.label)}</button>`).join('')
     + '</div></div>';
 }

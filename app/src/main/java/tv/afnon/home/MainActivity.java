@@ -63,6 +63,7 @@ public class MainActivity extends Screen {
 
     private TextView clock, gdate, hdate, wifiName;
     private int favouriteCount, recentCount;
+    private boolean classicHome;
     private PrayerDay day;
     private long lastMinute = -1;
     private int lastFav = F0;
@@ -269,8 +270,9 @@ public class MainActivity extends Screen {
         fav.setEllipsize(TextUtils.TruncateAt.END);
         place(fav, Tokens.COURT_X, LABEL_ABOVE_FAV, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         List<String> favs = Apps.slots(this, t);
-        favouriteCount = favs.size();
-        int columns = FavouriteChoice.columns(favouriteCount);
+        classicHome = Prefs.classicHome(this);
+        favouriteCount = FavouriteChoice.visibleCount(favs.size(), classicHome);
+        int columns = FavouriteChoice.columns(favouriteCount, classicHome);
         float fw = (Tokens.COURT_W - (columns - 1) * 20) / columns;
         for (int i = 0; i < favouriteCount; i++) {
             nodes[F0 + i] = favouriteTile(favs.get(i), F0 + i,
@@ -279,14 +281,14 @@ public class MainActivity extends Screen {
 
         TextView recent = caps(text(ui400, 22, Palette.MIST_400));
         recent.setText(t.recentApps());
-        place(recent, Tokens.COURT_X, 842, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        place(recent, Tokens.COURT_X, classicHome ? 724 : 842, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         float mw = (Tokens.COURT_W - 5 * 20) / 6f;
         List<String> recentApps = Apps.recent(this);
         recentCount = recentApps.size();
         for (int i = 0; i < recentCount; i++) {
-            nodes[M0 + i] = moreTile(recentApps.get(i), M0 + i, Tokens.COURT_X + i * (mw + 20), 890, mw);
+            nodes[M0 + i] = moreTile(recentApps.get(i), M0 + i, Tokens.COURT_X + i * (mw + 20), classicHome ? 772 : 890, mw);
         }
-        nodes[ALL] = allAppsTile(Tokens.COURT_X + 5 * (mw + 20), 890, mw);
+        nodes[ALL] = allAppsTile(Tokens.COURT_X + 5 * (mw + 20), classicHome ? 772 : 890, mw);
 
         for (int i = 0; i < NODES; i++) {
             final int n = i;
@@ -399,18 +401,19 @@ public class MainActivity extends Screen {
         Drawable d = Apps.icon(this, pkg);
         if (d != null) icon.setImageDrawable(d);
         String name = pkg == null ? "" : Apps.name(this, t, pkg);
-        TextView label = text(ui500, Apps.isLatin(name) ? 24 : 26, Palette.PLASTER_100);
+        TextView label = text(ui500, Apps.isLatin(name) ? (classicHome ? 28 : 24) : (classicHome ? 30 : 26), Palette.PLASTER_100);
         label.setText(name);
         label.setSingleLine(true);
         label.setEllipsize(TextUtils.TruncateAt.END);
-        col.addView(icon, new LinearLayout.LayoutParams(Ui.ipx(40), Ui.ipx(40)));
+        int iconSize = Ui.ipx(classicHome ? 56 : 40);
+        col.addView(icon, new LinearLayout.LayoutParams(iconSize, iconSize));
         col.addView(new View(this), new LinearLayout.LayoutParams(1, 0, 1));
         col.addView(label, new LinearLayout.LayoutParams(-1, -2));
         b.addView(col, new FrameLayout.LayoutParams(-1, -1));
         b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> activateApp(pkg));
         nodePackage[node] = pkg;
-        placeTile(b, x, y, w, 132);
+        placeTile(b, x, y, w, classicHome ? 196 : 132);
         return b;
     }
 
@@ -849,11 +852,11 @@ public class MainActivity extends Screen {
         if (rtl && key == KeyEvent.KEYCODE_DPAD_LEFT) key = KeyEvent.KEYCODE_DPAD_RIGHT;
         else if (rtl && key == KeyEvent.KEYCODE_DPAD_RIGHT) key = KeyEvent.KEYCODE_DPAD_LEFT;
         int from = currentNode();
-        int columns = FavouriteChoice.columns(favouriteCount);
+        int columns = FavouriteChoice.columns(favouriteCount, classicHome);
         if (replacementPackage != null) {
             int to = FavouriteChoice.move(from - F0, favouriteCount,
                 key == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : key == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0,
-                key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0);
+                key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0, classicHome);
             if (to >= 0) nodes[F0 + to].requestFocus();
             return;
         }

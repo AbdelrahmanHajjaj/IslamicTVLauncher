@@ -22,6 +22,8 @@ const favs: { label: string; icon: 'tv' | 'film' | 'book' | 'globe' }[] = [
   { label: ar ? 'شاهد' : 'Shahid', icon: 'film' },
   { label: ar ? 'القرآن الكريم' : 'Quran', icon: 'book' },
   { label: ar ? 'المتصفح' : 'Browser', icon: 'globe' },
+  { label: 'Netflix', icon: 'film' },
+  { label: ar ? 'مشغل الوسائط' : 'Media Player', icon: 'tv' },
 ];
 const more = ar ? ['يوتيوب ميوزك', 'متجر Play', 'مشغل الوسائط', 'مدير الملفات'] : ['YouTube Music', 'Play Store', 'Media Player', 'File Manager'];
 const allCount = 14;
@@ -57,14 +59,13 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
 <div class="label fav-label caps">{t.s('fav')}</div>
 {favs.map((f, i) => (
-  <button class="ft fav" {...(cardHidden && i === 0 ? { 'data-focus-start': '' } : {})} style={`inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + ${i} * (var(--layout-tile-favourite-width) + var(--layout-gap-favourites)))`}
-    data-nav-up=".radio-pill" data-toast={`${W.site} ${f.label}`}>
+  <button class="ft fav" {...(cardHidden && i === 0 ? { 'data-focus-start': '' } : {})} data-extra={i >= 4 ? "true" : undefined} style={`--slot:${i};--column:${i % 3};--row:${Math.floor(i / 3)}`} data-toast={`${W.site} ${f.label}`}>
     <Icon name={f.icon} size={44} />
     <span>{f.label}</span>
   </button>
 ))}
 
-<div class="label more-label caps">{ar ? 'تطبيقات' : 'Apps'}</div>
+<div class="label more-label caps">{t.s('recentApps')}</div>
 {[...more, t.s('settings')].map((label, i) => {
   const style = `inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + ${i} * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))`;
   return label === t.s('settings')
@@ -145,6 +146,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
     };
     live(homeModel, (c) => {
       $('.pills').classList.toggle('icons-only', !c.prefs.quickLabels);
+      stage.dataset.homeLayout = c.prefs.homeLayout === 'classic' ? 'classic' : 'two_rows';
       const left = Math.ceil((c.day.nextTime.getTime() - c.now.getTime()) / 1000);
       const remind = c.prefs.remind * 60;
       const due = (forced || (remind > 0 && left > 0 && left <= remind)) && card.dataset.for !== dismissedFor;
@@ -274,9 +276,13 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
   .label { position: absolute; inset-inline-start: var(--layout-courtyard-inset-inline-start); font-size: var(--font-size-label); color: var(--color-mist-400); }
   .fav-label { top: 478px; }
-  .more-label { top: 722px; }
-  .fav { top: 520px; width: var(--layout-tile-favourite-width); height: var(--layout-tile-favourite-height); padding: 22px 24px; flex-direction: column; justify-content: space-between; align-items: flex-start; font-size: var(--font-size-body-l); font-weight: 500; text-align: start; }
-  .more { top: 764px; width: calc((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6); height: var(--layout-tile-more-height); border-radius: var(--radius-cell); padding: 18px; align-items: flex-end; font-size: var(--font-size-label); text-align: start; }
+  .more-label { top: 842px; }
+  .fav { inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + var(--column) * ((var(--layout-courtyard-width) - 40px) / 3 + 20px)); top:calc(516px + var(--row) * 156px); width:calc((var(--layout-courtyard-width) - 40px) / 3); height:132px; padding: 22px 24px; flex-direction: column; justify-content: space-between; align-items: flex-start; font-size: var(--font-size-body-l); font-weight: 500; text-align: start; }
+  .more { top: 890px; width: calc((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6); height:94px; border-radius: var(--radius-cell); padding: 18px; align-items: flex-end; font-size: var(--font-size-label); text-align: start; }
+  :global(.tv[data-home-layout="classic"]) .fav { inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + var(--slot) * ((var(--layout-courtyard-width) - 60px) / 4 + 20px)); top:516px; width:calc((var(--layout-courtyard-width) - 60px) / 4); height:196px; }
+  :global(.tv[data-home-layout="classic"]) .fav[data-extra] { display:none; }
+  :global(.tv[data-home-layout="classic"]) .more-label { top:724px; }
+  :global(.tv[data-home-layout="classic"]) .more { top:772px; }
   .all { white-space: pre-line; padding: 12px; --rest-fill: transparent; --rest-border: var(--color-line-dash); --rest-border-width: 0; border: 2px dashed var(--color-line-dash); }
   .all:focus { border-color: transparent; }
 
