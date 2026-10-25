@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -28,10 +29,6 @@ final class Apps {
 
     private static final String[] DEFAULT_FAVOURITES = {
         "com.google.android.youtube.tv", "net.mbc.shahidTV", "dev.ctv.tv", "com.tcl.browser"};
-    /** Home's "More" row picks these first (minus favourites), then fills from the rest. */
-    static final String[] MORE_FIRST = {
-        "com.google.android.youtube.tvmusic", "com.android.vending", "com.tcl.ui_mediaCenter",
-        "com.alphainventor.filemanager", "com.sami.salaty_tv"};
     /** Never listed: this launcher, the previous one, and the TV's own input/Live TV plumbing. */
     private static final Set<String> HIDDEN = new HashSet<>(Arrays.asList(
         "tv.afnon.home", "com.gathin.tvhome", "com.tcl.suspension", "com.tcl.tv"));
@@ -50,12 +47,14 @@ final class Apps {
         EN_NAMES.put("com.google.android.youtube.tv", "YouTube");
         EN_NAMES.put("net.mbc.shahidTV", "Shahid");
         EN_NAMES.put("com.android.vending", "Play Store");
+        EN_NAMES.put("com.phlox.tvwebbrowser", "TV Bro");
     }
 
     private static List<String> cached;
     private static long cachedAt;
+    private static final Map<String, ApplicationInfo> appInfo = new HashMap<>();
 
-    static synchronized void invalidate() { cached = null; }
+    static synchronized void invalidate() { cached = null; appInfo.clear(); }
 
     /**
      * Every app that has a TV or a phone-style launcher entry, one per package, not hidden. Cached for two
@@ -64,12 +63,13 @@ final class Apps {
     static synchronized List<String> installed(Context c) {
         long now = android.os.SystemClock.uptimeMillis();
         if (cached != null && now - cachedAt < 2000) return new ArrayList<>(cached);
+        appInfo.clear();
         PackageManager pm = c.getPackageManager();
         Set<String> found = new LinkedHashSet<>();
         for (String category : new String[] {Intent.CATEGORY_LEANBACK_LAUNCHER, Intent.CATEGORY_LAUNCHER}) {
             for (ResolveInfo r : pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(category), 0)) {
                 String p = r.activityInfo.packageName;
-                if (!HIDDEN.contains(p)) found.add(p);
+                if (!HIDDEN.contains(p)) { found.add(p); appInfo.put(p, r.activityInfo.applicationInfo); }
             }
         }
         cached = new ArrayList<>(found);
@@ -94,15 +94,29 @@ final class Apps {
         return out;
     }
 
-    /** Home's "More" row: the preferred picks that are installed and not favourites, filled up from the rest. */
-    static List<String> more(Context c, Text t, int count) {
-        List<String> favs = slots(c, t);
-        List<String> all = installed(c);
-        List<String> out = new ArrayList<>();
-        for (int i = 4; i < favs.size() && out.size() < count; i++) out.add(favs.get(i));
-        for (String p : MORE_FIRST) if (out.size() < count && all.contains(p) && !favs.contains(p)) out.add(p);
-        for (String p : sorted(c, t)) if (out.size() < count && !favs.contains(p) && !out.contains(p)) out.add(p);
+    static List<String> allApps(Context c, Text t) {
+        List<String> apps = sorted(c, t);
+        if (prefs(c).getBoolean("hide_system_apps", false)) apps.removeIf(pkg -> {
+            try { return (info(c, pkg).flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0; }
+            catch (PackageManager.NameNotFoundException gone) { return true; }
+        });
+        return apps;
+    }
+
+    static List<String> recent(Context c) {
+        List<String> all = installed(c), out = new ArrayList<>();
+        for (String pkg : prefs(c).getString("recent_apps", "").split(","))
+            if (all.contains(pkg) && !out.contains(pkg) && out.size() < 5) out.add(pkg);
         return out;
+    }
+
+    static void remember(Context c, String pkg) {
+        if (pkg == null || pkg.isEmpty() || pkg.startsWith("@") || HIDDEN.contains(pkg)) return;
+        LinkedHashSet<String> recent = new LinkedHashSet<>();
+        recent.add(pkg);
+        for (String old : prefs(c).getString("recent_apps", "").split(","))
+            if (!old.isEmpty() && recent.size() < 5) recent.add(old);
+        prefs(c).edit().putString("recent_apps", TextUtils.join(",", recent)).apply();
     }
 
     // ---------------------------------------------------------------- favourites
@@ -127,7 +141,7 @@ final class Apps {
         List<String> saved = favourites(c);
         int count = Math.min(FAVOURITE_SLOTS, Math.max(4, saved.size()));
         for (String p : saved) if (installed.contains(p) && !out.contains(p) && out.size() < count) out.add(p);
-        for (String p : sorted(c, t)) if (out.size() < count && !out.contains(p)) out.add(p);
+        if (out.size() < count) for (String p : sorted(c, t)) if (out.size() < count && !out.contains(p)) out.add(p);
         return out;
     }
 
@@ -139,12 +153,19 @@ final class Apps {
 
     // ---------------------------------------------------------------- one app
 
+    // The launcher query already supplied this; asking Android again per label/icon stalls All apps.
+    private static synchronized ApplicationInfo info(Context c, String pkg) throws PackageManager.NameNotFoundException {
+        ApplicationInfo value = appInfo.get(pkg);
+        if (value == null) { value = c.getPackageManager().getApplicationInfo(pkg, 0); appInfo.put(pkg, value); }
+        return value;
+    }
+
     static String name(Context c, Text t, String pkg) {
         if (t.ar && AR_NAMES.containsKey(pkg)) return AR_NAMES.get(pkg);
         if (EN_NAMES.containsKey(pkg)) return EN_NAMES.get(pkg);
         try {
             PackageManager pm = c.getPackageManager();
-            return pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString();
+            return pm.getApplicationLabel(info(c, pkg)).toString();
         } catch (PackageManager.NameNotFoundException e) {
             return pkg;
         }
@@ -153,7 +174,7 @@ final class Apps {
     static Drawable icon(Context c, String pkg) {
         if (pkg == null) return null;
         try {
-            return c.getPackageManager().getApplicationIcon(pkg);
+            return c.getPackageManager().getApplicationIcon(info(c, pkg));
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }
@@ -172,6 +193,7 @@ final class Apps {
         if (i == null) return;
         try {
             c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
+            remember(c, pkg);
         } catch (ActivityNotFoundException | SecurityException ignored) {
             // The app went away or refuses outside launches; stay where we are.
         }

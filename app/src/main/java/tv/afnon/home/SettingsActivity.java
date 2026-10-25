@@ -99,7 +99,6 @@ public class SettingsActivity extends Screen {
     private final TextView[] navLabel = new TextView[SECTIONS];
     private final List<Row> rows = new ArrayList<>();
     private TextView sectionLabel, previewValue;
-    private LinearLayout hints;
     private TextView saved;
     private final Runnable hideSaved = () -> saved.animate().alpha(0).setDuration(Appearance.motion(Tokens.MOTION_OVERLAY_FADE_MS));
     /** The SEG or STEP row being edited (null: none) and its unsaved choice or amount. */
@@ -161,15 +160,11 @@ public class SettingsActivity extends Screen {
         sectionLabel.setAllCaps(!t.ar);
         place(sectionLabel, 640, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        hints = new LinearLayout(this);
-        hints.setOrientation(LinearLayout.HORIZONTAL);
-        place(hints, 640, 976, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        // ✓ Saved: on the hint line, at the rows' end edge, so the hints never shift when it comes and goes.
+        // Save feedback sits below the settings rows.
         saved = text(ui500, 22, Palette.GOLD_400);
         saved.setText(t.saved());
         saved.setAlpha(0);
-        placeEnd(saved, 1920 - 640 - Tokens.LAYOUT_SETTINGS_ROW_WIDTH, 976,
+        placeEnd(saved, 1920 - 640 - Tokens.LAYOUT_SETTINGS_ROW_WIDTH, 1016,
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         setContentView(root);
@@ -433,6 +428,12 @@ public class SettingsActivity extends Screen {
                     void set(boolean on) { prefs().edit().putBoolean("focus_lighting", on).apply(); }
                 },
                 new Row(TOGGLE) {
+                    String label() { return t.hideSystemApps(); }
+                    String help() { return t.hideSystemAppsHelp(); }
+                    boolean on() { return prefs().getBoolean("hide_system_apps", false); }
+                    void set(boolean on) { prefs().edit().putBoolean("hide_system_apps", on).apply(); }
+                },
+                new Row(TOGGLE) {
                     String label() { return t.reduceMotion(); }
                     boolean on() { return Appearance.reduced(c); }
                     void set(boolean on) { prefs().edit().putBoolean("reduce_motion", on).apply(); Appearance.load(c); }
@@ -659,11 +660,6 @@ public class SettingsActivity extends Screen {
     private void focusNav() {
         onNav = true;
         nav[section].requestFocus();
-        List<String> h = new ArrayList<>();
-        h.add(t.hintMove());
-        h.add(t.hintOpen());
-        h.add(t.hintBackHome());
-        setHints(hints, h);
     }
 
     private void focusRow(int i) {
@@ -671,11 +667,7 @@ public class SettingsActivity extends Screen {
         rowIndex = i;
         Row r = rows.get(i);
         r.tile.requestFocus();
-        List<String> h = new ArrayList<>();
-        h.add(t.hintMove());
-        h.add(r.kind == VALUE ? t.hintChoose() : r.kind == TOGGLE ? t.hintSwitch() : t.hintEdit());
-        h.add(t.hintBackMenu());
-        setHints(hints, h);
+
         styleNav(section);
     }
 
@@ -684,11 +676,6 @@ public class SettingsActivity extends Screen {
         editing = r;
         draft = r.kind == SEG ? r.selected() : r.amount();
         render(r, true);
-        List<String> h = new ArrayList<>();
-        h.add(t.hintChange());
-        h.add(t.hintSave());
-        h.add(t.hintBackCancel());
-        setHints(hints, h);
     }
 
     /** Leaves editing; save keeps the draft if it differs from what is saved. */
@@ -707,7 +694,7 @@ public class SettingsActivity extends Screen {
         }
     }
 
-    /** ✓ Saved fades in at the end of the hint line, then out; a new save restarts it. */
+    /** Brief feedback after a settings change. */
     private void showSaved() {
         saved.removeCallbacks(hideSaved);
         saved.animate().alpha(1).setDuration(Appearance.motion(Tokens.MOTION_OVERLAY_FADE_MS));
@@ -952,11 +939,6 @@ public class SettingsActivity extends Screen {
         root.addView(chooser, new FrameLayout.LayoutParams(-1, -1));
         FocusTile start = first;
         if (start != null) root.post(start::requestFocus);
-        List<String> h = new ArrayList<>();
-        h.add(t.hintMove());
-        h.add(t.hintChoose());
-        h.add(t.hintBackCancel());
-        setHints(hints, h);
     }
 
     private void closeChooser() {

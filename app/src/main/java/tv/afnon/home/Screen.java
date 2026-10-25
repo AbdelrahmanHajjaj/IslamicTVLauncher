@@ -26,7 +26,6 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -307,18 +306,6 @@ abstract class Screen extends Activity {
 
     void readClockFormat() {
         h24 = Prefs.clock24(this);
-    }
-
-    /** The key hints along the bottom, 40px apart. */
-    void setHints(LinearLayout hints, List<String> h) {
-        hints.removeAllViews();
-        for (int i = 0; i < h.size(); i++) {
-            TextView v = text(ui400, 22, Palette.MIST_400);
-            v.setText(h.get(i));
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
-            if (i > 0) lp.setMarginStart(Ui.ipx(40));
-            hints.addView(v, lp);
-        }
     }
 
     /** The connected Wi-Fi network's name, or null when there is none or it can't be read. */

@@ -150,6 +150,8 @@ in Developer options, revoke the USB debugging authorisations, reboot, and check
 | I want to… | Do this |
 |---|---|
 | Change favourites | All apps → hold **OK** to add, reorder or replace up to nine favourites; replacement lets you choose a tile on Home |
+| Recent apps | Up to five apps opened through Afnon, below the two favourite rows |
+| Hide preinstalled apps | Settings → Display & language → **Hide system apps in All apps**; Home favourites stay visible |
 | Uninstall a removable app | All apps → hold **OK** → Uninstall → Android confirmation |
 | Prayer time offsets | Settings → Prayer times → Prayer time offsets (−30 to +30 minutes for each time) |
 | App-coloured lighting | Settings → Display & language → App focus lighting |

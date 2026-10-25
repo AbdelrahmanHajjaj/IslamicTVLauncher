@@ -97,12 +97,6 @@ public class NowActivity extends Screen {
         dlp.topMargin = Ui.ipx(18 - 2 * r);
         col.addView(dismissButton, dlp);
 
-        TextView hint = text(ui400, 22, Palette.MIST_400);
-        hint.setText(t.nowHint(Prefs.callCloseMinutes(this)));
-        LinearLayout.LayoutParams hlp = new LinearLayout.LayoutParams(-2, -2);
-        hlp.topMargin = Ui.ipx(20 - r);
-        col.addView(hint, hlp);
-
         place(col, 640, 230, 640, ViewGroup.LayoutParams.WRAP_CONTENT);
         setContentView(root);
         updatePlayLabel();

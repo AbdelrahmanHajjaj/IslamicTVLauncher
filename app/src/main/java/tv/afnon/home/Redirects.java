@@ -32,6 +32,7 @@ final class Redirects {
         try {
             s.startActivities(new Intent[] {home, open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)});
+            Apps.remember(s, to);
         } catch (RuntimeException ignored) {
             // The target refuses outside launches; stay where we are.
         }

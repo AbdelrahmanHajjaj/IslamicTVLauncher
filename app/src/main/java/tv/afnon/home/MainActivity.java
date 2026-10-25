@@ -50,22 +50,20 @@ import java.util.Set;
 /** Afnon Home: the mihrab arch on the start side, the courtyard (clock, prayer strip, apps) beside it. */
 public class MainActivity extends Screen {
 
-    // Focus nodes, in the order of design/FocusMap.dc.html.
-    // Section labels sit 10px above the design (478 / 722) so the focus ring and 1.06 scale never touch them.
-    private static final int LABEL_ABOVE_FAV = 468, LABEL_ABOVE_MORE = 712;
+    // Leave space between the section label and the first row's focus ring.
+    private static final int LABEL_ABOVE_FAV = 468;
 
-    private static final int ARCH = 0, WIFI = 1, SETTINGS = 2, F0 = 3, M0 = 7, ALL = 12, RADIO = 13, NODES = 14;
+    private static final int ARCH = 0, WIFI = 1, SETTINGS = 2, F0 = 3, M0 = 12, ALL = 17, RADIO = 18, NODES = 19;
 
     private final View[] nodes = new View[NODES];
     private final TextView[] cellTag = new TextView[6], cellName = new TextView[6], cellTime = new TextView[6];
     private final View[] cell = new View[6];
-    private final String[] nodeLabel = new String[NODES];
     private final String[] nodePackage = new String[NODES];
     private FocusGlow focusGlow;
     private String replacementPackage;
 
     private TextView clock, gdate, hdate, wifiName;
-    private LinearLayout hints;
+    private int favouriteCount, recentCount;
     private PrayerDay day;
     private long lastMinute = -1;
     private int lastFav = F0;
@@ -192,6 +190,7 @@ public class MainActivity extends Screen {
     void build() {
         newRoot();
         java.util.Arrays.fill(nodePackage, null);
+        java.util.Arrays.fill(nodes, null);
         focusGlow = Prefs.of(this).getBoolean("focus_lighting", false) ? new FocusGlow(this) : null;
         if (focusGlow != null) root.addView(focusGlow, new FrameLayout.LayoutParams(-1, -1));
         card = null;   // a reminder card went with the old root
@@ -264,34 +263,36 @@ public class MainActivity extends Screen {
         fav.setMaxWidth(Ui.ipx(Tokens.COURT_W));
         fav.setEllipsize(TextUtils.TruncateAt.END);
         place(fav, Tokens.COURT_X, LABEL_ABOVE_FAV, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        float fw = (Tokens.COURT_W - 3 * 24) / 4f;
         List<String> favs = Apps.slots(this, t);
-        for (int i = 0; i < 4; i++) {
-            nodes[F0 + i] = favouriteTile(i < favs.size() ? favs.get(i) : null, F0 + i, Tokens.COURT_X + i * (fw + 24), 520, fw);
+        favouriteCount = favs.size();
+        int columns = FavouriteChoice.columns(favouriteCount);
+        float fw = (Tokens.COURT_W - (columns - 1) * 20) / columns;
+        for (int i = 0; i < favouriteCount; i++) {
+            nodes[F0 + i] = favouriteTile(favs.get(i), F0 + i,
+                Tokens.COURT_X + (i % columns) * (fw + 20), 516 + (i / columns) * 156, fw);
         }
 
-        TextView more = caps(text(ui400, 22, Palette.MIST_400));
-        more.setText(favs.size() > 4 ? t.moreFavourites() : t.more());
-        place(more, Tokens.COURT_X, LABEL_ABOVE_MORE, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        TextView recent = caps(text(ui400, 22, Palette.MIST_400));
+        recent.setText(t.recentApps());
+        place(recent, Tokens.COURT_X, 842, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         float mw = (Tokens.COURT_W - 5 * 20) / 6f;
-        List<String> moreApps = Apps.more(this, t, 5);
-        for (int i = 0; i < 5; i++) {
-            nodes[M0 + i] = moreTile(i < moreApps.size() ? moreApps.get(i) : null, M0 + i, Tokens.COURT_X + i * (mw + 20), 764, mw);
+        List<String> recentApps = Apps.recent(this);
+        recentCount = recentApps.size();
+        for (int i = 0; i < recentCount; i++) {
+            nodes[M0 + i] = moreTile(recentApps.get(i), M0 + i, Tokens.COURT_X + i * (mw + 20), 890, mw);
         }
-        nodes[ALL] = allAppsTile(Tokens.COURT_X + 5 * (mw + 20), 764, mw);
-
-        hints = new LinearLayout(this);
-        hints.setOrientation(LinearLayout.HORIZONTAL);
-        place(hints, Tokens.COURT_X, 962, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        nodes[ALL] = allAppsTile(Tokens.COURT_X + 5 * (mw + 20), 890, mw);
 
         for (int i = 0; i < NODES; i++) {
             final int n = i;
+            if (nodes[i] == null) continue;
             nodes[i].setOnFocusChangeListener((v, has) -> { if (has) onNodeFocused(n); else if (n == ARCH) setArchFocused(false); });
         }
 
         if (replacementPackage != null) {
             for (int i = 0; i < NODES; i++) {
-                boolean candidate = nodePackage[i] != null && favs.contains(nodePackage[i]);
+                if (nodes[i] == null) continue;
+                boolean candidate = i >= F0 && i < M0;
                 nodes[i].setFocusable(candidate);
                 nodes[i].setEnabled(candidate);
                 if (!candidate) nodes[i].setAlpha(.4f);
@@ -323,7 +324,6 @@ public class MainActivity extends Screen {
             compass.setColor(c);
         });
         b.setOnClickListener(v -> startActivity(new Intent(this, PrayerDayActivity.class)));
-        nodeLabel[ARCH] = t.today();
         placeTile(b, 176, 904, 440, 72);
         return b;
     }
@@ -348,7 +348,6 @@ public class MainActivity extends Screen {
             icon.setColor(c);
         });
         b.setOnClickListener(v -> startSafely(new Intent(Settings.ACTION_WIFI_SETTINGS)));
-        nodeLabel[WIFI] = t.network();
         return b;
     }
 
@@ -361,7 +360,6 @@ public class MainActivity extends Screen {
         b.setContentDescription(t.settings());
         b.setLook(f -> gear.setColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> startSafely(new Intent(this, SettingsActivity.class)));
-        nodeLabel[SETTINGS] = t.settings();
         placeEnd(b, 1920 - (Tokens.COURT_X + Tokens.COURT_W), 56, 72, 72);
         return b;
     }
@@ -370,25 +368,24 @@ public class MainActivity extends Screen {
         FocusTile b = new FocusTile(this, Tokens.RADIUS_TILE);
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(Ui.ipx(24), Ui.ipx(22), Ui.ipx(24), Ui.ipx(22));
+        col.setPadding(Ui.ipx(20), Ui.ipx(18), Ui.ipx(20), Ui.ipx(18));
         ImageView icon = new ImageView(this);
         icon.setScaleType(ImageView.ScaleType.FIT_START);
         Drawable d = Apps.icon(this, pkg);
         if (d != null) icon.setImageDrawable(d);
         String name = pkg == null ? "" : Apps.name(this, t, pkg);
-        TextView label = text(ui500, Apps.isLatin(name) ? 28 : 30, Palette.PLASTER_100);
+        TextView label = text(ui500, Apps.isLatin(name) ? 24 : 26, Palette.PLASTER_100);
         label.setText(name);
         label.setSingleLine(true);
         label.setEllipsize(TextUtils.TruncateAt.END);
-        col.addView(icon, new LinearLayout.LayoutParams(Ui.ipx(48), Ui.ipx(48)));
+        col.addView(icon, new LinearLayout.LayoutParams(Ui.ipx(40), Ui.ipx(40)));
         col.addView(new View(this), new LinearLayout.LayoutParams(1, 0, 1));
         col.addView(label, new LinearLayout.LayoutParams(-1, -2));
         b.addView(col, new FrameLayout.LayoutParams(-1, -1));
         b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> activateApp(pkg));
-        nodeLabel[node] = name;
         nodePackage[node] = pkg;
-        placeTile(b, x, y, w, 150);
+        placeTile(b, x, y, w, 132);
         return b;
     }
 
@@ -404,9 +401,8 @@ public class MainActivity extends Screen {
         b.addView(label, new FrameLayout.LayoutParams(-1, -1));
         b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> activateApp(pkg));
-        nodeLabel[node] = name;
         nodePackage[node] = pkg;
-        placeTile(b, x, y, w, 112);
+        placeTile(b, x, y, w, 94);
         return b;
     }
 
@@ -415,14 +411,13 @@ public class MainActivity extends Screen {
         b.setRest(0, Palette.LINE_DASH, 2).setDashed();
         TextView label = text(ui400, 22, Palette.PLASTER_100);
         // Two lines: the dashed tile is too narrow for "All apps · N" on one.
-        label.setText(t.all(Apps.installed(this).size()));
+        label.setText(t.all(Apps.allApps(this, t).size()));
         label.setPadding(Ui.ipx(12), Ui.ipx(18), Ui.ipx(12), Ui.ipx(18));
         label.setGravity(Gravity.BOTTOM | Gravity.START);
         b.addView(label, new FrameLayout.LayoutParams(-1, -1));
         b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> startActivity(new Intent(this, AllAppsActivity.class)));
-        nodeLabel[ALL] = t.allTitle();
-        placeTile(b, x, y, w, 112);
+        placeTile(b, x, y, w, 94);
         return b;
     }
 
@@ -516,28 +511,8 @@ public class MainActivity extends Screen {
 
     private void onNodeFocused(int n) {
         if (focusGlow != null) focusGlow.show(nodePackage[n]);
-        if (replacementPackage != null) {
-            setHints(hints, java.util.Collections.singletonList(t.replaceHint()));
-            return;
-        }
         if (n >= F0 && n < M0) lastFav = n;
         setArchFocused(n == ARCH);
-        List<String> h = new ArrayList<>();
-        if (n == ARCH) {
-            h.add(t.hintOk(t.today()));
-            h.add(t.hintApps());
-        } else if (n == RADIO) {
-            h.add(t.hintOk(nodeLabel[n]));
-        } else if (n >= F0 && n < M0) {
-            h.add(t.hintOk(t.open(nodeLabel[n])));
-            h.add(t.hintMore());
-        } else if (n >= M0) {
-            h.add(t.hintOk(n == ALL ? nodeLabel[n] : t.open(nodeLabel[n])));
-            h.add(t.hintFavs());
-        } else {
-            h.add(t.hintOk(nodeLabel[n]));
-        }
-        setHints(hints, h);
     }
 
     private void setArchFocused(boolean f) {
@@ -569,14 +544,12 @@ public class MainActivity extends Screen {
         nodes[RADIO] = b;
         b.setLook(f -> styleRadio());
         b.setOnClickListener(v -> showRadioCard());
-        nodeLabel[RADIO] = t.station(Radio.station(this));
         return b;
     }
 
     /** Puts the pill and the open card in step with the radio. */
     private void styleRadio() {
         if (radioLabel == null || nodes[RADIO] == null) return;
-        nodeLabel[RADIO] = t.station(Radio.station(this));
         int state = Radio.state();
         boolean on = Radio.on(), playing = state == Radio.PLAYING;
         boolean focused = nodes[RADIO].isFocused();
@@ -658,12 +631,6 @@ public class MainActivity extends Screen {
         blp.setMarginStart(-Ui.ipx(r));
         radioCard.addView(buttons, blp);
 
-        TextView note = text(ui400, 20, Palette.MIST_400);
-        note.setText(t.radioNote());
-        LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(-1, -2);
-        nlp.topMargin = Ui.ipx(20 - r);
-        radioCard.addView(note, nlp);
-
         // Hangs from the header, end-aligned with the Settings button, over the dates and the prayer strip.
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(Ui.ipx(720), -2, Gravity.TOP | Gravity.END);
         lp.setMarginEnd(Ui.ipx(1920 - (Tokens.COURT_X + Tokens.COURT_W)));
@@ -672,15 +639,6 @@ public class MainActivity extends Screen {
         for (View n : nodes) if (n != null) n.setFocusable(false);
         styleRadio();
         cardPlay.requestFocus();
-        cardHints(cardPlay);
-    }
-
-    private void cardHints(View focused) {
-        if (radioCard == null || hints == null) return;
-        List<String> h = new ArrayList<>();
-        h.add(t.hintOk(focused == cardDark ? t.screenOff() : (Radio.on() ? t.radioStop() : t.radioPlay())));
-        h.add(t.hintClose());
-        setHints(hints, h);
     }
 
     /** A 68px pill on the card with an icon: lapis at rest, gold when focused. */
@@ -700,7 +658,6 @@ public class MainActivity extends Screen {
             int c = f ? Palette.LAPIS_900 : Palette.PLASTER_100;
             v.setTextColor(c);
             icon.setColor(c);
-            if (f) cardHints(b);
         });
         return b;
     }
@@ -774,10 +731,6 @@ public class MainActivity extends Screen {
         root.addView(card, lp);
         for (View n : nodes) if (n != null) n.setFocusable(false);
         cardOk.requestFocus();
-        List<String> h = new ArrayList<>();
-        h.add(t.hintOk(t.apOk()));
-        h.add(t.hintBackHome().replace(t.home(), t.dismiss()));
-        setHints(hints, h);
     }
 
     /** A 68px pill on the cream card: lapis (Got it) or outlined; gold when focused. */
@@ -867,12 +820,12 @@ public class MainActivity extends Screen {
         if (rtl && key == KeyEvent.KEYCODE_DPAD_LEFT) key = KeyEvent.KEYCODE_DPAD_RIGHT;
         else if (rtl && key == KeyEvent.KEYCODE_DPAD_RIGHT) key = KeyEvent.KEYCODE_DPAD_LEFT;
         int from = currentNode();
+        int columns = FavouriteChoice.columns(favouriteCount);
         if (replacementPackage != null) {
-            int slot = from >= F0 && from < M0 ? from - F0 : from >= M0 && from < ALL ? from - M0 + 4 : 0;
-            int to = FavouriteChoice.move(slot, Apps.slots(this, t).size(),
+            int to = FavouriteChoice.move(from - F0, favouriteCount,
                 key == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : key == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0,
                 key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0);
-            if (to >= 0) nodes[to < 4 ? F0 + to : M0 + to - 4].requestFocus();
+            if (to >= 0) nodes[F0 + to].requestFocus();
             return;
         }
         if (from < 0) { nodes[ARCH].requestFocus(); return; }
@@ -881,21 +834,23 @@ public class MainActivity extends Screen {
         int to = -1;
         switch (from) {
             case ARCH: to = right ? F0 : up ? RADIO : -1; break;
-            case RADIO: to = left ? ARCH : right ? WIFI : down ? F0 + 1 : -1; break;
-            case WIFI: to = left ? RADIO : right ? SETTINGS : down ? F0 + 2 : -1; break;
-            case SETTINGS: to = left ? WIFI : down ? F0 + 3 : -1; break;
+            case RADIO: to = left ? ARCH : right ? WIFI : down ? F0 : -1; break;
+            case WIFI: to = left ? RADIO : right ? SETTINGS : down ? F0 + columns / 2 : -1; break;
+            case SETTINGS: to = left ? WIFI : down ? F0 + columns - 1 : -1; break;
             default:
-                if (from >= F0 && from < M0) {
-                    int i = from - F0;
-                    if (left) to = i == 0 ? ARCH : from - 1;
-                    else if (right) to = i == 3 ? -1 : from + 1;
-                    else if (up) to = i == 3 ? SETTINGS : i == 2 ? WIFI : RADIO;
-                    else to = M0 + new int[] {0, 1, 3, 4}[i];
-                } else {
-                    int i = from - M0;
-                    if (left) to = i == 0 ? ARCH : from - 1;
-                    else if (right) to = from == ALL ? -1 : from + 1;
-                    else if (up) to = lastFav;
+                if (from >= F0 && from < F0 + favouriteCount) {
+                    int slot = from - F0, col = slot % columns;
+                    if (left) to = col == 0 ? ARCH : from - 1;
+                    else if (right && col < columns - 1 && slot + 1 < favouriteCount) to = from + 1;
+                    else if (up) to = slot >= columns ? from - columns : col == 0 ? RADIO : col == columns - 1 ? SETTINGS : WIFI;
+                    else if (down) {
+                        if (slot < columns && favouriteCount > columns) to = F0 + Math.min(favouriteCount - 1, slot + columns);
+                        else to = recentCount == 0 ? ALL : M0 + Math.min(recentCount - 1, col * 5 / columns);
+                    }
+                } else if (from >= M0) {
+                    if (left) to = from == ALL ? (recentCount == 0 ? ARCH : M0 + recentCount - 1) : from == M0 ? ARCH : from - 1;
+                    else if (right) to = from == ALL ? -1 : from < M0 + recentCount - 1 ? from + 1 : ALL;
+                    else if (up) to = Math.min(F0 + favouriteCount - 1, lastFav);
                 }
         }
         if (to >= 0 && nodes[to] != null) nodes[to].requestFocus();
@@ -929,6 +884,6 @@ public class MainActivity extends Screen {
     }
 
     private String appsKey() {
-        return Apps.favourites(this) + "|" + Apps.installed(this).toString();
+        return Apps.favourites(this) + "|" + Apps.recent(this) + "|" + Apps.installed(this).toString();
     }
 }

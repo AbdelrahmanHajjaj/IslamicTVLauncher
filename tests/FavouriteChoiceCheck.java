@@ -8,7 +8,9 @@ public final class FavouriteChoiceCheck {
                 int moved = FavouriteChoice.move(slot,count,delta[0],delta[1]);
                 check(moved >= 0 && moved < count);
             }
-        check(FavouriteChoice.move(3,6,0,1)==5);
+        check(FavouriteChoice.columns(6)==3);
+        check(FavouriteChoice.columns(9)==5);
+        check(FavouriteChoice.move(2,6,0,1)==5);
         check(FavouriteChoice.move(8,9,0,-1)==3);
         List<String> before = Arrays.asList("a","b","c","d","e","f");
         check(FavouriteChoice.replace(before,4,"new").equals(Arrays.asList("a","b","c","d","new","f")));

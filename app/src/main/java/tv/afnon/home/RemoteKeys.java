@@ -178,7 +178,7 @@ public class RemoteKeys extends AccessibilityService {
         // Act on release only, and swallow the press too so the app underneath never sees half a key.
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
             if (app != null) {
-                try { startActivity(target(this, app).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); }
+                try { startActivity(target(this, app).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); Apps.remember(this, app); }
                 catch (RuntimeException ignored) { }
             } else {
                 try {

@@ -3,16 +3,17 @@ package tv.afnon.home;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Home's four large favourites and up to five smaller favourites below. */
+/** Home favourites occupy at most two balanced rows. */
 final class FavouriteChoice {
     static final int MAX = 9;
+    static int columns(int count) { return Math.max(1, (Math.min(MAX, count) + 1) / 2); }
     static int move(int slot, int count, int dx, int dy) {
         if (count < 1 || count > MAX) return -1;
         slot = Math.max(0, Math.min(count - 1, slot));
-        int start = slot < 4 ? 0 : 4, end = slot < 4 ? Math.min(3, count - 1) : count - 1;
+        int columns = columns(count), start = slot / columns * columns, end = Math.min(start + columns - 1, count - 1);
         if (dx != 0) return Math.max(start, Math.min(end, slot + dx));
-        if (dy > 0 && slot < 4 && count > 4) return Math.min(count - 1, slot + 4);
-        if (dy < 0 && slot >= 4) return Math.min(3, slot - 4);
+        if (dy > 0 && slot < columns && count > columns) return Math.min(count - 1, slot + columns);
+        if (dy < 0 && slot >= columns) return slot - columns;
         return slot;
     }
     static List<String> replace(List<String> current, int slot, String app) {

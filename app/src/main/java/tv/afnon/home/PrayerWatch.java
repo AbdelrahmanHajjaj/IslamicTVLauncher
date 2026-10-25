@@ -168,7 +168,7 @@ final class PrayerWatch {
         if (!t.ar) label.setLetterSpacing(0.2f);
         TextView title = text(display, 44, Palette.PLASTER_100,
             t.apTitle(names[day.nextIndex], minutes, Screen.duration(Screen.secondsUntil(day.nextTime, now), false)));
-        TextView sub = text(ui, 22, Palette.MIST_400, t.bannerSub(Screen.clock(t, day.nextTime, h24, 1f), BANNER_SECONDS));
+        TextView sub = text(ui, 22, Palette.MIST_400, t.apSub(Screen.clock(t, day.nextTime, h24, 1f)));
         words.addView(label);
         words.addView(title);
         words.addView(sub);

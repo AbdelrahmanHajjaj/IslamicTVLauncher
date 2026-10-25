@@ -43,7 +43,6 @@ public class PrayerDayActivity extends Screen {
     private int pickerFacing;
     // OK and Back act on release; Settings opens the picker on press, so that press's release must not close it.
     private boolean pickerPressed;
-    private LinearLayout hints;
     private PrayerDay day;
     private long lastMinute = -1;
     /** Opened by Settings for the room direction only (extra "room"). */
@@ -78,10 +77,6 @@ public class PrayerDayActivity extends Screen {
 
         buildQibla();
 
-        hints = new LinearLayout(this);
-        hints.setOrientation(LinearLayout.HORIZONTAL);
-        place(hints, Tokens.COURT_X, 976, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         setContentView(root);
         lastMinute = -1;
         render(true);
@@ -110,7 +105,6 @@ public class PrayerDayActivity extends Screen {
             back.setColor(c);
         });
         b.setOnClickListener(v -> finish());
-        b.setOnFocusChangeListener((v, has) -> { if (has) setHints(hints, java.util.Collections.singletonList(t.hintOk(t.home()))); });
         placeEnd(b, 1920 - (Tokens.COURT_X + Tokens.COURT_W), 56, ViewGroup.LayoutParams.WRAP_CONTENT, 72);
         return b;
     }
@@ -147,11 +141,6 @@ public class PrayerDayActivity extends Screen {
         b.setOnFocusChangeListener((v, has) -> {
             if (has) {
                 lastRow = i;
-                List<String> h = new ArrayList<>();
-                h.add(t.hintOk(t.bellToggle()));
-                h.add(t.hintQibla());
-                h.add(t.hintBackHome());
-                setHints(hints, h);
             }
         });
         placeTile(b, Tokens.COURT_X, ROW_TOP + i * (ROW_H + ROW_GAP), 620, ROW_H);
@@ -210,14 +199,6 @@ public class PrayerDayActivity extends Screen {
         roomButton.addView(roomLabel, new FrameLayout.LayoutParams(-1, -1));
         roomButton.setLook(f -> roomLabel.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         roomButton.setOnClickListener(v -> openPicker());
-        roomButton.setOnFocusChangeListener((v, has) -> {
-            if (has) {
-                List<String> h = new ArrayList<>();
-                h.add(t.hintOk(roomLabel.getText().toString()));
-                h.add(t.hintTimes());
-                setHints(hints, h);
-            }
-        });
         placeTile(roomButton, 1424 + 32, 236 + 698 - 28 - 64, 400 - 64, 64);
     }
 
@@ -300,11 +281,7 @@ public class PrayerDayActivity extends Screen {
         picker = null;
         renderMinute(new Date());
         roomButton.requestFocus();
-        // Still focused from before the picker, so the focus listener won't run: refresh the hint's wording here.
-        List<String> h = new ArrayList<>();
-        h.add(t.hintOk(roomLabel.getText().toString()));
-        h.add(t.hintTimes());
-        setHints(hints, h);
+
     }
 
     @Override

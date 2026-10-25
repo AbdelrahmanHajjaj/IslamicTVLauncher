@@ -39,16 +39,16 @@ final class Text {
     String cityName = "";
     String city() { return cityName; }
     String fav() { return ar ? "المفضلة" : "FAVOURITES"; }
-    String moreFavourites() { return ar ? "المزيد من المفضلة والتطبيقات" : "MORE FAVOURITES & APPS"; }
     String addFavourite() { return ar ? "إضافة إلى المفضلة" : "Add to favourites"; }
     String removeFavourite() { return ar ? "إزالة من المفضلة" : "Remove from favourites"; }
     String replaceFavourite() { return ar ? "استبدال تطبيق في المفضلة" : "Replace a favourite"; }
-    String replaceWith(String name) { return (ar ? "اختر ما تريد استبداله بـ " : "CHOOSE A FAVOURITE TO REPLACE WITH ") + name; }
-    String replaceHint() { return ar ? "OK استبدال · رجوع للإلغاء" : "OK Replace selected favourite · Back Cancel"; }
+    String replaceWith(String name) { return (ar ? "استبدال بـ " : "REPLACE WITH ") + name; }
     String uninstall() { return ar ? "إلغاء التثبيت" : "Uninstall"; }
     String focusLighting() { return ar ? "إضاءة حسب التطبيق" : "App focus lighting"; }
     String focusLightingHelp() { return ar ? "تتغير إضاءة الخلفية قليلًا حسب التطبيق المحدد" : "Gently tint the background using the selected app's colours"; }
-    String more() { return ar ? "المزيد" : "MORE"; }
+    String hideSystemApps() { return ar ? "إخفاء تطبيقات النظام من كل التطبيقات" : "Hide system apps in All apps"; }
+    String hideSystemAppsHelp() { return ar ? "تبقى تطبيقاتك المفضلة ظاهرة في الرئيسية" : "Home favourites stay visible"; }
+    String recentApps() { return ar ? "التطبيقات الأخيرة" : "RECENT APPS"; }
     /** Home's tile: the label over the count. */
     String all(int n) { return d((ar ? "كل التطبيقات" : "All apps") + "\n" + n); }
     String ampm(boolean am) { return ar ? (am ? "ص" : "م") : (am ? "AM" : "PM"); }
@@ -65,10 +65,6 @@ final class Text {
     String suhoorEnds(String time) { return d(ar ? "السحور حتى " + time : "Suhoor ends " + time); }
     String comingSoon() { return ar ? "هذه الشاشة قادمة في التحديث التالي" : "This screen comes in the next update"; }
 
-    String hintOk(String what) { return "OK  " + what; }
-    String hintApps() { return ar ? "◀  التطبيقات" : "▶  Apps"; }
-    String hintMore() { return ar ? "▼  المزيد" : "▼  More"; }
-    String hintFavs() { return ar ? "▲  المفضلة" : "▲  Favourites"; }
     String open(String app) { return ar ? "فتح " + app : "Open " + app; }
     String network() { return ar ? "إعدادات الشبكة" : "Network settings"; }
 
@@ -92,11 +88,8 @@ final class Text {
         if (!ar && minutes < 60) return d(prayer + " in " + minutes + (minutes == 1 ? " minute" : " minutes"));
         return prayer + " " + inMinutes(minutes, hoursAndMinutes);
     }
-    String apSub(CharSequence time) { return d((ar ? "الأذان " : "Adhan at ") + time + (ar ? " · رجوع للإغلاق" : " · Back to dismiss")); }
+    String apSub(CharSequence time) { return d((ar ? "الأذان " : "Adhan at ") + time); }
     String apOk() { return ar ? "حسنًا" : "Got it"; }
-    String bannerSub(CharSequence time, int seconds) {
-        return d((ar ? "الأذان " : "Adhan ") + time + (ar ? " · يختفي خلال " + seconds + " ث" : " · hides in " + seconds + " s"));
-    }
     String nowLabel() { return ar ? "حان الآن وقت صلاة" : "IT'S TIME FOR"; }
     String play() { return ar ? "تشغيل الأذان" : "Play adhan"; }
     String stop() { return ar ? "إيقاف الأذان" : "Stop adhan"; }
@@ -123,14 +116,6 @@ final class Text {
     String radioPlay() { return ar ? "تشغيل" : "Play"; }
     String radioStop() { return ar ? "إيقاف" : "Stop"; }
     String screenOff() { return ar ? "إطفاء الشاشة" : "Screen off"; }
-    String radioNote() {
-        return d(ar ? "تستمر في الرئيسية وشاشة التوقف · تتوقف إذا شغّل تطبيق آخر صوتًا"
-                    : "Keeps playing on Home and the screensaver · stops when another app plays sound");
-    }
-    String screenOffNote() {
-        return d(ar ? "الشاشة مطفأة والإذاعة تعمل · اضغط أي زر للعودة" : "Screen off, radio playing · press any key to come back");
-    }
-    String hintClose() { return ar ? "رجوع  إغلاق" : "Back  Close"; }
     String sectionRadio() { return ar ? "الإذاعة" : "Radio"; }
     String radioRowHelp(Radio.Station s) { return stationWhere(s) + (ar ? " · تحتاج إلى الإنترنت" : " · needs the internet"); }
     String afterAdhanRow() { return ar ? "بعد الأذان" : "After the adhan"; }
@@ -145,12 +130,6 @@ final class Text {
         return ar ? new String[] {"مع شاشة التوقف", "بعدها بـ 15 د", "أبدًا"} : new String[] {"With screensaver", "15 min later", "Never"};
     }
 
-    /** The call screen's hint: how it closes by itself (Settings → Reminders); 0 is when the adhan ends. */
-    String nowHint(int minutes) {
-        if (minutes == 0) return d(ar ? "رجوع للإغلاق · يُغلق تلقائيًا بعد الأذان" : "Back to dismiss · closes by itself after the adhan");
-        return d(ar ? "رجوع للإغلاق · يُغلق تلقائيًا بعد " + (minutes == 1 ? "دقيقة" : minutes + " دقائق")
-                    : "Back to dismiss · closes by itself after " + minutes + " min");
-    }
     String callCloseRow() { return ar ? "إغلاق شاشة الأذان" : "Close the call screen"; }
     String callCloseHelp() { return ar ? "ثم تعود إلى ما كنت تشاهده" : "Then back to what you were watching"; }
     /** In the order of the row's minutes: 0 (after the adhan), 1, 5, 10. */
@@ -172,8 +151,6 @@ final class Text {
         return ar ? "في المفضلة · " + ord[position - 1] : d("In favourites · position " + position);
     }
     String notFav() { return ar ? "اضغط مطولًا على OK لوضعه في المفضلة" : "Hold OK to put it in favourites"; }
-    String hintOpen() { return ar ? "OK  فتح" : "OK  Open"; }
-    String hintHold() { return ar ? "اضغط مطولًا  ترتيب المفضلة" : "Hold OK  Arrange favourites"; }
     String moveEarlier() { return ar ? "تقديمه في المفضلة" : "Move earlier in favourites"; }
     String moveLater() { return ar ? "تأخيره في المفضلة" : "Move later in favourites"; }
     String putInPlaceOf(String app) { return ar ? "ضعه في المفضلة مكان " + app : "Put in favourites instead of " + app; }
@@ -278,20 +255,11 @@ final class Text {
     String networkHelp() { return ar ? "واي فاي وإيثرنت" : "Wi-Fi and Ethernet"; }
     String deviceRow() { return ar ? "إعدادات التلفاز" : "TV settings"; }
     String deviceHelp() { return ar ? "الصورة والصوت والتطبيقات والنظام" : "Picture, sound, apps and system"; }
-    String hintMove() { return ar ? "▲▼  تنقل" : "▲▼  Move"; }
-    String hintChange() { return ar ? "◀▶  تغيير القيمة" : "◀▶  Change value"; }
-    String hintChoose() { return ar ? "OK  اختيار" : "OK  Choose"; }
-    String hintBackMenu() { return ar ? "رجوع  القائمة" : "Back  Menu"; }
-    String hintEdit() { return ar ? "OK  تعديل" : "OK  Edit"; }
-    String hintSwitch() { return ar ? "OK  تشغيل/إيقاف" : "OK  On/Off"; }
-    String hintSave() { return ar ? "OK  حفظ" : "OK  Save"; }
-    String hintBackCancel() { return ar ? "رجوع  إلغاء" : "Back  Cancel"; }
     String saved() { return ar ? "✓  تم الحفظ" : "✓  Saved"; }
     String qibla() { return ar ? "القبلة" : "QIBLA"; }
     String north() { return ar ? "الشمال ▲" : "▲ North"; }
     String qiblaHint() { return ar ? "وجّه الشمال على البوصلة نحو الشمال الحقيقي" : "Line up the compass north with true north"; }
     String bellToggle() { return ar ? "تشغيل/إيقاف الأذان لهذه الصلاة" : "Adhan on/off for this prayer"; }
-    String hintBackHome() { return ar ? "رجوع  الرئيسية" : "Back  Home"; }
     String bell(boolean on) { return ar ? (on ? "الأذان مفعّل" : "الأذان متوقف") : (on ? "Adhan on" : "Adhan off"); }
     String rowNow() { return ar ? "الآن" : "now"; }
     /** Sunrise is masculine in Arabic (الشروق مضى); the prayers are feminine (الصلاة مضت). */
@@ -333,8 +301,6 @@ final class Text {
                   : "Stand facing the TV, open the compass app on your phone and hold it flat in front of you, then set the number here to what it reads. Once is enough while the TV stays where it is.";
     }
     String roomKeys() { return ar ? "◀ ▶  ٥°     ▲ ▼  ٤٥°     OK  حفظ     رجوع  إلغاء" : "◀ ▶  5°     ▲ ▼  45°     OK  Save     Back  Cancel"; }
-    String hintQibla() { return ar ? "◀  القبلة" : "▶  Qibla"; }
-    String hintTimes() { return ar ? "▶  المواقيت" : "◀  Times"; }
 
     private static int sector(double degrees) {
         return (int) Math.round(((degrees % 360) + 360) % 360 / 45) % 8;
