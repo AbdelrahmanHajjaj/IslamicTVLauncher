@@ -1,8 +1,8 @@
 # Fork and upstream contribution plan
 
-This is a local preparation record for `feature/improvements_and_cleanup`, not a submitted PR.
-No push or PR creation is part of the documentation update. Read [CONTRIBUTING.md](../CONTRIBUTING.md)
-and the [PR template](../.github/pull_request_template.md) before submission.
+The integration branch `feature/improvements_and_cleanup` is submitted as [fork PR #1](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher/pull/1).
+Only that fork PR is in scope; upstream proposals are deferred at the owner's request.
+Read [CONTRIBUTING.md](../CONTRIBUTING.md) and the [PR template](../.github/pull_request_template.md) for each future submission.
 
 ## Two destinations, focused upstream changes
 
@@ -47,13 +47,13 @@ Carry over only relevant checks and sanitised screenshots in each PR's descripti
 |---|---|
 | Attribution and licence | MIT and third-party notices retained, including CleanYourTV. No downloaded adhan or generated announcement audio is added to Git. |
 | Current city data | Native catalog and generated browser data contain 137 cities / 43 countries; [city reference](CITIES.md). Introductory browser counts now derive from the catalog. |
-| New city's prayer accuracy | **Pending:** six calculated times on one named date compared with an official local mosque/authority timetable, including method, Asr, timezone and differences. Leamington Spa's MWL default is not a verified mosque timetable. |
+| New city's prayer accuracy | **Not independently verified:** the local mosque has no available published link. The owner configured manual offsets; they survived the final update and restart. Leamington Spa's MWL default remains an editable starting point, not a verified mosque timetable. An upstream city PR still needs the required comparison. |
 | Bilingual UI evidence | Updated real-TV screenshots cover Home, layout cards, offsets, appearance and prayer bar in English/Arabic. Every affected screen still needs its complete physical D-pad edge/Back check for its proposed PR. |
-| Shared design tokens | Generated-token consistency checks pass in the recorded build. **Pending:** review the hard-coded preview/offset sizes in `SettingsActivity.java` and bar dimensions in `PrayerDock.java`, and move applicable UI constants into `afnon-mihrab/tokens.json` where the contribution guide requires them. Passing generation checks alone does not prove this. |
-| Browser parity | Native data, icons, patterns, themes and both Home layouts are shared/mirrored. **Pending:** native prayer-offset editing and other TV-only settings need an appropriate browser representation; actual OS operations stay native. |
-| Build and warnings | Last native build: launcher lint 0 errors / 85 warnings; installer lint 0 errors / 14 warnings. **Pending:** remove the 16 added pattern-vector warnings (8 path / 8 raster) and compare against the selected upstream base. Do not call this "no new warnings" yet. |
+| Shared design tokens | Settings rows, offset time sizing, appearance previews, layout cards, quick menus and prayer-bar dimensions now use shared tokens. Native generation and browser consistency checks pass. Decorative miniature drawing coordinates remain local to their renderers. |
+| Browser parity | Native data, icons, patterns, themes, both Home layouts and six prayer-offset controls are shared/mirrored. English/Arabic save/cancel, navigation and centred times passed real-browser checks. Android inputs, Wi-Fi, overlays, service and recovery operations require the TV. |
+| Build and warnings | Final native build: launcher lint 0 errors / 56 warnings; installer lint 0 errors / 14 warnings. All sixteen added pattern-vector warnings were removed, and further touched-code findings were fixed. No lint findings map to added/changed lines against the fork base. A separate baseline build was not run because the local export guard refused its source archive; this is a diff-based comparison, not a complete diagnostic-set equivalence claim. |
 | Tests and performance | Existing automated checks and site build are recorded in [local validation](LOCAL-VALIDATION.md). Limited All apps timings are not a broad speed or memory comparison with CleanYourTV. |
-| Hardware coverage | Home, remote keys, held volume, radio and test adhan have been checked on TCL 50C641K / Android 11. **Pending:** live HDMI picture/audio, full phone setup/recovery on a phone, and final reboot/idle-saver checks after the latest changes. |
+| Hardware coverage | Home, remote keys, held volume, radio and test adhan have been checked on TCL 50C641K / Android 11. The final APK retained settings and disabled packages; Home and the prayer/button service returned after a restart. Automatic saver start, physical Home wake, and the post-restart Home/Blue/Back/Settings/Input/held-volume checks passed. Live HDMI picture/audio and complete phone setup/recovery still need hardware coverage. |
 | Privacy | Public screenshots are cropped/redacted as documented in [capture notes](screenshots/README.md). Backups, account/network/device identifiers, signing keys and private recordings stay outside commits. |
 
 These remaining items block describing the **whole branch** as compliant and ready for upstream.

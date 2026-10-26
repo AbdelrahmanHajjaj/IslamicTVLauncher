@@ -4,8 +4,9 @@ import { THEMES, BACKGROUNDS } from '../scripts/appearance';
 import voicesJson from '../data/adhans.json';
 import type { Ctx } from '../lib/ctx';
 import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
-import { ASR, clock, hijri, methodParams } from '../lib/prayer';
+import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET } from '../lib/prayer';
 import type { Text } from '../lib/text';
+import { prayerLabel } from '../lib/prayer-icon';
 import { loadFacing } from './prayer-day';
 
 export const PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, APPEARANCE = 4, NETWORK = 5, DEVICE = 6, SECTIONS = 7;
@@ -17,6 +18,7 @@ export type SPrefs = Prefs;
 
 export type Row = {
   id: string; kind: Kind; label: string; help: string;
+  prayer?: number;
   value?: string; segs?: string[]; selected?: number; on?: boolean;
 };
 
@@ -62,10 +64,14 @@ export const DOCK_MODES = ['hidden', 'tab', 'off'] as const;
 const DARK = [0, 15, -1];
 const CLOCKS = ['system', '12', '24'] as const;
 
-export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
+export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = false): Row[] {
   const { t } = c;
   const p = c.prefs as SPrefs;
   const facing = loadFacing();
+  if (offsetsPage) return t.list('prayerNames').map((label, prayer) => ({
+    id: `offset${prayer}`, kind: 'step', prayer, label,
+    help: clock(t, c.day.times[prayer], c.h24), value: t.offsetMinutes(prayerOffsets(p)[prayer]),
+  }));
   const city = cityOf(p);
   const st = stationOf(p);
   switch (section) {
@@ -73,6 +79,7 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
       { id: 'city', kind: 'value', label: t.s('location'), help: locationHelp(t, city.lat, city.lng), value: placeOf(t, city) },
       { id: 'method', kind: 'value', label: t.s('method'), help: methodAngles(t, methodOf(p)), value: t.methodName(methodOf(p)) },
       { id: 'school', kind: 'seg', label: t.s('asrSchool'), help: t.s('asrSchoolHelp'), segs: t.list('asrSchools'), selected: p.hanafi ? 1 : 0 },
+      { id: 'offsets', kind: 'value', label: t.s('prayerOffsets'), help: t.s('prayerOffsetsHelp'), value: t.offsetCount(prayerOffsets(p).filter(n => n !== 0).length) },
       { id: 'hijri', kind: 'step', label: t.s('hijriAdjust'), help: (t.ar ? 'اليوم: ' : 'Today: ') + hijri(t, c.day), value: t.days(p.hijriOffset) },
       { id: 'room', kind: 'value', label: t.s('roomTitle'), help: t.s('roomHelp'), value: facing < 0 ? t.s('notSet') : t.bearingLabel(facing) },
     ];
@@ -118,15 +125,20 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
 export type Edit = { row: number; draft: number };
 
 /** What editing starts from: the chosen segment, or the Hijri offset. */
-export const savedDraft = (c: Ctx, row: Row) => (row.kind === 'seg' ? row.selected! : row.id === 'lighting' ? c.prefs.lighting ?? 35 : (c.prefs as SPrefs).hijriOffset);
+export const savedDraft = (c: Ctx, row: Row) => (row.kind === 'seg' ? row.selected! : row.prayer !== undefined ? prayerOffsets(c.prefs)[row.prayer] : row.id === 'lighting' ? c.prefs.lighting ?? 35 : (c.prefs as SPrefs).hijriOffset);
 
 /** ◀▶ while editing (d = +1 toward the end), held to the row's range. */
 export const moveDraft = (row: Row, draft: number, d: number) =>
-  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : row.id === 'lighting' ? Math.max(0, Math.min(100, draft + d)) : Math.max(-2, Math.min(2, draft + d));
+  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : row.prayer !== undefined ? Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, draft + d)) : row.id === 'lighting' ? Math.max(0, Math.min(100, draft + d)) : Math.max(-2, Math.min(2, draft + d));
 
 /** OK while editing: the new prefs, or null when the draft is what is already saved. 'lang' is the page's. */
 export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
   if (draft === savedDraft(c, row)) return null;
+  if (row.prayer !== undefined) {
+    const offsets = prayerOffsets(c.prefs);
+    offsets[row.prayer] = moveDraft(row, draft, 0);
+    return { ...c.prefs, prayerOffsets: offsets };
+  }
   return row.kind === 'seg' ? pick(c, row.id, draft) : row.id === 'lighting' ? { ...c.prefs, lighting: draft } : { ...(c.prefs as SPrefs), hijriOffset: draft };
 }
 
@@ -151,7 +163,7 @@ export function pick(c: Ctx, id: string, i: number): SPrefs | null {
 
 const chevron = '<svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
-export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 112) {
+export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 'var(--layout-settings-rows-top)') {
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
   else if (r.kind === 'carousel')
@@ -161,8 +173,9 @@ export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 112) 
   else if (r.kind === 'step')
     control = `<span class="stepb" data-step="-1">−</span><span class="stepv">${esc(r.value ?? '')}</span><span class="stepb" data-step="1">+</span>`;
   else control = `<span class="switch${r.on ? ' on' : ''}"><i></i></span>`;
-  return `<button class="ft row srow${editing ? ' editing' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:${top + i * 98}px">`
-    + `<span class="words"><span class="rl">${esc(r.label)}</span>${r.help ? `<span class="rh">${esc(r.help)}</span>` : ''}</span>`
+  return `<button class="ft row srow${editing ? ' editing' : ''}${r.prayer !== undefined ? ' offset-row' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:calc(${top} + ${i} * (var(--layout-settings-row-height) + var(--layout-settings-row-gap)))">`
+    + `<span class="words"><span class="rl">${r.prayer !== undefined ? prayerLabel(r.prayer, esc(r.label)) : esc(r.label)}</span>${r.help && r.prayer === undefined ? `<span class="rh">${esc(r.help)}</span>` : ''}</span>
+    ${r.prayer !== undefined ? `<span class="offset-time num" dir="ltr">${esc(r.help)}</span>` : ''}`
     + `<span class="ctl">${control}</span></button>`;
 }
 
@@ -172,11 +185,11 @@ export function navHtml(t: Text, section: number) {
 }
 
 /** The rows; the one being edited shows its draft. */
-export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null) =>
-  rowsFor(c, section, radioOn).map((r, i) => {
-    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE ? 410 : 112);
-    const shown = r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
-    return rowHtml(c.t, shown, i, true, section === APPEARANCE ? 410 : 112);
+export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null, offsetsPage = false) =>
+  rowsFor(c, section, radioOn, offsetsPage).map((r, i) => {
+    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
+    const shown = r.prayer !== undefined ? { ...r, value: c.t.offsetMinutes(edit.draft), help: clock(c.t, new Date(c.day.times[r.prayer].getTime() + (edit.draft - savedDraft(c, r)) * 60000), c.h24) } : r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
+    return rowHtml(c.t, shown, i, true, section === APPEARANCE ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
   }).join('');
 export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);
 

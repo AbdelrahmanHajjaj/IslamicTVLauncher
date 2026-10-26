@@ -86,7 +86,8 @@ for completed checks and remaining hardware tests.
 
 Arabic/RTL and English/LTR layouts include the new controls, with Arabic-Indic or Latin digits.
 The launcher uses plain Java and Android Views with adhan-java; no AndroidX, Kotlin or Compose.
-Backgrounds are small cached local drawings, with no video, blur, wallpaper downloads or idle animation
+Backgrounds are small cached local drawings and eight transparent pattern masks totalling about 60 KB,
+with editable [shared SVG sources](afnon-mihrab/patterns/README.md). There is no video, blur, wallpaper download or idle animation
 loop. This is more functionality than CleanYourTV's minimal Home; no equivalent memory or speed claim is made.
 See [themes and controls](docs/THEMES.md) for the detailed behaviour.
 
@@ -201,7 +202,9 @@ uses the network for ADB setup and, when selected, downloading the upstream APK.
 The browser preview is separate: it keeps preferences in browser storage and plays a radio stream only
 when requested. Its city and method data, prayer icons, patterns and text come from the native sources.
 It demonstrates Home layouts, appearance and quick controls, but cannot control TV inputs, Wi-Fi,
-Android overlays or screensavers. Native prayer-offset editing is not yet mirrored in the browser.
+Android overlays or screensavers. Prayer-offset editing mirrors the TV: six centred adjusted times,
+minus/value/plus controls, draft cancellation and saved offsets, in Arabic and English.
+[Browser offset screenshots](docs/screenshots/README.md#browser-offset-preview) show this separate preview.
 
 ## Development and contributions
 
@@ -213,6 +216,7 @@ proposals; the original guide does not explicitly ban renaming, but upstream bra
 ```powershell
 python -S -B -m unittest discover -s tests -v
 ./gradlew.bat --offline --no-daemon :app:assembleDebug :app:lintDebug :installer:assembleDebug :installer:lintDebug
+npm.cmd --prefix site test
 npm.cmd --prefix site run build
 npm.cmd --prefix site run tokens:check
 ```

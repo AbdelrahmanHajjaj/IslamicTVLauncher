@@ -18,7 +18,9 @@ offsets remain. Check the method, Asr school, timezone and offsets after changin
 
 The [city contribution rules](../CONTRIBUTING.md#1-add-your-city) require a six-time comparison for
 one date against an official authority or local mosque timetable. That comparison for this addition
-is still pending; do not describe its default as locally verified in an upstream PR. A fixed offset
+has not been completed: the local mosque has no available published link, and the tester uses manually
+configured per-prayer offsets. Those settings were preserved during update and restart checks. They are
+not independent verification of the catalog default; do not claim that in an upstream PR. A fixed offset
 cannot reproduce seasonal timetable rules. [Calculation methods](PRAYER-METHODS.md) explains the
 19 presets and why London Unified is not offered as a generic city-independent method.
 

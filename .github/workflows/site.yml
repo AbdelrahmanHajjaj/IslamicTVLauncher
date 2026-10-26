@@ -33,6 +33,9 @@ jobs:
       - name: Generated token files match tokens.json
         run: npm run tokens:check
         working-directory: site
+      - name: Prayer preview regression checks
+        run: npm test
+        working-directory: site
 
   build:
     needs: tokens

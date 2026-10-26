@@ -4,6 +4,13 @@ import type { Text } from './text';
 import extraPresets from '../data/method-presets.json';
 import { cityOf, methodOf, type Prefs } from './data';
 
+export const MAX_PRAYER_OFFSET = 30;
+/** Old or malformed saved preferences must not break every preview screen. */
+export const prayerOffsets = (prefs: Prefs): number[] => Array.from({ length: 6 }, (_, i) => {
+  const n = prefs.prayerOffsets?.[i];
+  return typeof n === 'number' && Number.isInteger(n) ? Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, n)) : 0;
+});
+
 export const FAJR = 0, SUNRISE = 1, DHUHR = 2, ASR = 3, MAGHRIB = 4, ISHA = 5;
 const RAMADAN = 8; // 0-based, as IslamicCalendar.RAMADAN
 
@@ -50,6 +57,8 @@ export function prayerDay(now: Date, prefs: Prefs) {
   const where = new Coordinates(city.lat, city.lng);
   const params = methodParams(methodOf(prefs));
   params.madhab = prefs.hanafi ? Madhab.Hanafi : Madhab.Shafi;
+  const offsets = prayerOffsets(prefs);
+  params.adjustments = { fajr: offsets[0], sunrise: offsets[1], dhuhr: offsets[2], asr: offsets[3], maghrib: offsets[4], isha: offsets[5] };
   const at = (d: Date) => new PrayerTimes(where, d, params);
   const today = at(now);
   const times = [today.fajr, today.sunrise, today.dhuhr, today.asr, today.maghrib, today.isha].map(minute);

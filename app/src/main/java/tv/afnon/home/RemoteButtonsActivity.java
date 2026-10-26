@@ -23,11 +23,13 @@ public final class RemoteButtonsActivity extends Activity {
             if (RemoteKeys.allowedCode(code)) mappings.put(code, item[1]);
         }
         for (int code : new int[]{KeyEvent.KEYCODE_NOTIFICATION, KeyEvent.KEYCODE_SETTINGS,
-                KeyEvent.KEYCODE_TV_INPUT, KeyEvent.KEYCODE_TV, KeyEvent.KEYCODE_ALL_APPS,
+                KeyEvent.KEYCODE_TV_INPUT, KeyEvent.KEYCODE_TV,
                 KeyEvent.KEYCODE_PROG_RED, KeyEvent.KEYCODE_PROG_GREEN, KeyEvent.KEYCODE_PROG_YELLOW, KeyEvent.KEYCODE_PROG_BLUE})
             mappings.putIfAbsent(code, RemoteKeys.defaultAction(code));
         if (getPackageManager().hasSystemFeature("com.tcl.software.tinput_shortcut_config"))
             for (int code : new int[]{4062, 4065, 4159}) mappings.putIfAbsent(code, "@default");
+        if (android.os.Build.VERSION.SDK_INT >= 28)
+            mappings.putIfAbsent(KeyEvent.KEYCODE_ALL_APPS, RemoteKeys.defaultAction(KeyEvent.KEYCODE_ALL_APPS));
         showKeys();
     }
 

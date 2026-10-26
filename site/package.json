@@ -4,10 +4,12 @@
   "type": "module",
   "description": "Afnon preview site and the token generator (afnon-mihrab/tokens.json -> app + site)",
   "scripts": {
+    "test": "npm run gen && node scripts/test.mjs",
     "gen": "node scripts/tokens.mjs && node scripts/extract.mjs",
     "dev": "npm run gen && astro dev",
     "build": "npm run gen && astro build",
     "preview": "astro preview",
+    "patterns": "node scripts/patterns.mjs",
     "tokens": "node scripts/tokens.mjs",
     "tokens:check": "node scripts/tokens.mjs --check"
   },

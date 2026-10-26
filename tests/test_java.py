@@ -42,14 +42,17 @@ class JavaChecks(unittest.TestCase):
         self.assertEqual(extracted, [mode for mode, _ in mappings])
         for mode, resource in mappings:
             self.assertIn(mode, modes)
-            vector = ET.parse(ROOT / f"app/src/main/res/drawable/{resource}.xml").getroot()
-            self.assertEqual((vector.get(ns + "viewportWidth"), vector.get(ns + "viewportHeight")), ("480", "270"))
-            path = vector.find("path")
-            self.assertEqual(path.get(ns + "fillColor"), "#00000000")
-            self.assertTrue(path.get(ns + "pathData"))
-            # Oversized strings compile as STRING_TOO_LARGE and crash VectorDrawable on Android 11.
-            self.assertLess(len(path.get(ns + "pathData").encode("utf-8")), 30000)
-            self.assertGreater(float(path.get(ns + "strokeWidth")), 0)
+            import struct
+            svg = ET.parse(ROOT / f"afnon-mihrab/patterns/{mode}.svg").getroot()
+            self.assertEqual(svg.get("viewBox"), "0 0 480 270")
+            path = svg.find("{http://www.w3.org/2000/svg}path")
+            self.assertTrue(path.get("d"))
+            self.assertGreater(float(path.get("stroke-width")), 0)
+            png = (ROOT / f"app/src/main/res/drawable-nodpi/{resource}.png").read_bytes()
+            self.assertEqual(png[:8], b"\x89PNG\r\n\x1a\n")
+            self.assertEqual(struct.unpack(">II", png[16:24]), (480, 270))
+            self.assertLess(len(png), 60000, "Static pattern masks must stay small")
+            self.assertFalse((ROOT / f"app/src/main/res/drawable/{resource}.xml").exists())
 
     def test_phone_package_and_home_guards(self):
         javac, java = shutil.which("javac"), shutil.which("java")

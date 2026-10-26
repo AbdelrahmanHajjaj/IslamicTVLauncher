@@ -24,9 +24,12 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 - Home focus begins at the first favourite; Down traverses favourites/recent apps to All apps, and Left reaches Today & Qibla. App metadata is cached and All apps creates tiles as rows enter view; package changes refresh the list even when the count is unchanged.
 - Removed the unused All apps dock, footer instructions and adhan dismissal hints. Replaced ambiguous Home settings/Qibla symbols with a cog and compass, and enlarged prayer icons.
-- Unified Arabic/English additions and RTL layout; the preview shares native city/method/icon/pattern data and includes both Home layouts. Native offset editing is not yet mirrored in the browser.
+- Unified Arabic/English additions and RTL layout; the preview shares native city/method/icon/pattern data and includes both Home layouts. Browser offset editing now mirrors all six native rows, including draft/save/cancel, centred adjusted times, clock formats and Arabic digits.
 - Ordinary updates to an existing Home no longer repeat the initial handover/rollback; setup preserves the selected screensaver. Three text-layout calls now respect the declared Android 8 minimum.
 - Merged upstream main through `ca457a7`, preserving fork setup guards, favourite capacity and layouts. Updated README, city reference and sanitised English/Arabic TV screenshots; documented the remaining upstream contribution checks.
+- Shared settings, preview, quick-menu and prayer-bar dimensions now come from design tokens. Browser keyboard focus no longer jumps to a stationary pointer when rows redraw.
+- Replaced eight complex background vectors with small tinted PNG masks generated from shared SVG paths; removed their sixteen lint warnings. Remote-key setup now reports failed preference writes, and the All apps key is offered only on Android versions supporting it.
+- Existing fork CI now runs Android lint, the launcher/recovery regression suite and browser prayer-offset tests.
 - Safety/recovery and colour-sampling patterns adapted from CleanYourTV, Copyright (c) 2026 Gathin, MIT; see `docs/CLEANYOURTV-LICENSE.txt`.
 
 ## [0.6.1] (upstream) - 2026-10-25

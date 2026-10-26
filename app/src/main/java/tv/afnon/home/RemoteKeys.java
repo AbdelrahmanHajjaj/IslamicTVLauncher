@@ -220,7 +220,7 @@ public class RemoteKeys extends AccessibilityService {
             if (!appKeys.containsKey(KeyEvent.KEYCODE_TV)) out.put(KeyEvent.KEYCODE_TV, inputs);
             if (!appKeys.containsKey(KeyEvent.KEYCODE_TV_INPUT)) out.put(KeyEvent.KEYCODE_TV_INPUT, inputs);
         }
-        if (!appKeys.containsKey(KeyEvent.KEYCODE_ALL_APPS)) out.put(KeyEvent.KEYCODE_ALL_APPS, new Intent(this, AllAppsActivity.class));
+        if (android.os.Build.VERSION.SDK_INT >= 28 && !appKeys.containsKey(KeyEvent.KEYCODE_ALL_APPS)) out.put(KeyEvent.KEYCODE_ALL_APPS, new Intent(this, AllAppsActivity.class));
         for (Intent i : out.values()) i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         return out;
     }

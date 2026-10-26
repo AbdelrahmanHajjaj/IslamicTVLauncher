@@ -23,6 +23,7 @@ export type Prefs = {
   method: string | null; // null: the city's own method
   hanafi: boolean;
   hijriOffset: number;
+  prayerOffsets?: number[];
   clock: 'system' | '12' | '24';
   digits: 'auto' | 'eastern' | 'western';
   remind: number;

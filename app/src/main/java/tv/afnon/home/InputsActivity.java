@@ -15,7 +15,7 @@ public final class InputsActivity extends Activity {
         View menu = QuickMenus.inputs(this, this::finish);
         setContentView(menu);
         WindowManager.LayoutParams lp = getWindow().getAttributes();
-        lp.gravity = Gravity.TOP | (Screen.loadText(this).ar ? Gravity.LEFT : Gravity.RIGHT);
+        lp.gravity = Gravity.TOP | Gravity.getAbsoluteGravity(Gravity.END, Screen.loadText(this).ar ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         lp.x = Ui.ipx(96); lp.y = Ui.ipx(152);
         lp.width = Ui.ipx(640); lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         getWindow().setAttributes(lp);

@@ -163,12 +163,12 @@ public final class SetupProvider extends ContentProvider {
                 Prefs.of(c).edit().putBoolean("focus_lighting", on).apply();
                 break;
             case "remote_enabled":
-                Prefs.of(c).edit().putBoolean("remote_enabled", on).commit();
+                if (!Prefs.of(c).edit().putBoolean("remote_enabled", on).commit()) throw new IllegalStateException("Could not save remote settings");
                 new Handler(Looper.getMainLooper()).post(RemoteKeys::reload);
                 break;
             case "keys":
                 RemoteKeys.validate(value);
-                Prefs.of(c).edit().putString("keys", value).commit();
+                if (!Prefs.of(c).edit().putString("keys", value).commit()) throw new IllegalStateException("Could not save remote settings");
                 new Handler(Looper.getMainLooper()).post(RemoteKeys::reload);
                 break;
             case "adhan": Prefs.setAdhan(c, on); break;
@@ -223,7 +223,7 @@ public final class SetupProvider extends ContentProvider {
             return saved;
         }
         if (!"restore_remote".equals(method)) return super.call(method, arg, extras);
-        Prefs.of(c).edit().putBoolean("remote_enabled", false).putBoolean("repair_service", false).commit();
+        if (!Prefs.of(c).edit().putBoolean("remote_enabled", false).putBoolean("repair_service", false).commit()) throw new IllegalStateException("Could not save remote settings");
         android.os.Bundle result = new android.os.Bundle();
         java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
         new Handler(Looper.getMainLooper()).post(() -> {

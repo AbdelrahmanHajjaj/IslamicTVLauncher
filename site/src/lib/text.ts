@@ -94,6 +94,8 @@ export function makeText(lang: Lang, eastern = lang === 'ar') {
         GULF: ar ? 'منطقة الخليج' : 'Gulf region',
       })[m] ?? (ar ? 'الهيئة المصرية العامة للمساحة' : 'Egyptian General Authority of Survey'),
     place: (city: string, country: string) => city + (ar ? '، ' : ', ') + country,
+    offsetMinutes: (n: number) => d(`${n > 0 ? '+' : ''}${n}${ar ? ' د' : ' min'}`),
+    offsetCount: (n: number) => d(n === 0 ? (ar ? 'الكل 0 د' : 'All 0 min') : `${n}${ar ? ' معدّلة' : ' adjusted'}`),
     days: (n: number) => {
       const sign = n > 0 ? '+' : '';
       if (!ar) return d(`${sign}${n} ${Math.abs(n) === 1 ? 'day' : 'days'}`);

@@ -78,9 +78,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".InputsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" android:theme="@style/Theme.Afnon.Call" android:taskAffinity="tv.afnon.home.inputs" android:launchMode="singleInstance" />
+        <activity android:name=".InputsActivity" android:exported="false" android:excludeFromRecents="true" android:theme="@style/Theme.Afnon.Call" android:taskAffinity="tv.afnon.home.inputs" android:launchMode="singleInstance" />
         <activity android:name=".DockActivity" android:exported="false" android:excludeFromRecents="true" android:noHistory="true" android:theme="@android:style/Theme.NoDisplay" />
-        <activity android:name=".RemoteButtonsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
+        <activity android:name=".RemoteButtonsActivity" android:exported="false" android:excludeFromRecents="true" />
         <activity
             android:name=".AllAppsActivity"
             android:exported="false"

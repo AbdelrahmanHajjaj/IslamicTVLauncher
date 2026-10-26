@@ -4,9 +4,9 @@ name: App
 on:
   push:
     branches: [main]
-    paths: ['app/**', 'settings.gradle', 'build.gradle', 'gradle/**', '.github/workflows/app.yml']
+    paths: ['app/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle/**', '.github/workflows/app.yml']
   pull_request:
-    paths: ['app/**', 'settings.gradle', 'build.gradle', 'gradle/**', '.github/workflows/app.yml']
+    paths: ['app/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle/**', '.github/workflows/app.yml']
   workflow_dispatch:
 
 permissions:
@@ -21,4 +21,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - run: chmod +x gradlew && ./gradlew :app:assembleDebug --no-daemon --stacktrace
+      - run: chmod +x gradlew && ./gradlew :app:assembleDebug :app:lintDebug --no-daemon --stacktrace
+      - name: Launcher and recovery regression checks
+        run: python3 -S -B -m unittest discover -s tests -v

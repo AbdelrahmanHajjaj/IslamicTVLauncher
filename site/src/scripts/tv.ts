@@ -58,7 +58,7 @@ if (frame && stage) {
     }
   });
 
-  stage.addEventListener('pointerover', (e) => {
+  stage.addEventListener('pointermove', (e) => {
     const t = (e.target as HTMLElement).closest<HTMLElement>('a[href], button, [tabindex]');
     if (t && stage.contains(t) && document.activeElement !== t && t.tabIndex >= 0) t.focus({ preventScroll: true });
   });

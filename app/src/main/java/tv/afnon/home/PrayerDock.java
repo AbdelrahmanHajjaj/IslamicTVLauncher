@@ -99,9 +99,9 @@ final class PrayerDock {
             : content();
         root.setClipChildren(false); root.setClipToPadding(false);
         root.addView(content);
-        int width = Ui.ipx("dock".equals(which) ? 1920 : 640);
+        int width = Ui.ipx("dock".equals(which) ? Tokens.LAYOUT_PRAYER_DOCK_WIDTH : Tokens.LAYOUT_QUICK_MENU_WIDTH);
         root.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        attach(root, width, Math.min(root.getMeasuredHeight(), Ui.ipx(760)), true, fromDock);
+        attach(root, width, Math.min(root.getMeasuredHeight(), Ui.ipx(Tokens.LAYOUT_QUICK_MENU_MAX_HEIGHT)), true, fromDock);
         QuickMenus.focusFirst(content);
         update(new Date(), asleep());
     }
@@ -109,27 +109,27 @@ final class PrayerDock {
     private View content() {
         Text t = Screen.loadText(service);
         LinearLayout panel = QuickMenus.panel(service, null);
-        panel.setPadding(Ui.ipx(24), Ui.ipx(10), Ui.ipx(24), Ui.ipx(10));
+        panel.setPadding(Ui.ipx(Tokens.SPACE_4), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_PADDING_BLOCK), Ui.ipx(Tokens.SPACE_4), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_PADDING_BLOCK));
         panel.setOrientation(LinearLayout.HORIZONTAL); panel.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout prayers = new LinearLayout(service);
 
         for (int i = 0; i < 6; i++) {
             LinearLayout prayer = new LinearLayout(service); prayer.setOrientation(LinearLayout.VERTICAL);
-            prayer.setPadding(Ui.ipx(12), Ui.ipx(6), Ui.ipx(12), Ui.ipx(6));
+            prayer.setPadding(Ui.ipx(Tokens.SPACE_2), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_CELL_PADDING_BLOCK), Ui.ipx(Tokens.SPACE_2), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_CELL_PADDING_BLOCK));
             cells[i] = prayer;
-            tags[i] = QuickMenus.text(service, "", 14, Palette.PLASTER_100); prayer.addView(tags[i]);
-            names[i] = QuickMenus.text(service, "", 18, Palette.PLASTER_100); prayer.addView(names[i]);
-            times[i] = QuickMenus.text(service, "", 24, Palette.PLASTER_100); prayer.addView(times[i]);
+            tags[i] = QuickMenus.text(service, "", Tokens.FONT_SIZE_COMPACT_TAG, Palette.PLASTER_100); prayer.addView(tags[i]);
+            names[i] = QuickMenus.text(service, "", Tokens.FONT_SIZE_COMPACT_LABEL, Palette.PLASTER_100); prayer.addView(names[i]);
+            times[i] = QuickMenus.text(service, "", Tokens.FONT_SIZE_CONTROL, Palette.PLASTER_100); prayer.addView(times[i]);
             for (TextView text : new TextView[] {tags[i], names[i], times[i]}) text.setIncludeFontPadding(false);
             names[i].setSingleLine(true); names[i].setEllipsize(android.text.TextUtils.TruncateAt.END);
             times[i].setSingleLine(true);
-            LinearLayout.LayoutParams cell = new LinearLayout.LayoutParams(0, -2, 1); cell.setMarginEnd(Ui.ipx(8));
+            LinearLayout.LayoutParams cell = new LinearLayout.LayoutParams(0, -2, 1); cell.setMarginEnd(Ui.ipx(Tokens.SPACE_1));
             prayers.addView(prayer, cell);
         }
         panel.addView(prayers, new LinearLayout.LayoutParams(0, -2, 1));
         LinearLayout buttons = new LinearLayout(service); buttons.setClipChildren(false); buttons.setClipToPadding(false);
         buttons.setGravity(Gravity.END);
-        buttons.setPaddingRelative(Ui.ipx(12), 0, 0, 0);
+        buttons.setPaddingRelative(Ui.ipx(Tokens.SPACE_2), 0, 0, 0);
         String[] labels = {t.home(), t.inputsTitle(), "Wi-Fi", t.settings()};
         int[] icons = {Icon.HOME, Icon.INPUT, Icon.WIFI, Icon.GEAR};
         Runnable[] actions = {
@@ -138,17 +138,17 @@ final class PrayerDock {
             () -> { hide(); InputSources.launch(service, new Intent(service, SettingsActivity.class)); }
         };
         for (int i = 0; i < labels.length; i++) {
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, Ui.ipx(60)); lp.setMarginEnd(Ui.ipx(8));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_BUTTON_SIZE)); lp.setMarginEnd(Ui.ipx(Tokens.SPACE_1));
             buttons.addView(QuickMenus.iconButton(service, labels[i], icons[i], Prefs.quickLabels(service), actions[i]), lp);
         }
-        FocusTile minimize = new FocusTile(service, 22);
-        minimize.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 1);
+        FocusTile minimize = new FocusTile(service, Tokens.RADIUS_QUICK_BUTTON);
+        minimize.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, Tokens.BORDER_THIN);
         minimize.setContentDescription(t.collapseDock());
-        Icon minus = new Icon(service, Icon.MINUS, 2f);
-        minimize.addView(minus, new FrameLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30), Gravity.CENTER));
+        Icon minus = new Icon(service, Icon.MINUS, Tokens.BORDER_CHIP_WIDTH);
+        minimize.addView(minus, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_QUICK_MENU_ICON_SIZE), Ui.ipx(Tokens.LAYOUT_QUICK_MENU_ICON_SIZE), Gravity.CENTER));
         minimize.setLook(f -> minus.setColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         minimize.setOnClickListener(v -> collapse());
-        buttons.addView(minimize, new LinearLayout.LayoutParams(Ui.ipx(60), Ui.ipx(60)));
+        buttons.addView(minimize, new LinearLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_BUTTON_SIZE), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_BUTTON_SIZE)));
         panel.addView(buttons, new LinearLayout.LayoutParams(-2, -2));
         return panel;
     }
@@ -160,9 +160,9 @@ final class PrayerDock {
             if (window == null) {
                 Ui.init(service);
                 LinearLayout tab = QuickMenus.panel(service, null);
-                tab.setPadding(Ui.ipx(24), Ui.ipx(6), Ui.ipx(24), Ui.ipx(6));
-                next = QuickMenus.text(service, "", 18, Palette.PLASTER_100); next.setGravity(Gravity.CENTER); tab.addView(next);
-                attach(tab, Ui.ipx(1920), WindowManager.LayoutParams.WRAP_CONTENT, false, true);
+                tab.setPadding(Ui.ipx(Tokens.SPACE_4), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_CELL_PADDING_BLOCK), Ui.ipx(Tokens.SPACE_4), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_CELL_PADDING_BLOCK));
+                next = QuickMenus.text(service, "", Tokens.FONT_SIZE_COMPACT_LABEL, Palette.PLASTER_100); next.setGravity(Gravity.CENTER); tab.addView(next);
+                attach(tab, Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_WIDTH), WindowManager.LayoutParams.WRAP_CONTENT, false, true);
             }
         }
         if (next == null && times[0] == null) return;
@@ -179,9 +179,9 @@ final class PrayerDock {
             boolean current = i == day.nowIndex, upcoming = i == day.nextIndex;
             boolean past = !upcoming && !day.times[i].after(now);
             int color = current ? Palette.LAPIS_900 : upcoming ? Palette.GOLD_400 : past ? Palette.MIST_400 : Palette.PLASTER_100;
-            GradientDrawable cell = new GradientDrawable(); cell.setCornerRadius(Ui.px(14));
+            GradientDrawable cell = new GradientDrawable(); cell.setCornerRadius(Ui.px(Tokens.RADIUS_CELL));
             cell.setColor(current ? Palette.PLASTER_100 : past ? Palette.LAPIS_800_60 : Palette.LAPIS_800);
-            cell.setStroke(Ui.ipx(upcoming ? 2 : 1), upcoming ? Palette.GOLD_400 : Palette.LINE_SOFT);
+            cell.setStroke(Ui.ipx(upcoming ? Tokens.BORDER_CHIP_WIDTH : Tokens.BORDER_THIN), upcoming ? Palette.GOLD_400 : Palette.LINE_SOFT);
             cells[i].setBackground(cell);
             tags[i].setText(current ? t.nowTag() : upcoming ? t.nextTag() : "");
             tags[i].setTextColor(color); this.names[i].setTextColor(color); times[i].setTextColor(color);
@@ -195,8 +195,8 @@ final class PrayerDock {
                 | (interactive ? 0 : WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE),
             PixelFormat.TRANSLUCENT);
         boolean bottom = dockPosition && !"top".equals(Prefs.of(service).getString("dock_position", "bottom"));
-        lp.gravity = (bottom ? Gravity.BOTTOM : Gravity.TOP) | (Screen.loadText(service).ar ? Gravity.LEFT : Gravity.RIGHT);
-        lp.x = Ui.ipx(dockPosition ? 0 : 96); lp.y = Ui.ipx(dockPosition ? 0 : 152);
+        lp.gravity = (bottom ? Gravity.BOTTOM : Gravity.TOP) | Gravity.getAbsoluteGravity(Gravity.END, Screen.loadText(service).ar ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+        lp.x = Ui.ipx(dockPosition ? 0 : Tokens.SPACE_SAFE_INLINE); lp.y = Ui.ipx(dockPosition ? 0 : Tokens.LAYOUT_QUICK_MENU_TOP);
         lp.setTitle("Afnon prayer bar");
         try { wm.addView(view, lp); window = view; }
         catch (RuntimeException unavailable) {

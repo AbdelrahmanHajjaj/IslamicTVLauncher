@@ -40,7 +40,7 @@ public class SettingsActivity extends Screen {
 
     private static final int PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, APPEARANCE = 4, NETWORK = 5, DEVICE = 6, SECTIONS = 7;
     private static final int VALUE = 0, SEG = 1, STEP = 2, TOGGLE = 3, CAROUSEL = 4;
-    private static final float ROWS_TOP = 112, ROW_H = 88, ROW_GAP = 10;
+    private static final float ROWS_TOP = Tokens.LAYOUT_SETTINGS_ROWS_TOP, ROW_H = Tokens.LAYOUT_SETTINGS_ROW_HEIGHT, ROW_GAP = Tokens.LAYOUT_SETTINGS_ROW_GAP;
     private static final float NAV_TOP = 152, NAV_H = 76, NAV_GAP = 10;
 
     /** One row: what it shows and what OK (and ◀▶ while editing) do. */
@@ -167,7 +167,7 @@ public class SettingsActivity extends Screen {
         ((LinearLayout.LayoutParams) previewValue.getLayoutParams()).topMargin += Ui.ipx(6);
         place(preview, 96, 1080 - 56 - 124, 424, 124);
 
-        sectionLabel = caps(text(ui400, 22, Palette.MIST_400));
+        sectionLabel = caps(text(ui400, Tokens.FONT_SIZE_LABEL, Palette.MIST_400));
         sectionLabel.setAllCaps(!t.ar);
         place(sectionLabel, 640, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -618,8 +618,8 @@ public class SettingsActivity extends Screen {
         line.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
         LinearLayout words = new LinearLayout(this);
         words.setOrientation(LinearLayout.VERTICAL);
-        r.label = text(ui500, 26, Palette.PLASTER_100);
-        r.help = text(r.prayer() >= 0 ? ui500 : ui400, r.prayer() >= 0 ? 30 : 20, Palette.PLASTER_100);
+        r.label = text(ui500, Tokens.FONT_SIZE_BODY, Palette.PLASTER_100);
+        r.help = text(r.prayer() >= 0 ? ui500 : ui400, r.prayer() >= 0 ? Tokens.FONT_SIZE_BODY_L : Tokens.FONT_SIZE_CAPTION, Palette.PLASTER_100);
         r.help.setSingleLine(true);
         if (r.prayer() >= 0) r.help.setTextDirection(View.TEXT_DIRECTION_LTR);
         words.addView(r.label);
@@ -636,10 +636,10 @@ public class SettingsActivity extends Screen {
         r.tile.addView(line, new FrameLayout.LayoutParams(-1, -1));
         if (r.prayer() >= 0) {
             r.help.setGravity(Gravity.CENTER);
-            r.tile.addView(r.help, new FrameLayout.LayoutParams(Ui.ipx(280), -2, Gravity.CENTER));
+            r.tile.addView(r.help, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_OFFSET_TIME_WIDTH), -2, Gravity.CENTER));
         }
         r.tile.setLook(f -> render(r, f));
-        placeTile(r.tile, 640, (section == APPEARANCE ? 410 : ROWS_TOP) + i * (ROW_H + ROW_GAP), Tokens.LAYOUT_SETTINGS_ROW_WIDTH, ROW_H);
+        placeTile(r.tile, 640, (section == APPEARANCE ? Tokens.LAYOUT_SETTINGS_APPEARANCE_TOP : ROWS_TOP) + i * (ROW_H + ROW_GAP), Tokens.LAYOUT_SETTINGS_ROW_WIDTH, ROW_H);
     }
 
     /** Refresh rows and previews from saved settings or the appearance draft. */
@@ -679,7 +679,7 @@ public class SettingsActivity extends Screen {
                 String[] names = r.segs();
                 int selected = r.selected();
                 for (int i = selected - 1; i <= selected + 1; i++) {
-                    TextView chip = text(ui400, 22, i == selected ? Palette.PLASTER_100 : ink);
+                    TextView chip = text(ui400, Tokens.FONT_SIZE_LABEL, i == selected ? Palette.PLASTER_100 : ink);
                     chip.setText(i >= 0 && i < names.length ? names[i] : "");
                     chip.setGravity(Gravity.CENTER);
                     chip.setSingleLine(true);
@@ -687,7 +687,7 @@ public class SettingsActivity extends Screen {
                     chip.setPadding(Ui.ipx(12), 0, Ui.ipx(12), 0);
                     if (i == selected) chip.setBackground(round(Palette.LAPIS_700, 26));
                     else chip.setAlpha(.65f);
-                    r.control.addView(chip, new LinearLayout.LayoutParams(Ui.ipx(190), Ui.ipx(52)));
+                    r.control.addView(chip, new LinearLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_CAROUSEL_WIDTH), Ui.ipx(Tokens.LAYOUT_SETTINGS_CAROUSEL_HEIGHT)));
                 }
                 break;
             }
@@ -710,7 +710,7 @@ public class SettingsActivity extends Screen {
                 String[] segs = r.segs();
                 for (int i = 0; i < segs.length; i++) {
                     boolean chosen = i == (edit ? draft : r.selected());
-                    TextView s = text(ui400, 22, chosen ? (focused ? Palette.PLASTER_100 : Palette.LAPIS_900) : (focused ? Palette.LAPIS_900 : Palette.MIST_400));
+                    TextView s = text(ui400, Tokens.FONT_SIZE_LABEL, chosen ? (focused ? Palette.PLASTER_100 : Palette.LAPIS_900) : (focused ? Palette.LAPIS_900 : Palette.MIST_400));
                     s.setText(segs[i]);
                     s.setGravity(Gravity.CENTER);
                     s.setPadding(Ui.ipx(24), 0, Ui.ipx(24), 0);
@@ -719,7 +719,7 @@ public class SettingsActivity extends Screen {
                         if (focused) bg.setStroke(Ui.ipx(3), Palette.PLASTER_100);
                         s.setBackground(bg);
                     }
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, Ui.ipx(52));
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, Ui.ipx(Tokens.LAYOUT_SETTINGS_CAROUSEL_HEIGHT));
                     if (i > 0) lp.setMarginStart(Ui.ipx(6));
                     track.addView(s, lp);
                 }
@@ -1013,16 +1013,16 @@ public class SettingsActivity extends Screen {
             }
         };
         home.setContentDescription(t.appearancePreview());
-        appearancePreview.addView(home, new FrameLayout.LayoutParams(Ui.ipx(480), Ui.ipx(270), Gravity.START));
+        appearancePreview.addView(home, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_PREVIEW_WIDTH), Ui.ipx(Tokens.LAYOUT_SETTINGS_PREVIEW_HEIGHT), Gravity.START));
         LinearLayout caption = new LinearLayout(this);
         caption.setOrientation(LinearLayout.VERTICAL);
-        TextView label = text(ui400, 22, Palette.MIST_400); label.setText(t.appearancePreview()); caption.addView(label);
-        appearanceName = text(displayBold, 42, Palette.PLASTER_100);
+        TextView label = text(ui400, Tokens.FONT_SIZE_LABEL, Palette.MIST_400); label.setText(t.appearancePreview()); caption.addView(label);
+        appearanceName = text(displayBold, Tokens.FONT_SIZE_APPEARANCE_TITLE, Palette.PLASTER_100);
         caption.addView(appearanceName);
         appearanceSwatches = new LinearLayout(this);
         caption.addView(appearanceSwatches);
-        appearancePreview.addView(caption, new FrameLayout.LayoutParams(Ui.ipx(500), -2, Gravity.END | Gravity.CENTER_VERTICAL));
-        place(appearancePreview, 640, 112, Tokens.LAYOUT_SETTINGS_ROW_WIDTH, 270);
+        appearancePreview.addView(caption, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_APPEARANCE_CAPTION_WIDTH), -2, Gravity.END | Gravity.CENTER_VERTICAL));
+        place(appearancePreview, Tokens.LAYOUT_SETTINGS_CONTENT_START, Tokens.LAYOUT_SETTINGS_ROWS_TOP, Tokens.LAYOUT_SETTINGS_ROW_WIDTH, Tokens.LAYOUT_SETTINGS_PREVIEW_HEIGHT);
         updateAppearancePreview();
     }
 
@@ -1038,7 +1038,7 @@ public class SettingsActivity extends Screen {
         appearanceSwatches.removeAllViews();
         for (int i : new int[]{0, 2, 4, 6}) {
             View swatch = new View(this); swatch.setBackground(round(previewStyle.colors[i], 24));
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Ui.ipx(48), Ui.ipx(48)); lp.setMarginEnd(Ui.ipx(14));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Ui.ipx(48), Ui.ipx(48)); lp.setMarginEnd(Ui.ipx(Tokens.LAYOUT_SETTINGS_SWATCH_GAP));
             appearanceSwatches.addView(swatch, lp);
         }
     }
@@ -1111,7 +1111,7 @@ public class SettingsActivity extends Screen {
             v.setPadding(Ui.ipx(24), 0, Ui.ipx(24), 0);
             item.addView(v, new FrameLayout.LayoutParams(-1, horizontal ? Ui.ipx(76) : -1, Gravity.BOTTOM));
             if (horizontal) {
-                FrameLayout.LayoutParams preview = new FrameLayout.LayoutParams(-1, Ui.ipx(302), Gravity.TOP);
+                FrameLayout.LayoutParams preview = new FrameLayout.LayoutParams(-1, Ui.ipx(Tokens.LAYOUT_SETTINGS_LAYOUT_PREVIEW_HEIGHT), Gravity.TOP);
                 preview.setMargins(Ui.ipx(20), Ui.ipx(18), Ui.ipx(20), 0);
                 item.addView(layoutPreview(index == 1), preview);
             }
@@ -1123,20 +1123,20 @@ public class SettingsActivity extends Screen {
                 pick.accept(index);
                 closeChooser();
             });
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(horizontal ? Ui.ipx(640) : -1, Ui.ipx(horizontal ? 400 : 68 + 2 * FocusTile.REACH));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(horizontal ? Ui.ipx(Tokens.LAYOUT_SETTINGS_LAYOUT_CARD_WIDTH) : -1, Ui.ipx(horizontal ? Tokens.LAYOUT_SETTINGS_LAYOUT_CARD_HEIGHT : 68 + 2 * FocusTile.REACH));
             if (i > 0) { if (horizontal) lp.setMarginStart(Ui.ipx(24)); else lp.topMargin = Ui.ipx(6 - 2 * FocusTile.REACH); }
             list.addView(item, lp);
             if (chosen || first == null) first = item;
         }
         scroll.addView(list);
-        float listH = horizontal ? 400 + 2 * FocusTile.REACH : Math.min(items.length, 8) * 74 + 2 * FocusTile.REACH;
+        float listH = horizontal ? Tokens.LAYOUT_SETTINGS_LAYOUT_CARD_HEIGHT + 2 * FocusTile.REACH : Math.min(items.length, 8) * 74 + 2 * FocusTile.REACH;
         LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(-1, Ui.ipx(listH));
         slp.topMargin = Ui.ipx(20 - FocusTile.REACH);
         slp.setMarginStart(-reach);
         slp.setMarginEnd(-reach);
         card.addView(scroll, slp);
 
-        chooser.addView(card, new FrameLayout.LayoutParams(Ui.ipx(horizontal ? 1200 : 900), -2, Gravity.CENTER));
+        chooser.addView(card, new FrameLayout.LayoutParams(Ui.ipx(horizontal ? Tokens.LAYOUT_SETTINGS_LAYOUT_CHOOSER_WIDTH : 900), -2, Gravity.CENTER));
         setRowsFocusable(false);
         root.addView(chooser, new FrameLayout.LayoutParams(-1, -1));
         FocusTile start = first;

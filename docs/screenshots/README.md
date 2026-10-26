@@ -24,7 +24,7 @@ imply that every preview was saved. The bar is shown over launcher Settings, not
 ![Dim clock and next-prayer screensaver](screensaver.png)
 
 The installed Android dream service was selected and started for this capture. Its picker label is
-**IslamicTVLauncher (Afnon)**. Automatic start after idle and physical-remote wake remain separate tests.
+**IslamicTVLauncher (Afnon)**. Automatic start after idle and physical Home wake passed separately on 26 October 2026; see the [validation record](../LOCAL-VALIDATION.md).
 
 ## Earlier upstream examples
 
@@ -39,3 +39,13 @@ preview-site social images. Do not use them as evidence of the current fork layo
 - [Ramadan](ramadan.png)
 - [Settings](settings-en.png)
 - [Radio settings](settings-radio.png)
+
+## Browser offset preview
+
+These two captures are from the local browser preview on **26 October 2026**, not from the TV.
+They use the preview's default city and zero offsets, with no imported personal TV settings.
+They show centred adjusted times and the same six minus/value/plus controls in both languages.
+
+| English | Arabic |
+|---|---|
+| ![Browser offsets](offsets-browser-en.png) | ![Browser offsets in Arabic](offsets-browser-ar.png) |
