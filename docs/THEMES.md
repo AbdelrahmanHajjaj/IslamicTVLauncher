@@ -101,7 +101,7 @@ The prayer/button accessibility service hosts a slim, full-width **Prayer bar** 
 - **Small prayer tab**: a thin strip with the next prayer and time while another app/input is visible. It cannot receive focus, touches or remote navigation.
 - **Off**: disables the bar, independently of reminders and adhan.
 - **Prayer bar position → Top / Bottom**: applies to both the strip and expanded bar; Bottom is the default.
-- **Open prayer bar**: opens it from Settings, or opens accessibility settings if its service is unavailable.
+- **Open prayer bar**: opens it from Settings. If its service is unavailable, it opens accessibility settings, falling back to the TV's main Settings when the dedicated shortcut is unsupported.
 
 Under **Device settings → Remote buttons**, assign Red, Green, Yellow, Blue or another supported shortcut to **Prayer bar**. There is no universal default button; a device's saved assignment survives updates. Essential Home, Back, power, volume and navigation keys remain protected. The bar reuses the existing prayer clock check and refreshes its text once per minute; it adds no idle animation or new service.
 
