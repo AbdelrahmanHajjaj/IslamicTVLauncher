@@ -28,6 +28,7 @@ class FocusTile extends FrameLayout {
     private final RectF box = new RectF();
     private final RectF ringBox = new RectF();
     private final float radius;
+    private final ThemeSurface surface;
     private int restFill;
     private int restBorder;
     private float restBorderWidth;
@@ -36,7 +37,9 @@ class FocusTile extends FrameLayout {
 
     FocusTile(Context c, float radiusDesignPx) {
         super(c);
-        radius = Ui.px(radiusDesignPx);
+        surface = Appearance.surface();
+        // Circular quick controls and pills keep their intended shape.
+        radius = Ui.px(radiusDesignPx <= Tokens.RADIUS_PANEL ? surface.radius(radiusDesignPx) : radiusDesignPx);
         int reach = Ui.ipx(REACH);
         setPadding(reach, reach, reach, reach);
         setWillNotDraw(false);
@@ -52,9 +55,10 @@ class FocusTile extends FrameLayout {
 
     /** Resting fill (0 for none) and border (width 0 for none). */
     FocusTile setRest(int fillColor, int borderColor, float borderWidthDesignPx) {
-        restFill = fillColor;
-        restBorder = borderColor;
-        restBorderWidth = Ui.px(borderWidthDesignPx);
+        restFill = surface.fill(fillColor);
+        boolean themed = !surface.classic() && surface.isPanel(fillColor) && borderWidthDesignPx == 0;
+        restBorder = themed ? surface.edge : borderColor;
+        restBorderWidth = Ui.px(themed ? surface.stroke : borderWidthDesignPx);
         invalidate();
         return this;
     }
@@ -97,6 +101,11 @@ class FocusTile extends FrameLayout {
         if (f != 0) {
             fill.setColor(f);
             c.drawRoundRect(box, radius, radius, fill);
+        }
+        if (!focused && restFill != 0 && "blocks".equals(surface.name)) {
+            fill.setColor(surface.edge);
+            float line = Ui.px(Tokens.SURFACE_BLOCKS_STRIPE);
+            c.drawRect(box.left + radius, box.bottom - line, box.right - radius, box.bottom, fill);
         }
         if (!focused && restBorderWidth > 0) {
             border.setColor(restBorder);

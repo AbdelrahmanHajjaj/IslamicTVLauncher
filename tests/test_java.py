@@ -73,16 +73,29 @@ class JavaChecks(unittest.TestCase):
 
     def test_theme_bounds_and_preset_contrast(self):
         import json
+        import re
+        source = ROOT / "app/src/main/java/tv/afnon/home"
+        native = re.findall(r'"([^"]+)"', re.search(r'PRESETS = \{([^}]+)', (source / "Appearance.java").read_text()).group(1))
+        browser = re.search(r'const presets:.*? = \{([^}]+)', (ROOT / "site/src/scripts/appearance.ts").read_text()).group(1)
+        self.assertEqual(native, ["mihrab", *[name.strip() for name in browser.split(",")], "custom"])
+        self.assertEqual(len(native) - 1, 20, "Twenty built-in themes; imported Custom is separate")
+        assets = ROOT / "app/src/main/assets/themes"
+        self.assertEqual(set(native[1:-1]), {path.stem for path in assets.glob("*.json")})
+        labels = re.search(r'String\[\] themeNames\(\).*', (source / "Text.java").read_text(encoding="utf-8")).group(0)
+        for language in re.findall(r'new String\[\] \{([^}]+)', labels):
+            self.assertEqual(len(re.findall(r'"[^"]+"', language)), len(native))
         javac, java = shutil.which("javac"), shutil.which("java")
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([javac, "-encoding", "UTF-8", "-d", output,
                 str(ROOT / "app/src/main/java/tv/afnon/home/ThemeSpec.java"),
+                str(ROOT / "app/src/main/java/tv/afnon/home/ThemeSurface.java"),
+                str(ROOT / "app/src/main/java/tv/afnon/home/Tokens.java"),
                 str(ROOT / "tests/ThemeCheck.java")], check=True, capture_output=True)
             subprocess.run([java, "-cp", output, "tv.afnon.home.ThemeCheck"], check=True, capture_output=True)
-            for path in (ROOT / "app/src/main/assets/themes").glob("*.json"):
+            for path in assets.glob("*.json"):
                 with self.subTest(theme=path.stem):
                     preset = json.loads(path.read_text(encoding="utf-8"))
-                    values = [*preset["colors"].values(), preset["background"]]
+                    values = [*preset["colors"].values(), preset["background"], preset.get("surface", "classic")]
                     subprocess.run([java, "-cp", output, "tv.afnon.home.ThemeCheck", *values], check=True, capture_output=True)
 
     def test_remote_capture_waits_for_a_complete_press(self):

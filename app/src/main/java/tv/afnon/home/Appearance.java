@@ -9,7 +9,7 @@ import java.util.*;
 
 /** Local themes; static 480x270 ambient art shares the existing foreground clock tick. */
 final class Appearance {
-    static final String[] PRESETS = {"mihrab", "aurora", "ember", "forest", "midnight", "rose", "sand", "slate", "custom"};
+    static final String[] PRESETS = {"mihrab", "aurora", "ember", "forest", "midnight", "rose", "sand", "slate", "glass", "frost", "cinema", "carbon", "neon", "blueprint", "signal", "arcade", "dusk", "oasis", "brass", "mosaic", "custom"};
     private static final int[] BASE = {Tokens.LAPIS_950, Tokens.LAPIS_900, Tokens.LAPIS_800, Tokens.LAPIS_700,
         Tokens.GOLD_400, Tokens.GOLD_200, Tokens.PLASTER_100, Tokens.MIST_400};
     private static String loaded = "";
@@ -19,8 +19,23 @@ final class Appearance {
         final int[] colors = BASE.clone();
         String mode = "lattice";
         int lighting = 35;
+        ThemeSurface surface = new ThemeSurface("classic", colors);
     }
     private static Style current = new Style();
+    static ThemeSurface surface() { return current.surface; }
+    static android.graphics.drawable.GradientDrawable panel(int color, float radius) {
+        ThemeSurface s = surface();
+        android.graphics.drawable.GradientDrawable result = new android.graphics.drawable.GradientDrawable();
+        result.setColor(s.fill(color));
+        result.setCornerRadius(Ui.px(s.radius(radius)));
+        if (s.isPanel(color) && s.stroke > 0) result.setStroke(Ui.ipx(s.stroke), s.edge);
+        return result;
+    }
+    static android.graphics.drawable.GradientDrawable prayerPanel(int color) {
+        android.graphics.drawable.GradientDrawable result = panel(color, Tokens.RADIUS_CELL);
+        result.setCornerRadius(Ui.px(Math.min(surface().radius(Tokens.RADIUS_CELL), Tokens.SURFACE_PRAYER_RADIUS_MAX)));
+        return result;
+    }
     private static String bitmapKey = "";
     private static Bitmap bitmap;
 
@@ -36,11 +51,13 @@ final class Appearance {
     static JSONObject checked(String json) throws Exception {
         if (json.length() > 16384) throw new IllegalArgumentException("Theme is too large");
         JSONObject object = new JSONObject(json);
-        Set<String> known = new HashSet<>(Arrays.asList("version", "colors", "background", "lighting"));
+        Set<String> known = new HashSet<>(Arrays.asList("version", "colors", "background", "lighting", "surface"));
         for (Iterator<String> it = object.keys(); it.hasNext();) if (!known.contains(it.next())) throw new IllegalArgumentException("Unknown theme field");
         if (!(object.get("version") instanceof Integer) || object.getInt("version") != 1) throw new IllegalArgumentException("Expected theme version 1");
         if (object.has("lighting") && !(object.get("lighting") instanceof Integer)) throw new IllegalArgumentException("Lighting must be an integer");
         if (object.has("background") && !(object.get("background") instanceof String)) throw new IllegalArgumentException("Background must be text");
+        if (object.has("surface") && !(object.get("surface") instanceof String)) throw new IllegalArgumentException("Surface must be text");
+        ThemeSpec.surface(object.optString("surface", "classic"));
         Map<String, Integer> colors = new LinkedHashMap<>();
         for (int i = 0; i < BASE.length; i++) colors.put(ThemeSpec.COLORS[i], BASE[i]);
         JSONObject changes = object.has("colors") ? object.getJSONObject("colors") : new JSONObject();
@@ -49,7 +66,7 @@ final class Appearance {
             if (!(changes.get(name) instanceof String)) throw new IllegalArgumentException("Colour must be text");
             colors.put(name, ThemeSpec.color(changes.getString(name)));
         }
-        ThemeSpec.validate(colors, object.optString("background", "lattice"), object.optInt("lighting", 35));
+        ThemeSpec.validate(colors, object.optString("background", "lattice"), object.optInt("lighting", 35), object.optString("surface", "classic"));
         return object;
     }
 
@@ -84,6 +101,7 @@ final class Appearance {
             for (int i = 0; changes != null && i < BASE.length; i++)
                 if (changes.has(ThemeSpec.COLORS[i])) style.colors[i] = ThemeSpec.color(changes.getString(ThemeSpec.COLORS[i]));
             style.mode = object.optString("background", "lattice"); style.lighting = object.optInt("lighting", 35);
+            style.surface = new ThemeSurface(object.optString("surface", "classic"), style.colors);
         } catch (Exception ignored) { /* Invalid saved data falls back to the original Mihrab. */ }
         if (Arrays.asList(ThemeSpec.BACKGROUNDS).contains(background)) style.mode = background;
         if (light >= 0 && light <= 100) style.lighting = light;

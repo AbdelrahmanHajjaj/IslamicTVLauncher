@@ -376,7 +376,7 @@ final class Text {
     String applyAppearance() { return ar ? "تطبيق التغييرات" : "Apply changes"; }
     String appearancePreview() { return ar ? "معاينة الرئيسية" : "Home preview"; }
     String sectionAppearance() { return ar ? "الرئيسية والمظهر" : "Home & appearance"; }
-    String[] themeNames() { return ar ? new String[] {"محراب", "شفق", "جمر", "غابة", "منتصف الليل", "وردي", "رمال", "أردوازي", "مخصصة"} : new String[] {"Mihrab", "Aurora", "Ember", "Forest", "Midnight", "Rose", "Sand", "Slate", "Custom"}; }
+    String[] themeNames() { return ar ? new String[] {"محراب", "شفق", "جمر", "غابة", "منتصف الليل", "وردي", "رمال", "أردوازي", "زجاج", "صقيع", "سينما", "كربون", "نيون", "مخطط", "إشارة", "أركيد", "غسق", "واحة", "نحاس أصفر", "فسيفساء", "مخصصة"} : new String[] {"Mihrab", "Aurora", "Ember", "Forest", "Midnight", "Rose", "Sand", "Slate", "Glass", "Frost", "Cinema", "Carbon", "Neon", "Blueprint", "Signal", "Arcade", "Dusk", "Oasis", "Brass", "Mosaic", "Custom"}; }
     String homeLayout() { return ar ? "تخطيط الرئيسية" : "Home layout"; }
     String homeCountdown() { return ar ? "العد التنازلي للصلاة" : "Prayer countdown"; }
     String[] homeCountdowns() { return ar ? new String[] {"محراب", "شريط مدمج", "مخفي"} : new String[] {"Mihrab", "Compact bar", "Hidden"}; }

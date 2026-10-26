@@ -46,13 +46,13 @@ export function cellsHtml(c: Ctx) {
   const { t, day, now, h24 } = c;
   const names = prayerNames(c);
   return homePrayers(c.prefs.homePrayers, day.nowIndex, day.nextIndex).map(i => {
-    if (i < 0) return `<div class="cell" data-state="past" aria-label="${t.s('noCurrentPrayer')}"><span class="tag caps">${t.s('nowTag')}</span><span class="name">—</span><span class="time num">—</span></div>`;
+    if (i < 0) return `<div class="cell" data-state="past" aria-label="${t.s('noCurrentPrayer')}"><div class="prayer-head"><span></span><span class="tag caps">${t.s('nowTag')}</span></div><span class="name">—</span><span class="time num">—</span></div>`;
     const time = day.times[i];
     let tag = i === day.nowIndex ? t.s('nowTag') : i === day.nextIndex ? t.s('nextTag') : '';
     if (day.ramadan && i === FAJR) tag = t.s('suhoorTag');
     if (day.ramadan && i === MAGHRIB) tag = t.s('iftarTag');
     const state = i === day.nowIndex ? 'now' : i === day.nextIndex ? 'next' : time <= now ? 'past' : 'up';
-    return `<div class="cell" data-state="${state}"><span class="tag caps">${prayerLabel(i, tag)}</span><span class="name">${names[i]}</span><span class="time num">${clock(t, time, h24, 0.55)}</span></div>`;
+    return `<div class="cell" data-state="${state}"><div class="prayer-head"><span class="prayer-symbol" aria-hidden="true">${prayerLabel(i, '')}</span><span class="tag caps">${tag}</span></div><span class="name">${names[i]}</span><span class="time num">${clock(t, time, h24, 0.55)}</span></div>`;
   }).join('');
 }
 

@@ -186,6 +186,8 @@ final class Tokens {
     static final float LAYOUT_HOME_REFERENCE_TOP = 290f;
     /** layout.home.info-top */
     static final float LAYOUT_HOME_INFO_TOP = 368f;
+    /** layout.home.cell-inset */
+    static final float LAYOUT_HOME_CELL_INSET = 20f;
     /** layout.home.cell-padding */
     static final float LAYOUT_HOME_CELL_PADDING = 10f;
     /** layout.arch.width */
@@ -370,6 +372,38 @@ final class Tokens {
     static final int BORDER_CHIP_COLOR = 0x40EFE7D6;
     /** border.chip.width */
     static final float BORDER_CHIP_WIDTH = 2f;
+    /** surface.prayer-radius-max */
+    static final float SURFACE_PRAYER_RADIUS_MAX = 28f;
+    /** surface.modern-countdown-scale */
+    static final float SURFACE_MODERN_COUNTDOWN_SCALE = 0.86f;
+    /** surface.glass.radius */
+    static final float SURFACE_GLASS_RADIUS = 32f;
+    /** surface.glass.stroke */
+    static final float SURFACE_GLASS_STROKE = 2f;
+    /** surface.glass.opacity */
+    static final float SURFACE_GLASS_OPACITY = 0.86f;
+    /** surface.glass.edge */
+    static final float SURFACE_GLASS_EDGE = 0.38f;
+    /** surface.cinema.radius */
+    static final float SURFACE_CINEMA_RADIUS = 6f;
+    /** surface.outline.radius */
+    static final float SURFACE_OUTLINE_RADIUS = 10f;
+    /** surface.outline.stroke */
+    static final float SURFACE_OUTLINE_STROKE = 2f;
+    /** surface.blocks.radius */
+    static final float SURFACE_BLOCKS_RADIUS = 4f;
+    /** surface.blocks.stripe */
+    static final float SURFACE_BLOCKS_STRIPE = 4f;
+    /** surface.soft.radius */
+    static final float SURFACE_SOFT_RADIUS = 42f;
+    /** surface.frame.radius */
+    static final float SURFACE_FRAME_RADIUS = 0f;
+    /** surface.frame.stroke */
+    static final float SURFACE_FRAME_STROKE = 3f;
+    /** surface.arch-stroke */
+    static final float SURFACE_ARCH_STROKE = 3f;
+    /** surface.arch-inner */
+    static final float SURFACE_ARCH_INNER = 1.5f;
     /** motion.focus */
     static final long DUR_FOCUS_MS = 120;
     /** motion.panel-slide */

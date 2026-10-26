@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "colors": {
+    "lapis-950": "#190D09",
+    "lapis-900": "#281710",
+    "lapis-800": "#3A2319",
+    "lapis-700": "#4B3022",
+    "gold-400": "#FFB875",
+    "gold-200": "#FFDBAC",
+    "plaster-100": "#FFF3E8",
+    "mist-400": "#E4C2AB"
+  },
+  "surface": "blocks",
+  "background": "solid",
+  "lighting": 0
+}

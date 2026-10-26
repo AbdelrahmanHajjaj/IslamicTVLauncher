@@ -413,7 +413,7 @@ const { t, lang } = ctx;
     inset-inline-start: 96px; width: 424px; height: 76px; align-items: center; padding: 0 var(--space-4);
     border-radius: var(--radius-cell); font-size: var(--font-size-body); color: var(--color-mist-400); --rest-fill: transparent;
   }
-  .settings .nav.open { --rest-fill: var(--color-lapis-800); --rest-border: var(--color-gold-400); --rest-border-width: 2px; color: var(--color-plaster-100); }
+  .settings .nav.open { --rest-fill: var(--surface-fill, var(--color-lapis-800)); --rest-border: var(--color-gold-400); --rest-border-width: 2px; color: var(--color-plaster-100); }
   .settings .nav:focus, .tv:not(:focus-within) .settings .nav[data-focus-start] { color: var(--focus-text); }
   .settings .label { position: absolute; inset-inline-start: var(--layout-settings-content-start); top: 56px; font-size: var(--font-size-label); color: var(--color-mist-400); }
   .settings .hints { inset-inline-start: var(--layout-settings-content-start); top: 976px; }
@@ -470,7 +470,7 @@ const { t, lang } = ctx;
     position: relative; flex: none; height: 68px; width: 100%; align-items: center; padding: 0 var(--space-4);
     border-radius: var(--radius-cell); font-size: var(--font-size-body); font-weight: 400; text-align: start; --rest-fill: transparent;
   }
-  .settings .ch-item.chosen { --rest-fill: var(--color-lapis-700); color: var(--color-gold-400); font-weight: 500; }
+  .settings .ch-item.chosen { --rest-fill: var(--surface-fill, var(--color-lapis-800)); color: var(--color-gold-400); font-weight: 500; }
   .settings .ch-item:focus { transform: none; color: var(--focus-text); }
 
   .settings .toast { position: absolute; inset-inline-end: var(--space-safe-inline); bottom: var(--space-safe-block); max-width: var(--layout-toast-width); padding: 24px 32px; border-radius: var(--radius-panel); background: var(--color-plaster-100); color: var(--color-lapis-900); font-size: var(--font-size-body); }

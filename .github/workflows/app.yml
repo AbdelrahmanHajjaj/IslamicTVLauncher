@@ -21,6 +21,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - run: chmod +x gradlew && ./gradlew :app:assembleDebug :app:lintDebug --no-daemon --stacktrace
+      - run: chmod +x gradlew && ./gradlew :app:verifyApkSize :app:lintDebug --no-daemon --stacktrace
       - name: Launcher and recovery regression checks
         run: python3 -S -B -m unittest discover -s tests -v

@@ -24,3 +24,17 @@ dependencies {
     // Offline prayer-time calculation (no network, no transitive dependencies).
     implementation 'com.batoulapps.adhan:adhan:1.2.1'
 }
+
+// The distributed launcher must stay below 25 MB (decimal), including bundled audio.
+def verifyApkSize = tasks.register('verifyApkSize') {
+    group = 'verification'
+    description = 'Build and enforce the launcher APK size budget.'
+    dependsOn('assembleDebug')
+    def apk = layout.buildDirectory.file('outputs/apk/debug/app-debug.apk')
+    doLast {
+        long size = apk.get().asFile.length()
+        if (size <= 0 || size >= 25_000_000) throw new GradleException("Launcher APK must be under 25 MB; got ${size} bytes")
+        logger.lifecycle("Launcher APK: ${size} / 25,000,000 bytes")
+    }
+}
+tasks.named('check') { dependsOn(verifyApkSize) }

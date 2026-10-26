@@ -52,7 +52,7 @@ import java.util.Set;
 public class MainActivity extends Screen {
 
     private final View[] nodes = new View[NODES];
-    private final TextView[] cellTag = new TextView[6], cellName = new TextView[6], cellTime = new TextView[6];
+    private final TextView[] cellIcon = new TextView[6], cellTag = new TextView[6], cellName = new TextView[6], cellTime = new TextView[6];
     private final View[] cell = new View[6];
     private final String[] nodePackage = new String[NODES];
     private FocusGlow focusGlow;
@@ -190,6 +190,7 @@ public class MainActivity extends Screen {
         int previousNode = currentNode();
         String previousPackage = previousNode < 0 ? null : nodePackage[previousNode];
         newRoot();
+        if (Appearance.surface().modern()) { display = ui400; displayBold = ui600; }
         java.util.Arrays.fill(nodePackage, null);
         java.util.Arrays.fill(nodes, null);
         focusGlow = Prefs.of(this).getBoolean("focus_lighting", false) ? new FocusGlow(this) : null;
@@ -246,8 +247,11 @@ public class MainActivity extends Screen {
         for (int i = 0; i < slots; i++) {
             LinearLayout v = new LinearLayout(this);
             v.setOrientation(LinearLayout.VERTICAL);
-            v.setPadding(Ui.ipx(Tokens.SPACE_2), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING), Ui.ipx(Tokens.SPACE_2), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING));
+            v.setPadding(Ui.ipx(Tokens.LAYOUT_HOME_CELL_INSET), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING), Ui.ipx(Tokens.LAYOUT_HOME_CELL_INSET), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING));
             cellTag[i] = text(ui400, 20, Palette.PLASTER_100);
+            cellIcon[i] = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.PLASTER_100);
+            cellIcon[i].setIncludeFontPadding(false);
+            cellIcon[i].setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             cellName[i] = text(ui400, 26, Palette.PLASTER_100);
             cellTime[i] = text(ui400, Tokens.FONT_SIZE_BODY_L, Palette.PLASTER_100);
             cellTag[i].setIncludeFontPadding(false);
@@ -256,10 +260,19 @@ public class MainActivity extends Screen {
             cellName[i].setSingleLine(true);
             cellName[i].setEllipsize(TextUtils.TruncateAt.END);
             cellTime[i].setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
-            cellTime[i].setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+            for (TextView label : new TextView[]{cellName[i], cellTime[i]}) {
+                label.setGravity(Gravity.START);
+                label.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+            }
+            cellTag[i].setGravity(Gravity.END);
+            cellTag[i].setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
             cellTime[i].setFontFeatureSettings("tnum");
             cellTime[i].setSingleLine(true);
-            v.addView(cellTag[i], new LinearLayout.LayoutParams(-1, 0, 1));
+            LinearLayout head = new LinearLayout(this);
+            head.setOrientation(LinearLayout.HORIZONTAL);
+            head.addView(cellIcon[i], new LinearLayout.LayoutParams(-2, -2));
+            head.addView(cellTag[i], new LinearLayout.LayoutParams(0, -2, 1));
+            v.addView(head, new LinearLayout.LayoutParams(-1, 0, 1));
             v.addView(cellName[i], new LinearLayout.LayoutParams(-1, -2));
             v.addView(cellTime[i], new LinearLayout.LayoutParams(-1, -2));
             lineHeight(cellName[i], 1.1f);
@@ -347,7 +360,7 @@ public class MainActivity extends Screen {
         info.setOrientation(compact ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
         info.setGravity(Gravity.CENTER);
         if (compact) {
-            info.setBackground(round(Palette.LAPIS_800, Tokens.RADIUS_CELL));
+            info.setBackground(Appearance.panel(Palette.LAPIS_800, Tokens.RADIUS_CELL));
             info.setPadding(Ui.ipx(inset), 0, Ui.ipx(inset), 0);
         }
         archLabel = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.MIST_400);
@@ -516,6 +529,7 @@ public class MainActivity extends Screen {
             archCount.setText(t.d(duration(left, true)));
             float size = Ui.px(home.mode == HomeLayout.COMPACT ? Tokens.LAYOUT_HOME_COMPACT_COUNTDOWN_SIZE
                 : left >= 36000 ? Tokens.FONT_SIZE_DISPLAY_L : left >= 3600 ? Tokens.FONT_SIZE_DISPLAY_XL_HOURS : Tokens.LAYOUT_HOME_COUNTDOWN_SIZE);
+            if (Appearance.surface().modern()) size *= Tokens.SURFACE_MODERN_COUNTDOWN_SCALE;
             if (archCount.getTextSize() != size) { archCount.setTextSize(TypedValue.COMPLEX_UNIT_PX, size); lineHeight(archCount, 1f); }
         }
         if (arch != null) arch.setState(secondsUntil(day.nextTime, now) <= Tokens.APPROACH_MIN * 60L ? ArchView.APPROACHING : ArchView.REST);
@@ -553,8 +567,8 @@ public class MainActivity extends Screen {
         for (int slot = 0; slot < prayers.length; slot++) {
             int i = prayers[slot];
             if (i < 0) {
-                cell[slot].setBackground(round(Palette.LAPIS_800, Tokens.RADIUS_CELL));
-                cellTag[slot].setContentDescription(t.nowTag());
+                cell[slot].setBackground(Appearance.prayerPanel(Palette.LAPIS_800));
+                cellIcon[slot].setText("");
                 cellTag[slot].setText(t.nowTag()); cellName[slot].setText("—"); cellTime[slot].setText("—");
                 cell[slot].setContentDescription(t.noCurrentPrayer());
                 for (TextView v : new TextView[] {cellTag[slot], cellName[slot], cellTime[slot]}) {
@@ -573,16 +587,15 @@ public class MainActivity extends Screen {
             else if (i == day.nextIndex) { bg = 0; fg = Palette.GOLD_400; ring = Palette.GOLD_400; bold = true; }
             else if (past) { bg = Palette.LAPIS_800_60; fg = Palette.MIST_400; bold = false; }
             else { bg = Palette.LAPIS_800; fg = Palette.PLASTER_100; bold = false; }
-            GradientDrawable g = new GradientDrawable();
-            g.setCornerRadius(Ui.px(Tokens.RADIUS_CELL));
-            g.setColor(bg);
+            GradientDrawable g = Appearance.prayerPanel(bg);
             if (ring != 0) g.setStroke(Ui.ipx(3), ring);
             cell[slot].setBackground(g);
-            PrayerIcon.set(cellTag[slot], i, tag);
+            cellTag[slot].setText(tag);
+            PrayerIcon.set(cellIcon[slot], i, "");
             cellName[slot].setText(names[i]);
             cellTime[slot].setText(time(day.times[i], 0.55f));
             Typeface tf = bold ? ui600 : ui400;
-            for (TextView v : new TextView[] {cellTag[slot], cellName[slot], cellTime[slot]}) v.setTextColor(fg);
+            for (TextView v : new TextView[] {cellIcon[slot], cellTag[slot], cellName[slot], cellTime[slot]}) v.setTextColor(fg);
             cellTag[slot].setTypeface(ui400);
             cellName[slot].setTypeface(tf);
             cellTime[slot].setTypeface(tf);

@@ -67,9 +67,9 @@ h1, h2, h3 { font-family: var(--display); font-weight: var(--display-weight); li
   position: absolute;
   display: flex;
   border-radius: var(--radius-tile);
-  background: var(--rest-fill, var(--color-lapis-800));
+  background: var(--rest-fill, var(--surface-fill, var(--color-lapis-800)));
   color: var(--color-plaster-100);
-  box-shadow: inset 0 0 0 var(--rest-border-width, 0) var(--rest-border, transparent);
+  box-shadow: inset 0 0 0 var(--rest-border-width, var(--surface-stroke, 0px)) var(--rest-border, var(--surface-edge, transparent));
   outline: 0 solid transparent;
   transition: transform var(--motion-focus) var(--motion-easing-standard);
   cursor: pointer;
@@ -115,3 +115,11 @@ h1, h2, h3 { font-family: var(--display); font-weight: var(--display-weight); li
 .tv[data-background] > .ambient-ridge { display: none; }
 
 .prayer-icon { display: inline-block; width: min(1em, 38px); height: min(1em, 38px); vertical-align: -.08em; margin-inline-end: .24em; }
+
+/* Solid rules only; no CSS blur, backdrop filter or painted shadow. */
+.tv[data-surface="blocks"] .ft:is(.fav, .more:not(.all), .tile, .srow):not(:focus)::after {
+  content: ''; position: absolute; pointer-events: none; inset-inline: var(--surface-blocks-radius); bottom: 0;
+  height: var(--surface-blocks-stripe); background: var(--color-gold-400);
+}
+.tv[data-surface="blocks"]:not(:focus-within) [data-focus-start].ft::after { display: none; }
+.settings .nav:not(.open) { --rest-border-width: 0px; }

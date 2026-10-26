@@ -289,7 +289,19 @@ public class SettingsActivity extends Screen {
         View plan = new View(this) {
             final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             private void box(Canvas c, float x, float y, float w, float h, int color) {
-                paint.setColor(color); c.drawRoundRect(x, y, x + w, y + h, Tokens.RADIUS_CELL, Tokens.RADIUS_CELL, paint);
+                ThemeSurface s = previewStyle.surface;
+                float radius = s.radius(Tokens.RADIUS_CELL);
+                paint.setStyle(Paint.Style.FILL); paint.setColor(s.fill(color));
+                c.drawRoundRect(x, y, x + w, y + h, radius, radius, paint);
+                if (s.isPanel(color) && s.stroke > 0) {
+                    paint.setStyle(Paint.Style.STROKE); paint.setStrokeWidth(s.stroke); paint.setColor(s.edge);
+                    c.drawRoundRect(x, y, x + w, y + h, radius, radius, paint);
+                    paint.setStyle(Paint.Style.FILL);
+                }
+                if (s.isPanel(color) && "blocks".equals(s.name)) {
+                    paint.setColor(s.edge);
+                    c.drawRect(x + radius, y + h - Tokens.SURFACE_BLOCKS_STRIPE, x + w - radius, y + h, paint);
+                }
             }
             @Override protected void onDraw(Canvas c) {
                 c.save(); c.scale(getWidth() / Tokens.LAYOUT_HOME_WIDTH, getHeight() / 1080f);

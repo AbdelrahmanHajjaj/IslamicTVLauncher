@@ -33,7 +33,7 @@ export function homeLayout(p: Prefs, count: number, rtl: boolean) {
 
 export function homePreview(p: Prefs, rtl: boolean) {
   const h = homeLayout(p, 6, rtl);
-  const box = (x: number, y: number, w: number, height: number, color = 'lapis-700') => `<rect x="${x}" y="${y}" width="${w}" height="${height}" rx="16" fill="var(--color-${color})"/>`;
+  const box = (x: number, y: number, w: number, height: number, color = 'lapis-700') => `<rect x="${x}" y="${y}" width="${w}" height="${height}" style="rx:var(--radius-cell)" fill="${color.startsWith('lapis') ? 'var(--surface-fill)' : `var(--color-${color})`}" stroke="var(--surface-edge)" stroke-width="${color.startsWith('lapis') ? 'var(--surface-stroke)' : '0'}"/>`;
   const slots = homePrayers(h.table, -1, 0).length, cw = Math.min(HOME['tile-max-width'], (h.width - (slots - 1) * 12) / Math.max(1, slots));
   return `<svg viewBox="0 0 1920 1080" aria-hidden="true"><g${rtl ? ' transform="translate(1920 0) scale(-1 1)"' : ''}>`
     + box(h.x, 56, 400, 100, 'plaster-100')

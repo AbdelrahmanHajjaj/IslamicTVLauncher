@@ -6,9 +6,21 @@ import midnight from '../../../app/src/main/assets/themes/midnight.json';
 import rose from '../../../app/src/main/assets/themes/rose.json';
 import sand from '../../../app/src/main/assets/themes/sand.json';
 import slate from '../../../app/src/main/assets/themes/slate.json';
+import glass from '../../../app/src/main/assets/themes/glass.json';
+import frost from '../../../app/src/main/assets/themes/frost.json';
+import cinema from '../../../app/src/main/assets/themes/cinema.json';
+import carbon from '../../../app/src/main/assets/themes/carbon.json';
+import neon from '../../../app/src/main/assets/themes/neon.json';
+import blueprint from '../../../app/src/main/assets/themes/blueprint.json';
+import signal from '../../../app/src/main/assets/themes/signal.json';
+import arcade from '../../../app/src/main/assets/themes/arcade.json';
+import dusk from '../../../app/src/main/assets/themes/dusk.json';
+import oasis from '../../../app/src/main/assets/themes/oasis.json';
+import brass from '../../../app/src/main/assets/themes/brass.json';
+import mosaic from '../../../app/src/main/assets/themes/mosaic.json';
 import patterns from '../data/background-patterns.json';
 import type { Prefs } from '../lib/data';
-const presets: Record<string, typeof aurora> = { aurora, ember, forest, midnight, rose, sand, slate };
+const presets: Record<string, typeof aurora & { surface?: string }> = { aurora, ember, forest, midnight, rose, sand, slate, glass, frost, cinema, carbon, neon, blueprint, signal, arcade, dusk, oasis, brass, mosaic };
 export const THEMES = ['mihrab', ...Object.keys(presets)];
 export const BACKGROUNDS = ['theme', 'lattice', 'solid', 'panorama', 'daylight', 'mountains', 'dunes', 'halo', 'night_sky', ...Object.keys(patterns)];
 const rendered = new WeakMap<HTMLElement, string>();
@@ -22,6 +34,39 @@ export function appearance(stage: HTMLElement, prefs: Prefs) {
     if (theme) stage.style.setProperty('--color-' + name, theme.colors[name as keyof typeof aurora.colors]);
     else stage.style.setProperty('--color-' + name, tokens.color[name as keyof typeof aurora.colors].$value);
   }
+  // Match Palette.apply: tinted alpha colours and aliases must resolve on this element,
+  // rather than inherit the default palette already resolved on :root.
+  const tint = (group: Record<string, any>, prefix = '') => {
+    for (const [name, token] of Object.entries(group)) {
+      const key = prefix + name;
+      if (!('$value' in token)) { tint(token, key + '-'); continue; }
+      const value = token.$value as string;
+      const rgba = /^rgba\((\d+),(\d+),(\d+),([\d.]+)\)$/.exec(value);
+      if (!rgba) continue;
+      const hex = '#' + rgba.slice(1, 4).map(v => Number(v).toString(16).padStart(2, '0')).join('').toUpperCase();
+      const base = Object.entries(tokens.color).find(([, t]) => '$value' in t && t.$value === hex)?.[0];
+      if (base) stage.style.setProperty('--color-' + key, `color-mix(in srgb, var(--color-${base}) ${Number(rgba[4]) * 100}%, transparent)`);
+    }
+  };
+  tint(tokens.color);
+  for (const [name, spec] of Object.entries(tokens.border)) {
+    if ('color' in spec) stage.style.setProperty('--border-' + name + '-color', `var(--${spec.color.$value.slice(1, -1).replaceAll('.', '-')})`);
+  }
+  const surface = theme?.surface ?? 'classic';
+  stage.dataset.surface = surface;
+  const modern = !['classic', 'frame'].includes(surface);
+  stage.style.setProperty('--home-display', modern ? 'var(--font-family-ui)' : 'var(--display)');
+  stage.style.setProperty('--home-display-weight', modern ? '600' : 'var(--display-weight)');
+  stage.style.setProperty('--home-countdown-scale', String(modern ? tokens.surface['modern-countdown-scale'].$value : 1));
+  const treatment = tokens.surface[surface as keyof typeof tokens.surface] as { radius?: { $value: string }; stroke?: { $value: string } } | undefined;
+  for (const radius of ['cell', 'row', 'tile']) stage.style.setProperty('--radius-' + radius, treatment?.radius?.$value ?? tokens.radius[radius as 'cell' | 'row' | 'tile'].$value);
+  const panel = surface === 'cinema' || surface === 'outline' ? 'lapis-950' : surface === 'frame' ? 'lapis-900' : surface === 'blocks' ? 'lapis-700' : 'lapis-800';
+  const fill = surface === 'glass' ? `color-mix(in srgb, var(--color-${panel}) ${tokens.surface.glass.opacity.$value * 100}%, transparent)` : `var(--color-${panel})`;
+  const edge = surface === 'glass' ? `color-mix(in srgb, var(--color-lapis-800), var(--color-plaster-100) ${tokens.surface.glass.edge.$value * 100}%)` : 'var(--color-gold-400)';
+  stage.style.setProperty('--surface-fill', fill);
+  stage.style.setProperty('--surface-edge', edge);
+  stage.style.setProperty('--surface-stroke', treatment?.stroke?.$value ?? '0px');
+  stage.style.setProperty('--surface-arch-stroke', surface === 'classic' ? tokens.surface['arch-stroke'].$value : treatment?.stroke?.$value ?? '0px');
   stage.dataset.background = mode;
   const css = getComputedStyle(stage);
   const color = (name: string) => css.getPropertyValue('--color-' + name).trim();
