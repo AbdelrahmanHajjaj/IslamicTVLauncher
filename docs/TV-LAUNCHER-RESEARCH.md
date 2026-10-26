@@ -225,9 +225,13 @@ value of validating the lifecycle and upgrades before expanding customization.
 
 ## Agreed Home customization scope
 
+Implemented on `feature/home_customization`: native Home, the transactional settings preview,
+permanent Today & Qibla quick access, and browser parity. See [local validation](LOCAL-VALIDATION.md) for checks and
+hardware limits. The later app-card, favourite-editing, grouping and backup ideas remain separate work.
+
 The follow-up discussion agreed to make Home adapt to configurable prayer information before
 finalizing the app-card improvements. Cameras, video backgrounds and a widget platform are excluded.
-This section records the agreed design; implementation is pending.
+This section records the implemented design.
 
 | Control | Choices | Layout behavior |
 |---|---|---|
@@ -282,6 +286,6 @@ bilingual text, run the affected checks, and capture sanitized real-TV evidence.
 live HDMI/audio interactions, reboot and idle screensaver behavior remain separate hardware checks;
 published screenshots do not substitute for them. See [local validation](LOCAL-VALIDATION.md).
 
-For this research-only change, validation is limited to source/screenshot inspection, APK identity,
-document links and the Git diff. Builds and tests were not rerun because application behavior did
-not change.
+The original research pass was limited to source/screenshot inspection, APK identity, document links
+and the Git diff. The subsequent Home implementation and its build, browser and TV checks are recorded
+in [local validation](LOCAL-VALIDATION.md).

@@ -19,7 +19,7 @@ Arabic and English · 137 cities in 43 countries · 19 calculation methods · 14
 > *Indeed, prayer has been decreed upon the believers at fixed times.* (An-Nisa 4:103)
 
 Afnon replaces the stock Android TV launcher with a home screen for prayer times, favourite apps and
-Quran radio. The next prayer and its countdown sit inside a mihrab arch. Prayer reminders and the
+Quran radio. Show the next-prayer countdown in a mihrab or compact bar, or hide it. Prayer reminders and the
 adhan can appear over other apps; an optional compact prayer bar provides times and quick controls
 without returning to Home.
 
@@ -55,8 +55,14 @@ for completed checks and remaining hardware tests.
 - **Quran radio.** Cairo by default, with Nablus, Shabab FM, Qatar, Jordan and ten reciter channels.
   Live audio level bars, pause/resume around the adhan and screen-off listening. TCL Audio Only is used
   where supported; other TVs get a dim black-screen fallback.
-- **Two Home layouts.** Two balanced rows of up to nine favourites, or a Classic row showing the
-  first four as larger tiles. Horizontal selection cards preview both layouts; switching keeps the
+- **Customizable Home.** In **Settings → Display & language → Home layout**, choose a mihrab
+  on either side (or follow the language), a compact countdown at the top/bottom, or hide the countdown.
+  Independently show all prayer times, current only, next only, current and next, or hide the table.
+  Current-only modes show a neutral dash when there is no current prayer. The app area reflows into the
+  available space. Preview changes with Left/Right, **Apply changes** to save, or Back to cancel;
+  **Reset layout to default** resets the draft. Adhan, reminders and the screensaver keep their settings.
+- **Favourite rows.** Two balanced rows of up to nine favourites, or a Classic row showing the
+  first four. The Home layout preview includes both choices; switching keeps the
   complete favourites list. Up to five recent apps and All apps remain below. Recent history records
   launches through Afnon, including assigned remote buttons, and stays on the TV.
 - **App management.** Hold OK in All apps to add, reorder or replace a favourite. Replacement returns
@@ -68,7 +74,8 @@ for completed checks and remaining hardware tests.
   panorama, daylight, mountains, dunes, halo, night sky and eight Islamic-inspired line patterns.
   Horizontal lists update the miniature preview immediately; **Apply changes** saves the page.
   Ambient light, reduced motion and optional app-coloured focus lighting are separate controls.
-- **Quick controls.** Home has Inputs, Radio, Wi-Fi and Settings. Inputs lists Home, registered HDMI
+- **Quick controls.** Home has Inputs, Radio, Today & Qibla, Wi-Fi and Settings. Today & Qibla stays
+  beside Wi-Fi even when the countdown and prayer table are hidden. Inputs lists Home, registered HDMI
   sources and Live TV; **⋯ Advanced inputs** opens the TV's own source chooser. Wi-Fi opens Android's
   network panel for the current connection and available networks. A shared label switch controls Home
   and prayer-bar buttons. All apps also has a launcher Settings cog.
