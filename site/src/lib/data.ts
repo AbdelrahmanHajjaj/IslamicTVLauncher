@@ -17,6 +17,7 @@ export const STATIONS: Station[] = stationsJson;
 export type Prefs = {
   theme?: string; background?: string; lighting?: number; reduceMotion?: boolean; repairService?: boolean;
   quickLabels?: boolean; homeLayout?: 'two_rows' | 'classic';
+  homeCountdown?: number; homeSide?: number; homeBar?: number; homePrayers?: number;
   dockMode?: 'hidden' | 'tab' | 'off'; dockPosition?: 'top' | 'bottom';
   remoteButtons?: Record<string, string>;
   city: string;

@@ -37,6 +37,9 @@ const { t, lang } = ctx;
     </svg>
     <div class="appearance-caption"><span>{t.s('appearancePreview')}</span><h3 data-theme-name></h3><div class="swatches">{['lapis-950','lapis-800','gold-400','plaster-100'].map(c => <i style={`background:var(--color-${c})`}/>)}</div></div>
   </div>
+  <div class="appearance-preview home-preview" data-home-preview hidden>
+    <div class="appearance-home" data-home-plan></div><p class="appearance-caption">{t.s('homeHelp')}</p>
+  </div>
   <div class="rows" data-rows set:html={rowsHtml(ctx, PRAYER)} />
   <div class="saved" data-saved role="status">{t.s('saved')}</div>
   <div class="chooser" data-chooser hidden></div>
@@ -46,6 +49,7 @@ const { t, lang } = ctx;
 </div>
 
 <script>
+  import { homePreview } from '../lib/home-layout';
   import { appearance, THEMES }  from '../scripts/appearance';
   import { live } from '../scripts/live';
   import { href } from '../lib/site';
@@ -73,9 +77,11 @@ const { t, lang } = ctx;
 
     let section = 0;
     let offsetsPage = false;
+    let homeDraft: SPrefs | null = null;
+    let homeParentRow = 0;
     let offsetsParentRow = 0;
     let appearanceDraft: SPrefs | null = null;
-    const rowCtx = () => appearanceDraft && section === APPEARANCE ? { ...ctx, prefs: appearanceDraft } : ctx;
+    const rowCtx = () => homeDraft ? { ...ctx, prefs: homeDraft } : appearanceDraft && section === APPEARANCE ? { ...ctx, prefs: appearanceDraft } : ctx;
     let edit: Edit | null = null;
     let lastRows = rowsEl.innerHTML;
     let radioOn = false;
@@ -91,8 +97,10 @@ const { t, lang } = ctx;
       $('[data-appearance-preview]').hidden = section !== APPEARANCE;
       if (appearanceDraft) appearance($('[data-appearance-preview]'), appearanceDraft);
       $('[data-theme-name]').textContent = ctx.t.list('themeNames')[Math.max(0, THEMES.indexOf(rowCtx().prefs.theme ?? 'mihrab'))];
-      $('[data-label]').textContent = offsetsPage ? ctx.t.s('prayerOffsets') : sectionName(ctx.t, section);
-      const h = rowsHtml(rowCtx(), section, radioOn, edit, offsetsPage);
+      $('[data-home-preview]').hidden = !homeDraft;
+      if (homeDraft) $('[data-home-plan]').innerHTML = homePreview(homeDraft, rtl);
+      $('[data-label]').textContent = homeDraft ? ctx.t.s('homeLayout') : offsetsPage ? ctx.t.s('prayerOffsets') : sectionName(ctx.t, section);
+      const h = rowsHtml(rowCtx(), section, radioOn, edit, offsetsPage, !!homeDraft);
       if (h === lastRows) return;
       const fi = focusedRow();
       rowsEl.innerHTML = h;
@@ -111,13 +119,14 @@ const { t, lang } = ctx;
     };
     const save = (p: SPrefs | null) => {
       if (!p) return;
-      if (section === APPEARANCE) { appearanceDraft = p; rerender(); }
+      if (homeDraft) { homeDraft = p; rerender(); }
+      else if (section === APPEARANCE) { appearanceDraft = p; rerender(); }
       else { update(p); showSaved(); }
     };
 
     const setSection = (n: number) => {
-      if (n === section && !offsetsPage) return;
-      offsetsPage = false;
+      if (n === section && !offsetsPage && !homeDraft) return;
+      offsetsPage = false; homeDraft = null;
       section = n;
       appearanceDraft = n === APPEARANCE ? { ...ctx.prefs } : null;
       edit = null;
@@ -147,25 +156,23 @@ const { t, lang } = ctx;
     audio.addEventListener('error', () => { if (radioOn && audio.getAttribute('src')) { radioOn = false; rerender(); } });
 
     // ------------------------------------------------------------ chooser
-    let chooser: { back?: () => void; row: number; horizontal: boolean } | null = null;
+    let chooser: { back?: () => void; row: number } | null = null;
     const items = () => [...chooserEl.querySelectorAll<HTMLElement>('[data-item]')];
     const focusItem = (i: number) => {
       const all = items();
       const el = all[Math.max(0, Math.min(all.length - 1, i))];
       if (!el) return;
       el.focus({ preventScroll: true });
-      if (chooser?.horizontal) { el.scrollIntoView({ block: "nearest", inline: "nearest" }); return; }
       const list = el.parentElement!;
       if (el.offsetTop < list.scrollTop) list.scrollTop = el.offsetTop - 10;
       else if (el.offsetTop + el.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = el.offsetTop + el.offsetHeight - list.clientHeight + 10;
     };
     let onPick: (i: number) => void = () => {};
-    const open = (title: string, list: { label: string; chosen: boolean }[], picked: (i: number) => void, back?: () => void, horizontal = false) => {
+    const open = (title: string, list: { label: string; chosen: boolean }[], picked: (i: number) => void, back?: () => void) => {
       const row = chooser?.row ?? focusedRow();
-      chooser = { back, row, horizontal };
+      chooser = { back, row };
       onPick = picked;
-      chooserEl.classList.toggle('layout-chooser', horizontal);
-      chooserEl.innerHTML = chooserHtml(ctx.t, title, list, horizontal);
+      chooserEl.innerHTML = chooserHtml(ctx.t, title, list);
       chooserEl.hidden = false;
       focusItem(Math.max(0, list.findIndex((x) => x.chosen)));
     };
@@ -260,7 +267,7 @@ const { t, lang } = ctx;
     const setEdit = (e: Edit | null) => { edit = e; rerender(); };
     const endEdit = (keep: boolean) => {
       if (!edit) return;
-      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[edit.row], draft = edit.draft;
+      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[edit.row], draft = edit.draft;
       setEdit(null);
       if (!keep) return;
       if (r.id === 'lang') { if (draft !== r.selected) goLang(draft); }
@@ -269,9 +276,13 @@ const { t, lang } = ctx;
 
     /** OK opens or edits a row; carousels preview directly with Left/Right. */
     const act = (i: number) => {
-      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[i];
+      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[i];
       if (!r) return;
-      if (r.id === 'apply' && appearanceDraft) { update(appearanceDraft); showSaved(); }
+      if (r.id === 'homeApply' && homeDraft) {
+        const draft = homeDraft; homeDraft = null; update(draft); showSaved(); focusRow(homeParentRow);
+      }
+      else if (r.id === 'homeReset' && homeDraft) save({ ...homeDraft, homeCountdown: 0, homeSide: 0, homeBar: 0, homePrayers: 0, homeLayout: 'two_rows' });
+      else if (r.id === 'apply' && appearanceDraft) { update(appearanceDraft); showSaved(); }
       else if (r.kind === 'carousel') return;
       else if (r.kind === 'seg' || r.kind === 'step') setEdit({ row: i, draft: savedDraft(rowCtx(), r) });
       else if (r.id === 'radio') setRadio(!radioOn);
@@ -281,7 +292,7 @@ const { t, lang } = ctx;
       else if (r.id === 'adhan') save({ ...p(), adhan: !ctx.prefs.adhan });
       else if (r.kind === 'value') {
         if (r.id === 'offsets') { offsetsPage = true; offsetsParentRow = i; rerender(); focusRow(0); }
-        else if (r.id === 'homeLayout') open(ctx.t.s('homeLayout'), ctx.t.list('homeLayouts').map((label, k) => ({ label, chosen: k === (ctx.prefs.homeLayout === 'classic' ? 1 : 0) })), k => save({ ...p(), homeLayout: k === 1 ? 'classic' : 'two_rows' }), undefined, true);
+        else if (r.id === 'homeLayout') { homeDraft = { ...ctx.prefs }; homeParentRow = i; rerender(); focusRow(0); }
         else if (r.id === 'remoteButtons') openRemoteButtons();
         else if (r.id === 'dockMode') open(ctx.t.s('prayerDock'), ctx.t.list('dockModes').map((label, k) => ({ label, chosen: DOCK_MODES[k] === (ctx.prefs.dockMode ?? 'hidden') })), k => save({ ...p(), dockMode: DOCK_MODES[k] }));
         else if (r.id === 'city') openRegions();
@@ -314,7 +325,7 @@ const { t, lang } = ctx;
         handled();
         const i = items().indexOf(a);
         if (back) close(true);
-        else if (chooser.horizontal ? horiz : vert) focusItem(i < 0 ? 0 : i + (chooser.horizontal ? toEnd : vert));
+        else if (vert) focusItem(i < 0 ? 0 : i + vert);
         else if (ok && i >= 0) choose(i);
         return;
       }
@@ -334,17 +345,18 @@ const { t, lang } = ctx;
         if (back) endEdit(false);
         else if (ok) endEdit(true);
         else if (horiz) {
-          const draft = moveDraft(rowsFor(rowCtx(), section, radioOn, offsetsPage)[edit.row], edit.draft, toEnd);
+          const draft = moveDraft(rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[edit.row], edit.draft, toEnd);
           if (draft !== edit.draft) setEdit({ ...edit, draft });
         }
         return;
       }
       // Carousels consume Left/Right; other rows return to sections toward the start.
-      if (back && offsetsPage) { offsetsPage = false; rerender(); focusRow(offsetsParentRow); }
+      if (back && homeDraft) { homeDraft = null; rerender(); focusRow(homeParentRow); }
+      else if (back && offsetsPage) { offsetsPage = false; rerender(); focusRow(offsetsParentRow); }
       else if (back) focusNav();
       else if (vert) focusRow(+row + vert);
       else if (horiz) {
-        const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[+row];
+        const r = rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[+row];
         if (r.kind === 'carousel') save(pick(rowCtx(), r.id, Math.max(0, Math.min(r.segs!.length - 1, r.selected! + toEnd))));
         else if (toEnd < 0) focusNav();
       }
@@ -374,7 +386,7 @@ const { t, lang } = ctx;
       const i = +rowEl.dataset.row!;
       const seg = el.closest<HTMLElement>('[data-seg]');
       const step = el.closest<HTMLElement>('[data-step]');
-      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[i];
+      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[i];
       if (seg && (r.kind === 'seg' || r.kind === 'carousel')) {
         if (r.id === 'lang') goLang(+seg.dataset.seg!);
         else save(pick(rowCtx(), r.id, +seg.dataset.seg!));
@@ -393,12 +405,16 @@ const { t, lang } = ctx;
 
 <style is:global>
   .settings .slide { width: var(--layout-settings-carousel-width); height: var(--layout-settings-carousel-height); padding: 0 12px; display: grid; place-items: center; overflow: hidden; white-space: nowrap; font-size: var(--font-size-label); opacity: .65; }
+  .settings .slide.home-choice { width:var(--layout-settings-home-arrow-width); }
+  .settings .slide.home-choice.on { width:var(--layout-settings-home-choice-width); }
   .settings .slide.on { border-radius: 26px; background: var(--color-lapis-700); color: var(--color-plaster-100); opacity: 1; }
 
   .settings .appearance-preview { position: absolute; inset-inline-start: var(--layout-settings-content-start); top: var(--layout-settings-rows-top); width: var(--layout-settings-row-width); height: var(--layout-settings-preview-height); display: flex; align-items: center; gap: calc(var(--layout-settings-row-width) - var(--layout-settings-preview-width) - var(--layout-settings-appearance-caption-width)); }
   .settings .appearance-preview[hidden] { display: none; }
   .settings .appearance-home { width: var(--layout-settings-preview-width); height: var(--layout-settings-preview-height); flex: none; background: var(--scene-image); background-color: var(--color-lapis-900); background-size: cover; }
   .settings .appearance-caption { font-size: var(--font-size-label); color: var(--color-mist-400); }
+  .settings .home-preview svg { display: block; width: 100%; height: 100%; }
+  .settings .home-preview p { width: var(--layout-settings-appearance-caption-width); margin: 0; }
   .settings .appearance-caption h3 { font-size: var(--font-size-appearance-title); color: var(--color-plaster-100); margin: 12px 0 24px; }
   .settings .swatches { display: flex; gap: var(--layout-settings-swatch-gap); }
   .settings .swatches i { width: var(--space-6); height: var(--space-6); border-radius: 50%; }
@@ -478,9 +494,4 @@ const { t, lang } = ctx;
 
   .settings .toast { position: absolute; inset-inline-end: var(--space-safe-inline); bottom: var(--space-safe-block); max-width: var(--layout-toast-width); padding: 24px 32px; border-radius: var(--radius-panel); background: var(--color-plaster-100); color: var(--color-lapis-900); font-size: var(--font-size-body); }
   .settings .toast[hidden] { display: none; }
-  .settings .layout-chooser .ch-card { width:var(--layout-settings-layout-chooser-width); }
-  .settings .layout-chooser .ch-list { display:flex; flex-direction:row; gap:24px; overflow-x:auto; overflow-y:hidden; }
-  .settings .layout-chooser .ch-item { flex:0 0 var(--layout-settings-content-start); height:var(--layout-settings-layout-card-height); display:flex; flex-direction:column; gap:16px; padding:18px 20px; }
-  .settings .layout-chooser svg { width:100%; height:var(--layout-settings-layout-preview-height); background:var(--color-lapis-900); border-radius:8px; }
-  :lang(ar) .settings .layout-chooser svg { transform:scaleX(-1); }
 </style>

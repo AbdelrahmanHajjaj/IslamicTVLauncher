@@ -5,6 +5,7 @@ process.env.TZ = 'Europe/London';
 const server = await createServer({ configFile: false, logLevel: 'error', server: { middlewareMode: true } });
 try {
   await server.ssrLoadModule('/tests/offsets.ts');
+  await server.ssrLoadModule('/tests/home.ts');
 } finally {
   await server.close();
 }

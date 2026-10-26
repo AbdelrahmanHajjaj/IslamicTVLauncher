@@ -1,5 +1,6 @@
 // Settings (SettingsActivity): sections, each section's rows and the Asr preview, as HTML strings so the same
 // code renders the page at build time and re-renders it in the browser after every change.
+import { homeChoice } from '../lib/home-layout';
 import { THEMES, BACKGROUNDS } from '../scripts/appearance';
 import voicesJson from '../data/adhans.json';
 import type { Ctx } from '../lib/ctx';
@@ -64,7 +65,7 @@ export const DOCK_MODES = ['hidden', 'tab', 'off'] as const;
 const DARK = [0, 15, -1];
 const CLOCKS = ['system', '12', '24'] as const;
 
-export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = false): Row[] {
+export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = false, homePage = false): Row[] {
   const { t } = c;
   const p = c.prefs as SPrefs;
   const facing = loadFacing();
@@ -74,6 +75,17 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
   }));
   const city = cityOf(p);
   const st = stationOf(p);
+  if (homePage) {
+    const mode = homeChoice(p.homeCountdown, 2);
+    return [
+      { id: 'homeCountdown', kind: 'carousel', label: t.s('homeCountdown'), help: '', segs: t.list('homeCountdowns'), selected: mode },
+      { id: 'homePosition', kind: 'carousel', label: t.s('homePosition'), help: '', segs: mode === 2 ? ['—'] : t.list(mode === 1 ? 'homeBars' : 'homeSides'), selected: mode === 2 ? 0 : homeChoice(mode === 1 ? p.homeBar : p.homeSide, mode === 1 ? 1 : 2) },
+      { id: 'homePrayers', kind: 'carousel', label: t.s('homePrayers'), help: '', segs: t.list('homePrayerModes'), selected: homeChoice(p.homePrayers, 4) },
+      { id: 'homeFavourites', kind: 'carousel', label: t.s('homeFavourites'), help: '', segs: t.list('homeLayouts'), selected: p.homeLayout === 'classic' ? 1 : 0 },
+      { id: 'homeReset', kind: 'value', label: t.s('homeReset'), help: '' },
+      { id: 'homeApply', kind: 'value', label: t.s('applyAppearance'), help: '' },
+    ];
+  }
   switch (section) {
     case PRAYER: return [
       { id: 'city', kind: 'value', label: t.s('location'), help: locationHelp(t, city.lat, city.lng), value: placeOf(t, city) },
@@ -146,6 +158,10 @@ export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
 export function pick(c: Ctx, id: string, i: number): SPrefs | null {
   const p = { ...(c.prefs as SPrefs) };
   switch (id) {
+    case 'homeCountdown': return { ...p, homeCountdown: homeChoice(i, 2) };
+    case 'homePosition': return p.homeCountdown === 2 ? p : p.homeCountdown === 1 ? { ...p, homeBar: homeChoice(i, 1) } : { ...p, homeSide: homeChoice(i, 2) };
+    case 'homePrayers': return { ...p, homePrayers: homeChoice(i, 4) };
+    case 'homeFavourites': return { ...p, homeLayout: i === 1 ? 'classic' : 'two_rows' };
     case 'theme': return { ...p, theme: THEMES[i] };
     case 'background': return { ...p, background: BACKGROUNDS[i] };
     case 'school': return { ...p, hanafi: i === 1 };
@@ -166,8 +182,14 @@ const chevron = '<svg class="chev" width="22" height="22" viewBox="0 0 24 24" fi
 export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 'var(--layout-settings-rows-top)') {
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
-  else if (r.kind === 'carousel')
-    control = [r.selected! - 1, r.selected!, r.selected! + 1].map(k => `<span class="slide${k === r.selected ? ' on' : ''}" ${k >= 0 && k < r.segs!.length ? `data-seg="${k}"` : ''}>${esc(r.segs![k] ?? '')}</span>`).join('');
+  else if (r.kind === 'carousel') {
+    const home = r.id.startsWith('home');
+    control = [r.selected! - 1, r.selected!, r.selected! + 1].map(k => {
+      const valid = k >= 0 && k < r.segs!.length;
+      const label = home && k !== r.selected ? (valid ? ((k < r.selected!) !== t.ar ? '‹' : '›') : '') : r.segs![k] ?? '';
+      return `<span class="slide${k === r.selected ? ' on' : ''}${home ? ' home-choice' : ''}" ${valid ? `data-seg="${k}"` : ''}>${esc(label)}</span>`;
+    }).join('');
+  }
   else if (r.kind === 'seg')
     control = `<span class="track">${r.segs!.map((s, k) => `<span class="seg${k === r.selected ? ' on' : ''}" data-seg="${k}">${esc(s)}</span>`).join('')}</span>`;
   else if (r.kind === 'step')
@@ -185,11 +207,11 @@ export function navHtml(t: Text, section: number) {
 }
 
 /** The rows; the one being edited shows its draft. */
-export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null, offsetsPage = false) =>
-  rowsFor(c, section, radioOn, offsetsPage).map((r, i) => {
-    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
+export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null, offsetsPage = false, homePage = false) =>
+  rowsFor(c, section, radioOn, offsetsPage, homePage).map((r, i) => {
+    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE || homePage ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
     const shown = r.prayer !== undefined ? { ...r, value: c.t.offsetMinutes(edit.draft), help: clock(c.t, new Date(c.day.times[r.prayer].getTime() + (edit.draft - savedDraft(c, r)) * 60000), c.h24) } : r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
-    return rowHtml(c.t, shown, i, true, section === APPEARANCE ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
+    return rowHtml(c.t, shown, i, true, section === APPEARANCE || homePage ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
   }).join('');
 export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);
 
@@ -209,17 +231,8 @@ export const citiesOf = (t: Text, country: string) => CITIES.filter((c) => (t.ar
 export const methodItems = (t: Text, p: Prefs): Item[] => METHODS.map((m) => ({ label: t.methodName(m), chosen: m === methodOf(p) }));
 export const stationsOf = (reciters: boolean) => STATIONS.filter((s) => !!s.reciter === reciters);
 
-function layoutPreview(classic: boolean) {
-  const columns = classic ? 4 : 3, count = classic ? 4 : 6, width = classic ? 60 : 82;
-  const tile = (x: number, y: number, w: number, h: number, color: string) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="var(--color-${color})"/>`;
-  return `<svg viewBox="0 0 480 270" aria-hidden="true"><rect x="22" y="30" width="136" height="218" rx="68" fill="var(--color-lapis-800)"/>${tile(52,130,76,4,'gold-400')}${tile(190,30,95,7,'plaster-100')}${tile(190,46,140,3,'mist-400')}`
-    + Array.from({length:6},(_,i)=>tile(190+i*44,64,40,31,i===0?'gold-400':'lapis-800')).join('')
-    + Array.from({length:count},(_,i)=>tile(190+i%columns*(width+6),116+Math.floor(i/columns)*42,width,classic?64:36,i===0?'gold-400':'lapis-800')).join('')
-    + Array.from({length:6},(_,i)=>tile(190+i*44,220,40,24,'lapis-700')).join('')+'</svg>';
-}
-
-export function chooserHtml(t: Text, title: string, items: Item[], horizontal = false) {
+export function chooserHtml(t: Text, title: string, items: Item[]) {
   return `<div class="ch-card"><div class="ch-title display-bold">${esc(title)}</div><div class="ch-list">`
-    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}">${horizontal ? layoutPreview(i === 1) : ""}${esc(it.label)}</button>`).join('')
+    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}">${esc(it.label)}</button>`).join('')
     + '</div></div>';
 }

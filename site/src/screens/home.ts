@@ -2,6 +2,7 @@ import { prayerLabel } from '../lib/prayer-icon';
 // Home's live content, from MainActivity.renderMinute and Screen.renderCountdown.
 import tokens from '../../../afnon-mihrab/tokens.json';
 import type { Ctx, Model } from '../lib/ctx';
+import { homePrayers } from '../lib/home-layout';
 import { DHUHR, FAJR, MAGHRIB, clock, duration, gregorian, hijri, secondsUntil } from '../lib/prayer';
 
 const MIN = { ms: 1 / 60000, s: 1 / 60, min: 1 } as const;
@@ -44,7 +45,9 @@ export function archModel(c: Ctx) {
 export function cellsHtml(c: Ctx) {
   const { t, day, now, h24 } = c;
   const names = prayerNames(c);
-  return day.times.map((time, i) => {
+  return homePrayers(c.prefs.homePrayers, day.nowIndex, day.nextIndex).map(i => {
+    if (i < 0) return `<div class="cell" data-state="past" aria-label="${t.s('noCurrentPrayer')}"><span class="tag caps">${t.s('nowTag')}</span><span class="name">—</span><span class="time num">—</span></div>`;
+    const time = day.times[i];
     let tag = i === day.nowIndex ? t.s('nowTag') : i === day.nextIndex ? t.s('nextTag') : '';
     if (day.ramadan && i === FAJR) tag = t.s('suhoorTag');
     if (day.ramadan && i === MAGHRIB) tag = t.s('iftarTag');
