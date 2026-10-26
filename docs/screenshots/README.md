@@ -49,3 +49,14 @@ They show centred adjusted times and the same six minus/value/plus controls in b
 | English | Arabic |
 |---|---|
 | ![Browser offsets](offsets-browser-en.png) | ![Browser offsets in Arabic](offsets-browser-ar.png) |
+
+
+## Home customization PR (26 October 2026)
+
+The following unedited captures show the current customization branch. Settings and All apps are native captures from TCL 50C641K / Android 11. Home images are explicitly **browser previews**, using the default demonstration city and zero offsets; their times follow the browser environment and are not a city timetable. Native Settings and All apps captures contain no network name, account details, location or device identifier. Installed app names are examples from the test TV.
+
+| Screen | English | Arabic |
+|---|---|---|
+| Home — browser preview | [Home](custom-home-browser-en.png) | [الرئيسية](custom-home-browser-ar.png) |
+| Settings — native TV | [Settings](custom-settings-en.png) | [الإعدادات](custom-settings-ar.png) |
+| All apps — native TV | [App grid](custom-apps-en.png) | [كل التطبيقات](custom-apps-ar.png) |

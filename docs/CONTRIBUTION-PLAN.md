@@ -1,7 +1,7 @@
 # Fork and upstream contribution plan
 
-The integration branch `feature/improvements_and_cleanup` is submitted as [fork PR #1](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher/pull/1).
-Only that fork PR is in scope; upstream proposals are deferred at the owner's request.
+The previous integration branch `feature/improvements_and_cleanup` was submitted as [fork PR #1](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher/pull/1).
+The owner has now authorized publishing `feature/home_customization` as a Home customization and appearance PR into this fork's `main`. Upstream proposals remain deferred.
 Read [CONTRIBUTING.md](../CONTRIBUTING.md) and the [PR template](../.github/pull_request_template.md) for each future submission.
 
 ## Two destinations, focused upstream changes
