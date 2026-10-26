@@ -27,6 +27,9 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ### Changed and fixed
 
+- Expanded from eight to twenty themes with Glass, Frost, Cinema, Carbon, Neon, Blueprint, Signal, Arcade, Dusk, Oasis, Brass and Mosaic. Six new surface treatments change card shapes, borders, fills and Home typography. Glass uses translucency without blur; no artwork, fonts or dependencies were added. Old selections and Custom imports remain compatible. Native/browser previews match, and the build checks the 25 MB APK limit.
+- Aligned Home prayer-card names and times left in English and right in Arabic, with the icon above the name and Now/Next at the opposite end of the top row.
+
 - All apps no longer expires its catalogue after two seconds on Home. List/label preparation and icon decoding run off the UI thread, with visible icons delivered in batches of five. Package changes refresh cached data, and rebuilding or closing the screen discards outdated loading results.
 - Home focus begins at the first favourite; Down traverses favourites/recent apps to All apps, and Up reaches the quick controls including Today & Qibla. Rebuilding Home preserves the focused app when it remains visible. App metadata is cached and All apps creates tiles as rows enter view; package changes refresh the list even when the count is unchanged.
 - Removed the unused All apps dock, footer instructions and adhan dismissal hints. Replaced ambiguous Home settings/Qibla symbols with a cog and compass, and enlarged prayer icons.

@@ -73,8 +73,8 @@ for completed checks and remaining hardware tests.
   An optional system-utility filter keeps media apps, games and Play Store visible. The app list reuses
   cached metadata and labels until they need refreshing. All apps prepares its list in the background and
   loads icons in batches of five as rows enter view; its unused bottom dock and instructional footer are removed.
-- **Themes and backgrounds.** Eight palettes—Mihrab, Aurora, Ember, Forest, Midnight, Rose, Sand and
-  Slate—plus validated custom JSON themes. Sixteen named backgrounds and a theme-default option include
+- **Themes and backgrounds.** Twenty themes with classic, glass, cinema, outlined, bold-block,
+  soft and framed treatments, plus validated custom JSON themes. See the [theme catalogue](docs/THEMES.md#built-in-themes). Sixteen named backgrounds and a theme-default option include
   panorama, daylight, mountains, dunes, halo, night sky and eight Islamic-inspired line patterns.
   Horizontal lists update the miniature preview immediately; **Apply changes** saves the page.
   Ambient light, reduced motion and optional app-coloured focus lighting are separate controls.

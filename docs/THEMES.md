@@ -1,6 +1,37 @@
 # Themes and ambient backgrounds
 
-In **Settings → Home & appearance**, choose Mihrab (the original look), Aurora, Ember, Forest, Midnight, Rose, Sand or Slate. Use Left/Right on the horizontal theme and background lists to update a miniature Home preview immediately. **Apply changes** saves the whole page; leaving it without applying keeps the active theme and settings unchanged. Imported Custom themes remain available. Home layout, theme and background share this preview and Apply action. Up/Down scrolls through the choices while the preview stays fixed. Prayer calculations, radio, fonts and Quran text stay unchanged. Background choices include lattice, solid, panorama, daylight, mountains, dunes, halo and night sky, plus eight line patterns: Arches, Eight-point stars, Mashrabiya, Arabesque, Star tiles, Rosettes, Octagon lattice and Corner medallions. Every pattern takes its line colour from the selected theme; Ambient light also adjusts line strength. They use small local vector resources drawn into the existing cached 480×270 bitmap, with no wallpaper downloads or animation loop. The browser preview extracts the same vector paths. Pattern names and selection controls are available in Arabic and English. Ambient light controls the subtle colour wash, from 0 to 100. Daylight follows the TV clock; it does not fetch weather or images. The static 480×270 background updates at most once a minute on the existing foreground clock tick. Reduce motion removes focus scaling and UI transitions; the screensaver still moves to avoid a static image.
+In **Settings → Home & appearance**, choose from **20 built-in themes**, plus an imported Custom theme. The original eight retain their names and saved selections. Use Left/Right on the horizontal theme and background lists to update a miniature Home preview immediately. **Apply changes** saves the whole page; leaving it without applying keeps the active theme and settings unchanged. Imported Custom themes remain available. Home layout, theme and background share this preview and Apply action. Up/Down scrolls through the choices while the preview stays fixed. Prayer calculations, radio and Quran text stay unchanged. New modern styles reuse the bundled Alexandria font for the Home clock and countdown; classic and framed styles retain the original display fonts. Quran text always uses Amiri. Background choices include lattice, solid, panorama, daylight, mountains, dunes, halo and night sky, plus eight line patterns: Arches, Eight-point stars, Mashrabiya, Arabesque, Star tiles, Rosettes, Octagon lattice and Corner medallions. Every pattern takes its line colour from the selected theme; Ambient light also adjusts line strength. They use small local PNG masks drawn into the existing cached 480×270 bitmap, with no wallpaper downloads or animation loop. The browser preview reads their shared SVG source paths. Pattern names and selection controls are available in Arabic and English. Ambient light controls the subtle colour wash, from 0 to 100. Daylight follows the TV clock; it does not fetch weather or images. The static 480×270 background updates at most once a minute on the existing foreground clock tick. Reduce motion removes focus scaling and UI transitions; the screensaver still moves to avoid a static image.
+
+## Built-in themes
+
+The original eight retain their saved IDs and classic treatment: **Mihrab, Aurora, Ember, Forest, Midnight, Rose, Sand and Slate**. The twelve additions bring six other surface styles. All use dark TV-friendly backgrounds and the existing focus ring. Background choice remains independent; choose **Theme default** to use the preset’s background.
+
+| Theme | العربية | Treatment | Default background |
+|---|---|---|---|
+| Glass | زجاج | Translucent dark panels, rounded corners, fine highlights | Halo |
+| Frost | صقيع | Translucent dark panels, rounded corners, fine highlights | Mountains |
+| Cinema | سينما | Near-black panels, small corners, no resting border | Solid |
+| Carbon | كربون | Near-black panels, small corners, no resting border | Panorama |
+| Neon | نيون | Thin accent outlines, dark interiors | Solid |
+| Blueprint | مخطط | Thin accent outlines, dark interiors | Octagon Lattice |
+| Signal | إشارة | Square blocks and accent underlines | Solid |
+| Arcade | أركيد | Square blocks and accent underlines | Night Sky |
+| Dusk | غسق | Large rounded cards without borders | Dunes |
+| Oasis | واحة | Large rounded cards without borders | Panorama |
+| Brass | نحاس أصفر | Square frames with accent outlines | Arches |
+| Mosaic | فسيفساء | Square frames with accent outlines | Star Tiles |
+
+### TV references and cost
+
+References were reviewed as screenshots, not copied into the app: [Apple TV materials](https://developer.apple.com/design/human-interface-guidelines/materials), [Projectivy](https://play.google.com/store/apps/details?id=com.spocky.projengmenu), [Dispatch](https://play.google.com/store/apps/details?id=com.spauldhaliwal.dispatch), [Emotn UI](https://app.emotn.com/ui/), and [Premium TV Launcher](https://play.google.com/store/apps/details?id=com.premium.tv.launcher.ui). Our adaptations use Projectivy’s quiet rows, Dispatch’s dark surfaces, and Apple/Premium Launcher’s rounded translucent panels. Bold blocks and fine outlined variants offer more contrast within Afnon’s existing layout. No external artwork, hand/pointer graphics, feeds or widgets are included.
+
+Glass is an 86%-opaque dark fill with a solid highlight outline. There is no live blur, reflection, shader pass, shadow, video or idle animation. Every background uses the existing cached 480×270 bitmap (about 0.52 MB), shared by the active theme; there is no bitmap per theme. Themes add small JSON records and drawing parameters, with no fonts, libraries or image assets. These choices target the existing under-2-GB TV requirement; they are not a performance guarantee for every device.
+
+`./gradlew :app:verifyApkSize` builds the debug APK and fails unless it is **strictly below 25,000,000 bytes**. It is included in `check` and the launcher CI workflow. The full local APK, including locally bundled audio, is measured in [local validation](LOCAL-VALIDATION.md).
+
+Prayer cards align their name and time to the start edge: left in English, right in Arabic. The icon sits above the name, with Now/Next or Ramadan status at the opposite end of the top row. This retains the card height and gives long names their own full-width line. Prayer cards use 20-pixel side padding and cap their corner radius at 28 pixels; larger app tiles retain the full theme radius. Current/next state colours stay distinct in every style.
+
+## Custom themes
 
 Custom themes are local JSON, imported over ADB. Copy a preset from `app/src/main/assets/themes/`, edit it and run:
 
@@ -21,12 +52,13 @@ python -S -B tools/device.py --tv 192.168.1.50:5555 theme my-theme.json
     "plaster-100": "#EFF5ED",
     "mist-400": "#B3D0D8"
   },
+  "surface": "glass",
   "background": "panorama",
   "lighting": 35
 }
 ```
 
-The eight names retain their original token meanings: dark surfaces, accent, pressed accent, primary and secondary text. Omitted colours keep the defaults. Colours must be opaque `#RRGGBB`; unknown fields, files over 16 KiB, out-of-range lighting and insufficient text contrast are rejected before saving. Select Mihrab to reset the look. No image downloads, video, blur, telemetry or extra runtime dependencies were added.
+The optional `surface` field accepts `classic` (default for old files), `glass`, `cinema`, `outline`, `blocks`, `soft` or `frame`. Glass also validates text contrast over the panel composited on white. The eight colour names retain their original token meanings: dark surfaces, accent, pressed accent, primary and secondary text. Omitted colours keep the defaults. Colours must be opaque `#RRGGBB`; unknown fields, files over 16 KiB, out-of-range lighting and insufficient text contrast are rejected before saving. Select Mihrab to reset the look. No image downloads, video, blur, telemetry or extra runtime dependencies were added.
 
 `afnon-mihrab/tokens.json` remains the source for the default design. `npm run tokens` in `site/` generates both immutable defaults and the theme palette. Do not edit `Tokens.java` or `Palette.java` directly. The browser preview reads the same preset files.
 
