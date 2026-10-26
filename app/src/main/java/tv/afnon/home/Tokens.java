@@ -248,6 +248,8 @@ final class Tokens {
     static final float LAYOUT_GAP_MORE = 20f;
     /** layout.gap-prayer-cells */
     static final float LAYOUT_GAP_PRAYER_CELLS = 12f;
+    /** layout.all-apps.icon-size */
+    static final float LAYOUT_ALL_APPS_ICON_SIZE = 72f;
     /** layout.tile-favourite.width */
     static final float LAYOUT_TILE_FAVOURITE_WIDTH = 248f;
     /** layout.tile-favourite.height */

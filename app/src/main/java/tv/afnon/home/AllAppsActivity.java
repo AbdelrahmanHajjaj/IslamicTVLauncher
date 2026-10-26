@@ -146,12 +146,11 @@ public class AllAppsActivity extends Screen {
         FocusTile tile = new FocusTile(this, Tokens.RADIUS_TILE);
         ImageView icon = new ImageView(this);
         icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        icon.setPadding(Ui.ipx(8), Ui.ipx(8), Ui.ipx(8), Ui.ipx(8));
         icons.put(pkg, icon);
         GradientDrawable iconBackground = new GradientDrawable();
         iconBackground.setCornerRadius(Ui.px(14));
         icon.setBackground(iconBackground);
-        FrameLayout.LayoutParams ip = new FrameLayout.LayoutParams(Ui.ipx(56), Ui.ipx(56), Gravity.START | Gravity.TOP);
+        FrameLayout.LayoutParams ip = new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_ALL_APPS_ICON_SIZE), Ui.ipx(Tokens.LAYOUT_ALL_APPS_ICON_SIZE), Gravity.START | Gravity.TOP);
         ip.setMarginStart(Ui.ipx(24)); ip.topMargin = Ui.ipx(22);
         tile.addView(icon, ip);
 
@@ -165,6 +164,9 @@ public class AllAppsActivity extends Screen {
         String name = labels.get(pkg);
         TextView label = text(ui500, 26, Palette.PLASTER_100);
         label.setText(name);
+        label.setGravity(Gravity.START);
+        label.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+        label.setTextDirection(Apps.isLatin(name) ? View.TEXT_DIRECTION_LTR : View.TEXT_DIRECTION_RTL);
         label.setSingleLine(true);
         label.setEllipsize(TextUtils.TruncateAt.END);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM | Gravity.START);
