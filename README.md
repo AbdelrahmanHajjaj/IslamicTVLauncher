@@ -55,15 +55,18 @@ for completed checks and remaining hardware tests.
 - **Quran radio.** Cairo by default, with Nablus, Shabab FM, Qatar, Jordan and ten reciter channels.
   Live audio level bars, pause/resume around the adhan and screen-off listening. TCL Audio Only is used
   where supported; other TVs get a dim black-screen fallback.
-- **Customizable Home.** In **Settings → Display & language → Home layout**, choose a mihrab
+- **Customizable Home.** In **Settings → Home & appearance**, choose a mihrab
   on either side (or follow the language), a compact countdown at the top/bottom, or hide the countdown.
   Independently show all prayer times, current only, next only, current and next, or hide the table.
   Current-only modes show a neutral dash when there is no current prayer. The app area reflows into the
-  available space. Preview changes with Left/Right, **Apply changes** to save, or Back to cancel;
+  available space. The full-size mihrab shows the next prayer, its time, a large countdown and location,
+  with the clock beside it. Preview layout, theme and background together with Left/Right, scroll through
+  the choices, then **Apply changes** to save the page, or Back to cancel;
   **Reset layout to default** resets the draft. Adhan, reminders and the screensaver keep their settings.
-- **Favourite rows.** Two balanced rows of up to nine favourites, or a Classic row showing the
+- **Favourite rows.** Up to nine favourites across two rows, or a Classic row showing the
   first four. The Home layout preview includes both choices; switching keeps the
-  complete favourites list. Up to five recent apps and All apps remain below. Recent history records
+  complete favourites list. Without the mihrab, six favourites use four columns and two rows;
+  focus rings have room around labels and neighbouring panels. Up to five recent apps and All apps remain below. Recent history records
   launches through Afnon, including assigned remote buttons, and stays on the TV.
 - **App management.** Hold OK in All apps to add, reorder or replace a favourite. Replacement returns
   to Home so you can select its destination. Uninstall opens Android's confirmation for removable apps.
@@ -74,8 +77,8 @@ for completed checks and remaining hardware tests.
   panorama, daylight, mountains, dunes, halo, night sky and eight Islamic-inspired line patterns.
   Horizontal lists update the miniature preview immediately; **Apply changes** saves the page.
   Ambient light, reduced motion and optional app-coloured focus lighting are separate controls.
-- **Quick controls.** Home has Inputs, Radio, Today & Qibla, Wi-Fi and Settings. Today & Qibla stays
-  beside Wi-Fi even when the countdown and prayer table are hidden. Inputs lists Home, registered HDMI
+- **Quick controls.** Home has Today & Qibla, Inputs, Radio, Wi-Fi and Settings. Today & Qibla sits
+  at the outer end, beyond Inputs, even when the countdown and prayer table are hidden. Inputs lists Home, registered HDMI
   sources and Live TV; **⋯ Advanced inputs** opens the TV's own source chooser. Wi-Fi opens Android's
   network panel for the current connection and available networks. A shared label switch controls Home
   and prayer-bar buttons. All apps also has a launcher Settings cog.
@@ -167,7 +170,7 @@ authorisations, restart the TV and verify that its ADB port is closed. Port 5555
 | City, calculation method, Asr school or Hijri date | Settings → Prayer times |
 | Adjust each prayer's time | Prayer times → Prayer time offsets; compare the centred time with your local timetable |
 | Choose 12/24-hour display, digits or language | Settings → Display & language |
-| Choose Home layout | Display & language → Home layout; Left/Right previews, OK applies, Back cancels |
+| Customize Home and appearance | Home & appearance; Left/Right previews, Up/Down scrolls, Apply saves the page, Back cancels |
 | Add, reorder or replace favourites | All apps → hold OK; replacement selects a tile on Home |
 | Hide system utilities | Display & language → Hide system apps in All apps; this does not disable packages |
 | Remove a removable app | All apps → hold OK → Uninstall → Android confirmation |

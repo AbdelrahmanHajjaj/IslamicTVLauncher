@@ -7,7 +7,9 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 ### Added in IslamicTVLauncher (Afnon)
 
 - Home customization with a live layout preview, Apply, Back-to-cancel and reset. Choose a mihrab on either side, a compact countdown at the top/bottom, or hide it; independently show all prayer times, current, next, both, or none. Favourite and recent-app regions reflow while preserving saved apps and prayer-alert settings. Arabic/English browser previews mirror these controls.
-- Permanent Today & Qibla quick control beside Wi-Fi, replacing the mihrab button. Remote navigation reaches every remaining control even with both prayer sections hidden or no favourites.
+- Permanent Today & Qibla quick control at the outer end of the quick-action row, beyond Inputs, replacing the mihrab button. Remote navigation reaches every remaining control even with both prayer sections hidden or no favourites.
+- Restored the full-size mihrab with the clock beside it. Next prayer name, prayer time, large countdown and location fill the panel. Wider app rows use four columns for six favourites without the mihrab; focus spacing protects labels and adjacent panels.
+- One Home & appearance page combines layout, theme and background in a shared preview, with scrolling controls, one Apply and Back cancellation. The Asr school row now shows its own live draft time instead of a separate sidebar card.
 
 - Fork app and screensaver name, while retaining package `tv.afnon.home` and compatible signed updates.
 - Leamington Spa in the UK catalog: 137 cities across 43 countries. Its default still needs an official local timetable comparison before an upstream city PR. Browser introductory totals derive from the catalog.
@@ -15,7 +17,7 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 - Settings previews for reminder banners and adhan, using current audio settings without consuming scheduled alerts. Theme-aware reminder styling and six shared prayer icons throughout native and browser prayer displays.
 - Two favourite rows for up to nine apps and a Classic four-tile layout, selected in the Home customization preview. Both preserve the saved favourites and include a row of recent apps plus All apps.
 - Favourite replacement by selecting a destination on Home; Android uninstall confirmation for removable apps; optional system-utility filtering that retains media apps, games and Play Store.
-- Eight theme presets and validated custom JSON themes. A separate appearance page previews horizontal theme/background choices before Apply; ambient light, reduced motion and off-by-default app focus lighting.
+- Eight theme presets and validated custom JSON themes. The shared Home & appearance page previews theme/background choices before Apply; ambient light, reduced motion and off-by-default app focus lighting.
 - Sixteen named local backgrounds plus theme default, including eight theme-coloured line patterns: Arches, Eight-point stars, Mashrabiya, Arabesque, Star tiles, Rosettes, Octagon lattice and Corner medallions. Small cached drawings; no wallpaper downloads or idle animation loop.
 - Home/input switching with registered HDMI/CEC and tuner entries, a Home entry and an Advanced inputs header button. Wi-Fi opens the system network panel; All apps has a Settings cog.
 - An optional full-width prayer bar over apps/inputs, with current/next prayer styling, top/bottom placement, hidden/tab/off modes, mirrored RTL controls and a minimize button. Quick-control labels share one setting with Home.
