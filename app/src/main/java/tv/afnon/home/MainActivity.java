@@ -181,6 +181,11 @@ public class MainActivity extends Screen {
         render(false);
         // The prayer the card was about has arrived (the call takes over) or the card outlived its prayer.
         if (card != null && day != null && !day.nextTime.equals(cardFor)) dismissReminder();
+        if (hasWindowFocus() && card == null && radioCard == null && replacementPackage == null
+                && (quickMenu == null || !quickMenu.isShowing()) && Appearance.cycleIfDue(this)) {
+            loadSettings(null);
+            build(); // Recolours every view and restores the focused app/control.
+        }
     }
 
     // ---------------------------------------------------------------- layout

@@ -33,6 +33,7 @@ const { t, lang } = ctx;
 <script>
   import { homePreview } from '../lib/home-layout';
   import { appearance, THEMES }  from '../scripts/appearance';
+  import { armCycle } from '../lib/appearance-cycle';
   import { live } from '../scripts/live';
   import { href } from '../lib/site';
   import { CITIES, METHODS, cityOf, stationOf } from '../lib/data';
@@ -269,7 +270,7 @@ const { t, lang } = ctx;
       const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[i];
       if (!r) return;
       if (r.id === 'homeReset' && appearanceDraft) save({ ...appearanceDraft, homeCountdown: 0, homeSide: 0, homeBar: 0, homePrayers: 0, homeLayout: 'two_rows' });
-      else if (r.id === 'apply' && appearanceDraft) { update(appearanceDraft); showSaved(); }
+      else if (r.id === 'apply' && appearanceDraft) { appearanceDraft = armCycle(appearanceDraft, Date.now()); update(appearanceDraft); showSaved(); }
       else if (r.kind === 'carousel') return;
       else if (r.kind === 'seg' || r.kind === 'step') setEdit({ row: i, draft: savedDraft(rowCtx(), r) });
       else if (r.id === 'radio') setRadio(!radioOn);

@@ -106,7 +106,7 @@ public class SettingsActivity extends Screen {
     private LinearLayout appearanceSwatches;
     private Appearance.Style previewStyle;
     private String previewKey;
-    private int themeChoice, backgroundChoice, lightChoice;
+    private int themeChoice, backgroundChoice, lightChoice, cycleChoice;
     private boolean focusChoice, motionChoice;
     private static final String[] BACKGROUNDS = java.util.stream.Stream.concat(java.util.stream.Stream.of("theme"), Arrays.stream(ThemeSpec.BACKGROUNDS)).toArray(String[]::new);
     private final FocusTile[] nav = new FocusTile[SECTIONS];
@@ -233,6 +233,8 @@ public class SettingsActivity extends Screen {
             themeChoice = Math.max(0, Arrays.asList(Appearance.PRESETS).indexOf(prefs().getString("theme", "mihrab")));
             backgroundChoice = Math.max(0, Arrays.asList(BACKGROUNDS).indexOf(prefs().getString("background", "theme")));
             lightChoice = prefs().getInt("lighting", -1);
+            cycleChoice = 0;
+            for (int i = 0; i < AppearanceCycle.MINUTES.length; i++) if (AppearanceCycle.MINUTES[i] == Appearance.cycleMinutes(this)) cycleChoice = i;
             focusChoice = prefs().getBoolean("focus_lighting", false);
             motionChoice = Appearance.reduced(this);
             showAppearancePreview();
@@ -559,6 +561,13 @@ public class SettingsActivity extends Screen {
                     void setAmount(int n) { lightChoice = n; }
                     boolean saves() { return false; }
                 },
+                new Row(CAROUSEL) {
+                    String label() { return t.appearanceCycle(); }
+                    String help() { return t.appearanceCycleHelp(); }
+                    String[] segs() { return t.appearanceCycleChoices(); }
+                    int selected() { return cycleChoice; }
+                    void select(int i) { cycleChoice = i; }
+                },
                 new Row(TOGGLE) {
                     String label() { return t.focusLighting(); }
                     String help() { return t.focusLightingHelp(); }
@@ -587,6 +596,9 @@ public class SettingsActivity extends Screen {
                             .putString("theme", Appearance.PRESETS[themeChoice]).putString("background", BACKGROUNDS[backgroundChoice])
                             .putBoolean("focus_lighting", focusChoice).putBoolean("reduce_motion", motionChoice);
                         if (lightChoice < 0) save.remove("lighting"); else save.putInt("lighting", lightChoice);
+                        int interval = AppearanceCycle.MINUTES[cycleChoice];
+                        if (interval == 0) save.remove("appearance_cycle").remove("appearance_cycle_at");
+                        else save.putInt("appearance_cycle", interval).putLong("appearance_cycle_at", AppearanceCycle.next(System.currentTimeMillis(), interval));
                         save.apply(); relaunch(); showSaved();
                     }
                 }));

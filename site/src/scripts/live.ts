@@ -1,6 +1,7 @@
 // Browser side: prefs saved in this browser, and a once-a-second loop that re-renders the screen model into
 // the page's [data-k] (innerHTML) and [data-a] (attributes) elements.
 import { appearance } from './appearance';
+import { cycleAppearance } from '../lib/appearance-cycle';
 import { DEFAULT_PREFS, type Prefs } from '../lib/data';
 import { makeCtx, type Ctx, type Model } from '../lib/ctx';
 import { shiftFor } from '../lib/prayer';
@@ -46,6 +47,11 @@ export function live(model: (c: Ctx) => Model, onTick?: (c: Ctx) => void) {
     appearance(stage, prefs);
     bind(stage, model(c));
     onTick?.(c);
+    // Keep draft settings, prayer reminders and quick menus steady. No extra timer or reload.
+    if (stage.dataset.screen === 'home' && !document.hidden && !stage.querySelector('[data-card]:not([hidden]), [data-radio-card]:not([hidden]), [data-quick]:not([hidden]), [data-screen-off-view]:not([hidden])')) {
+      const next = cycleAppearance(prefs, Date.now());
+      if (next !== prefs) { prefs = next; savePrefs(prefs); appearance(stage, prefs); }
+    }
   };
   render();
   setInterval(render, 1000);

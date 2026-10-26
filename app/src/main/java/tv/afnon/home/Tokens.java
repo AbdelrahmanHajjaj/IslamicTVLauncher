@@ -440,6 +440,10 @@ final class Tokens {
     static final long MOTION_CALL_AUTO_DISMISS_MS = 600000;
     /** motion.call-silent-dismiss: The call screen set to close when the adhan ends, with no adhan playing */
     static final long MOTION_CALL_SILENT_DISMISS_MS = 60000;
+    /** timing.appearance-short */
+    static final int APPEARANCE_CYCLE_SHORT_MIN = 15;
+    /** timing.appearance-long */
+    static final int APPEARANCE_CYCLE_LONG_MIN = 30;
     /** timing.approach: Before a prayer, the arch switches to its approaching outline */
     static final int APPROACH_MIN = 15;
 }

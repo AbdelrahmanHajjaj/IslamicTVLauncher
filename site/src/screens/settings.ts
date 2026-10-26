@@ -1,6 +1,7 @@
 // Settings (SettingsActivity): sections, each section's rows and the Asr preview, as HTML strings so the same
 // code renders the page at build time and re-renders it in the browser after every change.
 import { homeChoice } from '../lib/home-layout';
+import { CYCLE_MINUTES, cycleMinutes } from '../lib/appearance-cycle';
 import { THEMES, BACKGROUNDS } from '../scripts/appearance';
 import voicesJson from '../data/adhans.json';
 import { makeCtx, type Ctx } from '../lib/ctx';
@@ -114,6 +115,7 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
       { id: 'theme', kind: 'carousel', label: t.s('themeRow'), help: '', segs: t.list('themeNames').slice(0, THEMES.length), selected: Math.max(0, THEMES.indexOf(p.theme ?? 'mihrab')) },
       { id: 'background', kind: 'carousel', label: t.s('backgroundRow'), help: '', segs: t.list('backgroundNames'), selected: Math.max(0, BACKGROUNDS.indexOf(p.background ?? 'theme')) },
       { id: 'lighting', kind: 'step', label: t.s('lightingRow'), help: '', value: t.d(`${p.lighting ?? 35}%`) },
+      { id: 'appearanceCycle', kind: 'carousel', label: t.s('appearanceCycle'), help: t.s('appearanceCycleHelp'), segs: t.list('appearanceCycleChoices'), selected: CYCLE_MINUTES.indexOf(cycleMinutes(p.appearanceCycle)) },
       { id: 'reduceMotion', kind: 'toggle', label: t.s('reduceMotion'), help: '', on: p.reduceMotion ?? false },
       { id: 'homeReset', kind: 'value', label: t.s('homeReset'), help: '' },
       { id: 'apply', kind: 'value', label: t.s('applyAppearance'), help: '' },
@@ -158,6 +160,7 @@ export function pick(c: Ctx, id: string, i: number): SPrefs | null {
     case 'homeFavourites': return { ...p, homeLayout: i === 1 ? 'classic' : 'two_rows' };
     case 'theme': return { ...p, theme: THEMES[i] };
     case 'background': return { ...p, background: BACKGROUNDS[i] };
+    case 'appearanceCycle': return { ...p, appearanceCycle: CYCLE_MINUTES[i] ?? 0 };
     case 'school': return { ...p, hanafi: i === 1 };
     case 'remind': return { ...p, remind: REMIND[i] };
     case 'resume': return { ...p, radioResume: i === 0 };

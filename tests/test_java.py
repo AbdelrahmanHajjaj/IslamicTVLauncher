@@ -8,6 +8,13 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 class JavaChecks(unittest.TestCase):
+    def test_appearance_rotation_policy(self):
+        with tempfile.TemporaryDirectory() as output:
+            source = ROOT / "app/src/main/java/tv/afnon/home"
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+                str(source / "Tokens.java"), str(source / "AppearanceCycle.java"), str(ROOT / "tests/AppearanceCycleCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.AppearanceCycleCheck"], check=True, capture_output=True)
+
     def test_background_resolution_and_memory_budget(self):
         with tempfile.TemporaryDirectory() as output:
             source = ROOT / "app/src/main/java/tv/afnon/home"

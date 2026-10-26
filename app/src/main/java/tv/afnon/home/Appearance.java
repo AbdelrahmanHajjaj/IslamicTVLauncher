@@ -48,6 +48,28 @@ final class Appearance {
     }
     static boolean reduced(Context c) { return Prefs.of(c).getBoolean("reduce_motion", false); }
 
+    static int cycleMinutes(Context c) { return AppearanceCycle.minutes(Prefs.of(c).getInt("appearance_cycle", 0)); }
+
+    /** Called only by unobstructed, foreground Home on its existing tick. Never wakes the TV. */
+    static boolean cycleIfDue(Context c) {
+        android.content.SharedPreferences prefs = Prefs.of(c);
+        int minutes = cycleMinutes(c);
+        if (minutes == 0) return false;
+        long now = System.currentTimeMillis(), at = prefs.getLong("appearance_cycle_at", 0);
+        if (AppearanceCycle.needsStart(now, at, minutes)) {
+            prefs.edit().putLong("appearance_cycle_at", AppearanceCycle.next(now, minutes)).apply();
+            return false;
+        }
+        if (!AppearanceCycle.due(now, at, minutes)) return false;
+        load(c);
+        Random random = new Random();
+        int theme = AppearanceCycle.pick(PRESETS.length - 1, Arrays.asList(PRESETS).indexOf(prefs.getString("theme", "mihrab")), random);
+        int background = AppearanceCycle.pick(ThemeSpec.BACKGROUNDS.length, Arrays.asList(ThemeSpec.BACKGROUNDS).indexOf(current.mode), random);
+        prefs.edit().putString("theme", PRESETS[theme]).putString("background", ThemeSpec.BACKGROUNDS[background])
+            .putLong("appearance_cycle_at", AppearanceCycle.next(now, minutes)).apply();
+        return true;
+    }
+
     static JSONObject checked(String json) throws Exception {
         if (json.length() > 16384) throw new IllegalArgumentException("Theme is too large");
         JSONObject object = new JSONObject(json);

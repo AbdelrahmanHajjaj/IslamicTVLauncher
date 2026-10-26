@@ -16,6 +16,7 @@ export const STATIONS: Station[] = stationsJson;
 /** Viewer preferences, as Afnon Settings keeps them on the TV. Saved in this browser only. */
 export type Prefs = {
   theme?: string; background?: string; lighting?: number; reduceMotion?: boolean; repairService?: boolean;
+  appearanceCycle?: number; appearanceCycleAt?: number;
   quickLabels?: boolean; homeLayout?: 'two_rows' | 'classic';
   homeCountdown?: number; homeSide?: number; homeBar?: number; homePrayers?: number;
   dockMode?: 'hidden' | 'tab' | 'off'; dockPosition?: 'top' | 'bottom';

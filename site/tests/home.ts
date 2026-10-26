@@ -30,7 +30,7 @@ for (const lang of ['ar', 'en'] as const) for (let table = 0; table < 5; table++
   const draft = pick(c, 'homeCountdown', 1)!;
   assert.equal(c.prefs.homeCountdown, undefined, 'preview never changes saved prefs');
   const rows = rowsFor({ ...c, prefs: draft }, APPEARANCE);
-  assert.equal(rows.length, 10);
+  assert.equal(rows.length, 11);
   assert.ok(rows.some(r => r.id === 'theme') && rows.some(r => r.id === 'background'));
   assert.equal(rows.filter(r => r.id === 'apply').length, 1);
   assert.ok(!rowsFor(c, DISPLAY).some(r => r.id === 'homeLayout'));

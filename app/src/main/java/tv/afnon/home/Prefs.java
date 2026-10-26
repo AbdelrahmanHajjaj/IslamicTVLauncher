@@ -420,6 +420,6 @@ final class Prefs {
         SharedPreferences p = of(c);
         return p.getString("locale", "") + "|" + p.getString("digits", "") + "|" + clock24(c) + "|" + cityIndex(c)
             + "|" + method(c) + "|" + madhab(c) + "|" + java.util.Arrays.toString(prayerOffsets(c)) + "|" + hijriOffset(c) + "|" + p.getInt("facing", -1) + "|" + Appearance.key(c) + "|" + Appearance.reduced(c) + "|" + p.getBoolean("hide_system_apps", false) + "|" + p.getString("dock_mode", "hidden") + "|" + p.getString("dock_position", "bottom") + "|" + quickLabels(c) + "|" + classicHome(c)
-            + "|" + homeCountdown(c) + "|" + homeSide(c) + "|" + homeBar(c) + "|" + homePrayers(c);
+            + "|" + homeCountdown(c) + "|" + homeSide(c) + "|" + homeBar(c) + "|" + homePrayers(c) + "|" + Appearance.cycleMinutes(c);
     }
 }

@@ -24,9 +24,10 @@ const presets: Record<string, typeof aurora & { surface?: string }> = { aurora, 
 export const THEMES = ['mihrab', ...Object.keys(presets)];
 export const BACKGROUNDS = ['theme', 'lattice', 'solid', 'panorama', 'daylight', 'mountains', 'dunes', 'halo', 'night_sky', ...Object.keys(patterns)];
 const rendered = new WeakMap<HTMLElement, string>();
+export const backgroundOf = (prefs: Prefs) => prefs.background && prefs.background !== 'theme' ? prefs.background : presets[prefs.theme ?? 'mihrab']?.background ?? 'lattice';
 export function appearance(stage: HTMLElement, prefs: Prefs) {
   const theme = presets[prefs.theme ?? 'mihrab'];
-  const mode = prefs.background && prefs.background !== 'theme' ? prefs.background : theme?.background ?? 'lattice';
+  const mode = backgroundOf(prefs);
   const key = JSON.stringify([prefs.theme, prefs.background, prefs.lighting, prefs.reduceMotion, mode === 'daylight' ? Math.floor(Date.now() / 60000) : 0]);
   if (key === rendered.get(stage)) return;
   rendered.set(stage, key);

@@ -335,6 +335,9 @@ final class Text {
     String themeRow() { return ar ? "السمة" : "Theme"; }
     String backgroundRow() { return ar ? "الخلفية" : "Background"; }
     String lightingRow() { return ar ? "الإضاءة المحيطية" : "Ambient light"; }
+    String appearanceCycle() { return ar ? "تغيير المظهر عشوائيًا" : "Random appearance"; }
+    String appearanceCycleHelp() { return ar ? "سمة وخلفية عشوائيتان أثناء عرض الرئيسية" : "Random theme and background while Home is visible"; }
+    String[] appearanceCycleChoices() { return ar ? new String[] {"إيقاف", "كل ١٥ دقيقة", "كل ٣٠ دقيقة"} : new String[] {"Off", "Every 15 minutes", "Every 30 minutes"}; }
     String reduceMotion() { return ar ? "تقليل الحركة" : "Reduce motion"; }
     String screensaver() { return ar ? "شاشة التوقف" : "Screensaver"; }
     String saverSystem() { return ar ? "إعدادات شاشة التوقف والصور" : "Screensaver and photo settings"; }

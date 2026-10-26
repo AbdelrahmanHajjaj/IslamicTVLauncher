@@ -6,6 +6,7 @@ const server = await createServer({ configFile: false, logLevel: 'error', server
 try {
   await server.ssrLoadModule('/tests/offsets.ts');
   await server.ssrLoadModule('/tests/home.ts');
+  await server.ssrLoadModule('/tests/appearance-cycle.ts');
 } finally {
   await server.close();
 }
