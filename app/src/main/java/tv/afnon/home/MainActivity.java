@@ -424,6 +424,7 @@ public class MainActivity extends Screen {
         row.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
         Icon icon = new Icon(this, Icon.WIFI, 2f);
         wifiName = text(ui400, 24, Palette.PLASTER_100);
+        updateWifi(); // A foreground theme rebuild does not run onResume again.
         wifiName.setTextDirection(View.TEXT_DIRECTION_LTR);
         wifiName.setSingleLine(true); wifiName.setMaxWidth(Ui.ipx(180));
         wifiName.setEllipsize(TextUtils.TruncateAt.END);
