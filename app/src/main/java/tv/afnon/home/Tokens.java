@@ -140,6 +140,46 @@ final class Tokens {
     static final float SPACE_SAFE_INLINE = 96f;
     /** space.safe-block */
     static final float SPACE_SAFE_BLOCK = 56f;
+    /** layout.home.width */
+    static final float LAYOUT_HOME_WIDTH = 1920f;
+    /** layout.home.top */
+    static final float LAYOUT_HOME_TOP = 248f;
+    /** layout.home.bottom */
+    static final float LAYOUT_HOME_BOTTOM = 1024f;
+    /** layout.home.gap */
+    static final float LAYOUT_HOME_GAP = 24f;
+    /** layout.home.mihrab-width */
+    static final float LAYOUT_HOME_MIHRAB_WIDTH = 504f;
+    /** layout.home.mihrab-height */
+    static final float LAYOUT_HOME_MIHRAB_HEIGHT = 756f;
+    /** layout.home.bar-height */
+    static final float LAYOUT_HOME_BAR_HEIGHT = 100f;
+    /** layout.home.table-height */
+    static final float LAYOUT_HOME_TABLE_HEIGHT = 112f;
+    /** layout.home.label-height */
+    static final float LAYOUT_HOME_LABEL_HEIGHT = 40f;
+    /** layout.home.tile-max-width */
+    static final float LAYOUT_HOME_TILE_MAX_WIDTH = 400f;
+    /** layout.home.tile-max-height */
+    static final float LAYOUT_HOME_TILE_MAX_HEIGHT = 196f;
+    /** layout.home.recent-height */
+    static final float LAYOUT_HOME_RECENT_HEIGHT = 94f;
+    /** layout.home.countdown-size */
+    static final float LAYOUT_HOME_COUNTDOWN_SIZE = 100f;
+    /** layout.home.compact-countdown-size */
+    static final float LAYOUT_HOME_COMPACT_COUNTDOWN_SIZE = 56f;
+    /** layout.home.prayer-name-size */
+    static final float LAYOUT_HOME_PRAYER_NAME_SIZE = 64f;
+    /** layout.home.panel-inset */
+    static final float LAYOUT_HOME_PANEL_INSET = 32f;
+    /** layout.home.verse-top */
+    static final float LAYOUT_HOME_VERSE_TOP = 124f;
+    /** layout.home.reference-top */
+    static final float LAYOUT_HOME_REFERENCE_TOP = 316f;
+    /** layout.home.info-top */
+    static final float LAYOUT_HOME_INFO_TOP = 368f;
+    /** layout.home.cell-padding */
+    static final float LAYOUT_HOME_CELL_PADDING = 10f;
     /** layout.arch.width */
     static final float ARCH_W = 600f;
     /** layout.arch.height */
@@ -208,6 +248,10 @@ final class Tokens {
     static final float LAYOUT_BANNER_WIDTH = 640f;
     /** layout.side-panel-width */
     static final float LAYOUT_SIDE_PANEL_WIDTH = 600f;
+    /** layout.settings.home-choice-width */
+    static final float LAYOUT_SETTINGS_HOME_CHOICE_WIDTH = 320f;
+    /** layout.settings.home-arrow-width */
+    static final float LAYOUT_SETTINGS_HOME_ARROW_WIDTH = 56f;
     /** layout.settings.sidebar-width */
     static final float LAYOUT_SETTINGS_SIDEBAR_WIDTH = 560f;
     /** layout.settings.row-width */

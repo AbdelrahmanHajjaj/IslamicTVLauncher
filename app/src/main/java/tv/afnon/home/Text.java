@@ -378,6 +378,17 @@ final class Text {
     String sectionAppearance() { return ar ? "السمات والخلفيات" : "Themes & backgrounds"; }
     String[] themeNames() { return ar ? new String[] {"محراب", "شفق", "جمر", "غابة", "منتصف الليل", "وردي", "رمال", "أردوازي", "مخصصة"} : new String[] {"Mihrab", "Aurora", "Ember", "Forest", "Midnight", "Rose", "Sand", "Slate", "Custom"}; }
     String homeLayout() { return ar ? "تخطيط الرئيسية" : "Home layout"; }
+    String homeCountdown() { return ar ? "العد التنازلي للصلاة" : "Prayer countdown"; }
+    String[] homeCountdowns() { return ar ? new String[] {"محراب", "شريط مدمج", "مخفي"} : new String[] {"Mihrab", "Compact bar", "Hidden"}; }
+    String homePosition() { return ar ? "موضع العد التنازلي" : "Countdown position"; }
+    String[] homeSides() { return ar ? new String[] {"حسب اللغة", "يسار", "يمين"} : new String[] {"Follow language", "Left", "Right"}; }
+    String[] homeBars() { return ar ? new String[] {"أعلى", "أسفل"} : new String[] {"Top", "Bottom"}; }
+    String homePrayers() { return ar ? "معلومات الصلاة" : "Prayer information"; }
+    String[] homePrayerModes() { return ar ? new String[] {"جميع المواقيت", "الحالية فقط", "القادمة فقط", "الحالية والقادمة", "مخفية"} : new String[] {"All times", "Current only", "Next only", "Current and next", "Hidden"}; }
+    String homeReset() { return ar ? "استعادة التخطيط الافتراضي" : "Reset layout to default"; }
+    String homeHelp() { return ar ? "عاين التخطيط ثم طبّق. الرجوع يلغي التغييرات. لا تتغير إعدادات الأذان والتذكير." : "Preview, then apply. Back cancels changes. Adhan and reminders stay as set."; }
+    String homeFavourites() { return ar ? "صفوف المفضلة" : "Favourite rows"; }
+    String noCurrentPrayer() { return ar ? "لا توجد صلاة حالية" : "No current prayer"; }
     String[] homeLayouts() { return ar ? new String[] {"صفّان للمفضلة", "كلاسيكي — صف واحد"} : new String[] {"Two favourite rows", "Classic — one row"}; }
     String[] backgroundNames() { return ar ? new String[] {"حسب السمة", "زخرفة", "سادة", "بانوراما", "ضوء النهار", "جبال", "كثبان", "هالة", "سماء الليل", "أقواس", "نجوم ثمانية", "مشربية", "أرابيسك", "بلاط النجوم", "وريدات", "شبكة مثمنة", "زخارف الأركان"} : new String[] {"Theme", "Lattice", "Solid", "Panorama", "Daylight", "Mountains", "Dunes", "Halo", "Night sky", "Arches", "Eight-point stars", "Mashrabiya", "Arabesque", "Star tiles", "Rosettes", "Octagon lattice", "Corner medallions"}; }
     String[] buttonActions() { return ar ? new String[] {"الأصلي", "الرئيسية", "التطبيقات", "المداخل", "الإعدادات", "شريط الصلاة"} : new String[] {"Original", "Home", "All apps", "Inputs", "Settings", "Prayer bar"}; }

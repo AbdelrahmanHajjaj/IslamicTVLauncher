@@ -333,6 +333,13 @@ abstract class Screen extends Activity {
 
     // ---------------------------------------------------------------- helpers
 
+    static android.graphics.drawable.GradientDrawable round(int color, float radiusDesignPx) {
+        android.graphics.drawable.GradientDrawable d = new android.graphics.drawable.GradientDrawable();
+        d.setColor(color);
+        d.setCornerRadius(Ui.px(radiusDesignPx));
+        return d;
+    }
+
     TextView text(Typeface tf, float sizeDesignPx, int color) {
         TextView v = new TextView(this);
         v.setTypeface(tf);

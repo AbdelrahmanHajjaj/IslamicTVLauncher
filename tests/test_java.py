@@ -8,6 +8,14 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 class JavaChecks(unittest.TestCase):
+    def test_home_layout_modes_and_prayer_selection(self):
+        with tempfile.TemporaryDirectory() as output:
+            source = ROOT / "app/src/main/java/tv/afnon/home"
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+                *(str(source / name) for name in ("Tokens.java", "FavouriteChoice.java", "HomeLayout.java")),
+                str(ROOT / "tests/HomeLayoutCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.HomeLayoutCheck"], check=True, capture_output=True)
+
     def test_prayer_vectors_cover_each_prayer_in_order(self):
         import re
         import xml.etree.ElementTree as ET
