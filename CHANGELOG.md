@@ -6,6 +6,7 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ### Added in IslamicTVLauncher (Afnon)
 
+- Optional random appearance in Home & appearance: Off, every 15 minutes or every 30 minutes. Each rotation chooses a different built-in theme and background while preserving layout and focused app. It uses Home's existing tick, defers during menus/reminders or other screens, and never wakes the TV. Apply restarts the interval; Off keeps the current appearance.
 - Home customization with a live layout preview, Apply, Back-to-cancel and reset. Choose a mihrab on either side, a compact countdown at the top/bottom, or hide it; independently show all prayer times, current, next, both, or none. Favourite and recent-app regions reflow while preserving saved apps and prayer-alert settings. Arabic/English browser previews mirror these controls.
 - Permanent Today & Qibla quick control at the outer end of the quick-action row, beyond Inputs, replacing the mihrab button. Remote navigation reaches every remaining control even with both prayer sections hidden or no favourites.
 - Restored the full-size mihrab with the clock beside it. Next prayer name, prayer time, large countdown and location fill the panel. Wider app rows use four columns for six favourites without the mihrab; focus spacing protects labels and adjacent panels.

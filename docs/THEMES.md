@@ -105,6 +105,14 @@ Under **Device settings → Remote buttons**, assign Red, Green, Yellow, Blue or
 
 Reminder banners continue over the current app/input, and adhan opens its existing call screen. Back from the call returns to the previous activity. An external HDMI device is separate from Android: whether its sound is ducked or mixed during adhan depends on the TV's audio routing and needs a live-source test. Apps can also restrict overlays. The browser preview demonstrates quick controls and settings; it cannot show an Android overlay or operate a TV input/network.
 
+### Random appearance
+
+In **Settings → Home & appearance → Random appearance**, choose **Off**, **Every 15 minutes** or **Every 30 minutes**, then Apply. It is off by default. The first change happens after the selected interval; applying a manual theme/background starts a fresh interval.
+
+Each change picks from the 20 built-in themes and 16 backgrounds, excluding the current theme and visible background. Custom theme data is retained but is not included in random selection. Layout, favourites, language, lighting preferences and prayer settings stay unchanged. Turning rotation off keeps the currently displayed theme and background.
+
+Rotation uses the existing Home clock tick and runs only while Home has focus and no reminder, radio card, quick menu or favourite replacement is open. Other apps, Settings and the screensaver are not interrupted. Returning to Home after an overdue interval makes one change, then starts a new interval; it does not replay missed changes. No alarm, wake-up, extra timer or background service is added. The saved deadline survives app restarts, and moving the system clock backwards restarts the interval safely.
+
 ### Prayer icons
 
 Six line icons, sized to the neighbouring text, identify Fajr (dawn), Sunrise (rising sun), Dhuhr (midday sun), Asr (afternoon sun), Maghrib (setting sun) and Isha (crescent and star). Names remain visible. The same vectors appear in Home, Today & Qibla, All apps' next-prayer chip, offsets, the settings preview, reminders, adhan, the prayer bar and Afnon's screensaver. Friday uses Dhuhr's icon. Icons inherit the text colour, including theme and focus states. The browser preview extracts the paths from the Android vector resources; there are no icon downloads or new dependencies.
