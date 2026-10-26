@@ -88,6 +88,7 @@
     <string name="check_title">تحقّق من</string>
     <string name="check_body">• التلفاز يعمل وغير نائم.\n• التصحيح مفعّل في خيارات المطوّرين.\n• التلفاز وهذا الهاتف على شبكة الواي فاي نفسها.</string>
     <string name="try_again">أعد المحاولة</string>
+    <string name="steps_failed_lead">أفنون على التلفاز، لكن خطوة مطلوبة باللون الأحمر لم تكتمل. أعد المحاولة لإكمال الإعداد.</string>
     <string name="back">رجوع</string>
 
     <!-- Make it yours -->
@@ -112,9 +113,9 @@
     <string name="city_lead">تتبع كل مدينة طريقة الحساب التي تعتمدها مساجدها.</string>
     <string name="city_search">ابحث عن مدينة أو دولة</string>
     <string name="city_none">لا توجد مدينة بهذا الاسم. جرّب اسم الدولة أو مدينة قريبة.</string>
-    <string name="fav_title">تطبيقاتك المفضلة الأربعة</string>
+    <string name="fav_title">تطبيقاتك المفضلة</string>
     <string name="fav_lead">تأتي أولًا في الشاشة الرئيسية. اضغط عليها بالترتيب الذي تريده.</string>
-    <string name="fav_count">%1$d من ٤</string>
+    <string name="fav_count">%1$d من %2$d</string>
     <string name="clean_title">نظّف تلفازك</string>
     <string name="clean_lead">أوقف الإعلانات والتتبّع والتطبيقات التي لا تستخدمها. لا يُحذف شيء، ويمكنك إعادة تشغيلها كلها.</string>
     <string name="clean_loading">جارٍ فحص ما على التلفاز…</string>
@@ -153,4 +154,10 @@
 
     <string name="guide_both">قوائم التلفاز معروضة بالعربية والإنجليزية</string>
     <string name="g3_wireless">وإن وجدت هذا أيضًا ففعّله:</string>
+    <string name="signature_kept">توقيع النسخة المثبتة مختلف. احتفظنا بها لحماية الشاشة الرئيسية والإعدادات. استخدم نسخة بنفس مفتاح التوقيع.</string>
+    <string name="export_backup">حفظ نسخة الاستعادة</string>
+    <string name="restore_backup">استعادة إعدادات التلفزيون الأصلية</string>
+    <string name="restore_backup_help">استعادة الشاشة الرئيسية والتطبيقات والإعدادات المسجلة؟ سيبقى أفنون مثبتًا.</string>
+    <string name="backup_restored">تمت استعادة إعدادات التلفزيون الأصلية</string>
+    <string name="choose_local_apk">تثبيت نسخة أفنون من الهاتف</string>
 </resources>

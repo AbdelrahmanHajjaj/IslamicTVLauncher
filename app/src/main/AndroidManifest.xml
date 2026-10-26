@@ -6,6 +6,8 @@
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- Opens Android's user-confirmed uninstall screen from All apps. -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <!-- Quran Radio: the stream, keeping the CPU and Wi-Fi awake under the screensaver, its level bars
          (RECORD_AUDIO, granted with pm grant at install) and the TV's sleep timer (WRITE_SECURE_SETTINGS, also
          pm grant), which is off only while the radio plays. -->
@@ -22,6 +24,11 @@
 
     <!-- Android 11+ package visibility, so the app tiles can resolve the apps they launch. -->
     <queries>
+        <intent><action android:name="android.service.dreams.DreamService" /></intent>
+        <intent><action android:name="com.android.tv.action.VIEW_INPUTS" /></intent>
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>
+        <intent><action android:name="android.intent.action.VIEW" /><data android:mimeType="vnd.android.cursor.dir/channel" /></intent>
+        <intent><action android:name="android.intent.action.VIEW" /><data android:mimeType="vnd.android.cursor.item/channel" /></intent>
         <!-- CVTE firmwares answer the remote's buttons in this service; FirmwareKeys then leaves keys alone. -->
         <intent>
             <action android:name="android.intent.action.HOTKEYSERVICE" />
@@ -71,6 +78,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".InputsActivity" android:exported="false" android:excludeFromRecents="true" android:theme="@style/Theme.Afnon.Call" android:taskAffinity="tv.afnon.home.inputs" android:launchMode="singleInstance" />
+        <activity android:name=".DockActivity" android:exported="false" android:excludeFromRecents="true" android:noHistory="true" android:theme="@android:style/Theme.NoDisplay" />
+        <activity android:name=".RemoteButtonsActivity" android:exported="false" android:excludeFromRecents="true" />
         <activity
             android:name=".AllAppsActivity"
             android:exported="false"

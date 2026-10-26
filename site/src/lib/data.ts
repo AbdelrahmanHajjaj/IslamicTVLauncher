@@ -15,10 +15,15 @@ export const STATIONS: Station[] = stationsJson;
 
 /** Viewer preferences, as Afnon Settings keeps them on the TV. Saved in this browser only. */
 export type Prefs = {
+  theme?: string; background?: string; lighting?: number; reduceMotion?: boolean; repairService?: boolean;
+  quickLabels?: boolean; homeLayout?: 'two_rows' | 'classic';
+  dockMode?: 'hidden' | 'tab' | 'off'; dockPosition?: 'top' | 'bottom';
+  remoteButtons?: Record<string, string>;
   city: string;
   method: string | null; // null: the city's own method
   hanafi: boolean;
   hijriOffset: number;
+  prayerOffsets?: number[];
   clock: 'system' | '12' | '24';
   digits: 'auto' | 'eastern' | 'western';
   remind: number;

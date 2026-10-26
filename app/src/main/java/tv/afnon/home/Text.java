@@ -1,6 +1,5 @@
 package tv.afnon.home;
 
-import com.batoulapps.adhan.CalculationMethod;
 import com.batoulapps.adhan.CalculationParameters;
 import com.batoulapps.adhan.Madhab;
 
@@ -39,7 +38,16 @@ final class Text {
     String cityName = "";
     String city() { return cityName; }
     String fav() { return ar ? "المفضلة" : "FAVOURITES"; }
-    String more() { return ar ? "المزيد" : "MORE"; }
+    String addFavourite() { return ar ? "إضافة إلى المفضلة" : "Add to favourites"; }
+    String removeFavourite() { return ar ? "إزالة من المفضلة" : "Remove from favourites"; }
+    String replaceFavourite() { return ar ? "استبدال تطبيق في المفضلة" : "Replace a favourite"; }
+    String replaceWith(String name) { return (ar ? "استبدال بـ " : "REPLACE WITH ") + name; }
+    String uninstall() { return ar ? "إلغاء التثبيت" : "Uninstall"; }
+    String focusLighting() { return ar ? "إضاءة حسب التطبيق" : "App focus lighting"; }
+    String focusLightingHelp() { return ar ? "تتغير إضاءة الخلفية قليلًا حسب التطبيق المحدد" : "Gently tint the background using the selected app's colours"; }
+    String hideSystemApps() { return ar ? "إخفاء تطبيقات النظام من كل التطبيقات" : "Hide system apps in All apps"; }
+    String hideSystemAppsHelp() { return ar ? "تبقى الوسائط والألعاب ومتجر Play ظاهرة" : "Media apps, games and Play Store stay visible"; }
+    String recentApps() { return ar ? "التطبيقات الأخيرة" : "RECENT APPS"; }
     /** Home's tile: the label over the count. */
     String all(int n) { return d((ar ? "كل التطبيقات" : "All apps") + "\n" + n); }
     String ampm(boolean am) { return ar ? (am ? "ص" : "م") : (am ? "AM" : "PM"); }
@@ -56,10 +64,6 @@ final class Text {
     String suhoorEnds(String time) { return d(ar ? "السحور حتى " + time : "Suhoor ends " + time); }
     String comingSoon() { return ar ? "هذه الشاشة قادمة في التحديث التالي" : "This screen comes in the next update"; }
 
-    String hintOk(String what) { return "OK  " + what; }
-    String hintApps() { return ar ? "◀  التطبيقات" : "▶  Apps"; }
-    String hintMore() { return ar ? "▼  المزيد" : "▼  More"; }
-    String hintFavs() { return ar ? "▲  المفضلة" : "▲  Favourites"; }
     String open(String app) { return ar ? "فتح " + app : "Open " + app; }
     String network() { return ar ? "إعدادات الشبكة" : "Network settings"; }
 
@@ -83,11 +87,8 @@ final class Text {
         if (!ar && minutes < 60) return d(prayer + " in " + minutes + (minutes == 1 ? " minute" : " minutes"));
         return prayer + " " + inMinutes(minutes, hoursAndMinutes);
     }
-    String apSub(CharSequence time) { return d((ar ? "الأذان " : "Adhan at ") + time + (ar ? " · رجوع للإغلاق" : " · Back to dismiss")); }
+    String apSub(CharSequence time) { return d((ar ? "الأذان " : "Adhan at ") + time); }
     String apOk() { return ar ? "حسنًا" : "Got it"; }
-    String bannerSub(CharSequence time, int seconds) {
-        return d((ar ? "الأذان " : "Adhan ") + time + (ar ? " · يختفي خلال " + seconds + " ث" : " · hides in " + seconds + " s"));
-    }
     String nowLabel() { return ar ? "حان الآن وقت صلاة" : "IT'S TIME FOR"; }
     String play() { return ar ? "تشغيل الأذان" : "Play adhan"; }
     String stop() { return ar ? "إيقاف الأذان" : "Stop adhan"; }
@@ -114,14 +115,6 @@ final class Text {
     String radioPlay() { return ar ? "تشغيل" : "Play"; }
     String radioStop() { return ar ? "إيقاف" : "Stop"; }
     String screenOff() { return ar ? "إطفاء الشاشة" : "Screen off"; }
-    String radioNote() {
-        return d(ar ? "تستمر في الرئيسية وشاشة التوقف · تتوقف إذا شغّل تطبيق آخر صوتًا"
-                    : "Keeps playing on Home and the screensaver · stops when another app plays sound");
-    }
-    String screenOffNote() {
-        return d(ar ? "الشاشة مطفأة والإذاعة تعمل · اضغط أي زر للعودة" : "Screen off, radio playing · press any key to come back");
-    }
-    String hintClose() { return ar ? "رجوع  إغلاق" : "Back  Close"; }
     String sectionRadio() { return ar ? "الإذاعة" : "Radio"; }
     String radioRowHelp(Radio.Station s) { return stationWhere(s) + (ar ? " · تحتاج إلى الإنترنت" : " · needs the internet"); }
     String afterAdhanRow() { return ar ? "بعد الأذان" : "After the adhan"; }
@@ -136,12 +129,9 @@ final class Text {
         return ar ? new String[] {"مع شاشة التوقف", "بعدها بـ 15 د", "أبدًا"} : new String[] {"With screensaver", "15 min later", "Never"};
     }
 
-    /** The call screen's hint: how it closes by itself (Settings → Reminders); 0 is when the adhan ends. */
-    String nowHint(int minutes) {
-        if (minutes == 0) return d(ar ? "رجوع للإغلاق · يُغلق تلقائيًا بعد الأذان" : "Back to dismiss · closes by itself after the adhan");
-        return d(ar ? "رجوع للإغلاق · يُغلق تلقائيًا بعد " + (minutes == 1 ? "دقيقة" : minutes + " دقائق")
-                    : "Back to dismiss · closes by itself after " + minutes + " min");
-    }
+    String testPrayerAlerts() { return ar ? "تجربة التذكير والأذان" : "Test reminders & adhan"; }
+    String testPrayerHelp() { return ar ? "معاينة الشريط أو شاشة الأذان بإعداداتك الحالية" : "Preview the banner or adhan screen with your current settings"; }
+    String[] testPrayerChoices() { return ar ? new String[] {"شريط التذكير", "شاشة الأذان"} : new String[] {"Reminder banner", "Adhan popup"}; }
     String callCloseRow() { return ar ? "إغلاق شاشة الأذان" : "Close the call screen"; }
     String callCloseHelp() { return ar ? "ثم تعود إلى ما كنت تشاهده" : "Then back to what you were watching"; }
     /** In the order of the row's minutes: 0 (after the adhan), 1, 5, 10. */
@@ -159,12 +149,10 @@ final class Text {
     /** "Asr in", followed by the countdown. */
     String chip(String prayer) { return ar ? prayer + " بعد" : prayer + " in"; }
     String favNote(int position) {
-        String[] ord = {"الأول", "الثاني", "الثالث", "الرابع"};
+        String[] ord = {"الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع"};
         return ar ? "في المفضلة · " + ord[position - 1] : d("In favourites · position " + position);
     }
     String notFav() { return ar ? "اضغط مطولًا على OK لوضعه في المفضلة" : "Hold OK to put it in favourites"; }
-    String hintOpen() { return ar ? "OK  فتح" : "OK  Open"; }
-    String hintHold() { return ar ? "اضغط مطولًا  ترتيب المفضلة" : "Hold OK  Arrange favourites"; }
     String moveEarlier() { return ar ? "تقديمه في المفضلة" : "Move earlier in favourites"; }
     String moveLater() { return ar ? "تأخيره في المفضلة" : "Move later in favourites"; }
     String putInPlaceOf(String app) { return ar ? "ضعه في المفضلة مكان " + app : "Put in favourites instead of " + app; }
@@ -179,7 +167,7 @@ final class Text {
         return ar ? "العصر: الجمهور (شافعي)" : "Asr: standard (Shafi‘i)";
     }
 
-    String methodName(CalculationMethod m) {
+    String methodName(PrayerMethod m) {
         switch (m) {
             case UMM_AL_QURA: return ar ? "أم القرى، مكة المكرمة" : "Umm al-Qura, Makkah";
             case MUSLIM_WORLD_LEAGUE: return ar ? "رابطة العالم الإسلامي" : "Muslim World League";
@@ -190,12 +178,21 @@ final class Text {
             case NORTH_AMERICA: return ar ? "الجمعية الإسلامية لأمريكا الشمالية" : "ISNA, North America";
             case MOON_SIGHTING_COMMITTEE: return ar ? "لجنة رؤية الهلال" : "Moonsighting Committee";
             case SINGAPORE: return ar ? "سنغافورة" : "Singapore";
+            case FRANCE: return ar ? "اتحاد المنظمات الإسلامية في فرنسا" : "France (UOIF)";
+            case TURKEY: return ar ? "تركيا — ديانت (حساب تقريبي)" : "Turkey / Diyanet (approximate)";
+            case RUSSIA: return ar ? "الإدارة الدينية لمسلمي روسيا" : "Spiritual Administration of Muslims of Russia";
+            case JAKIM: return ar ? "ماليزيا — جاكيم" : "Malaysia (JAKIM)";
+            case KEMENAG: return ar ? "وزارة الشؤون الدينية الإندونيسية" : "Indonesia (KEMENAG)";
+            case TUNISIA: return ar ? "تونس" : "Tunisia";
+            case ALGERIA: return ar ? "الجزائر" : "Algeria";
+            case MOROCCO: return ar ? "المغرب" : "Morocco";
+            case GULF: return ar ? "منطقة الخليج" : "Gulf region";
             default: return ar ? "الهيئة المصرية العامة للمساحة" : "Egyptian General Authority of Survey";
         }
     }
 
     /** "Fajr angle 19.5° · Isha 17.5°", or Isha as minutes after Maghrib where the method fixes it that way. */
-    String methodAngles(CalculationMethod m) {
+    String methodAngles(PrayerMethod m) {
         CalculationParameters p = m.getParameters();
         String fajr = (ar ? "زاوية الفجر " : "Fajr angle ") + trim(p.fajrAngle) + "°";
         String isha = p.ishaInterval > 0
@@ -269,20 +266,11 @@ final class Text {
     String networkHelp() { return ar ? "واي فاي وإيثرنت" : "Wi-Fi and Ethernet"; }
     String deviceRow() { return ar ? "إعدادات التلفاز" : "TV settings"; }
     String deviceHelp() { return ar ? "الصورة والصوت والتطبيقات والنظام" : "Picture, sound, apps and system"; }
-    String hintMove() { return ar ? "▲▼  تنقل" : "▲▼  Move"; }
-    String hintChange() { return ar ? "◀▶  تغيير القيمة" : "◀▶  Change value"; }
-    String hintChoose() { return ar ? "OK  اختيار" : "OK  Choose"; }
-    String hintBackMenu() { return ar ? "رجوع  القائمة" : "Back  Menu"; }
-    String hintEdit() { return ar ? "OK  تعديل" : "OK  Edit"; }
-    String hintSwitch() { return ar ? "OK  تشغيل/إيقاف" : "OK  On/Off"; }
-    String hintSave() { return ar ? "OK  حفظ" : "OK  Save"; }
-    String hintBackCancel() { return ar ? "رجوع  إلغاء" : "Back  Cancel"; }
     String saved() { return ar ? "✓  تم الحفظ" : "✓  Saved"; }
     String qibla() { return ar ? "القبلة" : "QIBLA"; }
     String north() { return ar ? "الشمال ▲" : "▲ North"; }
     String qiblaHint() { return ar ? "وجّه الشمال على البوصلة نحو الشمال الحقيقي" : "Line up the compass north with true north"; }
     String bellToggle() { return ar ? "تشغيل/إيقاف الأذان لهذه الصلاة" : "Adhan on/off for this prayer"; }
-    String hintBackHome() { return ar ? "رجوع  الرئيسية" : "Back  Home"; }
     String bell(boolean on) { return ar ? (on ? "الأذان مفعّل" : "الأذان متوقف") : (on ? "Adhan on" : "Adhan off"); }
     String rowNow() { return ar ? "الآن" : "now"; }
     /** Sunrise is masculine in Arabic (الشروق مضى); the prayers are feminine (الصلاة مضت). */
@@ -324,8 +312,6 @@ final class Text {
                   : "Stand facing the TV, open the compass app on your phone and hold it flat in front of you, then set the number here to what it reads. Once is enough while the TV stays where it is.";
     }
     String roomKeys() { return ar ? "◀ ▶  ٥°     ▲ ▼  ٤٥°     OK  حفظ     رجوع  إلغاء" : "◀ ▶  5°     ▲ ▼  45°     OK  Save     Back  Cancel"; }
-    String hintQibla() { return ar ? "◀  القبلة" : "▶  Qibla"; }
-    String hintTimes() { return ar ? "▶  المواقيت" : "◀  Times"; }
 
     private static int sector(double degrees) {
         return (int) Math.round(((degrees % 360) + 360) % 360 / 45) % 8;
@@ -346,4 +332,53 @@ final class Text {
     }
 
     String hijriSuffix() { return ar ? " هـ" : " AH"; }
+    String themeRow() { return ar ? "السمة" : "Theme"; }
+    String backgroundRow() { return ar ? "الخلفية" : "Background"; }
+    String lightingRow() { return ar ? "الإضاءة المحيطية" : "Ambient light"; }
+    String reduceMotion() { return ar ? "تقليل الحركة" : "Reduce motion"; }
+    String screensaver() { return ar ? "شاشة التوقف" : "Screensaver"; }
+    String saverSystem() { return ar ? "إعدادات شاشة التوقف والصور" : "Screensaver and photo settings"; }
+    String homeSettings() { return ar ? "الشاشة الرئيسية الافتراضية" : "Default Home"; }
+    String prayerDock() { return ar ? "شريط الصلاة" : "Prayer bar"; }
+    String openDock() { return ar ? "فتح شريط الصلاة" : "Open prayer bar"; }
+    String quickLabels() { return ar ? "أسماء أزرار الوصول السريع" : "Quick control labels"; }
+    String dockPosition() { return ar ? "موضع شريط الصلاة" : "Prayer bar position"; }
+    String[] dockPositions() { return ar ? new String[] {"أعلى", "أسفل"} : new String[] {"Top", "Bottom"}; }
+    String collapseDock() { return ar ? "طي" : "Collapse"; }
+    String dockDisabled() { return ar ? "شريط الصلاة مغلق في الإعدادات" : "Prayer bar is off in Settings"; }
+    String[] dockModes() { return ar ? new String[] {"مخفي حتى فتحه", "تبويب صغير", "مغلق"} : new String[] {"Hidden until opened", "Small prayer tab", "Off"}; }
+    String[] colourButtons() { return ar ? new String[] {"الأحمر", "الأخضر", "الأصفر", "الأزرق"} : new String[] {"Red", "Green", "Yellow", "Blue"}; }
+    String liveTv() { return ar ? "التلفزيون المباشر" : "Live TV"; }
+    String inputsTitle() { return ar ? "المداخل" : "Inputs"; }
+    String advancedInputs() { return ar ? "المداخل المتقدمة" : "Advanced inputs"; }
+    String inputsSystem() { return ar ? "قائمة مداخل التلفزيون" : "TV input menu"; }
+    String prayerOffsets() { return ar ? "تعديل مواقيت الصلاة بالدقائق" : "Prayer time offsets"; }
+    String prayerOffsetsHelp() { return ar ? "لكل صلاة: السالب أبكر والموجب لاحقًا · يشمل التذكير والأذان" : "Per prayer: minus is earlier, plus is later · includes reminders and adhan"; }
+    String offsetMinutes(int n) { return d((n > 0 ? "+" : "") + n + (ar ? " د" : " min")); }
+    String offsetCount(int n) { return d(n == 0 ? (ar ? "الكل 0 د" : "All 0 min") : n + (ar ? " معدّلة" : " adjusted")); }
+    String remoteButtons() { return ar ? "تخصيص أزرار التحكم" : "Remote buttons"; }
+    String pressButton() { return ar ? "اضغط زرًا لتخصيصه" : "Press a button to assign"; }
+    String pressButtonHelp() { return ar ? "اضغط زر اختصار في جهاز التحكم ثم اختر التطبيق. أزرار التنقل والصوت والطاقة تبقى كما هي. إذا فتح الزر تطبيقًا آخر، ارجع واختر الزر من القائمة." : "Press a shortcut button on your remote, then choose an app. Navigation, volume and power keep their usual function. If the button opens another app, return and select it from the list."; }
+    String buttonPreviewHelp() { return ar ? "على التلفزيون، اضغط زر جهاز التحكم هنا. هذه المعاينة تعرض أزرارًا وتطبيقات تجريبية فقط." : "On your TV, press the remote button here. This preview shows example buttons and apps only."; }
+    String enableButtons() { return ar ? "تفعيل خدمة أزرار التحكم" : "Enable the remote button service"; }
+    String buttonsFailed() { return ar ? "تعذّر حفظ الأزرار أو استعادتها. حاول مرة أخرى." : "Could not save or restore the buttons. Please try again."; }
+    String buttonAppMissing() { return ar ? "هذا التطبيق لم يعد متاحًا. اختر تطبيقًا آخر." : "This app is no longer available. Choose another app."; }
+    String buttonNumber(int code) { return (ar ? "زر " : "Button ") + d(String.valueOf(code)); }
+    String[] buttonNames() { return ar ? new String[] {"اختصار الإعدادات", "الإعدادات", "التلفزيون", "المعلومات", "الويب"} : new String[] {"Settings shortcut", "Settings", "TV", "Info", "Web"}; }
+    String restoreButtons() { return ar ? "استعادة أزرار التلفزيون الأصلية" : "Restore original TV buttons"; }
+    String serviceHealth() { return ar ? "خدمة الأذان والتذكير" : "Prayer and reminder service"; }
+    String serviceHelp() { return ar ? "إيقاف الخدمة يوقف تنبيهات الصلاة" : "Prayer alerts need this service enabled"; }
+    String serviceRunning() { return ar ? "تعمل" : "Running"; }
+    String serviceStopped() { return ar ? "متوقفة — فتح الإعدادات" : "Stopped — open settings"; }
+    String repairService() { return ar ? "استعادة خدمة الصلاة تلقائيًا" : "Recover prayer service"; }
+    String repairHelp() { return ar ? "عند العودة للرئيسية بعد إيقاف التطبيق" : "When Home opens after the app was stopped"; }
+    String systemUnavailable() { return ar ? "هذه الصفحة غير متاحة على التلفزيون" : "This settings page is unavailable on this TV"; }
+    String applyAppearance() { return ar ? "تطبيق التغييرات" : "Apply changes"; }
+    String appearancePreview() { return ar ? "معاينة الرئيسية" : "Home preview"; }
+    String sectionAppearance() { return ar ? "السمات والخلفيات" : "Themes & backgrounds"; }
+    String[] themeNames() { return ar ? new String[] {"محراب", "شفق", "جمر", "غابة", "منتصف الليل", "وردي", "رمال", "أردوازي", "مخصصة"} : new String[] {"Mihrab", "Aurora", "Ember", "Forest", "Midnight", "Rose", "Sand", "Slate", "Custom"}; }
+    String homeLayout() { return ar ? "تخطيط الرئيسية" : "Home layout"; }
+    String[] homeLayouts() { return ar ? new String[] {"صفّان للمفضلة", "كلاسيكي — صف واحد"} : new String[] {"Two favourite rows", "Classic — one row"}; }
+    String[] backgroundNames() { return ar ? new String[] {"حسب السمة", "زخرفة", "سادة", "بانوراما", "ضوء النهار", "جبال", "كثبان", "هالة", "سماء الليل", "أقواس", "نجوم ثمانية", "مشربية", "أرابيسك", "بلاط النجوم", "وريدات", "شبكة مثمنة", "زخارف الأركان"} : new String[] {"Theme", "Lattice", "Solid", "Panorama", "Daylight", "Mountains", "Dunes", "Halo", "Night sky", "Arches", "Eight-point stars", "Mashrabiya", "Arabesque", "Star tiles", "Rosettes", "Octagon lattice", "Corner medallions"}; }
+    String[] buttonActions() { return ar ? new String[] {"الأصلي", "الرئيسية", "التطبيقات", "المداخل", "الإعدادات", "شريط الصلاة"} : new String[] {"Original", "Home", "All apps", "Inputs", "Settings", "Prayer bar"}; }
 }

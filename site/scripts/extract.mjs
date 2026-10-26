@@ -1,7 +1,7 @@
 // Reads the app's own data into JSON for the preview site, so the site never keeps a second copy:
 //   Text.java       -> src/data/strings.json   (every `ar ? … : …` string, as {ar, en} templates)
 //   Prefs.CITIES    -> src/data/cities.json
-//   Prefs.METHODS   -> src/data/methods.json
+//   PrayerMethod   -> src/data/methods.json and method-presets.json
 //   Radio.STATIONS  -> src/data/stations.json
 //   res/font/*.ttf  -> src/assets/fonts/
 //   docs/screenshots -> public/screenshots/   (social preview images)
@@ -91,10 +91,10 @@ console.log(`  ${Object.keys(strings).length} strings; by hand in text.ts: ${ski
 
 const prefs = src('Prefs.java');
 const consts = Object.fromEntries(
-  [...prefs.matchAll(/static final CalculationMethod (\w+) = CalculationMethod\.(\w+);/g)].map((m) => [m[1], m[2]]),
+  [...prefs.matchAll(/static final PrayerMethod (\w+) = PrayerMethod\.(\w+);/g)].map((m) => [m[1], m[2]]),
 );
 const cityRe = new RegExp(
-  String.raw`new City\(${STR}, ${STR}, ${STR}, ${STR}, ${STR}, ([-\d.]+), ([-\d.]+), (?:CalculationMethod\.)?(\w+)(?:, (\w+))?\)`, 'g');
+  String.raw`new City\(${STR}, ${STR}, ${STR}, ${STR}, ${STR}, ([-\d.]+), ([-\d.]+), (?:PrayerMethod\.)?(\w+)(?:, (\w+))?\)`, 'g');
 const cities = [...prefs.matchAll(cityRe)].map((m) => ({
   id: unescape(m[1]), ar: unescape(m[2]), en: unescape(m[3]), countryAr: unescape(m[4]), countryEn: unescape(m[5]),
   lat: Number(m[6]), lng: Number(m[7]), method: consts[m[8]] ?? m[8], hanafi: m[9] === 'HANAFI',
@@ -109,8 +109,10 @@ const lost = [...new Set(cities.map((c) => c.countryEn))].filter((n) => !regions
 if (lost.length) throw new Error(`Prefs.REGIONS is missing ${lost.join(', ')}`);
 write('regions.json', regions);
 
-const methodsBlock = /CalculationMethod\[\] METHODS = \{([^}]*)\}/.exec(prefs)[1];
-write('methods.json', [...methodsBlock.matchAll(/CalculationMethod\.(\w+)/g)].map((m) => m[1]));
+const methods = src('PrayerMethod.java');
+write('methods.json', [...methods.matchAll(/^ {4}([A-Z_]+)\(/gm)].map(m => m[1]));
+write('method-presets.json', Object.fromEntries([...methods.matchAll(/^ {4}([A-Z_]+)\(([\d.]+), ([\d.]+), (\d+)\)/gm)]
+  .map(m => [m[1], { fajr: +m[2], isha: +m[3], interval: +m[4] }])));
 
 // ---------------------------------------------------------------- Radio.STATIONS
 
@@ -194,3 +196,21 @@ for (const m of block.matchAll(/new Station\(|Station\.reciter\(/g)) {
   }
 }
 write('stations.json', allStations);
+
+
+const prayerIcons = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(name => {
+  const xml = readFileSync(resolve(root, `app/src/main/res/drawable/ic_prayer_${name}.xml`), 'utf8');
+  const path = /android:pathData="([^"]+)"/.exec(xml)?.[1];
+  if (!path) throw new Error(`Missing prayer icon: ${name}`);
+  return path;
+});
+write('prayer-icons.json', prayerIcons);
+
+const backgroundPatterns = Object.fromEntries(['arches', 'eight_point_stars', 'mashrabiya', 'arabesque', 'star_tiles', 'rosettes', 'octagon_lattice', 'corner_medallions'].map(name => {
+  const xml = readFileSync(resolve(root, `afnon-mihrab/patterns/${name}.svg`), 'utf8');
+  const path = / d="([^"]+)"/.exec(xml)?.[1];
+  const stroke = /stroke-width="([^"]+)"/.exec(xml)?.[1];
+  if (!path || !stroke) throw new Error(`Missing background pattern: ${name}`);
+  return [name, { path, stroke: Number(stroke) }];
+}));
+write('background-patterns.json', backgroundPatterns);

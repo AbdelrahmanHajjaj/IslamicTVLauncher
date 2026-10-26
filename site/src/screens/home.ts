@@ -1,3 +1,4 @@
+import { prayerLabel } from '../lib/prayer-icon';
 // Home's live content, from MainActivity.renderMinute and Screen.renderCountdown.
 import tokens from '../../../afnon-mihrab/tokens.json';
 import type { Ctx, Model } from '../lib/ctx';
@@ -34,7 +35,7 @@ export function archModel(c: Ctx) {
   const left = secondsUntil(day.nextTime, now);
   return {
     left,
-    html: { archLabel: label, archName: name, archCount: t.d(duration(left, true)), archSub: t.d(sub), archSub2: t.d(sub2) },
+    html: { archLabel: label, archName: prayerLabel(day.nextIndex, name), archCount: t.d(duration(left, true)), archSub: t.d(sub), archSub2: t.d(sub2) },
     attr: { arch: { 'data-state': left <= APPROACH_MIN * 60 ? 'approaching' : 'rest' }, archCount: { 'data-long': String(left >= 3600) } },
   };
 }
@@ -48,7 +49,7 @@ export function cellsHtml(c: Ctx) {
     if (day.ramadan && i === FAJR) tag = t.s('suhoorTag');
     if (day.ramadan && i === MAGHRIB) tag = t.s('iftarTag');
     const state = i === day.nowIndex ? 'now' : i === day.nextIndex ? 'next' : time <= now ? 'past' : 'up';
-    return `<div class="cell" data-state="${state}"><span class="tag caps">${tag}</span><span class="name">${names[i]}</span><span class="time num">${clock(t, time, h24, 0.55)}</span></div>`;
+    return `<div class="cell" data-state="${state}"><span class="tag caps">${prayerLabel(i, tag)}</span><span class="name">${names[i]}</span><span class="time num">${clock(t, time, h24, 0.55)}</span></div>`;
   }).join('');
 }
 
@@ -64,7 +65,7 @@ export function homeModel(c: Ctx): Model {
       hdate: hijri(t, day) + t.sep() + day.city[t.lang],
       ...arch.html,
       cells: cellsHtml(c),
-      cardTitle: t.apTitle(names[day.nextIndex], minutes, duration(arch.left, false)),
+      cardTitle: prayerLabel(day.nextIndex, t.apTitle(names[day.nextIndex], minutes, duration(arch.left, false))),
       cardSub: t.apSub(clock(t, day.nextTime, h24)),
     },
     attr: { ...arch.attr, card: { 'data-for': String(day.nextTime.getTime()), 'data-left': String(arch.left) } },

@@ -1,3 +1,4 @@
+import { prayerLabel } from '../lib/prayer-icon';
 // Screensaver (AfnonDream): clock, Hijri date, next prayer and the time left.
 import tokens from '../../../afnon-mihrab/tokens.json';
 import type { Ctx, Model } from '../lib/ctx';
@@ -17,7 +18,7 @@ export function screensaverModel(c: Ctx): Model {
     html: {
       clock: clock(t, now, h24, 0.35),
       date: t.d(`${weekday}${t.sep()}${day.hijri.day} ${t.list('hijriMonths')[day.hijri.month]}`),
-      next: prayerNames(c)[day.nextIndex] + ' ' + clock(t, day.nextTime, h24),
+      next: prayerLabel(day.nextIndex, prayerNames(c)[day.nextIndex]) + ' ' + clock(t, day.nextTime, h24),
       left: t.inMinutes(Math.ceil(secs / 60), t.d(duration(secs, false))),
     },
   };

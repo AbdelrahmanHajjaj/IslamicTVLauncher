@@ -4,6 +4,50 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### Added in IslamicTVLauncher (Afnon)
+
+- Fork app and screensaver name, while retaining package `tv.afnon.home` and compatible signed updates.
+- Leamington Spa in the UK catalog: 137 cities across 43 countries. Its default still needs an official local timetable comparison before an upstream city PR. Browser introductory totals derive from the catalog.
+- Nineteen offline calculation methods, six per-prayer offsets (including sunrise), and a larger centred adjusted-time preview with − / value / + controls, 12/24-hour formatting and Arabic digits. Saved offsets apply to displays and alerts.
+- Settings previews for reminder banners and adhan, using current audio settings without consuming scheduled alerts. Theme-aware reminder styling and six shared prayer icons throughout native and browser prayer displays.
+- Two favourite rows for up to nine apps, a Classic four-tile layout, and horizontal layout cards with miniature previews. Both preserve the saved favourites and include a row of recent apps plus All apps.
+- Favourite replacement by selecting a destination on Home; Android uninstall confirmation for removable apps; optional system-utility filtering that retains media apps, games and Play Store.
+- Eight theme presets and validated custom JSON themes. A separate appearance page previews horizontal theme/background choices before Apply; ambient light, reduced motion and off-by-default app focus lighting.
+- Sixteen named local backgrounds plus theme default, including eight theme-coloured line patterns: Arches, Eight-point stars, Mashrabiya, Arabesque, Star tiles, Rosettes, Octagon lattice and Corner medallions. Small cached drawings; no wallpaper downloads or idle animation loop.
+- Home/input switching with registered HDMI/CEC and tuner entries, a Home entry and an Advanced inputs header button. Wi-Fi opens the system network panel; All apps has a Settings cog.
+- An optional full-width prayer bar over apps/inputs, with current/next prayer styling, top/bottom placement, hidden/tab/off modes, mirrored RTL controls and a minimize button. Quick-control labels share one setting with Home.
+- Remote settings: assign installed apps or launcher actions, including the prayer bar, using named shortcuts or physical button capture. Preserve essential keys, complete press/release handling and gamepad passthrough; retain other applications' TCL mappings.
+- Installed screensaver selection and opt-in prayer-service recovery while preserving unrelated accessibility helpers. The launcher saver keeps its dim clock/next-prayer/radio display and periodic movement.
+- Guarded Windows/Python setup, private recovery backups, verified Home takeover and reversible stock-launcher disabling. Phone installer local APK selection, backup export, bundled setup policy and a stop/retry path when required setup fails. Signature mismatches keep the installed app.
+
+### Changed and fixed
+
+- Home focus begins at the first favourite; Down traverses favourites/recent apps to All apps, and Left reaches Today & Qibla. App metadata is cached and All apps creates tiles as rows enter view; package changes refresh the list even when the count is unchanged.
+- Removed the unused All apps dock, footer instructions and adhan dismissal hints. Replaced ambiguous Home settings/Qibla symbols with a cog and compass, and enlarged prayer icons.
+- Unified Arabic/English additions and RTL layout; the preview shares native city/method/icon/pattern data and includes both Home layouts. Browser offset editing now mirrors all six native rows, including draft/save/cancel, centred adjusted times, clock formats and Arabic digits.
+- Ordinary updates to an existing Home no longer repeat the initial handover/rollback; setup preserves the selected screensaver. Three text-layout calls now respect the declared Android 8 minimum.
+- Merged upstream main through `ca457a7`, preserving fork setup guards, favourite capacity and layouts. Updated README, city reference and sanitised English/Arabic TV screenshots; documented the remaining upstream contribution checks.
+- Shared settings, preview, quick-menu and prayer-bar dimensions now come from design tokens. Browser keyboard focus no longer jumps to a stationary pointer when rows redraw.
+- Replaced eight complex background vectors with small tinted PNG masks generated from shared SVG paths; removed their sixteen lint warnings. Remote-key setup now reports failed preference writes, and the All apps key is offered only on Android versions supporting it.
+- Existing fork CI now runs Android lint, the launcher/recovery regression suite and browser prayer-offset tests.
+- Safety/recovery and colour-sampling patterns adapted from CleanYourTV, Copyright (c) 2026 Gathin, MIT; see `docs/CLEANYOURTV-LICENSE.txt`.
+
+## [0.6.1] (upstream) - 2026-10-25
+
+### Fixed
+- Home no longer crashes on start on a TV with fewer than four apps besides Afnon (found on a stock Android TV
+  9 emulator); the missing favourites show as empty tiles.
+- The installer (and `tools/install.sh`) can make Afnon Home on stock Android TV and Google TV. There
+  `set-home-activity` says "Success" but Home keeps opening the stock launcher, whose filter outranks any app,
+  so the step showed "Afnon is not set". The home step now turns the stock launcher off (plus Google's setup app
+  on Google TV) behind a safety switch on the TV that turns it back on after 5 minutes unless Afnon came up and
+  stayed up, puts it back at once if Afnon didn't, and notes it for the cleanup's undo. Installers already out
+  get this from the release's `tools/setup-steps.txt`.
+- When a required setup step fails, the installer stays on the step list with Try again and Continue, instead of
+  moving on to the city after a second and showing the red step only at the very end.
+
+This fork retains its guarded, backup-first setup and screensaver preservation; it does not execute the upstream automatic launcher-disable script. Its dynamic Home layout already handles short app lists. Failed required phone setup stays on the failed step with Retry, without allowing cleanup to proceed.
+
 ## [0.6] - 2026-10-25
 
 ### Added
@@ -188,7 +232,8 @@ First public release.
 - Screensaver, on-TV settings and remote button mapping.
 - Arabic (RTL) first, with English.
 
-[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.6...HEAD
+[Unreleased]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.6...v0.6.1
 [0.6]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.5...v0.6
 [0.5]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.4...v0.5
 [0.4]: https://github.com/egyjs/afnon-android-tv-launcher/compare/v0.3.1...v0.4

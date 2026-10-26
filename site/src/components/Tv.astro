@@ -6,6 +6,9 @@ const { mode, screen, ground = 'lattice' } = Astro.props;
 ---
 <div class="tv-frame">
   <div class="tv" data-mode={mode} data-screen={screen} data-ground={ground}>
+    <svg class="ambient-ridge" aria-hidden="true" width="1920" height="1080" viewBox="0 0 480 270">
+      <path d="M0 225 C110 160 160 265 280 215 C360 180 400 210 480 155 L480 270 L0 270 Z" />
+    </svg>
     {ground === 'lattice' && (
       <svg class="lattice" aria-hidden="true" width="1920" height="1080">
         <defs>

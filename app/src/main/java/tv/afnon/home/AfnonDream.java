@@ -170,7 +170,7 @@ public class AfnonDream extends DreamService {
             date.setText(t.d(weekday + t.sep() + day.hijriDay + " " + t.hijriMonths()[day.hijriMonth]));
             String[] names = t.prayerNames();
             if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
-            next.setText(names[day.nextIndex] + " " + Screen.clock(t, day.nextTime, h24, 1f));
+            PrayerIcon.set(next, day.nextIndex, names[day.nextIndex] + " " + Screen.clock(t, day.nextTime, h24, 1f));
         }
         long secs = Screen.secondsUntil(day.nextTime, now);
         left.setText(t.inMinutes((secs + 59) / 60, Screen.duration(secs, false)));

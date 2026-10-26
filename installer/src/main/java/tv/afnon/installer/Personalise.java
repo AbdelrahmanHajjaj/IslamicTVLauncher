@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * "Make it yours", after the install: the city and prayer settings, the four favourites, the remote's app buttons
+ * "Make it yours", after the install: the city and prayer settings, the favourites, the remote's app buttons
  * and the cleanup. Every choice is read from and written to Afnon on the TV (SetupProvider), so its cities and
  * settings stay the one source of truth; on an Afnon without the provider (0.5) only the cleanup runs.
  */
@@ -203,7 +203,7 @@ final class Personalise {
         a.add(grid, 14);
         List<View> tiles = new ArrayList<>();
         Runnable paint = () -> {
-            count.setText(a.getString(R.string.fav_count, favourites.size()));
+            count.setText(a.getString(R.string.fav_count, favourites.size(), Math.max(4, Math.min(9, info.optInt("favourite_slots", 4)))));
             for (View t : tiles) paintTile(t);
         };
         LinearLayout row = null;
@@ -263,7 +263,7 @@ final class Personalise {
         t.addView(name, Ui.wide(a, 8));
         t.setOnClickListener(v -> {
             if (favourites.contains(pkg)) favourites.remove(pkg);
-            else if (favourites.size() < 4) favourites.add(pkg);
+            else if (favourites.size() < Math.max(4, Math.min(9, info.optInt("favourite_slots", 4)))) favourites.add(pkg);
             paint.run();
         });
         return t;

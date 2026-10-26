@@ -45,9 +45,9 @@ class FocusTile extends FrameLayout {
         setClipChildren(false);
         border.setStyle(Paint.Style.STROKE);
         ring.setStyle(Paint.Style.STROKE);
-        ring.setColor(Tokens.PLASTER_100);
+        ring.setColor(Palette.PLASTER_100);
         ring.setStrokeWidth(Ui.px(Tokens.FOCUS_RING_WIDTH));
-        setRest(Tokens.LAPIS_800, 0, 0);
+        setRest(Palette.LAPIS_800, 0, 0);
     }
 
     /** Resting fill (0 for none) and border (width 0 for none). */
@@ -81,7 +81,9 @@ class FocusTile extends FrameLayout {
     protected void onFocusChanged(boolean gained, int direction, android.graphics.Rect previous) {
         super.onFocusChanged(gained, direction, previous);
         float s = gained ? focusScale : 1f;
-        animate().scaleX(s).scaleY(s).setDuration(Tokens.DUR_FOCUS_MS).setInterpolator(Ui.EASE).start();
+        animate().cancel();
+        if (Appearance.reduced(getContext())) { setScaleX(1f); setScaleY(1f); }
+        else animate().scaleX(s).scaleY(s).setDuration(Appearance.motion(Tokens.DUR_FOCUS_MS)).setInterpolator(Ui.EASE).start();
         if (look != null) look.apply(gained);
         invalidate();
     }
@@ -91,7 +93,7 @@ class FocusTile extends FrameLayout {
         float reach = Ui.px(REACH);
         box.set(reach, reach, getWidth() - reach, getHeight() - reach);
         boolean focused = isFocused();
-        int f = focused ? Tokens.GOLD_400 : restFill;
+        int f = focused ? Palette.GOLD_400 : restFill;
         if (f != 0) {
             fill.setColor(f);
             c.drawRoundRect(box, radius, radius, fill);

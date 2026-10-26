@@ -1,5 +1,6 @@
 // Browser side: prefs saved in this browser, and a once-a-second loop that re-renders the screen model into
 // the page's [data-k] (innerHTML) and [data-a] (attributes) elements.
+import { appearance } from './appearance';
 import { DEFAULT_PREFS, type Prefs } from '../lib/data';
 import { makeCtx, type Ctx, type Model } from '../lib/ctx';
 import { shiftFor } from '../lib/prayer';
@@ -42,6 +43,7 @@ export function live(model: (c: Ctx) => Model, onTick?: (c: Ctx) => void) {
   let shift = mode ? shiftFor(mode, prefs) : 0;
   const render = () => {
     const c = makeCtx(lang, prefs, new Date(Date.now() + shift), mode);
+    appearance(stage, prefs);
     bind(stage, model(c));
     onTick?.(c);
   };

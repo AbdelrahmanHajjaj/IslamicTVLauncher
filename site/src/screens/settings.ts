@@ -1,14 +1,16 @@
 // Settings (SettingsActivity): sections, each section's rows and the Asr preview, as HTML strings so the same
 // code renders the page at build time and re-renders it in the browser after every change.
+import { THEMES, BACKGROUNDS } from '../scripts/appearance';
 import voicesJson from '../data/adhans.json';
 import type { Ctx } from '../lib/ctx';
 import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
-import { ASR, clock, hijri, methodParams } from '../lib/prayer';
+import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET } from '../lib/prayer';
 import type { Text } from '../lib/text';
+import { prayerLabel } from '../lib/prayer-icon';
 import { loadFacing } from './prayer-day';
 
-export const PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, NETWORK = 4, DEVICE = 5, SECTIONS = 6;
-export type Kind = 'value' | 'seg' | 'step' | 'toggle';
+export const PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, APPEARANCE = 4, NETWORK = 5, DEVICE = 6, SECTIONS = 7;
+export type Kind = 'value' | 'seg' | 'step' | 'toggle' | 'carousel';
 export const VOICES = voicesJson;
 
 /** Every saved setting is in Prefs; the room direction is the Prayer Day screen's (loadFacing). */
@@ -16,6 +18,7 @@ export type SPrefs = Prefs;
 
 export type Row = {
   id: string; kind: Kind; label: string; help: string;
+  prayer?: number;
   value?: string; segs?: string[]; selected?: number; on?: boolean;
 };
 
@@ -25,7 +28,7 @@ const trim = (v: number) => String(+v.toFixed(2));
 // ---------------------------------------------------------------- Text.java methods with logic, ported
 
 export const sectionName = (t: Text, i: number) =>
-  [t.s('sectionPrayer'), t.s('sectionReminders'), t.s('sectionRadio'), t.s('sectionDisplay'), t.ar ? 'الشبكة' : 'Network', t.s('sectionDevice')][i];
+  [t.s('sectionPrayer'), t.s('sectionReminders'), t.s('sectionRadio'), t.s('sectionDisplay'), t.s('sectionAppearance'), t.ar ? 'الشبكة' : 'Network', t.s('sectionDevice')][i];
 
 function locationHelp(t: Text, lat: number, lng: number) {
   const ns = lat >= 0 ? (t.ar ? 'ش' : 'N') : t.ar ? 'ج' : 'S';
@@ -57,13 +60,18 @@ export const placeOf = (t: Text, c: (typeof CITIES)[number]) => (t.ar ? t.place(
 /** Settings → Reminders, in the order of Text.remindChoices (a list on the TV: six are too many for a seg). */
 export const REMIND = [5, 10, 15, 20, 30, 0];
 const remindIndex = (p: SPrefs) => (REMIND.indexOf(p.remind) < 0 ? 2 : REMIND.indexOf(p.remind));
+export const DOCK_MODES = ['hidden', 'tab', 'off'] as const;
 const DARK = [0, 15, -1];
 const CLOCKS = ['system', '12', '24'] as const;
 
-export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
+export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = false): Row[] {
   const { t } = c;
   const p = c.prefs as SPrefs;
   const facing = loadFacing();
+  if (offsetsPage) return t.list('prayerNames').map((label, prayer) => ({
+    id: `offset${prayer}`, kind: 'step', prayer, label,
+    help: clock(t, c.day.times[prayer], c.h24), value: t.offsetMinutes(prayerOffsets(p)[prayer]),
+  }));
   const city = cityOf(p);
   const st = stationOf(p);
   switch (section) {
@@ -71,6 +79,7 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
       { id: 'city', kind: 'value', label: t.s('location'), help: locationHelp(t, city.lat, city.lng), value: placeOf(t, city) },
       { id: 'method', kind: 'value', label: t.s('method'), help: methodAngles(t, methodOf(p)), value: t.methodName(methodOf(p)) },
       { id: 'school', kind: 'seg', label: t.s('asrSchool'), help: t.s('asrSchoolHelp'), segs: t.list('asrSchools'), selected: p.hanafi ? 1 : 0 },
+      { id: 'offsets', kind: 'value', label: t.s('prayerOffsets'), help: t.s('prayerOffsetsHelp'), value: t.offsetCount(prayerOffsets(p).filter(n => n !== 0).length) },
       { id: 'hijri', kind: 'step', label: t.s('hijriAdjust'), help: (t.ar ? 'اليوم: ' : 'Today: ') + hijri(t, c.day), value: t.days(p.hijriOffset) },
       { id: 'room', kind: 'value', label: t.s('roomTitle'), help: t.s('roomHelp'), value: facing < 0 ? t.s('notSet') : t.bearingLabel(facing) },
     ];
@@ -90,9 +99,25 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
       { id: 'lang', kind: 'seg', label: t.s('language'), help: t.s('languageHelp'), segs: [t.ar ? 'التلفاز' : 'TV', 'العربية', 'English'], selected: t.ar ? 1 : 2 },
       { id: 'digits', kind: 'seg', label: t.s('digits'), help: '', segs: ['0123', '٠١٢٣'], selected: t.eastern ? 1 : 0 },
       { id: 'clock', kind: 'seg', label: t.s('clockRow'), help: t.s('clockHelp'), segs: t.list('clocks').map(t.d), selected: Math.max(0, CLOCKS.indexOf(p.clock)) },
+      { id: 'quickLabels', kind: 'toggle', label: t.s('quickLabels'), help: '', on: p.quickLabels ?? false },
+      { id: 'dockMode', kind: 'value', label: t.s('prayerDock'), help: '', value: t.list('dockModes')[DOCK_MODES.indexOf(p.dockMode ?? 'hidden')] },
+      { id: 'homeLayout', kind: 'value', label: t.s('homeLayout'), help: '', value: t.list('homeLayouts')[p.homeLayout === 'classic' ? 1 : 0] },
+      { id: 'dockPosition', kind: 'seg', label: t.s('dockPosition'), help: '', segs: t.list('dockPositions'), selected: p.dockPosition === 'top' ? 0 : 1 },
+
+    ];
+    case APPEARANCE: return [
+      { id: 'theme', kind: 'carousel', label: t.s('themeRow'), help: '', segs: t.list('themeNames').slice(0, THEMES.length), selected: Math.max(0, THEMES.indexOf(p.theme ?? 'mihrab')) },
+      { id: 'background', kind: 'carousel', label: t.s('backgroundRow'), help: '', segs: t.list('backgroundNames'), selected: Math.max(0, BACKGROUNDS.indexOf(p.background ?? 'theme')) },
+      { id: 'lighting', kind: 'step', label: t.s('lightingRow'), help: '', value: t.d(`${p.lighting ?? 35}%`) },
+      { id: 'reduceMotion', kind: 'toggle', label: t.s('reduceMotion'), help: '', on: p.reduceMotion ?? false },
+      { id: 'apply', kind: 'value', label: t.s('applyAppearance'), help: '' },
     ];
     case NETWORK: return [{ id: 'network', kind: 'value', label: t.s('networkRow'), help: t.s('networkHelp'), value: '' }];
-    default: return [{ id: 'device', kind: 'value', label: t.s('deviceRow'), help: t.s('deviceHelp'), value: '' }];
+    default: return [
+      { id: 'device', kind: 'value', label: t.s('deviceRow'), help: t.s('deviceHelp'), value: '' },
+      ...['homeSettings', 'inputsTitle', 'screensaver', 'remoteButtons', 'serviceHealth'].map(id => ({ id, kind: 'value' as Kind, label: t.s(id), help: id === 'serviceHealth' ? t.s('serviceHelp') : '', value: '' })),
+      { id: 'repairService', kind: 'toggle', label: t.s('repairService'), help: t.s('repairHelp'), on: p.repairService ?? false },
+    ];
   }
 }
 
@@ -100,27 +125,35 @@ export function rowsFor(c: Ctx, section: number, radioOn = false): Row[] {
 export type Edit = { row: number; draft: number };
 
 /** What editing starts from: the chosen segment, or the Hijri offset. */
-export const savedDraft = (c: Ctx, row: Row) => (row.kind === 'seg' ? row.selected! : (c.prefs as SPrefs).hijriOffset);
+export const savedDraft = (c: Ctx, row: Row) => (row.kind === 'seg' ? row.selected! : row.prayer !== undefined ? prayerOffsets(c.prefs)[row.prayer] : row.id === 'lighting' ? c.prefs.lighting ?? 35 : (c.prefs as SPrefs).hijriOffset);
 
 /** ◀▶ while editing (d = +1 toward the end), held to the row's range. */
 export const moveDraft = (row: Row, draft: number, d: number) =>
-  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : Math.max(-2, Math.min(2, draft + d));
+  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : row.prayer !== undefined ? Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, draft + d)) : row.id === 'lighting' ? Math.max(0, Math.min(100, draft + d)) : Math.max(-2, Math.min(2, draft + d));
 
 /** OK while editing: the new prefs, or null when the draft is what is already saved. 'lang' is the page's. */
 export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
   if (draft === savedDraft(c, row)) return null;
-  return row.kind === 'seg' ? pick(c, row.id, draft) : { ...(c.prefs as SPrefs), hijriOffset: draft };
+  if (row.prayer !== undefined) {
+    const offsets = prayerOffsets(c.prefs);
+    offsets[row.prayer] = moveDraft(row, draft, 0);
+    return { ...c.prefs, prayerOffsets: offsets };
+  }
+  return row.kind === 'seg' ? pick(c, row.id, draft) : row.id === 'lighting' ? { ...c.prefs, lighting: draft } : { ...(c.prefs as SPrefs), hijriOffset: draft };
 }
 
 /** Choosing item i of a seg row. 'lang' is handled by the page (it moves to the other language's page). */
 export function pick(c: Ctx, id: string, i: number): SPrefs | null {
   const p = { ...(c.prefs as SPrefs) };
   switch (id) {
+    case 'theme': return { ...p, theme: THEMES[i] };
+    case 'background': return { ...p, background: BACKGROUNDS[i] };
     case 'school': return { ...p, hanafi: i === 1 };
     case 'remind': return { ...p, remind: REMIND[i] };
     case 'resume': return { ...p, radioResume: i === 0 };
     case 'dark': return { ...p, radioDark: DARK[i] };
     case 'digits': return { ...p, digits: i === 1 ? 'eastern' : 'western' };
+    case 'dockPosition': return { ...p, dockPosition: i === 0 ? 'top' : 'bottom' };
     case 'clock': return { ...p, clock: CLOCKS[i] };
     default: return null;
   }
@@ -130,34 +163,33 @@ export function pick(c: Ctx, id: string, i: number): SPrefs | null {
 
 const chevron = '<svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
-export function rowHtml(t: Text, r: Row, i: number, editing = false) {
-  const hint = JSON.stringify(editing
-    ? [t.s('hintChange'), t.s('hintSave'), t.s('hintBackCancel')]
-    : [t.s('hintMove'), r.kind === 'value' ? t.s('hintChoose') : r.kind === 'toggle' ? t.s('hintSwitch') : t.s('hintEdit'), t.s('hintBackMenu')]);
+export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 'var(--layout-settings-rows-top)') {
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
+  else if (r.kind === 'carousel')
+    control = [r.selected! - 1, r.selected!, r.selected! + 1].map(k => `<span class="slide${k === r.selected ? ' on' : ''}" ${k >= 0 && k < r.segs!.length ? `data-seg="${k}"` : ''}>${esc(r.segs![k] ?? '')}</span>`).join('');
   else if (r.kind === 'seg')
     control = `<span class="track">${r.segs!.map((s, k) => `<span class="seg${k === r.selected ? ' on' : ''}" data-seg="${k}">${esc(s)}</span>`).join('')}</span>`;
   else if (r.kind === 'step')
     control = `<span class="stepb" data-step="-1">−</span><span class="stepv">${esc(r.value ?? '')}</span><span class="stepb" data-step="1">+</span>`;
   else control = `<span class="switch${r.on ? ' on' : ''}"><i></i></span>`;
-  return `<button class="ft row srow${editing ? ' editing' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:${112 + i * 98}px" data-hints="${esc(hint)}">`
-    + `<span class="words"><span class="rl">${esc(r.label)}</span>${r.help ? `<span class="rh">${esc(r.help)}</span>` : ''}</span>`
+  return `<button class="ft row srow${editing ? ' editing' : ''}${r.prayer !== undefined ? ' offset-row' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:calc(${top} + ${i} * (var(--layout-settings-row-height) + var(--layout-settings-row-gap)))">`
+    + `<span class="words"><span class="rl">${r.prayer !== undefined ? prayerLabel(r.prayer, esc(r.label)) : esc(r.label)}</span>${r.help && r.prayer === undefined ? `<span class="rh">${esc(r.help)}</span>` : ''}</span>
+    ${r.prayer !== undefined ? `<span class="offset-time num" dir="ltr">${esc(r.help)}</span>` : ''}`
     + `<span class="ctl">${control}</span></button>`;
 }
 
 export function navHtml(t: Text, section: number) {
-  const hint = esc(JSON.stringify([t.s('hintMove'), t.s('hintOpen'), t.s('hintBackHome')]));
   return Array.from({ length: SECTIONS }, (_, i) =>
-    `<button class="ft row nav${i === section ? ' open' : ''}" data-nav="${i}"${i === section ? ' data-focus-start' : ''} style="top:${152 + i * 86}px" data-hints="${hint}">${esc(sectionName(t, i))}</button>`).join('');
+    `<button class="ft row nav${i === section ? ' open' : ''}" data-nav="${i}"${i === section ? ' data-focus-start' : ''} style="top:${152 + i * 86}px">${esc(sectionName(t, i))}</button>`).join('');
 }
 
 /** The rows; the one being edited shows its draft. */
-export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null) =>
-  rowsFor(c, section, radioOn).map((r, i) => {
-    if (edit?.row !== i) return rowHtml(c.t, r, i);
-    const shown = r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: c.t.days(edit.draft) };
-    return rowHtml(c.t, shown, i, true);
+export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null, offsetsPage = false) =>
+  rowsFor(c, section, radioOn, offsetsPage).map((r, i) => {
+    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
+    const shown = r.prayer !== undefined ? { ...r, value: c.t.offsetMinutes(edit.draft), help: clock(c.t, new Date(c.day.times[r.prayer].getTime() + (edit.draft - savedDraft(c, r)) * 60000), c.h24) } : r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
+    return rowHtml(c.t, shown, i, true, section === APPEARANCE ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
   }).join('');
 export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);
 
@@ -177,9 +209,17 @@ export const citiesOf = (t: Text, country: string) => CITIES.filter((c) => (t.ar
 export const methodItems = (t: Text, p: Prefs): Item[] => METHODS.map((m) => ({ label: t.methodName(m), chosen: m === methodOf(p) }));
 export const stationsOf = (reciters: boolean) => STATIONS.filter((s) => !!s.reciter === reciters);
 
-export function chooserHtml(t: Text, title: string, items: Item[]) {
-  const hint = esc(JSON.stringify([t.s('hintMove'), t.s('hintChoose'), t.s('hintBackCancel')]));
+function layoutPreview(classic: boolean) {
+  const columns = classic ? 4 : 3, count = classic ? 4 : 6, width = classic ? 60 : 82;
+  const tile = (x: number, y: number, w: number, h: number, color: string) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="var(--color-${color})"/>`;
+  return `<svg viewBox="0 0 480 270" aria-hidden="true"><rect x="22" y="30" width="136" height="218" rx="68" fill="var(--color-lapis-800)"/>${tile(52,130,76,4,'gold-400')}${tile(190,30,95,7,'plaster-100')}${tile(190,46,140,3,'mist-400')}`
+    + Array.from({length:6},(_,i)=>tile(190+i*44,64,40,31,i===0?'gold-400':'lapis-800')).join('')
+    + Array.from({length:count},(_,i)=>tile(190+i%columns*(width+6),116+Math.floor(i/columns)*42,width,classic?64:36,i===0?'gold-400':'lapis-800')).join('')
+    + Array.from({length:6},(_,i)=>tile(190+i*44,220,40,24,'lapis-700')).join('')+'</svg>';
+}
+
+export function chooserHtml(t: Text, title: string, items: Item[], horizontal = false) {
   return `<div class="ch-card"><div class="ch-title display-bold">${esc(title)}</div><div class="ch-list">`
-    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}" data-hints="${hint}">${esc(it.label)}</button>`).join('')
+    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}">${horizontal ? layoutPreview(i === 1) : ""}${esc(it.label)}</button>`).join('')
     + '</div></div>';
 }

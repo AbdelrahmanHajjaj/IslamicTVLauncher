@@ -63,21 +63,21 @@ public class ScreenOffActivity extends Activity implements Radio.Listener {
         Typeface ui = getResources().getFont(R.font.alexandria_regular);
 
         FrameLayout root = new FrameLayout(this);
-        root.setBackgroundColor(Tokens.SCREENSAVER_GROUND);
+        root.setBackgroundColor(Palette.SCREENSAVER_GROUND);
         root.setLayoutDirection(t.ar ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setGravity(Gravity.CENTER_HORIZONTAL);
         RadioBars bars = new RadioBars(this, 5);
-        bars.setColor(Tokens.SCREENSAVER_TEXT_DIM);
+        bars.setColor(Palette.SCREENSAVER_TEXT_DIM);
         bars.setLive(true);
         col.addView(bars, new LinearLayout.LayoutParams(Ui.ipx(56), Ui.ipx(48)));
         TextView note = new TextView(this);
         note.setTypeface(ui);
         note.setTextSize(TypedValue.COMPLEX_UNIT_PX, Ui.px(24));
-        note.setTextColor(Tokens.SCREENSAVER_TEXT);
+        note.setTextColor(Palette.SCREENSAVER_TEXT);
         note.setGravity(Gravity.CENTER);
-        note.setText(t.station(Radio.station(this)) + "\n" + t.screenOffNote());
+        note.setText(t.station(Radio.station(this)));
         LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(-2, -2);
         nlp.topMargin = Ui.ipx(20);
         col.addView(note, nlp);

@@ -9,6 +9,9 @@ the bar is calm, correct and reliable. A wrong Fajr time matters more than a mis
 
 Issues and pull requests are welcome in Arabic or English.
 
+For this fork, also read the [fork/upstream contribution plan](docs/CONTRIBUTION-PLAN.md). It records
+proposed PR scopes and outstanding checks; the requirements below still apply.
+
 ## 1. Add your city
 
 Cities live in `Prefs.java` (`CITIES`), each with an Arabic and English name, coordinates and the

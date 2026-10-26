@@ -50,9 +50,13 @@ final class TclKeys {
      * Maps each keycode to its intent. Returns false when this TV has no TCL remapping or the settings can't be
      * written (no WRITE_SECURE_SETTINGS grant); the caller then filters keys itself.
      */
+    private static final Handler handler = new Handler(Looper.getMainLooper());
+    private static Runnable pending;
+
     static boolean install(Context c, Map<Integer, Intent> targets) {
         if (!c.getPackageManager().hasSystemFeature(FEATURE)) return false;
         ContentResolver r = c.getContentResolver();
+        if (pending != null) handler.removeCallbacks(pending);
         try {
             Set<String> codes = codes(Settings.Global.getString(r, LIST));
             JSONObject values = new JSONObject();
@@ -60,14 +64,16 @@ final class TclKeys {
                 Intent i = e.getValue();
                 if (i.getPackage() == null && i.getComponent() != null) i.setPackage(i.getComponent().getPackageName());
                 if (i.getPackage() == null) continue;
-                values.put(String.valueOf(e.getKey()), entry(e.getKey(), i).toString());
+                String code = String.valueOf(e.getKey());
+                values.put(code, entry(e.getKey(), i).toString());
+                codes.add(code);
             }
-            // Buttons no longer ours (their app was uninstalled) are emptied, which hands them back to the firmware.
-            for (String code : codes) if (!values.has(code)) values.put(code, "");
             JSONArray list = new JSONArray();
-            for (Iterator<String> it = values.keys(); it.hasNext(); ) list.put(it.next());
-            if (!codes(list.toString()).equals(codes)) Settings.Global.putString(r, LIST, list.toString());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> writeKeys(r, values), LIST_SETTLE_MS);
+            for (String code : codes) list.put(code);
+            String oldList = Settings.Global.getString(r, LIST);
+            if (!codes(oldList).equals(codes) && !Settings.Global.putString(r, LIST, list.toString())) return false;
+            pending = () -> writeKeys(c, values);
+            handler.postDelayed(pending, LIST_SETTLE_MS);
             return true;
         } catch (SecurityException | JSONException e) {
             Log.w(TAG, "TCL key remapping unavailable", e);
@@ -75,18 +81,60 @@ final class TclKeys {
         }
     }
 
-    private static void writeKeys(ContentResolver r, JSONObject values) {
-        for (Iterator<String> it = values.keys(); it.hasNext(); ) {
-            String code = it.next();
-            String value = values.optString(code);
-            if (!value.equals(Settings.Global.getString(r, KEY_PREFIX + code))) {
-                try {
-                    Settings.Global.putString(r, KEY_PREFIX + code, value);
-                } catch (SecurityException e) {
-                    Log.w(TAG, "could not write " + KEY_PREFIX + code, e);
+    /** Only Afnon-owned values are restored; another app's later mapping belongs to that app. */
+    static boolean restore(Context c) {
+        if (pending != null) handler.removeCallbacks(pending);
+        return writeKeys(c, new JSONObject());
+    }
+
+    private static boolean writeKeys(Context c, JSONObject values) {
+        ContentResolver r = c.getContentResolver();
+        android.content.SharedPreferences saved = c.getSharedPreferences("remote_original", Context.MODE_PRIVATE);
+        try {
+            JSONObject owned = new JSONObject(saved.getString("keys", "{}"));
+            Set<String> removed = new HashSet<>();
+            for (Iterator<String> it = owned.keys(); it.hasNext();) {
+                String code = it.next();
+                if (values.has(code)) continue;
+                JSONObject record = owned.getJSONObject(code);
+                String current = Settings.Global.getString(r, KEY_PREFIX + code);
+                if (owns(record, current)) {
+                    // Keep the list entry: TCL's observer can outlive it. Empty restores the firmware default.
+                    String original = record.isNull("original") ? "" : record.getString("original");
+                    if (!Settings.Global.putString(r, KEY_PREFIX + code, original)) return false;
                 }
+                removed.add(code);
             }
+            for (String code : removed) owned.remove(code);
+            for (Iterator<String> it = values.keys(); it.hasNext();) {
+                String code = it.next();
+                String current = Settings.Global.getString(r, KEY_PREFIX + code);
+                JSONObject record = owned.optJSONObject(code);
+                // A user or another app changed this since our last write: preserve their new original.
+                if (record == null || !(owns(record, current)))
+                    record = new JSONObject().put("original", current == null ? JSONObject.NULL : current);
+                record.put("pending", values.getString(code));
+                owned.put(code, record);
+            }
+            if (!saved.edit().putString("keys", owned.toString()).commit()) return false;
+            for (Iterator<String> it = values.keys(); it.hasNext();) {
+                String code = it.next(), value = values.getString(code);
+                if (!value.equals(Settings.Global.getString(r, KEY_PREFIX + code))
+                        && !Settings.Global.putString(r, KEY_PREFIX + code, value)) return false;
+                JSONObject record = owned.getJSONObject(code);
+                record.put("applied", value);
+                record.remove("pending");
+            }
+            return saved.edit().putString("keys", owned.toString()).commit();
+        } catch (SecurityException | JSONException e) {
+            Log.w(TAG, "Could not save or restore Afnon button mappings", e);
+            return false;
         }
+    }
+
+    private static boolean owns(JSONObject record, String value) {
+        return record.has("applied") && record.optString("applied").equals(value)
+            || record.has("pending") && record.optString("pending").equals(value);
     }
 
     private static JSONObject entry(int code, Intent target) throws JSONException {
@@ -101,14 +149,14 @@ final class TclKeys {
         return new JSONObject().put("keycode", code).put("behavior", new JSONArray().put(behavior));
     }
 
-    private static Set<String> codes(String json) {
-        Set<String> out = new HashSet<>();
-        if (json == null) return out;
-        try {
-            JSONArray a = new JSONArray(json);
-            for (int i = 0; i < a.length(); i++) out.add(a.getString(i));
-        } catch (JSONException ignored) {
-            // Not ours or garbled: overwrite it.
+    private static Set<String> codes(String json) throws JSONException {
+        Set<String> out = new java.util.LinkedHashSet<>();
+        if (json == null || json.isEmpty()) return out;
+        JSONArray a = new JSONArray(json);
+        for (int i = 0; i < a.length(); i++) {
+            String code = a.getString(i);
+            if (!code.matches("[0-9]{1,6}")) throw new JSONException("Invalid TCL key list");
+            out.add(code);
         }
         return out;
     }

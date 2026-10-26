@@ -32,14 +32,15 @@ real TV over ADB, never just in the build.
 
 ```bash
 export TV=<ip>:5555                 # the tools refuse to run without it
-bash tools/install.sh               # fetch adhans (first time), assembleDebug, install, set HOME, grants, a11y service
+bash tools/install.sh               # assembleDebug, backup, install, verify HOME; device.py configure enables prayer/remote service
 bash tools/shot.sh home             # screenshot -> state/shots/home.png (look at it)
 adb -s $TV shell am start -n tv.afnon.home/.MainActivity --es test friday   # ramadan|now|reminder|call|banner|announce|radio
 ```
 
 `tools/env.sh` finds adb itself (PATH, then `local.properties` sdk.dir, ANDROID_HOME, default SDK folders);
-`ADB_BIN` overrides. Other tools: `disable.sh`/`enable.sh` (stock apps, logged to `state/disabled.log`),
-`restore.sh` (back to stock and uninstall, then reboot).
+`ADB_BIN` overrides. Other tools: `disable.sh`/`enable.sh` (selected apps, recorded in `state/backups/`),
+`restore.sh` (restore recorded TV state, keep Afnon installed, then verify and reboot).
+See `tools/device.md` and `docs/THEMES.md` for this branch’s setup and theme workflows.
 
 Keys injected with `adb shell input keyevent` do not reach the accessibility service: test remote buttons with the
 real remote, and ask the user to press them. `adb shell getevent -lt` and `logcat | grep handleKeyBefore` show what
@@ -69,16 +70,12 @@ service. So filtering is off on TCL:
 - **TCL's code has no error handling; mistakes restart the TV's UI.** Changing `CustomKey_<n>` while n is not in
   `CustomKeyList` crashes it (this happened once). So: write the list first, keys a second later, never drop codes
   from the list (empty them). Every intent must name its package (TCL checks it is installed and otherwise runs
-  `appnotinstall`, which must be a broadcast). Removing: delete keys before the list (`restore.sh` does), then reboot.
+  `appnotinstall`, which must be a broadcast). Restoring: write only original values owned by Afnon, retain list entries for observer safety, then verify on the TV.
 - After any change here: `logcat -b crash -d | grep "SYSTEM PROCESS"` must stay empty, and hold-volume must work.
 
 ## Phone installer (`installer/`)
 
-A separate phone app (plain Java, libadb-android, Conscrypt) that installs and sets up Afnon over ADB. It keeps no
-copies of what changes: the APK and `tools/setup-steps.txt` come from the latest release's tag (so a new setup step
-goes in that file, which `tools/install.sh` also runs, with a `?|` check line that exits 0 once it is in place on
-the TV; both tools skip a step whose check passes and require it to pass after the command), the cleanup list from `tools/clean-catalog.tsv` on main, and
-cities, apps, icons and buttons from the TV through `SetupProvider` (`content query/read/insert`, guarded by DUMP).
+A separate phone app (plain Java, libadb-android, Conscrypt) installs a locally selected APK or an upstream release over ADB. It writes a private/exportable recovery record before changing the TV. Setup commands are bundled in `Setup.java` and mirrored in `tools/setup-steps.txt`; the PC uses `tools/device.py`. Required setup failures stop cleanup. Cities, apps, icons and buttons come from `SetupProvider` (guarded by DUMP).
 That provider is a contract: add to it, bump `SetupProvider.API`, never break what's there. Remote buttons are pref
 `keys` (`KEY=package`, KEY a keycode name or number), defaulting to `RemoteKeys.APP_KEYS`.
 `--es screen <name>` opens any installer screen with sample data (debug builds); CI screenshots them.
@@ -105,6 +102,6 @@ layout changes in the app, update its component. `npm run dev` / `npm run build`
 
 ## Releases
 
-Debug-signed on purpose (`restore.sh` uses `run-as`), with `~/.android/debug.keystore` on the maintainer's machine:
+Debug-signed as in upstream, with `~/.android/debug.keystore` on the maintainer's machine:
 releases must keep that key or installed TVs can't upgrade. Steps in `gh.md`; record changes in `CHANGELOG.md`
 under Unreleased as you go.

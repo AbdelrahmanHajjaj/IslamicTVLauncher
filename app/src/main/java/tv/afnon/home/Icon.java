@@ -8,7 +8,7 @@ import android.view.View;
 
 /** Stroke icons on a 24px grid in the current colour, so they follow focus (README: Iconography). */
 final class Icon extends View {
-    static final int WIFI = 0, GEAR = 1, COMPASS = 2, BELL = 3, BACK = 4, STAR = 5, MIHRAB = 6, RADIO = 7, PLAY = 8, STOP = 9, MOON = 10;
+    static final int WIFI = 0, GEAR = 1, COMPASS = 2, BELL = 3, BACK = 4, STAR = 5, MIHRAB = 6, RADIO = 7, PLAY = 8, STOP = 9, MOON = 10, INPUT = 11, MINUS = 12, HOME = 13, MORE = 14;
 
     private int kind;
     private final float strokeOn24;
@@ -48,12 +48,31 @@ final class Icon extends View {
             arc(c, k, 12, 19.07f, 5f);
             p.setStyle(Paint.Style.FILL);
             c.drawCircle(12 * k, 19 * k, 1.2f * k, p);
+        } else if (kind == HOME) {
+            path.reset(); path.moveTo(3*k, 11*k); path.lineTo(12*k, 3*k); path.lineTo(21*k, 11*k);
+            path.moveTo(5*k, 10*k); path.lineTo(5*k, 21*k); path.lineTo(10*k, 21*k);
+            path.lineTo(10*k, 15*k); path.lineTo(14*k, 15*k); path.lineTo(14*k, 21*k);
+            path.lineTo(19*k, 21*k); path.lineTo(19*k, 10*k); c.drawPath(path, p);
+        } else if (kind == MORE) {
+            p.setStyle(Paint.Style.FILL);
+            for (int x = 5; x <= 19; x += 7) c.drawCircle(x*k, 12*k, 1.6f*k, p);
+        } else if (kind == MINUS) {
+            c.drawLine(5*k, 12*k, 19*k, 12*k, p);
+        } else if (kind == INPUT) {
+            r.set(3*k, 4*k, 21*k, 18*k); c.drawRoundRect(r, 2*k, 2*k, p);
+            c.drawLine(8*k, 22*k, 16*k, 22*k, p);
+            c.drawLine(12*k, 18*k, 12*k, 22*k, p);
+            c.drawLine(7*k, 11*k, 17*k, 11*k, p);
+            c.drawLine(14*k, 8*k, 17*k, 11*k, p);
+            c.drawLine(14*k, 14*k, 17*k, 11*k, p);
         } else if (kind == GEAR) {
+            float[] pts = {9.71f, 4.96f, 10.26f, 2.15f, 13.74f, 2.15f, 14.29f, 4.96f, 15.36f, 5.41f, 17.74f, 3.81f, 20.19f, 6.26f, 18.59f, 8.64f, 19.04f, 9.71f, 21.85f, 10.26f, 21.85f, 13.74f, 19.04f, 14.29f, 18.59f, 15.36f, 20.19f, 17.74f, 17.74f, 20.19f, 15.36f, 18.59f, 14.29f, 19.04f, 13.74f, 21.85f, 10.26f, 21.85f, 9.71f, 19.04f, 8.64f, 18.59f, 6.26f, 20.19f, 3.81f, 17.74f, 5.41f, 15.36f, 4.96f, 14.29f, 2.15f, 13.74f, 2.15f, 10.26f, 4.96f, 9.71f, 5.41f, 8.64f, 3.81f, 6.26f, 6.26f, 3.81f, 8.64f, 5.41f};
+            path.reset();
+            path.moveTo(pts[0] * k, pts[1] * k);
+            for (int i = 2; i < pts.length; i += 2) path.lineTo(pts[i] * k, pts[i + 1] * k);
+            path.close();
+            c.drawPath(path, p);
             c.drawCircle(12 * k, 12 * k, 3.2f * k, p);
-            c.drawCircle(12 * k, 12 * k, 7.5f * k, p);
-            float[][] spokes = {{12, 1.8f, 12, 4.5f}, {12, 19.5f, 12, 22.2f}, {1.8f, 12, 4.5f, 12}, {19.5f, 12, 22.2f, 12},
-                    {4.8f, 4.8f, 6.7f, 6.7f}, {17.3f, 17.3f, 19.2f, 19.2f}, {4.8f, 19.2f, 6.7f, 17.3f}, {17.3f, 6.7f, 19.2f, 4.8f}};
-            for (float[] s : spokes) c.drawLine(s[0] * k, s[1] * k, s[2] * k, s[3] * k, p);
         } else if (kind == BELL) {
             // M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z · M10 21h4
             path.reset();
@@ -125,10 +144,26 @@ final class Icon extends View {
             float a = flip ? 24 - 15 : 15, b = flip ? 24 - 8 : 8;
             c.drawLine(a * k, 5 * k, b * k, 12 * k, p);
             c.drawLine(b * k, 12 * k, a * k, 19 * k, p);
-        } else {
+        } else if (kind == COMPASS) {
             c.drawCircle(12 * k, 12 * k, 9 * k, p);
-            c.drawLine(12 * k, 12 * k, 15.5f * k, 5.5f * k, p);
-            c.drawLine(12 * k, 12 * k, 8.5f * k, 18.5f * k, p);
+            c.drawLine(12 * k, 3 * k, 12 * k, 5 * k, p);
+            c.drawLine(12 * k, 19 * k, 12 * k, 21 * k, p);
+            c.drawLine(3 * k, 12 * k, 5 * k, 12 * k, p);
+            c.drawLine(19 * k, 12 * k, 21 * k, 12 * k, p);
+            path.reset();
+            path.moveTo(16 * k, 7 * k);
+            path.lineTo(14 * k, 14 * k);
+            path.lineTo(8 * k, 17 * k);
+            path.lineTo(10 * k, 10 * k);
+            path.close();
+            c.drawPath(path, p);
+            path.reset();
+            path.moveTo(16 * k, 7 * k);
+            path.lineTo(14 * k, 14 * k);
+            path.lineTo(10 * k, 10 * k);
+            path.close();
+            p.setStyle(Paint.Style.FILL);
+            c.drawPath(path, p);
         }
     }
 

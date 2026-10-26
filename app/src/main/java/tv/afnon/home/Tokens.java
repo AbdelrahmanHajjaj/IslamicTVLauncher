@@ -70,6 +70,16 @@ final class Tokens {
     static final int SCREENSAVER_NEXT = 0xFFB8A578;
     /** color.screensaver.arch-line */
     static final int SCREENSAVER_ARCH_LINE = 0x59D8B46A;
+    /** font.size.compact-tag */
+    static final float FONT_SIZE_COMPACT_TAG = 14f;
+    /** font.size.compact-label */
+    static final float FONT_SIZE_COMPACT_LABEL = 18f;
+    /** font.size.control */
+    static final float FONT_SIZE_CONTROL = 24f;
+    /** font.size.quick-heading */
+    static final float FONT_SIZE_QUICK_HEADING = 28f;
+    /** font.size.appearance-title */
+    static final float FONT_SIZE_APPEARANCE_TITLE = 42f;
     /** font.size.display-xl: Countdown */
     static final float FONT_SIZE_DISPLAY_XL = 150f;
     /** font.size.display-xl-hours: Countdown when it has hours */
@@ -144,6 +154,34 @@ final class Tokens {
     static final float COURT_X = 760f;
     /** layout.courtyard.width */
     static final float COURT_W = 1064f;
+    /** layout.quick-menu.width */
+    static final float LAYOUT_QUICK_MENU_WIDTH = 640f;
+    /** layout.quick-menu.max-height */
+    static final float LAYOUT_QUICK_MENU_MAX_HEIGHT = 760f;
+    /** layout.quick-menu.top */
+    static final float LAYOUT_QUICK_MENU_TOP = 152f;
+    /** layout.quick-menu.padding-inline */
+    static final float LAYOUT_QUICK_MENU_PADDING_INLINE = 28f;
+    /** layout.quick-menu.heading-inset */
+    static final float LAYOUT_QUICK_MENU_HEADING_INSET = 10f;
+    /** layout.quick-menu.heading-gap */
+    static final float LAYOUT_QUICK_MENU_HEADING_GAP = 18f;
+    /** layout.quick-menu.row-height */
+    static final float LAYOUT_QUICK_MENU_ROW_HEIGHT = 78f;
+    /** layout.quick-menu.row-gap */
+    static final float LAYOUT_QUICK_MENU_ROW_GAP = 4f;
+    /** layout.quick-menu.button-padding */
+    static final float LAYOUT_QUICK_MENU_BUTTON_PADDING = 22f;
+    /** layout.quick-menu.icon-size */
+    static final float LAYOUT_QUICK_MENU_ICON_SIZE = 30f;
+    /** layout.prayer-dock.width */
+    static final float LAYOUT_PRAYER_DOCK_WIDTH = 1920f;
+    /** layout.prayer-dock.padding-block */
+    static final float LAYOUT_PRAYER_DOCK_PADDING_BLOCK = 10f;
+    /** layout.prayer-dock.cell-padding-block */
+    static final float LAYOUT_PRAYER_DOCK_CELL_PADDING_BLOCK = 6f;
+    /** layout.prayer-dock.button-size */
+    static final float LAYOUT_PRAYER_DOCK_BUTTON_SIZE = 60f;
     /** layout.gap-favourites */
     static final float LAYOUT_GAP_FAVOURITES = 24f;
     /** layout.gap-more */
@@ -174,6 +212,44 @@ final class Tokens {
     static final float LAYOUT_SETTINGS_SIDEBAR_WIDTH = 560f;
     /** layout.settings.row-width */
     static final float LAYOUT_SETTINGS_ROW_WIDTH = 1184f;
+    /** layout.settings.offset-time-width */
+    static final float LAYOUT_SETTINGS_OFFSET_TIME_WIDTH = 280f;
+    /** layout.settings.content-start */
+    static final float LAYOUT_SETTINGS_CONTENT_START = 640f;
+    /** layout.settings.rows-top */
+    static final float LAYOUT_SETTINGS_ROWS_TOP = 112f;
+    /** layout.settings.row-height */
+    static final float LAYOUT_SETTINGS_ROW_HEIGHT = 88f;
+    /** layout.settings.row-gap */
+    static final float LAYOUT_SETTINGS_ROW_GAP = 10f;
+    /** layout.settings.row-padding */
+    static final float LAYOUT_SETTINGS_ROW_PADDING = 28f;
+    /** layout.settings.appearance-top */
+    static final float LAYOUT_SETTINGS_APPEARANCE_TOP = 410f;
+    /** layout.settings.appearance-caption-width */
+    static final float LAYOUT_SETTINGS_APPEARANCE_CAPTION_WIDTH = 500f;
+    /** layout.settings.preview-width */
+    static final float LAYOUT_SETTINGS_PREVIEW_WIDTH = 480f;
+    /** layout.settings.preview-height */
+    static final float LAYOUT_SETTINGS_PREVIEW_HEIGHT = 270f;
+    /** layout.settings.swatch-gap */
+    static final float LAYOUT_SETTINGS_SWATCH_GAP = 14f;
+    /** layout.settings.carousel-width */
+    static final float LAYOUT_SETTINGS_CAROUSEL_WIDTH = 190f;
+    /** layout.settings.carousel-height */
+    static final float LAYOUT_SETTINGS_CAROUSEL_HEIGHT = 52f;
+    /** layout.settings.layout-chooser-width */
+    static final float LAYOUT_SETTINGS_LAYOUT_CHOOSER_WIDTH = 1200f;
+    /** layout.settings.layout-card-width */
+    static final float LAYOUT_SETTINGS_LAYOUT_CARD_WIDTH = 640f;
+    /** layout.settings.layout-card-height */
+    static final float LAYOUT_SETTINGS_LAYOUT_CARD_HEIGHT = 400f;
+    /** layout.settings.layout-preview-height */
+    static final float LAYOUT_SETTINGS_LAYOUT_PREVIEW_HEIGHT = 302f;
+    /** radius.quick-button */
+    static final float RADIUS_QUICK_BUTTON = 22f;
+    /** radius.icon-button */
+    static final float RADIUS_ICON_BUTTON = 36f;
     /** radius.badge */
     static final float RADIUS_BADGE = 8f;
     /** radius.cell */
@@ -216,6 +292,8 @@ final class Tokens {
     static final float FOCUS_PRESSED_SCALE = 1.02f;
     /** focus.pressed.ring-offset */
     static final float FOCUS_PRESSED_RING_OFFSET = 4f;
+    /** border.thin */
+    static final float BORDER_THIN = 1f;
     /** border.arch-rest.color */
     static final int BORDER_ARCH_REST_COLOR = 0xFFD8B46A;
     /** border.arch-rest.width */

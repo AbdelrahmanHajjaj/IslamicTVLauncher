@@ -34,7 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.batoulapps.adhan.CalculationMethod;
 import com.batoulapps.adhan.Coordinates;
 import com.batoulapps.adhan.Madhab;
 
@@ -50,19 +49,21 @@ import java.util.Set;
 /** Afnon Home: the mihrab arch on the start side, the courtyard (clock, prayer strip, apps) beside it. */
 public class MainActivity extends Screen {
 
-    // Focus nodes, in the order of design/FocusMap.dc.html.
-    // Section labels sit 10px above the design (478 / 722) so the focus ring and 1.06 scale never touch them.
-    private static final int LABEL_ABOVE_FAV = 468, LABEL_ABOVE_MORE = 712;
+    // Leave space between the section label and the first row's focus ring.
+    private static final int LABEL_ABOVE_FAV = 468;
 
-    private static final int ARCH = 0, WIFI = 1, SETTINGS = 2, F0 = 3, M0 = 7, ALL = 12, RADIO = 13, NODES = 14;
+    private static final int ARCH = 0, WIFI = 1, SETTINGS = 2, F0 = 3, M0 = 12, ALL = 17, RADIO = 18, INPUTS = 19, NODES = 20;
 
     private final View[] nodes = new View[NODES];
     private final TextView[] cellTag = new TextView[6], cellName = new TextView[6], cellTime = new TextView[6];
     private final View[] cell = new View[6];
-    private final String[] nodeLabel = new String[NODES];
+    private final String[] nodePackage = new String[NODES];
+    private FocusGlow focusGlow;
+    private String replacementPackage;
 
     private TextView clock, gdate, hdate, wifiName;
-    private LinearLayout hints;
+    private int favouriteCount, recentCount;
+    private boolean classicHome;
     private PrayerDay day;
     private long lastMinute = -1;
     private int lastFav = F0;
@@ -78,6 +79,7 @@ public class MainActivity extends Screen {
     private RadioBars pillBars, cardBars;
     private TextView radioLabel, cardStatus, playLabel;
     private LinearLayout radioCard;
+    private android.widget.PopupWindow quickMenu;
     private FocusTile cardPlay, cardDark;
     private final Radio.Listener onRadio = state -> styleRadio();
     /** Test only (shiftTo): how far Home's clock is moved. */
@@ -86,6 +88,7 @@ public class MainActivity extends Screen {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        if (readReplacement(getIntent())) build();
         runTest(getIntent());
     }
 
@@ -93,10 +96,11 @@ public class MainActivity extends Screen {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         boolean changed = loadSettings(intent);
-        if (changed) build();
-        // Home key from anywhere: back to Home with focus on the arch (FocusMap: Home key). Posted, because the
+        boolean replacementChanged = readReplacement(intent);
+        if (changed || replacementChanged) build();
+        // Home starts at the first app. Posted, because the
         // window puts back its previously focused view when it regains focus after onNewIntent.
-        root.post(() -> nodes[ARCH].requestFocus());
+        root.post(() -> firstApp().requestFocus());
         runTest(intent);
     }
 
@@ -155,6 +159,8 @@ public class MainActivity extends Screen {
 
     @Override
     protected void onResume() {
+        Apps.invalidate();
+        ServiceRepair.restore(this);
         if (!builtApps.equals(appsKey())) build();
         lastMinute = -1;
         updateWifi();
@@ -166,8 +172,10 @@ public class MainActivity extends Screen {
 
     @Override
     protected void onPause() {
+        if (quickMenu != null) { quickMenu.dismiss(); quickMenu = null; }
         Reminders.home = null;
         Radio.unlisten(onRadio);
+        if (focusGlow != null) focusGlow.stop();
         super.onPause();
     }
 
@@ -183,22 +191,26 @@ public class MainActivity extends Screen {
     @Override
     void build() {
         newRoot();
+        java.util.Arrays.fill(nodePackage, null);
+        java.util.Arrays.fill(nodes, null);
+        focusGlow = Prefs.of(this).getBoolean("focus_lighting", false) ? new FocusGlow(this) : null;
+        if (focusGlow != null) root.addView(focusGlow, new FrameLayout.LayoutParams(-1, -1));
         card = null;   // a reminder card went with the old root
         radioCard = null;
-        buildArch(488, 26, 12, Tokens.GOLD_200, 8);
+        buildArch(488, 26, 12, Palette.GOLD_200, 8);
 
         nodes[ARCH] = archButton();
 
         // Courtyard: clock and dates, then Wi-Fi and Settings at the end side.
         LinearLayout when = new LinearLayout(this);
         when.setOrientation(LinearLayout.VERTICAL);
-        clock = text(display, 96, Tokens.PLASTER_100);
+        clock = text(display, 96, Palette.PLASTER_100);
         clock.setIncludeFontPadding(false);
         clock.setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
         clock.setFontFeatureSettings("tnum");
         // Under the clock the Hijri date (with the city) first, then the Gregorian, smaller and in mist.
-        hdate = text(ui400, 26, Tokens.PLASTER_100);
-        gdate = text(ui400, 24, Tokens.MIST_400);
+        hdate = text(ui400, 26, Palette.PLASTER_100);
+        gdate = text(ui400, 24, Palette.MIST_400);
         when.addView(clock);
         when.addView(hdate);
         when.addView(gdate);
@@ -208,13 +220,17 @@ public class MainActivity extends Screen {
         when.setClipChildren(false);
         place(when, Tokens.COURT_X, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        // Radio and Wi-Fi side by side, ending 20px before the Settings button.
+        // Quick controls end beside Settings; the clock keeps its own space.
+        nodes[INPUTS] = inputPill();
         nodes[RADIO] = radioPill();
         nodes[WIFI] = wifiPill();
         LinearLayout pills = new LinearLayout(this);
         pills.setClipChildren(false);
         float reach = FocusTile.REACH;
-        pills.addView(nodes[RADIO], new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach)));
+        pills.addView(nodes[INPUTS], new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach)));
+        LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach));
+        rlp.setMarginStart(Ui.ipx(16 - 2 * reach));
+        pills.addView(nodes[RADIO], rlp);
         LinearLayout.LayoutParams wlp = new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach));
         wlp.setMarginStart(Ui.ipx(20 - 2 * reach));
         pills.addView(nodes[WIFI], wlp);
@@ -230,9 +246,9 @@ public class MainActivity extends Screen {
             LinearLayout v = new LinearLayout(this);
             v.setOrientation(LinearLayout.VERTICAL);
             v.setPadding(Ui.ipx(20), Ui.ipx(16), Ui.ipx(20), Ui.ipx(16));
-            cellTag[i] = text(ui400, 20, Tokens.PLASTER_100);
-            cellName[i] = text(ui400, 26, Tokens.PLASTER_100);
-            cellTime[i] = text(ui400, 34, Tokens.PLASTER_100);
+            cellTag[i] = text(ui400, 20, Palette.PLASTER_100);
+            cellName[i] = text(ui400, 26, Palette.PLASTER_100);
+            cellTime[i] = text(ui400, 34, Palette.PLASTER_100);
             cellTime[i].setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
             cellTime[i].setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
             cellTime[i].setFontFeatureSettings("tnum");
@@ -247,48 +263,62 @@ public class MainActivity extends Screen {
             place(v, Tokens.COURT_X + i * (cw + 12), 290, cw, 146);
         }
 
-        TextView fav = caps(text(ui400, 22, Tokens.MIST_400));
-        fav.setText(t.fav());
+        TextView fav = caps(text(ui400, 22, Palette.MIST_400));
+        fav.setText(replacementPackage == null ? t.fav() : t.replaceWith(Apps.name(this, t, replacementPackage)));
+        fav.setSingleLine(true);
+        fav.setMaxWidth(Ui.ipx(Tokens.COURT_W));
+        fav.setEllipsize(TextUtils.TruncateAt.END);
         place(fav, Tokens.COURT_X, LABEL_ABOVE_FAV, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        float fw = (Tokens.COURT_W - 3 * 24) / 4f;
         List<String> favs = Apps.slots(this, t);
-        for (int i = 0; i < 4; i++) {
-            nodes[F0 + i] = favouriteTile(favs.get(i), F0 + i, Tokens.COURT_X + i * (fw + 24), 520, fw);
+        classicHome = Prefs.classicHome(this);
+        favouriteCount = FavouriteChoice.visibleCount(favs.size(), classicHome);
+        int columns = FavouriteChoice.columns(favouriteCount, classicHome);
+        float fw = (Tokens.COURT_W - (columns - 1) * 20) / columns;
+        for (int i = 0; i < favouriteCount; i++) {
+            nodes[F0 + i] = favouriteTile(favs.get(i), F0 + i,
+                Tokens.COURT_X + (i % columns) * (fw + 20), 516 + (i / columns) * 156, fw);
         }
 
-        TextView more = caps(text(ui400, 22, Tokens.MIST_400));
-        more.setText(t.more());
-        place(more, Tokens.COURT_X, LABEL_ABOVE_MORE, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        TextView recent = caps(text(ui400, 22, Palette.MIST_400));
+        recent.setText(t.recentApps());
+        place(recent, Tokens.COURT_X, classicHome ? 724 : 842, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         float mw = (Tokens.COURT_W - 5 * 20) / 6f;
-        List<String> moreApps = Apps.more(this, t, 5);
-        for (int i = 0; i < 5; i++) {
-            nodes[M0 + i] = moreTile(i < moreApps.size() ? moreApps.get(i) : null, M0 + i, Tokens.COURT_X + i * (mw + 20), 764, mw);
+        List<String> recentApps = Apps.recent(this);
+        recentCount = recentApps.size();
+        for (int i = 0; i < recentCount; i++) {
+            nodes[M0 + i] = moreTile(recentApps.get(i), M0 + i, Tokens.COURT_X + i * (mw + 20), classicHome ? 772 : 890, mw);
         }
-        nodes[ALL] = allAppsTile(Tokens.COURT_X + 5 * (mw + 20), 764, mw);
-
-        hints = new LinearLayout(this);
-        hints.setOrientation(LinearLayout.HORIZONTAL);
-        place(hints, Tokens.COURT_X, 962, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        nodes[ALL] = allAppsTile(Tokens.COURT_X + 5 * (mw + 20), classicHome ? 772 : 890, mw);
 
         for (int i = 0; i < NODES; i++) {
             final int n = i;
+            if (nodes[i] == null) continue;
             nodes[i].setOnFocusChangeListener((v, has) -> { if (has) onNodeFocused(n); else if (n == ARCH) setArchFocused(false); });
         }
 
+        if (replacementPackage != null) {
+            for (int i = 0; i < NODES; i++) {
+                if (nodes[i] == null) continue;
+                boolean candidate = i >= F0 && i < M0;
+                nodes[i].setFocusable(candidate);
+                nodes[i].setEnabled(candidate);
+                if (!candidate) nodes[i].setAlpha(.4f);
+            }
+        }
         setContentView(root);
         builtApps = appsKey();
         lastMinute = -1;
         render(true);
-        nodes[ARCH].requestFocus();
+        firstApp().requestFocus();
     }
 
     private View archButton() {
         FocusTile b = new FocusTile(this, 36);
-        b.setRest(0, Tokens.GOLD_400_60, 2);
+        b.setRest(0, Palette.GOLD_400_60, 2);
         LinearLayout row = new LinearLayout(this);
         row.setGravity(Gravity.CENTER);
         Icon compass = new Icon(this, Icon.COMPASS, 1.8f);
-        TextView label = text(ui400, 26, Tokens.PLASTER_100);
+        TextView label = text(ui400, 26, Palette.PLASTER_100);
         label.setText(t.today());
         row.addView(compass, new LinearLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30)));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
@@ -296,50 +326,67 @@ public class MainActivity extends Screen {
         row.addView(label, lp);
         b.addView(row, new FrameLayout.LayoutParams(-1, -1));
         b.setLook(f -> {
-            int c = f ? Tokens.LAPIS_900 : Tokens.PLASTER_100;
+            int c = f ? Palette.LAPIS_900 : Palette.PLASTER_100;
             label.setTextColor(c);
             compass.setColor(c);
         });
         b.setOnClickListener(v -> startActivity(new Intent(this, PrayerDayActivity.class)));
-        nodeLabel[ARCH] = t.today();
         placeTile(b, 176, 904, 440, 72);
         return b;
     }
 
+    private View inputPill() {
+        return quickPill(t.inputsTitle(), Icon.INPUT, () -> openQuick(true));
+    }
+
+    private View quickPill(String name, int kind, Runnable action) {
+        return QuickMenus.iconButton(this, name, kind, Prefs.quickLabels(this), action);
+    }
+
+    private void openQuick(boolean inputs) {
+        if (quickMenu != null) quickMenu.dismiss();
+        closeRadioCard(false);
+        if (card != null) dismissReminder();
+        if (inputs) quickMenu = QuickMenus.show(this, nodes[INPUTS]);
+        else SystemScreens.wifi(this);
+    }
+
     private View wifiPill() {
         FocusTile b = new FocusTile(this, 36);
-        b.setRest(Tokens.LAPIS_800, Tokens.LINE_SOFT, 2);
+        b.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
         LinearLayout row = new LinearLayout(this);
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
         Icon icon = new Icon(this, Icon.WIFI, 2f);
-        wifiName = text(ui400, 24, Tokens.PLASTER_100);
+        wifiName = text(ui400, 24, Palette.PLASTER_100);
         wifiName.setTextDirection(View.TEXT_DIRECTION_LTR);
+        wifiName.setSingleLine(true); wifiName.setMaxWidth(Ui.ipx(180));
+        wifiName.setEllipsize(TextUtils.TruncateAt.END);
         row.addView(icon, new LinearLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30)));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
         lp.setMarginStart(Ui.ipx(14));
+        wifiName.setVisibility(Prefs.quickLabels(this) ? View.VISIBLE : View.GONE);
+        b.setContentDescription("Wi-Fi");
         row.addView(wifiName, lp);
         b.addView(row, new FrameLayout.LayoutParams(-2, -1));
         b.setLook(f -> {
-            int c = f ? Tokens.LAPIS_900 : Tokens.PLASTER_100;
+            int c = f ? Palette.LAPIS_900 : Palette.PLASTER_100;
             wifiName.setTextColor(c);
             icon.setColor(c);
         });
-        b.setOnClickListener(v -> startSafely(new Intent(Settings.ACTION_WIFI_SETTINGS)));
-        nodeLabel[WIFI] = t.network();
+        b.setOnClickListener(v -> openQuick(false));
         return b;
     }
 
     private View settingsButton() {
         FocusTile b = new FocusTile(this, 36);
-        b.setRest(Tokens.LAPIS_800, Tokens.LINE_SOFT, 2);
+        b.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
         Icon gear = new Icon(this, Icon.GEAR, 1.8f);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(Ui.ipx(34), Ui.ipx(34), Gravity.CENTER);
         b.addView(gear, lp);
         b.setContentDescription(t.settings());
-        b.setLook(f -> gear.setColor(f ? Tokens.LAPIS_900 : Tokens.PLASTER_100));
+        b.setLook(f -> gear.setColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> startSafely(new Intent(this, SettingsActivity.class)));
-        nodeLabel[SETTINGS] = t.settings();
         placeEnd(b, 1920 - (Tokens.COURT_X + Tokens.COURT_W), 56, 72, 72);
         return b;
     }
@@ -348,57 +395,57 @@ public class MainActivity extends Screen {
         FocusTile b = new FocusTile(this, Tokens.RADIUS_TILE);
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(Ui.ipx(24), Ui.ipx(22), Ui.ipx(24), Ui.ipx(22));
+        col.setPadding(Ui.ipx(20), Ui.ipx(18), Ui.ipx(20), Ui.ipx(18));
         ImageView icon = new ImageView(this);
         icon.setScaleType(ImageView.ScaleType.FIT_START);
         Drawable d = Apps.icon(this, pkg);
         if (d != null) icon.setImageDrawable(d);
         String name = pkg == null ? "" : Apps.name(this, t, pkg);
-        TextView label = text(ui500, Apps.isLatin(name) ? 28 : 30, Tokens.PLASTER_100);
+        TextView label = text(ui500, Apps.isLatin(name) ? (classicHome ? 28 : 24) : (classicHome ? 30 : 26), Palette.PLASTER_100);
         label.setText(name);
         label.setSingleLine(true);
         label.setEllipsize(TextUtils.TruncateAt.END);
-        col.addView(icon, new LinearLayout.LayoutParams(Ui.ipx(48), Ui.ipx(48)));
+        int iconSize = Ui.ipx(classicHome ? 56 : 40);
+        col.addView(icon, new LinearLayout.LayoutParams(iconSize, iconSize));
         col.addView(new View(this), new LinearLayout.LayoutParams(1, 0, 1));
         col.addView(label, new LinearLayout.LayoutParams(-1, -2));
         b.addView(col, new FrameLayout.LayoutParams(-1, -1));
-        b.setLook(f -> label.setTextColor(f ? Tokens.LAPIS_900 : Tokens.PLASTER_100));
-        b.setOnClickListener(v -> { if (pkg != null) Apps.launch(this, pkg); });
-        nodeLabel[node] = name;
-        placeTile(b, x, y, w, 150);
+        b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
+        b.setOnClickListener(v -> activateApp(pkg));
+        nodePackage[node] = pkg;
+        placeTile(b, x, y, w, classicHome ? 196 : 132);
         return b;
     }
 
     private View moreTile(String pkg, int node, float x, float y, float w) {
         FocusTile b = new FocusTile(this, Tokens.RADIUS_CELL);
         String name = pkg == null ? "" : Apps.name(this, t, pkg);
-        TextView label = text(ui400, 22, Tokens.PLASTER_100);
+        TextView label = text(ui400, 22, Palette.PLASTER_100);
         label.setText(name);
         label.setMaxLines(2);
         label.setEllipsize(TextUtils.TruncateAt.END);
         label.setPadding(Ui.ipx(18), Ui.ipx(18), Ui.ipx(18), Ui.ipx(18));
         label.setGravity(Gravity.BOTTOM | Gravity.START);
         b.addView(label, new FrameLayout.LayoutParams(-1, -1));
-        b.setLook(f -> label.setTextColor(f ? Tokens.LAPIS_900 : Tokens.PLASTER_100));
-        b.setOnClickListener(v -> { if (pkg != null) Apps.launch(this, pkg); });
-        nodeLabel[node] = name;
-        placeTile(b, x, y, w, 112);
+        b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
+        b.setOnClickListener(v -> activateApp(pkg));
+        nodePackage[node] = pkg;
+        placeTile(b, x, y, w, 94);
         return b;
     }
 
     private View allAppsTile(float x, float y, float w) {
         FocusTile b = new FocusTile(this, Tokens.RADIUS_CELL);
-        b.setRest(0, Tokens.LINE_DASH, 2).setDashed();
-        TextView label = text(ui400, 22, Tokens.PLASTER_100);
+        b.setRest(0, Palette.LINE_DASH, 2).setDashed();
+        TextView label = text(ui400, 22, Palette.PLASTER_100);
         // Two lines: the dashed tile is too narrow for "All apps · N" on one.
-        label.setText(t.all(Apps.installed(this).size()));
+        label.setText(t.all(Apps.allApps(this, t).size()));
         label.setPadding(Ui.ipx(12), Ui.ipx(18), Ui.ipx(12), Ui.ipx(18));
         label.setGravity(Gravity.BOTTOM | Gravity.START);
         b.addView(label, new FrameLayout.LayoutParams(-1, -1));
-        b.setLook(f -> label.setTextColor(f ? Tokens.LAPIS_900 : Tokens.PLASTER_100));
+        b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> startActivity(new Intent(this, AllAppsActivity.class)));
-        nodeLabel[ALL] = t.allTitle();
-        placeTile(b, x, y, w, 112);
+        placeTile(b, x, y, w, 94);
         return b;
     }
 
@@ -443,7 +490,7 @@ public class MainActivity extends Screen {
             }
         }
         archLabel.setText(label);
-        archName.setText(name);
+        PrayerIcon.set(archName, day.nextIndex, name);
         archSub.setText(t.d(sub));
         archSub2.setText(t.d(sub2));
         archSub2.setVisibility(sub2.isEmpty() ? View.GONE : View.VISIBLE);
@@ -455,16 +502,16 @@ public class MainActivity extends Screen {
             boolean past = i != day.nextIndex && !day.times[i].after(now);
             int bg, fg, ring = 0;
             boolean bold;
-            if (i == day.nowIndex) { bg = Tokens.PLASTER_100; fg = Tokens.LAPIS_900; bold = true; }
-            else if (i == day.nextIndex) { bg = 0; fg = Tokens.GOLD_400; ring = Tokens.GOLD_400; bold = true; }
-            else if (past) { bg = Tokens.LAPIS_800_60; fg = Tokens.MIST_400; bold = false; }
-            else { bg = Tokens.LAPIS_800; fg = Tokens.PLASTER_100; bold = false; }
+            if (i == day.nowIndex) { bg = Palette.PLASTER_100; fg = Palette.LAPIS_900; bold = true; }
+            else if (i == day.nextIndex) { bg = 0; fg = Palette.GOLD_400; ring = Palette.GOLD_400; bold = true; }
+            else if (past) { bg = Palette.LAPIS_800_60; fg = Palette.MIST_400; bold = false; }
+            else { bg = Palette.LAPIS_800; fg = Palette.PLASTER_100; bold = false; }
             GradientDrawable g = new GradientDrawable();
             g.setCornerRadius(Ui.px(Tokens.RADIUS_CELL));
             g.setColor(bg);
             if (ring != 0) g.setStroke(Ui.ipx(3), ring);
             cell[i].setBackground(g);
-            cellTag[i].setText(tag);
+            PrayerIcon.set(cellTag[i], i, tag);
             cellName[i].setText(names[i]);
             // English 12-hour ("12:41 PM") is too wide for a cell at 34px; Arabic's ص/م is narrow enough.
             float timeSize = Ui.px(!h24 && !t.ar ? 30 : 34);
@@ -491,24 +538,9 @@ public class MainActivity extends Screen {
     // ---------------------------------------------------------------- focus
 
     private void onNodeFocused(int n) {
+        if (focusGlow != null) focusGlow.show(nodePackage[n]);
         if (n >= F0 && n < M0) lastFav = n;
         setArchFocused(n == ARCH);
-        List<String> h = new ArrayList<>();
-        if (n == ARCH) {
-            h.add(t.hintOk(t.today()));
-            h.add(t.hintApps());
-        } else if (n == RADIO) {
-            h.add(t.hintOk(nodeLabel[n]));
-        } else if (n >= F0 && n < M0) {
-            h.add(t.hintOk(t.open(nodeLabel[n])));
-            h.add(t.hintMore());
-        } else if (n >= M0) {
-            h.add(t.hintOk(n == ALL ? nodeLabel[n] : t.open(nodeLabel[n])));
-            h.add(t.hintFavs());
-        } else {
-            h.add(t.hintOk(nodeLabel[n]));
-        }
-        setHints(hints, h);
     }
 
     private void setArchFocused(boolean f) {
@@ -521,7 +553,7 @@ public class MainActivity extends Screen {
     /** The header pill: "Radio" with a broadcast icon when off; level bars and "On air" (gold outline) when on. */
     private View radioPill() {
         FocusTile b = new FocusTile(this, 36);
-        b.setRest(Tokens.LAPIS_800, Tokens.LINE_SOFT, 2);
+        b.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
         LinearLayout row = new LinearLayout(this);
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
@@ -530,24 +562,24 @@ public class MainActivity extends Screen {
         glyph.addView(radioIcon, new FrameLayout.LayoutParams(-1, -1));
         pillBars = new RadioBars(this, 3);
         glyph.addView(pillBars, new FrameLayout.LayoutParams(Ui.ipx(22), Ui.ipx(22), Gravity.CENTER));
-        radioLabel = text(ui400, 24, Tokens.PLASTER_100);
+        radioLabel = text(ui400, 24, Palette.PLASTER_100);
         radioLabel.setSingleLine(true);
         row.addView(glyph, new LinearLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30)));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
         lp.setMarginStart(Ui.ipx(14));
+        radioLabel.setVisibility(Prefs.quickLabels(this) ? View.VISIBLE : View.GONE);
+        b.setContentDescription(t.radio());
         row.addView(radioLabel, lp);
         b.addView(row, new FrameLayout.LayoutParams(-2, -1));
         nodes[RADIO] = b;
         b.setLook(f -> styleRadio());
         b.setOnClickListener(v -> showRadioCard());
-        nodeLabel[RADIO] = t.station(Radio.station(this));
         return b;
     }
 
     /** Puts the pill and the open card in step with the radio. */
     private void styleRadio() {
         if (radioLabel == null || nodes[RADIO] == null) return;
-        nodeLabel[RADIO] = t.station(Radio.station(this));
         int state = Radio.state();
         boolean on = Radio.on(), playing = state == Radio.PLAYING;
         boolean focused = nodes[RADIO].isFocused();
@@ -557,11 +589,11 @@ public class MainActivity extends Screen {
         radioIcon.setVisibility(on ? View.GONE : View.VISIBLE);
         pillBars.setVisibility(on ? View.VISIBLE : View.GONE);
         pillBars.setLive(playing);
-        int fg = focused ? Tokens.LAPIS_900 : Tokens.PLASTER_100;
+        int fg = focused ? Palette.LAPIS_900 : Palette.PLASTER_100;
         radioLabel.setTextColor(fg);
         radioIcon.setColor(fg);
-        pillBars.setColor(focused ? Tokens.LAPIS_900 : Tokens.GOLD_400);
-        ((FocusTile) nodes[RADIO]).setRest(Tokens.LAPIS_800, on ? Tokens.GOLD_400_60 : Tokens.LINE_SOFT, 2);
+        pillBars.setColor(focused ? Palette.LAPIS_900 : Palette.GOLD_400);
+        ((FocusTile) nodes[RADIO]).setRest(Palette.LAPIS_800, on ? Palette.GOLD_400_60 : Palette.LINE_SOFT, 2);
         if (radioCard != null) {
             cardStatus.setText(t.stationWhere(Radio.station(this)) + t.sep() + t.radioStatus(state));
             cardBars.setLive(playing);
@@ -580,9 +612,9 @@ public class MainActivity extends Screen {
         radioCard.setOrientation(LinearLayout.VERTICAL);
         radioCard.setPadding(Ui.ipx(36), Ui.ipx(30), Ui.ipx(36), Ui.ipx(30));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Tokens.LAPIS_700);
+        bg.setColor(Palette.LAPIS_700);
         bg.setCornerRadius(Ui.px(24));
-        bg.setStroke(Ui.ipx(2), Tokens.GOLD_400_60);
+        bg.setStroke(Ui.ipx(2), Palette.GOLD_400_60);
         radioCard.setBackground(bg);
         radioCard.setClipChildren(false);
         radioCard.setClipToPadding(false);
@@ -590,15 +622,15 @@ public class MainActivity extends Screen {
         LinearLayout top = new LinearLayout(this);
         top.setGravity(Gravity.CENTER_VERTICAL);
         cardBars = new RadioBars(this, 5);
-        cardBars.setColor(Tokens.GOLD_400);
+        cardBars.setColor(Palette.GOLD_400);
         top.addView(cardBars, new LinearLayout.LayoutParams(Ui.ipx(72), Ui.ipx(64)));
         LinearLayout words = new LinearLayout(this);
         words.setOrientation(LinearLayout.VERTICAL);
-        TextView label = caps(text(ui400, 20, Tokens.MIST_400));
+        TextView label = caps(text(ui400, 20, Palette.MIST_400));
         label.setText(t.radio());
-        TextView title = text(displayBold, 48, Tokens.PLASTER_100);
+        TextView title = text(displayBold, 48, Palette.PLASTER_100);
         title.setText(t.station(Radio.station(this)));
-        cardStatus = text(ui400, 24, Tokens.GOLD_400);
+        cardStatus = text(ui400, 24, Palette.GOLD_400);
         words.addView(label);
         words.addView(title);
         words.addView(cardStatus);
@@ -611,10 +643,10 @@ public class MainActivity extends Screen {
         LinearLayout buttons = new LinearLayout(this);
         buttons.setClipChildren(false);
         playIcon = new Icon(this, Icon.PLAY, 2f);
-        playLabel = text(ui400, 24, Tokens.PLASTER_100);
+        playLabel = text(ui400, 24, Palette.PLASTER_100);
         cardPlay = radioButton(playIcon, playLabel, t.radioPlay());
         cardPlay.setOnClickListener(v -> Radio.toggle(this));
-        cardDark = radioButton(new Icon(this, Icon.MOON, 2f), text(ui400, 24, Tokens.PLASTER_100), t.screenOff());
+        cardDark = radioButton(new Icon(this, Icon.MOON, 2f), text(ui400, 24, Palette.PLASTER_100), t.screenOff());
         cardDark.setOnClickListener(v -> {
             closeRadioCard(true);
             ScreenOffActivity.start(this);
@@ -629,12 +661,6 @@ public class MainActivity extends Screen {
         blp.setMarginStart(-Ui.ipx(r));
         radioCard.addView(buttons, blp);
 
-        TextView note = text(ui400, 20, Tokens.MIST_400);
-        note.setText(t.radioNote());
-        LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(-1, -2);
-        nlp.topMargin = Ui.ipx(20 - r);
-        radioCard.addView(note, nlp);
-
         // Hangs from the header, end-aligned with the Settings button, over the dates and the prayer strip.
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(Ui.ipx(720), -2, Gravity.TOP | Gravity.END);
         lp.setMarginEnd(Ui.ipx(1920 - (Tokens.COURT_X + Tokens.COURT_W)));
@@ -643,21 +669,12 @@ public class MainActivity extends Screen {
         for (View n : nodes) if (n != null) n.setFocusable(false);
         styleRadio();
         cardPlay.requestFocus();
-        cardHints(cardPlay);
-    }
-
-    private void cardHints(View focused) {
-        if (radioCard == null || hints == null) return;
-        List<String> h = new ArrayList<>();
-        h.add(t.hintOk(focused == cardDark ? t.screenOff() : (Radio.on() ? t.radioStop() : t.radioPlay())));
-        h.add(t.hintClose());
-        setHints(hints, h);
     }
 
     /** A 68px pill on the card with an icon: lapis at rest, gold when focused. */
     private FocusTile radioButton(Icon icon, TextView v, String label) {
         FocusTile b = new FocusTile(this, 34);
-        b.setRest(Tokens.LAPIS_900, Tokens.LINE_SOFT, 2);
+        b.setRest(Palette.LAPIS_900, Palette.LINE_SOFT, 2);
         LinearLayout row = new LinearLayout(this);
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(Ui.ipx(28), 0, Ui.ipx(32), 0);
@@ -668,10 +685,9 @@ public class MainActivity extends Screen {
         row.addView(v, lp);
         b.addView(row, new FrameLayout.LayoutParams(-2, -1));
         b.setLook(f -> {
-            int c = f ? Tokens.LAPIS_900 : Tokens.PLASTER_100;
+            int c = f ? Palette.LAPIS_900 : Palette.PLASTER_100;
             v.setTextColor(c);
             icon.setColor(c);
-            if (f) cardHints(b);
         });
         return b;
     }
@@ -688,8 +704,10 @@ public class MainActivity extends Screen {
 
     /** "Asr in 13 minutes" at the bottom end, over the apps; it takes focus until Got it, Today's prayers or Back. */
     private void showReminder() {
+        if (quickMenu != null) { quickMenu.dismiss(); quickMenu = null; }
         if (card != null) dismissReminder();
         closeRadioCard(false);
+        Appearance.load(this);
         Date now = new Date();
         day = new PrayerDay(this, now);
         cardFor = day.nextTime;
@@ -699,20 +717,20 @@ public class MainActivity extends Screen {
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(Ui.ipx(36), Ui.ipx(32), Ui.ipx(36), Ui.ipx(32));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Tokens.PLASTER_100);
+        bg.setColor(Palette.LAPIS_900);
         bg.setCornerRadius(Ui.px(24));
-        bg.setStroke(Ui.ipx(6), Tokens.ON_PLASTER_BORDER);
+        bg.setStroke(Ui.ipx(2), Palette.GOLD_400);
         card.setBackground(bg);
         card.setClipChildren(false);
         card.setClipToPadding(false);
 
         String[] names = t.prayerNames();
         if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
-        TextView label = caps(text(ui400, 20, Tokens.ON_PLASTER_LABEL));
+        TextView label = caps(text(ui400, 20, Palette.GOLD_400));
         label.setText(t.apLabel());
-        TextView title = text(displayBold, 52, Tokens.LAPIS_900);
-        title.setText(t.apTitle(names[day.nextIndex], Reminders.minutesLeft(day, now), duration(secondsUntil(day.nextTime, now), false)));
-        TextView sub = text(ui400, 24, Tokens.ON_PLASTER_SECONDARY);
+        TextView title = text(displayBold, 52, Palette.PLASTER_100);
+        PrayerIcon.set(title, day.nextIndex, t.apTitle(names[day.nextIndex], Reminders.minutesLeft(day, now), duration(secondsUntil(day.nextTime, now), false)));
+        TextView sub = text(ui400, 24, Palette.MIST_400);
         sub.setText(t.apSub(time(day.nextTime, 1f)));
         card.addView(label);
         card.addView(title);
@@ -745,22 +763,18 @@ public class MainActivity extends Screen {
         root.addView(card, lp);
         for (View n : nodes) if (n != null) n.setFocusable(false);
         cardOk.requestFocus();
-        List<String> h = new ArrayList<>();
-        h.add(t.hintOk(t.apOk()));
-        h.add(t.hintBackHome().replace(t.home(), t.dismiss()));
-        setHints(hints, h);
     }
 
-    /** A 68px pill on the cream card: lapis (Got it) or outlined; gold when focused. */
+    /** A 68px pill on the reminder card, using the same focus colours as Home. */
     private FocusTile cardButton(String label, boolean filled) {
         FocusTile b = new FocusTile(this, 34);
-        b.setRest(filled ? Tokens.LAPIS_900 : 0, Tokens.ON_PLASTER_BUTTON_BORDER, filled ? 0 : 2);
-        TextView v = text(ui400, 24, filled ? Tokens.PLASTER_100 : Tokens.LAPIS_900);
+        b.setRest(filled ? Palette.LAPIS_800 : 0, Palette.LINE_SOFT, filled ? 0 : 2);
+        TextView v = text(ui400, 24, Palette.PLASTER_100);
         v.setText(label);
         v.setGravity(Gravity.CENTER);
         v.setPadding(Ui.ipx(32), 0, Ui.ipx(32), 0);
         b.addView(v, new FrameLayout.LayoutParams(-2, -1));
-        b.setLook(f -> v.setTextColor(f ? Tokens.LAPIS_900 : (filled ? Tokens.PLASTER_100 : Tokens.LAPIS_900)));
+        b.setLook(f -> v.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         return b;
     }
 
@@ -769,15 +783,19 @@ public class MainActivity extends Screen {
         root.removeView(card);
         card = null;
         for (View n : nodes) if (n != null) n.setFocusable(true);
-        nodes[ARCH].requestFocus();
+        firstApp().requestFocus();
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         int k = e.getKeyCode();
+        if (replacementPackage != null && k == KeyEvent.KEYCODE_BACK) {
+            if (e.getAction() == KeyEvent.ACTION_UP) { replacementPackage = null; build(); }
+            return true;
+        }
         // Source, where the firmware leaves it to the app in front (CVTE) and nothing else opens the source menu.
         if (k == KeyEvent.KEYCODE_TV_INPUT) {
-            Intent source = FirmwareKeys.sourceMenu(this);
+            Intent source = new Intent(this, InputsActivity.class);
             if (source != null) {
                 if (e.getAction() == KeyEvent.ACTION_UP && !e.isCanceled()) {
                     try {
@@ -817,8 +835,8 @@ public class MainActivity extends Screen {
             return super.dispatchKeyEvent(e);
         }
         if (k == KeyEvent.KEYCODE_BACK) {
-            // Back on Home returns focus to the arch and never leaves Home.
-            if (e.getAction() == KeyEvent.ACTION_UP) nodes[ARCH].requestFocus();
+            // Back on Home returns to the first app and never leaves Home.
+            if (e.getAction() == KeyEvent.ACTION_UP) firstApp().requestFocus();
             return true;
         }
         if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT
@@ -834,30 +852,49 @@ public class MainActivity extends Screen {
         if (rtl && key == KeyEvent.KEYCODE_DPAD_LEFT) key = KeyEvent.KEYCODE_DPAD_RIGHT;
         else if (rtl && key == KeyEvent.KEYCODE_DPAD_RIGHT) key = KeyEvent.KEYCODE_DPAD_LEFT;
         int from = currentNode();
-        if (from < 0) { nodes[ARCH].requestFocus(); return; }
+        int columns = FavouriteChoice.columns(favouriteCount, classicHome);
+        if (replacementPackage != null) {
+            int to = FavouriteChoice.move(from - F0, favouriteCount,
+                key == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : key == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0,
+                key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0, classicHome);
+            if (to >= 0) nodes[F0 + to].requestFocus();
+            return;
+        }
+        if (from < 0) { firstApp().requestFocus(); return; }
         boolean left = key == KeyEvent.KEYCODE_DPAD_LEFT, right = key == KeyEvent.KEYCODE_DPAD_RIGHT;
         boolean up = key == KeyEvent.KEYCODE_DPAD_UP, down = key == KeyEvent.KEYCODE_DPAD_DOWN;
         int to = -1;
         switch (from) {
-            case ARCH: to = right ? F0 : up ? RADIO : -1; break;
-            case RADIO: to = left ? ARCH : right ? WIFI : down ? F0 + 1 : -1; break;
-            case WIFI: to = left ? RADIO : right ? SETTINGS : down ? F0 + 2 : -1; break;
-            case SETTINGS: to = left ? WIFI : down ? F0 + 3 : -1; break;
+            case ARCH: to = right ? F0 : up ? INPUTS : -1; break;
+            case INPUTS: to = left ? ARCH : right ? RADIO : down ? F0 : -1; break;
+            case RADIO: to = left ? INPUTS : right ? WIFI : down ? F0 : -1; break;
+            case WIFI: to = left ? RADIO : right ? SETTINGS : down ? F0 + columns / 2 : -1; break;
+            case SETTINGS: to = left ? WIFI : down ? F0 + columns - 1 : -1; break;
             default:
-                if (from >= F0 && from < M0) {
-                    int i = from - F0;
-                    if (left) to = i == 0 ? ARCH : from - 1;
-                    else if (right) to = i == 3 ? -1 : from + 1;
-                    else if (up) to = i == 3 ? SETTINGS : i == 2 ? WIFI : RADIO;
-                    else to = M0 + new int[] {0, 1, 3, 4}[i];
-                } else {
-                    int i = from - M0;
-                    if (left) to = i == 0 ? ARCH : from - 1;
-                    else if (right) to = from == ALL ? -1 : from + 1;
-                    else if (up) to = lastFav;
+                if (from >= F0 && from < F0 + favouriteCount) {
+                    int slot = from - F0, col = slot % columns;
+                    if (left) to = col == 0 ? ARCH : from - 1;
+                    else if (right && col < columns - 1 && slot + 1 < favouriteCount) to = from + 1;
+                    else if (up) to = slot >= columns ? from - columns : col == 0 ? RADIO : col == columns - 1 ? SETTINGS : WIFI;
+                    else if (down) {
+                        if (slot < columns && favouriteCount > columns) to = F0 + Math.min(favouriteCount - 1, slot + columns);
+                        else to = recentCount == 0 ? ALL : M0 + Math.min(recentCount - 1, col * 5 / columns);
+                    }
+                } else if (from >= M0) {
+                    if (left) to = from == ALL ? (recentCount == 0 ? ARCH : M0 + recentCount - 1) : from == M0 ? ARCH : from - 1;
+                    else if (right) to = from == ALL ? -1 : from < M0 + recentCount - 1 ? from + 1 : ALL;
+                    else if (up) to = Math.min(F0 + favouriteCount - 1, lastFav);
+                    else if (down) to = ALL;
                 }
         }
         if (to >= 0 && nodes[to] != null) nodes[to].requestFocus();
+    }
+
+    private View firstApp() {
+        View first = nodes[favouriteCount > 0 ? F0 : recentCount > 0 ? M0 : ALL];
+        // A mouse/touch app can leave Android in touch mode when Home is pressed.
+        first.setFocusableInTouchMode(true);
+        return first;
     }
 
     private int currentNode() {
@@ -868,7 +905,26 @@ public class MainActivity extends Screen {
 
     // ---------------------------------------------------------------- apps
 
+    private boolean readReplacement(Intent intent) {
+        String next = intent == null ? null : intent.getStringExtra("replace_favourite");
+        if (intent != null) intent.removeExtra("replace_favourite");
+        if (next != null && (!Apps.installed(this).contains(next) || Apps.slots(this, t).contains(next))) next = null;
+        boolean changed = !java.util.Objects.equals(replacementPackage, next);
+        replacementPackage = next;
+        return changed;
+    }
+
+    private void activateApp(String pkg) {
+        if (replacementPackage == null) { if (pkg != null) Apps.launch(this, pkg); return; }
+        List<String> current = Apps.slots(this, t);
+        int at = current.indexOf(pkg);
+        if (at >= 0 && Apps.installed(this).contains(replacementPackage) && !current.contains(replacementPackage))
+            Apps.saveFavourites(this, FavouriteChoice.replace(current, at, replacementPackage));
+        replacementPackage = null;
+        build();
+    }
+
     private String appsKey() {
-        return Apps.favourites(this) + "|" + Apps.installed(this).size();
+        return Apps.favourites(this) + "|" + Apps.recent(this) + "|" + Apps.installed(this).toString();
     }
 }

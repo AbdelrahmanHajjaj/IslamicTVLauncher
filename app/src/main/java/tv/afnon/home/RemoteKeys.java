@@ -48,11 +48,20 @@ public class RemoteKeys extends AccessibilityService {
     static PrayerWatch watch;
     /** The running service, so a new button table applies at once; null while the service is off. */
     private static RemoteKeys running;
+    private PrayerDock dock;
+
+    static boolean toggleDock() { if (running == null || running.dock == null) return false; running.dock.toggle(); return true; }
+    static boolean showInputs() { if (running == null || running.dock == null) return false; running.dock.inputs(); return true; }
+    static void hideDock() { if (running != null && running.dock != null) running.dock.hide(); }
+    static void tickDock(java.util.Date now, boolean asleep) { if (running != null && running.dock != null) running.dock.update(now, asleep); }
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         running = this;
+        if (dock != null) dock.stop();
+        dock = new PrayerDock(this);
+        ServiceRepair.connected(this);
         applyKeys();
         // The radio may have left the TV's sleep timer off (a crash, a reboot mid-listen): put it back.
         Radio.restoreSleep(this);
@@ -75,7 +84,9 @@ public class RemoteKeys extends AccessibilityService {
 
     /** A key's code from its name ("KEYCODE_TCL_NETFLIX" or "TCL_NETFLIX") or its number ("4159"); 0 if unknown. */
     static int code(String name) {
-        if (name.matches("\\d+")) return Integer.parseInt(name);
+        if (name.matches("\\d+")) {
+            try { return Integer.parseInt(name); } catch (NumberFormatException ignored) { return 0; }
+        }
         int code = KeyEvent.keyCodeFromString(name.startsWith("KEYCODE_") ? name : "KEYCODE_" + name);
         return Math.max(code, 0);
     }
@@ -87,16 +98,70 @@ public class RemoteKeys extends AccessibilityService {
 
     private void applyKeys() {
         appKeys.clear();
+        if (!Prefs.of(this).getBoolean("remote_enabled", true)) {
+            TclKeys.restore(this);
+            filterKeys(false);
+            return;
+        }
         for (String[] k : keys(this)) {
             int code = code(k[0]);
-            if (code > 0) appKeys.put(code, k[1]);
+            if (allowedCode(code)) appKeys.put(code, k[1]);
         }
         boolean tcl = TclKeys.install(this, targets());
         filterKeys(!tcl && FirmwareKeys.shouldFilter(this));
     }
 
+    @Override public boolean onUnbind(Intent intent) {
+        ServiceRepair.disconnected(this);
+        return super.onUnbind(intent);
+    }
+
+    static Intent target(android.content.Context c, String value) {
+        switch (value) {
+            case "@dock": return new Intent(c, DockActivity.class);
+            case "@home": return new Intent(c, MainActivity.class);
+            case "@apps": return new Intent(c, AllAppsActivity.class);
+            case "@inputs": return new Intent(c, InputsActivity.class);
+            case "@settings": return new Intent(c, SettingsActivity.class);
+            case "@default": return null;
+            default: return Apps.launchIntent(c, value);
+        }
+    }
+
+    static String defaultAction(int code) {
+        if (code == SETTINGS_KEY || code == KeyEvent.KEYCODE_SETTINGS) return "@settings";
+        if (code == KeyEvent.KEYCODE_TV || code == KeyEvent.KEYCODE_TV_INPUT) return "@inputs";
+        if (code == KeyEvent.KEYCODE_ALL_APPS) return "@apps";
+        return "@default";
+    }
+
+    static boolean allowedCode(int code) {
+        return code > 0 && code < 100000 && code != KeyEvent.KEYCODE_HOME && code != KeyEvent.KEYCODE_POWER
+            && code != KeyEvent.KEYCODE_SLEEP && code != KeyEvent.KEYCODE_WAKEUP && code != KeyEvent.KEYCODE_TV_POWER
+            && code != KeyEvent.KEYCODE_STB_POWER && code != KeyEvent.KEYCODE_AVR_POWER
+            && code != KeyEvent.KEYCODE_BACK && code != KeyEvent.KEYCODE_ESCAPE
+            && code != KeyEvent.KEYCODE_ENTER && code != KeyEvent.KEYCODE_NUMPAD_ENTER
+            && code != KeyEvent.KEYCODE_DPAD_UP_LEFT && code != KeyEvent.KEYCODE_DPAD_UP_RIGHT
+            && code != KeyEvent.KEYCODE_DPAD_DOWN_LEFT && code != KeyEvent.KEYCODE_DPAD_DOWN_RIGHT
+            && code != KeyEvent.KEYCODE_VOLUME_UP && code != KeyEvent.KEYCODE_VOLUME_DOWN
+            && code != KeyEvent.KEYCODE_VOLUME_MUTE && !(code >= KeyEvent.KEYCODE_DPAD_UP && code <= KeyEvent.KEYCODE_DPAD_CENTER);
+    }
+
+    static void validate(String value) {
+        if (value.length() > 8192) throw new IllegalArgumentException("Too many button mappings");
+        for (String pair : value.split(",")) {
+            if (pair.isEmpty()) continue;
+            String[] parts = pair.split("=", -1);
+            if (parts.length != 2 || !allowedCode(code(parts[0])) ||
+                    !(parts[1].matches("[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+")
+                    || java.util.Arrays.asList("@home", "@apps", "@inputs", "@settings", "@dock", "@default").contains(parts[1])))
+                throw new IllegalArgumentException("Invalid button mapping");
+        }
+    }
+
     @Override
     public void onDestroy() {
+        if (dock != null) { dock.stop(); dock = null; }
         if (running == this) running = null;
         if (watch != null) watch.stop();
         watch = null;
@@ -105,6 +170,9 @@ public class RemoteKeys extends AccessibilityService {
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
+        if (event.isFromSource(android.view.InputDevice.SOURCE_GAMEPAD)
+                || event.isFromSource(android.view.InputDevice.SOURCE_JOYSTICK)) return false;
+        if (RemoteButtonsActivity.captureKey(event)) return true;
         int code = event.getKeyCode();
         String app = appKeys.get(code);
         Intent open;
@@ -116,11 +184,16 @@ public class RemoteKeys extends AccessibilityService {
         else return false;
         // Nothing here answers it (the app is gone, or the firmware has no Android TV inputs screen): let the key
         // through so the firmware's own handling (a CVTE source menu, say) still gets it.
-        if (app != null ? Apps.launchIntent(this, app) == null : open == null || explicit(new Intent(open)) == null) return false;
+        if (app != null ? target(this, app) == null : open == null || explicit(new Intent(open)) == null) return false;
         // Act on release only, and swallow the press too so the app underneath never sees half a key.
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+            if ("@dock".equals(app)) { toggleDock(); return true; }
+            if ("@inputs".equals(app) || (app == null && (code == KeyEvent.KEYCODE_TV || code == KeyEvent.KEYCODE_TV_INPUT))) {
+                if (showInputs()) return true;
+            }
             if (app != null) {
-                Apps.launch(this, app);
+                try { startActivity(target(this, app).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); Apps.remember(this, app); }
+                catch (RuntimeException ignored) { }
             } else {
                 try {
                     startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -136,26 +209,25 @@ public class RemoteKeys extends AccessibilityService {
     private Map<Integer, Intent> targets() {
         Map<Integer, Intent> out = new HashMap<>();
         for (Map.Entry<Integer, String> e : appKeys.entrySet()) {
-            Intent i = Apps.launchIntent(this, e.getValue());
+            Intent i = target(this, e.getValue());
             if (i != null) out.put(e.getKey(), i);
         }
         Intent settings = new Intent(this, SettingsActivity.class);
-        out.put(SETTINGS_KEY, settings);
-        out.put(KeyEvent.KEYCODE_SETTINGS, settings);
+        if (!appKeys.containsKey(SETTINGS_KEY)) out.put(SETTINGS_KEY, settings);
+        if (!appKeys.containsKey(KeyEvent.KEYCODE_SETTINGS)) out.put(KeyEvent.KEYCODE_SETTINGS, settings);
         Intent inputs = inputs();
         if (inputs != null) {
-            out.put(KeyEvent.KEYCODE_TV, inputs);
-            out.put(KeyEvent.KEYCODE_TV_INPUT, inputs);
+            if (!appKeys.containsKey(KeyEvent.KEYCODE_TV)) out.put(KeyEvent.KEYCODE_TV, inputs);
+            if (!appKeys.containsKey(KeyEvent.KEYCODE_TV_INPUT)) out.put(KeyEvent.KEYCODE_TV_INPUT, inputs);
         }
-        out.put(KeyEvent.KEYCODE_ALL_APPS, new Intent(this, AllAppsActivity.class));
+        if (android.os.Build.VERSION.SDK_INT >= 28 && !appKeys.containsKey(KeyEvent.KEYCODE_ALL_APPS)) out.put(KeyEvent.KEYCODE_ALL_APPS, new Intent(this, AllAppsActivity.class));
         for (Intent i : out.values()) i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         return out;
     }
 
     /** The Android TV inputs screen, else the firmware's own source menu; null if neither exists. */
     private Intent inputs() {
-        Intent i = explicit(new Intent(ACTION_VIEW_INPUTS));
-        return i != null ? i : FirmwareKeys.sourceMenu(this);
+        return new Intent(this, InputsActivity.class);
     }
 
     /** The intent pinned to the activity that answers it now, or null if none does. */
@@ -176,6 +248,7 @@ public class RemoteKeys extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        if (dock != null) dock.onWindow(event);
         Redirects.onWindowChanged(this, event);
     }
 

@@ -3,11 +3,11 @@ package tv.afnon.home;
 import android.content.Context;
 import android.icu.util.IslamicCalendar;
 
-import com.batoulapps.adhan.CalculationMethod;
 import com.batoulapps.adhan.CalculationParameters;
 import com.batoulapps.adhan.Coordinates;
 import com.batoulapps.adhan.Madhab;
 import com.batoulapps.adhan.PrayerTimes;
+import com.batoulapps.adhan.PrayerAdjustments;
 import com.batoulapps.adhan.Qibla;
 import com.batoulapps.adhan.data.DateComponents;
 
@@ -34,12 +34,17 @@ final class PrayerDay {
 
     /** With the saved location, method, Asr school and Hijri adjustment (Afnon Settings). */
     PrayerDay(Context c, Date now) {
-        this(now, Prefs.where(c), Prefs.method(c), Prefs.madhab(c), Prefs.hijriOffset(c));
+        this(now, Prefs.where(c), Prefs.method(c), Prefs.madhab(c), Prefs.hijriOffset(c), Prefs.prayerOffsets(c));
     }
 
-    PrayerDay(Date now, Coordinates where, CalculationMethod method, Madhab madhab, int hijriOffset) {
+    PrayerDay(Date now, Coordinates where, PrayerMethod method, Madhab madhab, int hijriOffset, int[] offsets) {
         CalculationParameters params = method.getParameters();
         params.madhab = madhab;
+        if (offsets.length != 6) throw new IllegalArgumentException("Expected six prayer offsets");
+        for (int offset : offsets) if (Math.abs((long) offset) > Prefs.MAX_PRAYER_OFFSET)
+            throw new IllegalArgumentException("Prayer offset out of range");
+        // Reuse these parameters for tomorrow too, so Fajr alerts and Suhoor share the displayed offset.
+        params.adjustments = new PrayerAdjustments(offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5]);
         PrayerTimes today = new PrayerTimes(where, DateComponents.from(now), params);
         times[FAJR] = minute(today.fajr);
         times[SUNRISE] = minute(today.sunrise);

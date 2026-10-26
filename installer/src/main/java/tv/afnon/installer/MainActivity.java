@@ -133,7 +133,11 @@ public final class MainActivity extends Activity {
                 Ui.small(this, getString(R.string.g3_wireless)),
                 Ui.tvText(this, R.string.tv_wireless_en, R.string.tv_wireless_ar)), 10);
         add(step(4, R.string.g4_title, R.string.g4_body), 10);
+        foot(Ui.secondary(this, getString(R.string.choose_local_apk), v -> startActivityForResult(
+            new android.content.Intent(android.content.Intent.ACTION_OPEN_DOCUMENT)
+                .setType("application/vnd.android.package-archive").addCategory(android.content.Intent.CATEGORY_OPENABLE), 81)));
         foot(Ui.primary(this, getString(R.string.guide_ready), v -> go(this::showFind)));
+        recoveryActions();
         back = this::finish;
     }
 
@@ -519,7 +523,7 @@ public final class MainActivity extends Activity {
 
     private Timeline timeline;
     TextView titleView, leadView;
-    /** The setup steps for the release being installed (tools/setup-steps.txt at its tag). */
+    /** Bundled setup steps, mirrored in tools/setup-steps.txt. */
     private List<Setup.Step> steps;
     /** The release's version ("0.5"), and whether every required step went through. */
     String version = "";
@@ -527,6 +531,7 @@ public final class MainActivity extends Activity {
     /** The address of the TV this run is working on, remembered for next time. */
     private String host;
     private Tv tv;
+    private File localApk;
 
     private void install() {
         stopFinders();
@@ -541,16 +546,22 @@ public final class MainActivity extends Activity {
                 Adb.Result sdk = a.shell("getprop ro.build.version.sdk");
                 int api = 0;
                 try { api = Integer.parseInt(sdk.out.trim()); } catch (NumberFormatException ignored) { }
-                if (api > 0 && api < 26) {
+                if (api < 26) {
                     fail(g, getString(R.string.tv_too_old));
                     return;
                 }
-                String tag = Setup.latestTag();
+                tv.recovery = new Recovery(a, getFilesDir(), host, tv);
+                String tag = localApk == null ? Setup.latestTag() : null;
                 version = tag == null ? "" : tag.replaceFirst("^v", "");
                 steps = Setup.steps(tag);
+                if (localApk != null) {
+                    android.content.pm.PackageInfo archive = getPackageManager().getPackageArchiveInfo(localApk.getPath(), 0);
+                    if (archive == null || !Setup.PACKAGE.equals(archive.packageName)) throw new IOException("Choose an Afnon launcher APK");
+                    version = archive.versionName;
+                }
                 String onTv = tv.afnonVersion();
                 // Already the latest: nothing to download, but the setup runs again (it is safe to repeat).
-                boolean current = onTv != null && onTv.equals(version);
+                boolean current = localApk == null && onTv != null && onTv.equals(version);
                 post(g, () -> {
                     if (!version.isEmpty()) leadView.setText(getString(R.string.install_lead_version, version));
                     timeline = timeline();
@@ -568,12 +579,13 @@ public final class MainActivity extends Activity {
                     runSteps(g, a);
                     return;
                 }
+                if (localApk != null) { send(g, a, localApk); return; }
                 File apk = Setup.download(getCacheDir(), (done, total) -> post(g, () -> {
                     if (total <= 0) return;
                     hero.progress(0.45f * done / total);
                     timeline.note(0, getString(R.string.mb_of, mb(done), mb(total)));
                 }));
-                send(g, a, apk, false);
+                send(g, a, apk);
             } catch (Exception e) {
                 fail(g, getString(R.string.error_install, message(e)));
             }
@@ -591,20 +603,19 @@ public final class MainActivity extends Activity {
     }
 
     /** On the worker thread: the APK into the TV, then the setup steps. */
-    private void send(int g, Adb a, File apk, boolean replacing) throws IOException, InterruptedException {
+    private void send(int g, Adb a, File apk) throws IOException, InterruptedException {
         post(g, () -> {
             timeline.set(0, Timeline.State.CHECKED);
             timeline.set(1, Timeline.State.WORKING);
         });
-        if (replacing) a.shell("pm uninstall " + Setup.PACKAGE);
         long size = apk.length();
         String result = a.install(apk, f -> post(g, () -> {
             hero.progress(0.45f + 0.45f * f);
             timeline.note(1, getString(R.string.mb_of, mb((long) (f * size)), mb(size)));
         }));
-        if (result.contains("INSTALL_FAILED_UPDATE_INCOMPATIBLE") && !replacing) {
-            // A copy of Afnon signed with another key is on the TV; only removing it lets this one in.
-            post(g, () -> askReplace(g, a, apk));
+        if (result.contains("INSTALL_FAILED_UPDATE_INCOMPATIBLE")) {
+            // Keep the installed Home and its data when signatures differ.
+            fail(g, getString(R.string.signature_kept));
             return;
         }
         if (!result.startsWith("Success")) {
@@ -622,7 +633,10 @@ public final class MainActivity extends Activity {
      * as it stands; otherwise its command runs (done) and the check runs again (checked, or failed / not on this TV).
      */
     private void runSteps(int g, Adb a) throws IOException, InterruptedException {
-        boolean allRequired = true;
+        tv.startHome("tv.afnon.home/.MainActivity");
+        for (String p : tv.enabledPackages()) if (p.startsWith("com.cvte."))
+            throw new IOException("CVTE: select Home and verify a reboot with PC setup before enabling remote helpers.");
+        try { tv.recovery.prepareSetup(); } catch (Exception e) { throw new IOException("Could not journal setup changes", e); }
         for (int i = 0; i < steps.size(); i++) {
             Setup.Step s = steps.get(i);
             int row = i + 2;
@@ -642,7 +656,18 @@ public final class MainActivity extends Activity {
                             : s.required ? Timeline.State.FAILED : Timeline.State.SKIPPED;
                 }
             }
-            if (end == Timeline.State.FAILED) allRequired = false;
+            if (end == Timeline.State.FAILED) {
+                installedOk = false;
+                post(g, () -> {
+                    timeline.set(row, Timeline.State.FAILED);
+                    timeline.note(row, getString(R.string.state_failed));
+                    hero.set(Hero.Mode.PROBLEM);
+                    titleView.setText(R.string.done_partly_title);
+                    leadView.setText(R.string.steps_failed_lead);
+                    foot(Ui.primary(this, getString(R.string.try_again), v -> go(this::install)));
+                });
+                return;
+            }
             Timeline.State shown = end;
             post(g, () -> {
                 boolean keepNote = shown == Timeline.State.CHECKED && timeline.hasNote(row);
@@ -653,26 +678,11 @@ public final class MainActivity extends Activity {
                 hero.progress(at);
             });
         }
-        installedOk = allRequired;
+        tv.requireHome();
+        installedOk = true;
         // A moment on the finished list, then the next stage.
         Thread.sleep(900);
         post(g, () -> new Personalise(this, tv).start());
-    }
-
-    private void askReplace(int g, Adb a, File apk) {
-        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle(R.string.old_signature_title)
-                .setMessage(R.string.old_signature_body)
-                .setPositiveButton(R.string.remove_and_install, (d, w) -> work.execute(() -> {
-                    try {
-                        send(g, a, apk, true);
-                    } catch (Exception e) {
-                        fail(g, getString(R.string.error_install, message(e)));
-                    }
-                }))
-                .setNegativeButton(R.string.cancel, (d, w) -> go(this::showGuide))
-                .setCancelable(false)
-                .show();
     }
 
     /** The end: what was set, and the tip about debugging. */
@@ -709,7 +719,66 @@ public final class MainActivity extends Activity {
         add(tip, 12);
         foot(Ui.primary(this, getString(R.string.finish), v -> finish()));
         foot(Ui.secondary(this, getString(R.string.another), v -> go(this::showGuide)));
+        recoveryActions();
         back = this::finish;
+    }
+
+    private void recoveryActions() {
+        if (tv == null || tv.recovery == null) return;
+        foot(Ui.secondary(this, getString(R.string.export_backup), v -> {
+            android.content.Intent i = new android.content.Intent(android.content.Intent.ACTION_CREATE_DOCUMENT)
+                .setType("application/json").addCategory(android.content.Intent.CATEGORY_OPENABLE)
+                .putExtra(android.content.Intent.EXTRA_TITLE, "recovery.json");
+            startActivityForResult(i, 80);
+        }));
+        foot(Ui.secondary(this, getString(R.string.restore_backup), v -> new AlertDialog.Builder(this)
+            .setMessage(R.string.restore_backup_help)
+            .setPositiveButton(R.string.restore_backup, (d, w) -> work.execute(() -> {
+                int g = gen;
+                try {
+                    tv.recovery.restore(tv);
+                    post(g, () -> { installedOk = false; showDone(java.util.Collections.singletonList(getString(R.string.backup_restored)), false); });
+                } catch (Exception e) { fail(g, message(e)); }
+            })).setNegativeButton(R.string.cancel, null).show()));
+    }
+
+    @Override protected void onActivityResult(int request, int result, android.content.Intent data) {
+        super.onActivityResult(request, result, data);
+        if (request == 81 && result == RESULT_OK && data != null && data.getData() != null) {
+            android.net.Uri uri = data.getData();
+            work.execute(() -> {
+                try {
+                    File selected = new File(getCacheDir(), "local-afnon.apk");
+                    try (java.io.InputStream in = getContentResolver().openInputStream(uri);
+                         java.io.OutputStream out = new java.io.FileOutputStream(selected)) {
+                        if (in == null) throw new IOException("Cannot open APK");
+                        byte[] bytes = new byte[65536]; int n; long size = 0;
+                        while ((n = in.read(bytes)) != -1) {
+                            size += n;
+                            if (size > 200L * 1024 * 1024) throw new IOException("APK is too large");
+                            out.write(bytes, 0, n);
+                        }
+                    }
+                    android.content.pm.PackageInfo archive = getPackageManager().getPackageArchiveInfo(selected.getPath(), 0);
+                    if (archive == null || !Setup.PACKAGE.equals(archive.packageName)) throw new IOException("Choose an Afnon launcher APK");
+                    localApk = selected;
+                    post(gen, () -> go(this::showFind));
+                } catch (Exception e) { fail(gen, message(e)); }
+            });
+            return;
+        }
+        if (request != 80 || result != RESULT_OK || data == null || data.getData() == null || tv == null || tv.recovery == null) return;
+        File backup = tv.recovery.file;
+        android.net.Uri uri = data.getData();
+        work.execute(() -> {
+            try (java.io.OutputStream out = getContentResolver().openOutputStream(uri);
+                 java.io.InputStream in = new java.io.FileInputStream(backup)) {
+                if (out == null) throw new IOException("Cannot open backup destination");
+                byte[] bytes = new byte[8192];
+                int n;
+                while ((n = in.read(bytes)) != -1) out.write(bytes, 0, n);
+            } catch (Exception e) { fail(gen, message(e)); }
+        });
     }
 
     /** The connection, for a last command after the work is done; null if there is none. */
@@ -729,6 +798,7 @@ public final class MainActivity extends Activity {
             add(card, 20);
             foot(Ui.primary(this, getString(R.string.try_again), v -> go(this::showFind)));
             foot(Ui.secondary(this, getString(R.string.back), v -> go(this::showGuide)));
+            recoveryActions();
             back = () -> go(this::showGuide);
         });
     }

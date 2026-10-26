@@ -66,6 +66,7 @@ final class PrayerWatch {
         PowerManager pm = service.getSystemService(PowerManager.class);
         Date now = new Date();
         boolean asleep = pm != null && !pm.isInteractive();
+        RemoteKeys.tickDock(now, asleep);
         // Asleep: nothing to show, unless the radio plays with the screen off (TCL Audio Only); then the call
         // still comes, waking the screen.
         if (asleep && !Radio.on()) return;
@@ -105,6 +106,7 @@ final class PrayerWatch {
     }
 
     void openCall(int prayer, Date time) {
+        RemoteKeys.hideDock();
         hideBanner();
         wakeScreen();
         Intent i = new Intent(service, NowActivity.class)
@@ -136,6 +138,7 @@ final class PrayerWatch {
 
     void showBanner(PrayerDay day, Date now) {
         hideBanner();
+        Appearance.load(service);
         Ui.init(service);
         Text t = Screen.loadText(service);
         boolean h24 = Prefs.clock24(service);
@@ -147,43 +150,40 @@ final class PrayerWatch {
         card.setLayoutDirection(t.ar ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         card.setPadding(Ui.ipx(28), Ui.ipx(24), Ui.ipx(28), 0);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Tokens.LAPIS_900);
+        bg.setColor(Palette.LAPIS_900);
         bg.setCornerRadius(Ui.px(24));
-        bg.setStroke(Ui.ipx(2), Tokens.GOLD_400);
+        bg.setStroke(Ui.ipx(2), Palette.GOLD_400);
         card.setBackground(bg);
         card.setClipToOutline(true);
         card.setClipToPadding(false);
 
         LinearLayout row = new LinearLayout(service);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        Icon mihrab = new Icon(service, Icon.MIHRAB, 1.2f);
-        mihrab.setColor(Tokens.GOLD_400);
-        row.addView(mihrab, new LinearLayout.LayoutParams(Ui.ipx(56), Ui.ipx(72)));
         LinearLayout words = new LinearLayout(service);
         words.setOrientation(LinearLayout.VERTICAL);
         String[] names = t.prayerNames();
         if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
         long minutes = Reminders.minutesLeft(day, now);
-        TextView label = text(ui, 20, Tokens.MIST_400, t.apLabel());
+        TextView label = text(ui, 20, Palette.MIST_400, t.apLabel());
         if (!t.ar) label.setLetterSpacing(0.2f);
-        TextView title = text(display, 44, Tokens.PLASTER_100,
+        TextView title = text(display, 44, Palette.PLASTER_100,
             t.apTitle(names[day.nextIndex], minutes, Screen.duration(Screen.secondsUntil(day.nextTime, now), false)));
-        TextView sub = text(ui, 22, Tokens.MIST_400, t.bannerSub(Screen.clock(t, day.nextTime, h24, 1f), BANNER_SECONDS));
+        PrayerIcon.set(title, day.nextIndex, title.getText());
+        TextView sub = text(ui, 22, Palette.MIST_400, t.apSub(Screen.clock(t, day.nextTime, h24, 1f)));
         words.addView(label);
         words.addView(title);
         words.addView(sub);
         Screen.lineHeight(title, 1.1f);
         ((LinearLayout.LayoutParams) sub.getLayoutParams()).topMargin = Ui.ipx(4);
         LinearLayout.LayoutParams wlp = new LinearLayout.LayoutParams(0, -2, 1);
-        wlp.setMarginStart(Ui.ipx(20));
         row.addView(words, wlp);
         card.addView(row);
 
         // The time left before it hides, emptying toward the start side.
         FrameLayout track = new FrameLayout(service);
-        track.setBackgroundColor(Tokens.BANNER_TRACK);
+        track.setBackgroundColor(Palette.BANNER_TRACK);
         View fill = new View(service);
-        fill.setBackgroundColor(Tokens.GOLD_400);
+        fill.setBackgroundColor(Palette.GOLD_400);
         track.addView(fill, new FrameLayout.LayoutParams(-1, -1));
         LinearLayout.LayoutParams tlp = new LinearLayout.LayoutParams(-1, Ui.ipx(6));
         tlp.topMargin = Ui.ipx(18);
@@ -245,7 +245,9 @@ final class PrayerWatch {
         handler.postDelayed(() -> {
             Date now = new Date();
             PrayerDay day = new PrayerDay(service, now);
-            if ("call".equals(kind)) {
+            if ("dock".equals(kind)) { RemoteKeys.toggleDock(); }
+            else if ("inputs".equals(kind)) { RemoteKeys.showInputs(); }
+            else if ("call".equals(kind)) {
                 openCall(day.nextIndex, day.nextTime);
             } else if ("announce".equals(kind)) {
                 Announce.now(service, day.nextIndex, day.friday);

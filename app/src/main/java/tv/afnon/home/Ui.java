@@ -17,6 +17,7 @@ final class Ui {
     static float scale = 1f;
 
     static void init(Context c) {
+        Appearance.load(c);
         scale = c.getResources().getDisplayMetrics().widthPixels / 1920f;
     }
 
@@ -32,14 +33,18 @@ final class Ui {
      * spokes) in gold-400 at 7%, repeated. Drawn once into a bitmap, so it costs nothing per frame.
      */
     static Drawable starLattice(Context c) {
-        int s = Math.max(1, ipx(96));
+        return starLattice(c, Palette.LAPIS_900, Palette.PATTERN_LINE, 96);
+    }
+
+    static Drawable starLattice(Context c, int ground, int line, float cell) {
+        int s = Math.max(1, ipx(cell));
         Bitmap b = Bitmap.createBitmap(s, s, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(b);
-        cv.drawColor(Tokens.LAPIS_900);
+        cv.drawColor(ground);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
         p.setStyle(Paint.Style.STROKE);
-        p.setStrokeWidth(px(1.5f));
-        p.setColor(Tokens.PATTERN_LINE);
+        p.setStrokeWidth(px(1.5f * cell / 96));
+        p.setColor(line);
         float k = s / 96f;
         cv.drawRect(28 * k, 28 * k, 68 * k, 68 * k, p);
         cv.save();

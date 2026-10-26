@@ -25,6 +25,7 @@ final class Tv {
     static final String CLEANED = "/data/local/tmp/afnon-cleaned.txt";
 
     private final Adb adb;
+    Recovery recovery;
 
     Tv(Adb adb) {
         this.adb = adb;
@@ -88,7 +89,7 @@ final class Tv {
 
     Set<String> enabledPackages() throws IOException, InterruptedException {
         Set<String> out = new HashSet<>();
-        for (String line : adb.shell("pm list packages -e").out.split("\n")) {
+        for (String line : adb.shell("pm list packages -e --user 0").out.split("\n")) {
             line = line.trim();
             if (line.startsWith("package:")) out.add(line.substring(8));
         }
@@ -97,7 +98,7 @@ final class Tv {
 
     Set<String> disabledPackages() throws IOException, InterruptedException {
         Set<String> out = new HashSet<>();
-        for (String line : adb.shell("pm list packages -d").out.split("\n")) {
+        for (String line : adb.shell("pm list packages -d --user 0").out.split("\n")) {
             line = line.trim();
             if (line.startsWith("package:")) out.add(line.substring(8));
         }
@@ -123,22 +124,65 @@ final class Tv {
 
     /** Turns one package off for the TV's user (not uninstalled) and notes it for undo. */
     boolean disable(String pkg) throws IOException, InterruptedException {
+        if (Safety.protectedPackage(pkg)) throw new IOException("Protected package");
+        if (!enabledPackages().contains(pkg)) return true;
+        if (recovery == null) throw new IOException("Create the phone backup first");
+        requireHome();
+        if (pkg.equals(home().split("/")[0]) || pkg.startsWith("com.cvte.tv.launcher")) return false;
+        String dreams = adb.shell("settings get secure screensaver_components").out;
+        if (dreams.contains(pkg + "/")) return false;
+        if (pkg.equals("com.google.android.tungsten.setupwraith")) {
+            String wifi = adb.shell("dumpsys wifi").out;
+            if (!wifi.contains("cname=") || wifi.contains("cname=" + pkg)) return false;
+        }
+        String details = adb.shell("dumpsys package " + pkg).out;
+        if (details.contains("android.permission.TV_INPUT_HARDWARE")) return false;
+        try { recovery.beforeDisable(pkg); } catch (Exception e) { throw new IOException("Backup failed", e); }
         Adb.Result r = adb.shell("pm disable-user --user 0 " + pkg);
-        boolean ok = r.ok() && !r.out.contains("Exception");
-        // Noted only once: the undo list holds each package one time.
-        if (ok) adb.shell("grep -qx '" + pkg + "' " + CLEANED + " 2>/dev/null || echo " + pkg + " >> " + CLEANED);
+        boolean ok = r.ok() && r.out.contains("disabled-user") && disabledPackages().contains(pkg);
+        if (ok) adb.shell("grep -qxF " + quote(pkg) + " " + CLEANED + " 2>/dev/null || echo " + quote(pkg) + " >> " + CLEANED);
         return ok;
     }
 
     boolean enable(String pkg) throws IOException, InterruptedException {
-        return adb.shell("pm enable " + pkg).ok();
+        if (!Safety.packageName(pkg)) throw new IOException("Invalid package");
+        return adb.shell("pm enable --user 0 " + pkg).ok() && enabledPackages().contains(pkg);
+    }
+
+    String home() throws IOException, InterruptedException {
+        String output = adb.shell("cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME").out.trim();
+        String[] lines = output.split("\n");
+        return lines.length == 0 ? "" : lines[lines.length - 1].trim();
+    }
+
+    void startHome(String component) throws IOException, InterruptedException {
+        if (!Safety.home(component)) throw new IOException("No safe Home component");
+        Adb.Result r = adb.shell("am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n " + quote(component));
+        if (!r.ok() || !r.out.contains("Status: ok") || r.out.contains("Error:")) throw new IOException("Home did not start");
+    }
+
+    void requireHome() throws IOException, InterruptedException {
+        String component = "tv.afnon.home/.MainActivity";
+        if (!Safety.sameHome(component, home())) throw new IOException("Afnon is not the selected Home");
+        startHome(component);
+        String focus = adb.shell("dumpsys activity activities").out;
+        boolean visible = false;
+        for (String line : focus.split("\n"))
+            if ((line.contains("mResumedActivity") || line.contains("mFocusedApp") || line.contains("topResumedActivity"))
+                && line.contains("tv.afnon.home/")) visible = true;
+        if (!visible) throw new IOException("Afnon is not visibly in front; cleanup stopped");
+    }
+
+    void restoreRemote() throws IOException, InterruptedException {
+        Adb.Result r = adb.shell("content call --uri content://tv.afnon.home.setup --method restore_remote");
+        if (!r.ok() || !r.out.contains("restored=true")) throw new IOException("Remote mappings could not be restored; keep the backup");
     }
 
     void forgetCleaned() throws IOException, InterruptedException {
         adb.shell("rm -f " + CLEANED);
     }
 
-    private static String quote(String s) {
+    static String quote(String s) {
         return "'" + s.replace("'", "'\\''") + "'";
     }
 }

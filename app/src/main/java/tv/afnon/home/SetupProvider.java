@@ -33,18 +33,18 @@ import java.util.List;
  * content query --uri content://tv.afnon.home.setup/info     {"version","api","city","locale","adhan",...}
  * content query --uri content://tv.afnon.home.setup/cities   [{"id","ar","en","countryAr","countryEn","region"}]
  * content query --uri content://tv.afnon.home.setup/regions  [{"ar","en"}]
- * content query --uri content://tv.afnon.home.setup/apps     [{"p","ar","en","fav"}]   fav: slot 0-3, or -1
+ * content query --uri content://tv.afnon.home.setup/apps     [{"p","ar","en","fav"}]   fav: slot 0-8, or -1
  * content query --uri content://tv.afnon.home.setup/keys     [{"key","p"}]
  * content read  --uri content://tv.afnon.home.setup/icon/&lt;package&gt;   a 96 px PNG
  * content insert --uri content://tv.afnon.home.setup/settings --bind name:s:&lt;name&gt; --bind value:s:&lt;value&gt;
- *     city (an id from cities) · locale (ar|en|system) · favourites (packages, comma-separated, at most 4) ·
+ *     city (an id from cities) · locale (ar|en|system) · favourites (packages, comma-separated, at most 9) ·
  *     keys (KEY=package pairs, comma-separated; KEY is a keycode name or number) · adhan · remind_voice ·
  *     announce (on|off)
  * </pre>
  * Each query is one row with one column, "json". Bump {@link #API} when the contract changes; never break it.
  */
 public final class SetupProvider extends ContentProvider {
-    static final int API = 1;
+    static final int API = 2;
     private static final int ICON_PX = 96;
 
     @Override
@@ -59,6 +59,7 @@ public final class SetupProvider extends ContentProvider {
         Object json;
         try {
             switch (first(uri)) {
+                case "theme": json = new JSONObject(Prefs.of(c).getString("theme_json", "{\"version\":1}")); break;
                 case "info": json = info(c); break;
                 case "cities": json = cities(); break;
                 case "regions": json = regions(); break;
@@ -84,6 +85,7 @@ public final class SetupProvider extends ContentProvider {
         return new JSONObject()
             .put("version", version)
             .put("api", API)
+            .put("favourite_slots", Apps.FAVOURITE_SLOTS)
             .put("city", Prefs.city(c).id)
             .put("locale", Prefs.of(c).getString("locale", "system"))
             .put("adhan", Prefs.adhan(c))
@@ -120,7 +122,7 @@ public final class SetupProvider extends ContentProvider {
 
     private static JSONArray keys(Context c) throws JSONException {
         JSONArray a = new JSONArray();
-        for (String[] k : RemoteKeys.keys(c)) a.put(new JSONObject().put("key", k[0]).put("p", k[1]));
+        for (String[] k : RemoteKeys.keys(c)) if (RemoteKeys.allowedCode(RemoteKeys.code(k[0]))) a.put(new JSONObject().put("key", k[0]).put("p", k[1]));
         return a;
     }
 
@@ -131,6 +133,11 @@ public final class SetupProvider extends ContentProvider {
         String name = values.getAsString("name"), value = values.getAsString("value");
         if (name == null || value == null) return null;
         boolean on = "on".equals(value) || "true".equals(value) || "1".equals(value);
+        if ("theme".equals(name)) {
+            try { Appearance.importTheme(c, value); }
+            catch (Exception e) { throw new IllegalArgumentException("Invalid theme: " + e.getMessage(), e); }
+            return uri;
+        }
         switch (name) {
             case "city":
                 for (int i = 0; i < Prefs.CITIES.length; i++) if (Prefs.CITIES[i].id.equals(value)) Prefs.setCity(c, i);
@@ -144,8 +151,24 @@ public final class SetupProvider extends ContentProvider {
                 Apps.saveFavourites(c, favs);
                 break;
             }
+            case "dock_position":
+                if (!DockPolicy.validPosition(value)) throw new IllegalArgumentException("Invalid prayer bar position");
+                Prefs.of(c).edit().putString("dock_position", value).apply();
+                break;
+            case "dock_mode":
+                if (!DockPolicy.validMode(value)) throw new IllegalArgumentException("Invalid prayer bar mode");
+                Prefs.of(c).edit().putString("dock_mode", value).apply();
+                break;
+            case "focus_lighting":
+                Prefs.of(c).edit().putBoolean("focus_lighting", on).apply();
+                break;
+            case "remote_enabled":
+                if (!Prefs.of(c).edit().putBoolean("remote_enabled", on).commit()) throw new IllegalStateException("Could not save remote settings");
+                new Handler(Looper.getMainLooper()).post(RemoteKeys::reload);
+                break;
             case "keys":
-                Prefs.of(c).edit().putString("keys", value).commit();
+                RemoteKeys.validate(value);
+                if (!Prefs.of(c).edit().putString("keys", value).commit()) throw new IllegalStateException("Could not save remote settings");
                 new Handler(Looper.getMainLooper()).post(RemoteKeys::reload);
                 break;
             case "adhan": Prefs.setAdhan(c, on); break;
@@ -184,6 +207,37 @@ public final class SetupProvider extends ContentProvider {
     private static String first(Uri uri) {
         List<String> parts = uri.getPathSegments();
         return parts.isEmpty() ? "" : parts.get(0);
+    }
+
+    @Override
+    public android.os.Bundle call(String method, String arg, android.os.Bundle extras) {
+        Context c = getContext();
+        if (c == null) return null;
+        // ContentProvider.call does not enforce the manifest's read/write permission itself.
+        c.enforceCallingOrSelfPermission("android.permission.DUMP", "ADB setup only");
+        if ("set_theme".equals(method)) {
+            try { Appearance.importTheme(c, arg == null ? "" : arg); }
+            catch (Exception e) { throw new IllegalArgumentException("Invalid theme", e); }
+            android.os.Bundle saved = new android.os.Bundle();
+            saved.putBoolean("saved", true);
+            return saved;
+        }
+        if (!"restore_remote".equals(method)) return super.call(method, arg, extras);
+        if (!Prefs.of(c).edit().putBoolean("remote_enabled", false).putBoolean("repair_service", false).commit()) throw new IllegalStateException("Could not save remote settings");
+        android.os.Bundle result = new android.os.Bundle();
+        java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            RemoteKeys.reload();
+            result.putBoolean("restored", TclKeys.restore(c));
+            done.countDown();
+        });
+        try {
+            if (!done.await(5, java.util.concurrent.TimeUnit.SECONDS)) throw new IllegalStateException("Remote restore timed out");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Remote restore interrupted", e);
+        }
+        return result;
     }
 
     @Override public String getType(Uri uri) { return null; }

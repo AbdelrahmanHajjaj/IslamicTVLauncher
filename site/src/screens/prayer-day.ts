@@ -1,3 +1,4 @@
+import { prayerLabel } from '../lib/prayer-icon';
 // Prayer day's live content, from PrayerDayActivity.render/renderMinute/renderPicker and QiblaView.
 import { Coordinates, Qibla } from 'adhan';
 import type { Ctx, Model } from '../lib/ctx';
@@ -57,7 +58,7 @@ export function prayerDayModel(c: Ctx): Model {
   // The arch: Home's countdown, with the method and Asr school below (no Ramadan wording here).
   const arch = archModel(c);
   arch.html.archLabel = day.friday && day.nextIndex === DHUHR ? t.s('jumuahLabel') : t.s('nextPrayer');
-  arch.html.archName = names[day.nextIndex];
+  arch.html.archName = prayerLabel(day.nextIndex, names[day.nextIndex]);
   arch.html.archSub = t.methodName(methodOf(prefs));
   arch.html.archSub2 = t.school(prefs.hanafi);
 
@@ -71,7 +72,7 @@ export function prayerDayModel(c: Ctx): Model {
 
   day.times.forEach((time, i) => {
     const state = i === day.nowIndex ? 'now' : i !== day.nextIndex && time <= now ? 'past' : 'up';
-    html['n' + i] = names[i];
+    html['n' + i] = prayerLabel(i, names[i]);
     html['s' + i] = state === 'now' ? t.s('rowNow') : state === 'past' ? t.passed(i === SUNRISE) : t.in(duration(secondsUntil(time, now), false));
     html['t' + i] = clock(t, time, h24, 0.55);
     attr['r' + i] = { 'data-state': state, 'data-bell': String(bells[i]), 'aria-label': `${names[i]} · ${t.bell(bells[i])}` };
@@ -91,7 +92,7 @@ export function prayerDayModel(c: Ctx): Model {
     html.qiblaHint = facingLine(t, facing);
     Object.assign(attr, dialAttrs(rel, (360 - facing) % 360));
   }
-  attr.room = { 'data-hints': JSON.stringify([t.hintOk(html.roomLabel), t.s('hintTimes')]) };
+  attr.room = {};
   return { html, attr };
 }
 

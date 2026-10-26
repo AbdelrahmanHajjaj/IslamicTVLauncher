@@ -1,0 +1,71 @@
+package tv.afnon.home;
+
+// Generated from afnon-mihrab/tokens.json by site/scripts/tokens.mjs. Do not edit: run `npm run tokens` in site/.
+final class Palette {
+    static int LAPIS_950 = Tokens.LAPIS_950;
+    static int LAPIS_900 = Tokens.LAPIS_900;
+    static int LAPIS_800 = Tokens.LAPIS_800;
+    static int LAPIS_700 = Tokens.LAPIS_700;
+    static int GOLD_400 = Tokens.GOLD_400;
+    static int GOLD_200 = Tokens.GOLD_200;
+    static int PLASTER_100 = Tokens.PLASTER_100;
+    static int MIST_400 = Tokens.MIST_400;
+    static int DISABLED_TEXT = Tokens.DISABLED_TEXT;
+    static int LAPIS_800_60 = Tokens.LAPIS_800_60;
+    static int GOLD_400_60 = Tokens.GOLD_400_60;
+    static int LINE_SOFT = Tokens.LINE_SOFT;
+    static int LINE_DASH = Tokens.LINE_DASH;
+    static int ARCH_INNER = Tokens.ARCH_INNER;
+    static int BELL_OFF_BORDER = Tokens.BELL_OFF_BORDER;
+    static int BANNER_TRACK = Tokens.BANNER_TRACK;
+    static int SEG_TRACK_FOCUSED = Tokens.SEG_TRACK_FOCUSED;
+    static int QIBLA_RING = Tokens.QIBLA_RING;
+    static int QIBLA_TICK = Tokens.QIBLA_TICK;
+    static int SCRIM = Tokens.SCRIM;
+    static int SCRIM_MENU = Tokens.SCRIM_MENU;
+    static int SCRIM_PANEL = Tokens.SCRIM_PANEL;
+    static int PATTERN_LINE = Tokens.PATTERN_LINE;
+    static int ON_PLASTER_LABEL = Tokens.ON_PLASTER_LABEL;
+    static int ON_PLASTER_SECONDARY = Tokens.ON_PLASTER_SECONDARY;
+    static int ON_PLASTER_BORDER = Tokens.ON_PLASTER_BORDER;
+    static int ON_PLASTER_BUTTON_BORDER = Tokens.ON_PLASTER_BUTTON_BORDER;
+    static int SCREENSAVER_GROUND = Tokens.SCREENSAVER_GROUND;
+    static int SCREENSAVER_TEXT = Tokens.SCREENSAVER_TEXT;
+    static int SCREENSAVER_TEXT_DIM = Tokens.SCREENSAVER_TEXT_DIM;
+    static int SCREENSAVER_NEXT = Tokens.SCREENSAVER_NEXT;
+    static int SCREENSAVER_ARCH_LINE = Tokens.SCREENSAVER_ARCH_LINE;
+    static void apply(java.util.Map<Integer, Integer> colors) {
+        LAPIS_950 = Appearance.tint(Tokens.LAPIS_950, colors);
+        LAPIS_900 = Appearance.tint(Tokens.LAPIS_900, colors);
+        LAPIS_800 = Appearance.tint(Tokens.LAPIS_800, colors);
+        LAPIS_700 = Appearance.tint(Tokens.LAPIS_700, colors);
+        GOLD_400 = Appearance.tint(Tokens.GOLD_400, colors);
+        GOLD_200 = Appearance.tint(Tokens.GOLD_200, colors);
+        PLASTER_100 = Appearance.tint(Tokens.PLASTER_100, colors);
+        MIST_400 = Appearance.tint(Tokens.MIST_400, colors);
+        DISABLED_TEXT = Appearance.tint(Tokens.DISABLED_TEXT, colors);
+        LAPIS_800_60 = Appearance.tint(Tokens.LAPIS_800_60, colors);
+        GOLD_400_60 = Appearance.tint(Tokens.GOLD_400_60, colors);
+        LINE_SOFT = Appearance.tint(Tokens.LINE_SOFT, colors);
+        LINE_DASH = Appearance.tint(Tokens.LINE_DASH, colors);
+        ARCH_INNER = Appearance.tint(Tokens.ARCH_INNER, colors);
+        BELL_OFF_BORDER = Appearance.tint(Tokens.BELL_OFF_BORDER, colors);
+        BANNER_TRACK = Appearance.tint(Tokens.BANNER_TRACK, colors);
+        SEG_TRACK_FOCUSED = Appearance.tint(Tokens.SEG_TRACK_FOCUSED, colors);
+        QIBLA_RING = Appearance.tint(Tokens.QIBLA_RING, colors);
+        QIBLA_TICK = Appearance.tint(Tokens.QIBLA_TICK, colors);
+        SCRIM = Appearance.tint(Tokens.SCRIM, colors);
+        SCRIM_MENU = Appearance.tint(Tokens.SCRIM_MENU, colors);
+        SCRIM_PANEL = Appearance.tint(Tokens.SCRIM_PANEL, colors);
+        PATTERN_LINE = Appearance.tint(Tokens.PATTERN_LINE, colors);
+        ON_PLASTER_LABEL = Appearance.tint(Tokens.ON_PLASTER_LABEL, colors);
+        ON_PLASTER_SECONDARY = Appearance.tint(Tokens.ON_PLASTER_SECONDARY, colors);
+        ON_PLASTER_BORDER = Appearance.tint(Tokens.ON_PLASTER_BORDER, colors);
+        ON_PLASTER_BUTTON_BORDER = Appearance.tint(Tokens.ON_PLASTER_BUTTON_BORDER, colors);
+        SCREENSAVER_GROUND = Appearance.tint(Tokens.SCREENSAVER_GROUND, colors);
+        SCREENSAVER_TEXT = Appearance.tint(Tokens.SCREENSAVER_TEXT, colors);
+        SCREENSAVER_TEXT_DIM = Appearance.tint(Tokens.SCREENSAVER_TEXT_DIM, colors);
+        SCREENSAVER_NEXT = Appearance.tint(Tokens.SCREENSAVER_NEXT, colors);
+        SCREENSAVER_ARCH_LINE = Appearance.tint(Tokens.SCREENSAVER_ARCH_LINE, colors);
+    }
+}

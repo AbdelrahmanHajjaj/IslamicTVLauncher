@@ -17,6 +17,6 @@ dependencyResolutionManagement {
         }
     }
 }
-rootProject.name = "afnon"
+rootProject.name = "IslamicTVLauncher"
 include ':app'
 include ':installer'

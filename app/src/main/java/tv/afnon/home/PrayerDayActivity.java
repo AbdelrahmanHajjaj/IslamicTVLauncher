@@ -43,7 +43,6 @@ public class PrayerDayActivity extends Screen {
     private int pickerFacing;
     // OK and Back act on release; Settings opens the picker on press, so that press's release must not close it.
     private boolean pickerPressed;
-    private LinearLayout hints;
     private PrayerDay day;
     private long lastMinute = -1;
     /** Opened by Settings for the room direction only (extra "room"). */
@@ -58,13 +57,13 @@ public class PrayerDayActivity extends Screen {
     @Override
     void build() {
         newRoot();
-        buildArch(500, 24, 16, Tokens.MIST_400, 0);
+        buildArch(500, 24, 16, Palette.MIST_400, 0);
 
         LinearLayout head = new LinearLayout(this);
         head.setOrientation(LinearLayout.VERTICAL);
-        TextView title = text(displayBold, 64, Tokens.PLASTER_100);
+        TextView title = text(displayBold, 64, Palette.PLASTER_100);
         title.setText(t.dayTitle());
-        dates = text(ui400, 26, Tokens.MIST_400);
+        dates = text(ui400, 26, Palette.MIST_400);
         head.addView(title);
         head.addView(dates);
         lineHeight(title, 1.1f);
@@ -78,10 +77,6 @@ public class PrayerDayActivity extends Screen {
 
         buildQibla();
 
-        hints = new LinearLayout(this);
-        hints.setOrientation(LinearLayout.HORIZONTAL);
-        place(hints, Tokens.COURT_X, 976, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         setContentView(root);
         lastMinute = -1;
         render(true);
@@ -92,12 +87,12 @@ public class PrayerDayActivity extends Screen {
 
     private FocusTile homePill() {
         FocusTile b = new FocusTile(this, 36);
-        b.setRest(0, Tokens.LINE_SOFT, 2);
+        b.setRest(0, Palette.LINE_SOFT, 2);
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
         r.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
         Icon back = new Icon(this, Icon.BACK, 2f);
-        TextView label = text(ui400, 24, Tokens.PLASTER_100);
+        TextView label = text(ui400, 24, Palette.PLASTER_100);
         label.setText(t.home());
         r.addView(back, new LinearLayout.LayoutParams(Ui.ipx(28), Ui.ipx(28)));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
@@ -105,12 +100,11 @@ public class PrayerDayActivity extends Screen {
         r.addView(label, lp);
         b.addView(r, new FrameLayout.LayoutParams(-2, -1));
         b.setLook(f -> {
-            int c = f ? Tokens.LAPIS_900 : Tokens.PLASTER_100;
+            int c = f ? Palette.LAPIS_900 : Palette.PLASTER_100;
             label.setTextColor(c);
             back.setColor(c);
         });
         b.setOnClickListener(v -> finish());
-        b.setOnFocusChangeListener((v, has) -> { if (has) setHints(hints, java.util.Collections.singletonList(t.hintOk(t.home()))); });
         placeEnd(b, 1920 - (Tokens.COURT_X + Tokens.COURT_W), 56, ViewGroup.LayoutParams.WRAP_CONTENT, 72);
         return b;
     }
@@ -121,10 +115,10 @@ public class PrayerDayActivity extends Screen {
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
         r.setPaddingRelative(Ui.ipx(28), 0, Ui.ipx(20), 0);
-        rowName[i] = text(ui400, 32, Tokens.PLASTER_100);
-        rowStatus[i] = text(ui400, 22, Tokens.PLASTER_100);
+        rowName[i] = text(ui400, 32, Palette.PLASTER_100);
+        rowStatus[i] = text(ui400, 22, Palette.PLASTER_100);
         rowStatus[i].setAlpha(0.85f);
-        rowTime[i] = text(display, 40, Tokens.PLASTER_100);
+        rowTime[i] = text(display, 40, Palette.PLASTER_100);
         rowTime[i].setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         rowTime[i].setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
         rowTime[i].setMinWidth(Ui.ipx(120));
@@ -147,11 +141,6 @@ public class PrayerDayActivity extends Screen {
         b.setOnFocusChangeListener((v, has) -> {
             if (has) {
                 lastRow = i;
-                List<String> h = new ArrayList<>();
-                h.add(t.hintOk(t.bellToggle()));
-                h.add(t.hintQibla());
-                h.add(t.hintBackHome());
-                setHints(hints, h);
             }
         });
         placeTile(b, Tokens.COURT_X, ROW_TOP + i * (ROW_H + ROW_GAP), 620, ROW_H);
@@ -169,20 +158,20 @@ public class PrayerDayActivity extends Screen {
         panel.setGravity(Gravity.CENTER_HORIZONTAL);
         panel.setPadding(Ui.ipx(32), Ui.ipx(28), Ui.ipx(32), Ui.ipx(28));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Tokens.LAPIS_800);
+        bg.setColor(Palette.LAPIS_800);
         bg.setCornerRadius(Ui.px(24));
         panel.setBackground(bg);
 
-        TextView label = caps(text(ui400, 22, Tokens.MIST_400));
+        TextView label = caps(text(ui400, 22, Palette.MIST_400));
         label.setText(t.qibla());
         // 260 rather than the design's 320, to make room for the room-direction button below.
         dial = new QiblaView(this);
-        northLabel = text(ui400, 20, Tokens.MIST_400);
-        degrees = text(display, 64, Tokens.GOLD_400);
+        northLabel = text(ui400, 20, Palette.MIST_400);
+        degrees = text(display, 64, Palette.GOLD_400);
         degrees.setTextDirection(View.TEXT_DIRECTION_LTR);
-        direction = text(ui400, 24, Tokens.PLASTER_100);
+        direction = text(ui400, 24, Palette.PLASTER_100);
         direction.setGravity(Gravity.CENTER_HORIZONTAL);
-        qiblaHint = text(ui400, 20, Tokens.MIST_400);
+        qiblaHint = text(ui400, 20, Palette.MIST_400);
         qiblaHint.setGravity(Gravity.CENTER_HORIZONTAL);
 
         panel.addView(label, new LinearLayout.LayoutParams(-1, -2));
@@ -199,25 +188,17 @@ public class PrayerDayActivity extends Screen {
         lineHeight(degrees, 1f);
         lineHeight(direction, 1.3f);
         qiblaHint.setIncludeFontPadding(false);
-        qiblaHint.setLineHeight(Ui.ipx(20 * 1.4f));
+        lineHeightPixels(qiblaHint, Ui.ipx(20 * 1.4f));
         panel.setClipChildren(false);
         place(panel, 1424, 236, 400, 698);
 
         roomButton = new FocusTile(this, 32);
-        roomButton.setRest(Tokens.LAPIS_700, 0, 0);
-        roomLabel = text(ui400, 22, Tokens.PLASTER_100);
+        roomButton.setRest(Palette.LAPIS_700, 0, 0);
+        roomLabel = text(ui400, 22, Palette.PLASTER_100);
         roomLabel.setGravity(Gravity.CENTER);
         roomButton.addView(roomLabel, new FrameLayout.LayoutParams(-1, -1));
-        roomButton.setLook(f -> roomLabel.setTextColor(f ? Tokens.LAPIS_900 : Tokens.PLASTER_100));
+        roomButton.setLook(f -> roomLabel.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         roomButton.setOnClickListener(v -> openPicker());
-        roomButton.setOnFocusChangeListener((v, has) -> {
-            if (has) {
-                List<String> h = new ArrayList<>();
-                h.add(t.hintOk(roomLabel.getText().toString()));
-                h.add(t.hintTimes());
-                setHints(hints, h);
-            }
-        });
         placeTile(roomButton, 1424 + 32, 236 + 698 - 28 - 64, 400 - 64, 64);
     }
 
@@ -227,31 +208,31 @@ public class PrayerDayActivity extends Screen {
         pickerFacing = f < 0 ? 0 : f;
         pickerPressed = false;
         picker = new FrameLayout(this);
-        picker.setBackgroundColor(Tokens.SCRIM_MENU);
+        picker.setBackgroundColor(Palette.SCRIM_MENU);
         picker.setClickable(true);
 
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(Ui.ipx(56), Ui.ipx(48), Ui.ipx(56), Ui.ipx(48));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Tokens.LAPIS_800);
+        bg.setColor(Palette.LAPIS_800);
         bg.setCornerRadius(Ui.px(24));
-        bg.setStroke(Ui.ipx(2), Tokens.GOLD_400_60);
+        bg.setStroke(Ui.ipx(2), Palette.GOLD_400_60);
         card.setBackground(bg);
 
-        TextView title = text(displayBold, 52, Tokens.GOLD_400);
+        TextView title = text(displayBold, 52, Palette.GOLD_400);
         title.setText(t.roomTitle());
-        TextView tip = text(ui400, 26, Tokens.PLASTER_100);
+        TextView tip = text(ui400, 26, Palette.PLASTER_100);
         tip.setText(t.roomTip());
-        tip.setLineHeight(Ui.ipx(26 * 1.6f));
+        lineHeightPixels(tip, Ui.ipx(26 * 1.6f));
 
         LinearLayout body = new LinearLayout(this);
         body.setGravity(Gravity.CENTER_VERTICAL);
         pickerDial = new QiblaView(this);
         LinearLayout values = new LinearLayout(this);
         values.setOrientation(LinearLayout.VERTICAL);
-        pickerValue = text(display, 64, Tokens.PLASTER_100);
-        pickerWhere = text(ui400, 28, Tokens.GOLD_200);
+        pickerValue = text(display, 64, Palette.PLASTER_100);
+        pickerWhere = text(ui400, 28, Palette.GOLD_200);
         values.addView(pickerValue);
         values.addView(pickerWhere);
         body.addView(pickerDial, new LinearLayout.LayoutParams(Ui.ipx(240), Ui.ipx(240)));
@@ -259,7 +240,7 @@ public class PrayerDayActivity extends Screen {
         vlp.setMarginStart(Ui.ipx(48));
         body.addView(values, vlp);
 
-        TextView keys = text(ui400, 22, Tokens.MIST_400);
+        TextView keys = text(ui400, 22, Palette.MIST_400);
         keys.setText(t.roomKeys());
         keys.setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
 
@@ -300,11 +281,7 @@ public class PrayerDayActivity extends Screen {
         picker = null;
         renderMinute(new Date());
         roomButton.requestFocus();
-        // Still focused from before the picker, so the focus listener won't run: refresh the hint's wording here.
-        List<String> h = new ArrayList<>();
-        h.add(t.hintOk(roomLabel.getText().toString()));
-        h.add(t.hintTimes());
-        setHints(hints, h);
+
     }
 
     @Override
@@ -341,13 +318,13 @@ public class PrayerDayActivity extends Screen {
         String[] names = t.prayerNames();
         if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
         archLabel.setText(day.friday && day.nextIndex == PrayerDay.DHUHR ? t.jumuahLabel() : t.nextPrayer());
-        archName.setText(names[day.nextIndex]);
+        PrayerIcon.set(archName, day.nextIndex, names[day.nextIndex]);
         archSub.setText(t.methodName(Prefs.method(this)));
         archSub2.setText(t.school(Prefs.madhab(this)));
 
         for (int i = 0; i < ROWS; i++) {
             state[i] = i == day.nowIndex ? 1 : (i != day.nextIndex && !day.times[i].after(now) ? 0 : 2);
-            rowName[i].setText(names[i]);
+            PrayerIcon.set(rowName[i], i, names[i]);
             rowTime[i].setText(time(day.times[i], 0.55f));
             paintRow(i);
         }
@@ -382,10 +359,10 @@ public class PrayerDayActivity extends Screen {
         if (rowName[i] == null || bell[i] == null) return;
         boolean focused = row[i] != null && row[i].isFocused();
         int s = state[i];
-        int fill = s == 1 ? Tokens.PLASTER_100 : (s == 0 ? Tokens.LAPIS_800_60 : Tokens.LAPIS_800);
+        int fill = s == 1 ? Palette.PLASTER_100 : (s == 0 ? Palette.LAPIS_800_60 : Palette.LAPIS_800);
         if (row[i] != null) row[i].setRest(fill, 0, 0);
         boolean dark = focused || s == 1;
-        int fg = dark ? Tokens.LAPIS_900 : (s == 0 ? Tokens.MIST_400 : Tokens.PLASTER_100);
+        int fg = dark ? Palette.LAPIS_900 : (s == 0 ? Palette.MIST_400 : Palette.PLASTER_100);
         for (TextView v : new TextView[] {rowName[i], rowStatus[i], rowTime[i]}) v.setTextColor(fg);
         rowName[i].setTypeface(dark ? ui600 : ui400);
 
@@ -393,13 +370,13 @@ public class PrayerDayActivity extends Screen {
         GradientDrawable g = new GradientDrawable();
         g.setShape(GradientDrawable.OVAL);
         if (on) {
-            g.setColor(dark ? Tokens.LAPIS_900 : Tokens.LAPIS_700);
-            bellIcon[i].setColor(Tokens.GOLD_400);
+            g.setColor(dark ? Palette.LAPIS_900 : Palette.LAPIS_700);
+            bellIcon[i].setColor(Palette.GOLD_400);
             bell[i].setAlpha(1f);
         } else {
             g.setColor(0);
-            g.setStroke(Ui.ipx(2), Tokens.BELL_OFF_BORDER);
-            bellIcon[i].setColor(dark ? Tokens.LAPIS_900 : Tokens.MIST_400);
+            g.setStroke(Ui.ipx(2), Palette.BELL_OFF_BORDER);
+            bellIcon[i].setColor(dark ? Palette.LAPIS_900 : Palette.MIST_400);
             bell[i].setAlpha(0.7f);
         }
         bell[i].setBackground(g);

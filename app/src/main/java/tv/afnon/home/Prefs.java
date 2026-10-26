@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.format.DateFormat;
 
-import com.batoulapps.adhan.CalculationMethod;
 import com.batoulapps.adhan.Coordinates;
 import com.batoulapps.adhan.Madhab;
 
@@ -25,15 +24,15 @@ final class Prefs {
         final String id, ar, en, countryAr, countryEn;
         final double lat, lng;
         /** The method that city's mosques follow; picked for it when the city changes. */
-        final CalculationMethod method;
+        final PrayerMethod method;
         /** The Asr school most of its mosques follow, also picked when the city changes. */
         final Madhab madhab;
 
-        City(String id, String ar, String en, String countryAr, String countryEn, double lat, double lng, CalculationMethod method) {
+        City(String id, String ar, String en, String countryAr, String countryEn, double lat, double lng, PrayerMethod method) {
             this(id, ar, en, countryAr, countryEn, lat, lng, method, Madhab.SHAFI);
         }
 
-        City(String id, String ar, String en, String countryAr, String countryEn, double lat, double lng, CalculationMethod method, Madhab madhab) {
+        City(String id, String ar, String en, String countryAr, String countryEn, double lat, double lng, PrayerMethod method, Madhab madhab) {
             this.id = id;
             this.ar = ar;
             this.en = en;
@@ -46,11 +45,11 @@ final class Prefs {
         }
     }
 
-    private static final CalculationMethod EG = CalculationMethod.EGYPTIAN;
-    private static final CalculationMethod MWL = CalculationMethod.MUSLIM_WORLD_LEAGUE;
-    private static final CalculationMethod IN = CalculationMethod.KARACHI;
-    private static final CalculationMethod SG = CalculationMethod.SINGAPORE;
-    private static final CalculationMethod NA = CalculationMethod.NORTH_AMERICA;
+    private static final PrayerMethod EG = PrayerMethod.EGYPTIAN;
+    private static final PrayerMethod MWL = PrayerMethod.MUSLIM_WORLD_LEAGUE;
+    private static final PrayerMethod IN = PrayerMethod.KARACHI;
+    private static final PrayerMethod SG = PrayerMethod.SINGAPORE;
+    private static final PrayerMethod NA = PrayerMethod.NORTH_AMERICA;
     /** Hanafi Asr (about an hour later), the usual school in Pakistan, Bangladesh and most of North India. */
     private static final Madhab HANAFI = Madhab.HANAFI;
     static final City[] CITIES = {
@@ -64,20 +63,20 @@ final class Prefs {
         new City("asyut", "أسيوط", "Asyut", "مصر", "Egypt", 27.1783, 31.1859, EG),
         new City("luxor", "الأقصر", "Luxor", "مصر", "Egypt", 25.6872, 32.6396, EG),
         new City("aswan", "أسوان", "Aswan", "مصر", "Egypt", 24.0889, 32.8998, EG),
-        new City("makkah", "مكة المكرمة", "Makkah", "السعودية", "Saudi Arabia", 21.3891, 39.8579, CalculationMethod.UMM_AL_QURA),
-        new City("madinah", "المدينة المنورة", "Madinah", "السعودية", "Saudi Arabia", 24.5247, 39.5692, CalculationMethod.UMM_AL_QURA),
-        new City("riyadh", "الرياض", "Riyadh", "السعودية", "Saudi Arabia", 24.7136, 46.6753, CalculationMethod.UMM_AL_QURA),
-        new City("jeddah", "جدة", "Jeddah", "السعودية", "Saudi Arabia", 21.5292, 39.1611, CalculationMethod.UMM_AL_QURA),
-        new City("dammam", "الدمام", "Dammam", "السعودية", "Saudi Arabia", 26.4333, 50.1000, CalculationMethod.UMM_AL_QURA),
-        new City("taif", "الطائف", "Taif", "السعودية", "Saudi Arabia", 21.2667, 40.4167, CalculationMethod.UMM_AL_QURA),
-        new City("tabuk", "تبوك", "Tabuk", "السعودية", "Saudi Arabia", 28.3972, 36.5789, CalculationMethod.UMM_AL_QURA),
-        new City("abha", "أبها", "Abha", "السعودية", "Saudi Arabia", 18.2167, 42.5000, CalculationMethod.UMM_AL_QURA),
-        new City("dubai", "دبي", "Dubai", "الإمارات", "UAE", 25.2048, 55.2708, CalculationMethod.DUBAI),
-        new City("abudhabi", "أبو ظبي", "Abu Dhabi", "الإمارات", "UAE", 24.4511, 54.3969, CalculationMethod.DUBAI),
-        new City("sharjah", "الشارقة", "Sharjah", "الإمارات", "UAE", 25.3375, 55.4119, CalculationMethod.DUBAI),
-        new City("alain", "العين", "Al Ain", "الإمارات", "UAE", 24.2075, 55.7447, CalculationMethod.DUBAI),
-        new City("kuwait", "الكويت", "Kuwait City", "الكويت", "Kuwait", 29.3759, 47.9774, CalculationMethod.KUWAIT),
-        new City("doha", "الدوحة", "Doha", "قطر", "Qatar", 25.2854, 51.5310, CalculationMethod.QATAR),
+        new City("makkah", "مكة المكرمة", "Makkah", "السعودية", "Saudi Arabia", 21.3891, 39.8579, PrayerMethod.UMM_AL_QURA),
+        new City("madinah", "المدينة المنورة", "Madinah", "السعودية", "Saudi Arabia", 24.5247, 39.5692, PrayerMethod.UMM_AL_QURA),
+        new City("riyadh", "الرياض", "Riyadh", "السعودية", "Saudi Arabia", 24.7136, 46.6753, PrayerMethod.UMM_AL_QURA),
+        new City("jeddah", "جدة", "Jeddah", "السعودية", "Saudi Arabia", 21.5292, 39.1611, PrayerMethod.UMM_AL_QURA),
+        new City("dammam", "الدمام", "Dammam", "السعودية", "Saudi Arabia", 26.4333, 50.1000, PrayerMethod.UMM_AL_QURA),
+        new City("taif", "الطائف", "Taif", "السعودية", "Saudi Arabia", 21.2667, 40.4167, PrayerMethod.UMM_AL_QURA),
+        new City("tabuk", "تبوك", "Tabuk", "السعودية", "Saudi Arabia", 28.3972, 36.5789, PrayerMethod.UMM_AL_QURA),
+        new City("abha", "أبها", "Abha", "السعودية", "Saudi Arabia", 18.2167, 42.5000, PrayerMethod.UMM_AL_QURA),
+        new City("dubai", "دبي", "Dubai", "الإمارات", "UAE", 25.2048, 55.2708, PrayerMethod.DUBAI),
+        new City("abudhabi", "أبو ظبي", "Abu Dhabi", "الإمارات", "UAE", 24.4511, 54.3969, PrayerMethod.DUBAI),
+        new City("sharjah", "الشارقة", "Sharjah", "الإمارات", "UAE", 25.3375, 55.4119, PrayerMethod.DUBAI),
+        new City("alain", "العين", "Al Ain", "الإمارات", "UAE", 24.2075, 55.7447, PrayerMethod.DUBAI),
+        new City("kuwait", "الكويت", "Kuwait City", "الكويت", "Kuwait", 29.3759, 47.9774, PrayerMethod.KUWAIT),
+        new City("doha", "الدوحة", "Doha", "قطر", "Qatar", 25.2854, 51.5310, PrayerMethod.QATAR),
         new City("amman", "عمّان", "Amman", "الأردن", "Jordan", 31.9539, 35.9106, MWL),
         new City("irbid", "إربد", "Irbid", "الأردن", "Jordan", 32.5556, 35.8500, MWL),
         new City("zarqa", "الزرقاء", "Zarqa", "الأردن", "Jordan", 32.0833, 36.1000, MWL),
@@ -175,8 +174,8 @@ final class Prefs {
         new City("surabaya", "سورابايا", "Surabaya", "إندونيسيا", "Indonesia", -7.2575, 112.7521, SG),
         new City("bandung", "باندونغ", "Bandung", "إندونيسيا", "Indonesia", -6.9175, 107.6191, SG),
         new City("medan", "ميدان", "Medan", "إندونيسيا", "Indonesia", 3.5952, 98.6722, SG),
-        new City("kualalumpur", "كوالالمبور", "Kuala Lumpur", "ماليزيا", "Malaysia", 3.1390, 101.6869, CalculationMethod.MOON_SIGHTING_COMMITTEE),
-        new City("penang", "بينانغ", "Penang", "ماليزيا", "Malaysia", 5.4164, 100.3327, CalculationMethod.MOON_SIGHTING_COMMITTEE),
+        new City("kualalumpur", "كوالالمبور", "Kuala Lumpur", "ماليزيا", "Malaysia", 3.1390, 101.6869, PrayerMethod.MOON_SIGHTING_COMMITTEE),
+        new City("penang", "بينانغ", "Penang", "ماليزيا", "Malaysia", 5.4164, 100.3327, PrayerMethod.MOON_SIGHTING_COMMITTEE),
         new City("singapore", "سنغافورة", "Singapore", "سنغافورة", "Singapore", 1.3521, 103.8198, SG),
         new City("brunei", "بندر سري بكاوان", "Bandar Seri Begawan", "بروناي", "Brunei", 4.9031, 114.9398, SG),
         new City("bangkok", "بانكوك", "Bangkok", "تايلاند", "Thailand", 13.7563, 100.5018, SG),
@@ -192,6 +191,7 @@ final class Prefs {
         new City("ankara", "أنقرة", "Ankara", "تركيا", "Turkey", 39.9334, 32.8597, MWL),
 
         // Europe
+        new City("leamingtonspa", "ليمينغتون سبا", "Leamington Spa", "المملكة المتحدة", "United Kingdom", 52.2913, -1.5364, MWL),
         new City("london", "لندن", "London", "المملكة المتحدة", "United Kingdom", 51.5074, -0.1278, MWL),
         new City("birmingham", "برمنغهام", "Birmingham", "المملكة المتحدة", "United Kingdom", 52.4862, -1.8904, MWL),
         new City("manchester", "مانشستر", "Manchester", "المملكة المتحدة", "United Kingdom", 53.4808, -2.2426, MWL),
@@ -261,20 +261,35 @@ final class Prefs {
         return new Coordinates(city.lat, city.lng);
     }
 
+    static final int MAX_PRAYER_OFFSET = 30;
+
+    static int prayerOffset(Context c, int prayer) {
+        return Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, of(c).getInt("prayer_offset_" + prayer, 0)));
+    }
+
+    static void setPrayerOffset(Context c, int prayer, int minutes) {
+        if (prayer < 0 || prayer >= 6 || Math.abs((long) minutes) > MAX_PRAYER_OFFSET)
+            throw new IllegalArgumentException("Invalid prayer offset");
+        of(c).edit().putInt("prayer_offset_" + prayer, minutes).apply();
+    }
+
+    static int[] prayerOffsets(Context c) {
+        int[] offsets = new int[6];
+        for (int i = 0; i < offsets.length; i++) offsets[i] = prayerOffset(c, i);
+        return offsets;
+    }
+
     // ---------------------------------------------------------------- calculation
 
-    static final CalculationMethod[] METHODS = {
-        CalculationMethod.EGYPTIAN, CalculationMethod.UMM_AL_QURA, CalculationMethod.MUSLIM_WORLD_LEAGUE,
-        CalculationMethod.KARACHI, CalculationMethod.DUBAI, CalculationMethod.KUWAIT, CalculationMethod.QATAR,
-        CalculationMethod.NORTH_AMERICA, CalculationMethod.MOON_SIGHTING_COMMITTEE, CalculationMethod.SINGAPORE};
+    static final PrayerMethod[] METHODS = PrayerMethod.values();
 
-    static CalculationMethod method(Context c) {
+    static PrayerMethod method(Context c) {
         String name = of(c).getString("method", null);
-        if (name != null) for (CalculationMethod m : METHODS) if (m.name().equals(name)) return m;
+        if (name != null) for (PrayerMethod m : METHODS) if (m.name().equals(name)) return m;
         return city(c).method;
     }
 
-    static void setMethod(Context c, CalculationMethod m) {
+    static void setMethod(Context c, PrayerMethod m) {
         of(c).edit().putString("method", m.name()).apply();
     }
 
@@ -392,9 +407,13 @@ final class Prefs {
     }
 
     /** Everything a built screen depends on; a screen whose key changed while it was away rebuilds. */
+    static boolean quickLabels(Context c) { return of(c).getBoolean("quick_labels", false); }
+
+    static boolean classicHome(Context c) { return "classic".equals(of(c).getString("home_layout", "two_rows")); }
+
     static String key(Context c) {
         SharedPreferences p = of(c);
         return p.getString("locale", "") + "|" + p.getString("digits", "") + "|" + clock24(c) + "|" + cityIndex(c)
-            + "|" + method(c) + "|" + madhab(c) + "|" + hijriOffset(c) + "|" + p.getInt("facing", -1);
+            + "|" + method(c) + "|" + madhab(c) + "|" + java.util.Arrays.toString(prayerOffsets(c)) + "|" + hijriOffset(c) + "|" + p.getInt("facing", -1) + "|" + Appearance.key(c) + "|" + Appearance.reduced(c) + "|" + p.getBoolean("hide_system_apps", false) + "|" + p.getString("dock_mode", "hidden") + "|" + p.getString("dock_position", "bottom") + "|" + quickLabels(c) + "|" + classicHome(c);
     }
 }

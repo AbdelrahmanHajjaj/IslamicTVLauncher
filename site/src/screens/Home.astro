@@ -13,7 +13,6 @@ const { ctx } = Astro.props;
 const { t, lang } = ctx;
 const m = homeModel(ctx);
 const ar = t.ar;
-const hints = (...h: string[]) => JSON.stringify(h);
 const station = stationOf(ctx.prefs);
 const cardHidden = ctx.mode !== 'reminder';
 
@@ -23,13 +22,15 @@ const favs: { label: string; icon: 'tv' | 'film' | 'book' | 'globe' }[] = [
   { label: ar ? 'شاهد' : 'Shahid', icon: 'film' },
   { label: ar ? 'القرآن الكريم' : 'Quran', icon: 'book' },
   { label: ar ? 'المتصفح' : 'Browser', icon: 'globe' },
+  { label: 'Netflix', icon: 'film' },
+  { label: ar ? 'مشغل الوسائط' : 'Media Player', icon: 'tv' },
 ];
 const more = ar ? ['يوتيوب ميوزك', 'متجر Play', 'مشغل الوسائط', 'مدير الملفات'] : ['YouTube Music', 'Play Store', 'Media Player', 'File Manager'];
 const allCount = 14;
 const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this opens' };
 ---
 <Arch ctx={ctx} infoTop={488} subSize={26} subGap={12} sub2Color="var(--color-gold-200)" sub2Gap={8} />
-<a class="ft arch-btn" href={href('prayer-day', lang) + '#tv'} {...(cardHidden ? { 'data-focus-start': '' } : {})} data-hints={hints(t.hintOk(t.s('today')), t.s('hintApps'))}>
+<a class="ft arch-btn" href={href('prayer-day', lang) + '#tv'}>
   <Icon name="compass" /> <span>{t.s('today')}</span>
 </a>
 
@@ -39,17 +40,18 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   <div class="gdate" data-k="gdate" set:html={m.html.gdate} />
 </div>
 
-<div class="pills">
-  <button class="ft pill radio-pill" data-open-radio data-hints={hints(t.hintOk(t.station(station)))}>
+<div class:list={["pills", {"icons-only": !ctx.prefs.quickLabels}]}>
+  <button class="ft pill" data-open-inputs aria-label={t.s('inputsTitle')}><Icon name="input" stroke={2} /> <span class="pill-label">{t.s('inputsTitle')}</span></button>
+  <button class="ft pill radio-pill" data-open-radio aria-label={t.s('radio')}>
     <span class="radio-off"><Icon name="radio" stroke={2} /></span>
     <span class="bars mini" aria-hidden="true"><i></i><i></i><i></i></span>
-    <span class="radio-label">{t.s('radio')}</span>
+    <span class="radio-label pill-label">{t.s('radio')}</span>
   </button>
-  <button class="ft pill" data-toast={t.s('network')} data-hints={hints(t.hintOk(t.s('network')))}>
-    <Icon name="wifi" stroke={2} /> <span dir="ltr">Wi-Fi</span>
+  <button class="ft pill" data-open-wifi data-toast={`${W.site} Wi-Fi`} aria-label="Wi-Fi">
+    <Icon name="wifi" stroke={2} /> <span class="pill-label" dir="ltr">Wi-Fi</span>
   </button>
 </div>
-<a class="ft gear" href={href('settings', lang) + '#tv'} aria-label={t.s('settings')} data-hints={hints(t.hintOk(t.s('settings')))}>
+<a class="ft gear" href={href('settings', lang) + '#tv'} aria-label={t.s('settings')}>
   <Icon name="gear" size={34} />
 </a>
 
@@ -57,29 +59,24 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
 <div class="label fav-label caps">{t.s('fav')}</div>
 {favs.map((f, i) => (
-  <button class="ft fav" style={`inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + ${i} * (var(--layout-tile-favourite-width) + var(--layout-gap-favourites)))`}
-    data-nav-up=".radio-pill" data-toast={`${W.site} ${f.label}`} data-hints={hints(t.hintOk(t.s('open', { app: f.label })), t.s('hintMore'))}>
+  <button class="ft fav" {...(cardHidden && i === 0 ? { 'data-focus-start': '' } : {})} data-extra={i >= 4 ? "true" : undefined} style={`--slot:${i};--column:${i % 3};--row:${Math.floor(i / 3)}`} data-toast={`${W.site} ${f.label}`}>
     <Icon name={f.icon} size={44} />
     <span>{f.label}</span>
   </button>
 ))}
 
-<div class="label more-label caps">{t.s('more')}</div>
+<div class="label more-label caps">{t.s('recentApps')}</div>
 {[...more, t.s('settings')].map((label, i) => {
   const style = `inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + ${i} * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))`;
-  const h = hints(t.hintOk(t.s('open', { app: label })), t.s('hintFavs'));
   return label === t.s('settings')
-    ? <a class="ft more" style={style} href={href('settings', lang) + '#tv'} data-hints={h}>{label}</a>
-    : <button class="ft more" style={style} data-toast={`${W.site} ${label}`} data-hints={h}>{label}</button>;
+    ? <a class="ft more" style={style} href={href('settings', lang) + '#tv'}>{label}</a>
+    : <button class="ft more" style={style} data-toast={`${W.site} ${label}`}>{label}</button>;
 })}
-<a class="ft more all" href={href('apps', lang) + '#tv'} style="inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + 5 * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))"
-  data-hints={hints(t.hintOk(t.s('allTitle')), t.s('hintFavs'))}>{t.all(allCount)}</a>
+<a class="ft more all" href={href('apps', lang) + '#tv'} style="inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + 5 * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))">{t.all(allCount)}</a>
 
-<div class="hints" data-hints-out></div>
 
 <!-- The reminder before a prayer (MainActivity.showReminder). -->
-<div class="card on-light" data-card data-a="card" data-for={m.attr!.card['data-for']} hidden={cardHidden} role="alertdialog" aria-label={t.s('apLabel')}
-  data-hints={hints(t.hintOk(t.s('apOk')), t.s('hintBackHome').replace(t.s('home'), t.s('dismiss')))}>
+<div class="card" data-card data-a="card" data-for={m.attr!.card['data-for']} hidden={cardHidden} role="alertdialog" aria-label={t.s('apLabel')}>
   <div class="card-label caps"><Icon name="clock" size={26} stroke={2} /> {t.s('apLabel')}</div>
   <div class="card-title display-bold" data-k="cardTitle" set:html={m.html.cardTitle} />
   <div class="card-sub" data-k="cardSub" set:html={m.html.cardSub} />
@@ -89,8 +86,14 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   </div>
 </div>
 
-<!-- Quran Radio card (MainActivity.openRadio): the real stream plays here too. -->
-<div class="radio-card" data-radio-card hidden data-hints={hints(t.hintOk(t.s('radioPlay')), t.s('hintClose'))}>
+<div class="quick-card" data-quick="inputs" hidden role="dialog" aria-label={t.s('inputsTitle')}>
+  <div class="quick-head"><div class="quick-title">{t.s('inputsTitle')}</div><button class="ft quick-more" aria-label={t.s('advancedInputs')} data-toast={`${W.site} ${t.s('inputsSystem')}`}><Icon name="more"/></button></div>
+  <button class="ft quick-item" data-quick-home>{t.s('home')}</button>
+  {['HDMI 1', 'HDMI 2', 'HDMI 3', t.s('liveTv')].map(name =>
+    <button class="ft quick-item" data-toast={`${W.site} ${name}`}>{name}</button>)}
+  <button class="visually-hidden" data-back data-quick-close tabindex="-1">{t.s('back')}</button>
+</div>
+<div class="radio-card" data-radio-card hidden>
   <div class="rc-head">
     <div>
       <div class="rc-label caps">{t.s('radio')}</div>
@@ -100,20 +103,19 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
     <span class="bars big" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
   </div>
   <div class="rc-buttons">
-    <button class="ft rc-btn play" data-radio-toggle data-hints={hints(t.hintOk(t.s('radioPlay')), t.s('hintClose'))}>
+    <button class="ft rc-btn play" data-radio-toggle>
       <span data-radio-play-label>{t.s('radioPlay')}</span> <Icon name="play" size={24} />
     </button>
-    <button class="ft rc-btn dark" data-screen-off data-hints={hints(t.hintOk(t.s('screenOff')), t.s('hintClose'))}>
+    <button class="ft rc-btn dark" data-screen-off>
       {t.s('screenOff')} <Icon name="moon" size={24} />
     </button>
     <button class="visually-hidden" data-back data-radio-close tabindex="-1">{t.s('dismiss')}</button>
   </div>
-  <p class="rc-note">{t.radioNote()}</p>
 </div>
 
 <div class="screen-off" data-screen-off-view hidden tabindex="-1">
   <span class="bars big" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
-  <p data-screen-off-note>{t.station(station)}<br />{t.screenOffNote()}</p>
+  <p data-screen-off-note>{t.station(station)}</p>
 </div>
 
 <div class="toast" data-toast-out hidden role="status"></div>
@@ -138,11 +140,13 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
       if (card.hidden === !show) return;
       card.hidden = !show;
       // The card takes the default focus while it shows, as on the TV.
-      $(show ? '.arch-btn' : '[data-card-ok]').removeAttribute('data-focus-start');
-      $(show ? '[data-card-ok]' : '.arch-btn').setAttribute('data-focus-start', '');
+      $(show ? '.fav' : '[data-card-ok]').removeAttribute('data-focus-start');
+      $(show ? '[data-card-ok]' : '.fav').setAttribute('data-focus-start', '');
       if (show && stage.contains(document.activeElement)) $('[data-card-ok]').focus({ preventScroll: true });
     };
     live(homeModel, (c) => {
+      $('.pills').classList.toggle('icons-only', !c.prefs.quickLabels);
+      stage.dataset.homeLayout = c.prefs.homeLayout === 'classic' ? 'classic' : 'two_rows';
       const left = Math.ceil((c.day.nextTime.getTime() - c.now.getTime()) / 1000);
       const remind = c.prefs.remind * 60;
       const due = (forced || (remind > 0 && left > 0 && left <= remind)) && card.dataset.for !== dismissedFor;
@@ -151,7 +155,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
     $('[data-card-ok]').addEventListener('click', () => {
       dismissedFor = card.dataset.for ?? '';
       showCard(false);
-      $('.arch-btn').focus({ preventScroll: true });
+      $('.fav').focus({ preventScroll: true });
     });
 
     // Toasts stand in for launching apps.
@@ -168,6 +172,31 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
     // Quran Radio: the chosen station's live stream.
     const audio = $<HTMLAudioElement>('[data-audio]');
+    let quickTrigger: HTMLElement | null = null;
+    const closeQuick = () => {
+      stage.querySelectorAll<HTMLElement>('[data-quick]').forEach(panel => panel.hidden = true);
+      quickTrigger?.focus({ preventScroll: true });
+    };
+    for (const name of ['inputs']) {
+      const trigger = $(`[data-open-${name}]`), panel = $(`[data-quick="${name}"]`);
+      trigger.addEventListener('click', () => {
+        closeQuick(); $('[data-radio-card]').hidden = true;
+        quickTrigger = trigger; panel.hidden = false;
+        panel.querySelector<HTMLElement>('.quick-item')?.focus({ preventScroll: true });
+      });
+      panel.querySelector('[data-quick-close]')?.addEventListener('click', closeQuick);
+      panel.querySelector('[data-quick-home]')?.addEventListener('click', closeQuick);
+      panel.addEventListener('keydown', (event) => {
+        if (['Escape','Backspace'].includes(event.key)) { event.preventDefault(); event.stopPropagation(); closeQuick(); }
+        if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key)) {
+          event.preventDefault(); event.stopPropagation();
+          const rows = [...panel.querySelectorAll<HTMLElement>('.quick-more, .quick-item')];
+          const at = rows.indexOf(document.activeElement as HTMLElement);
+          const step = event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0;
+          rows[Math.max(0, Math.min(rows.length - 1, at + step))]?.focus({ preventScroll: true });
+        }
+      });
+    }
     const rc = $('[data-radio-card]');
     const st = stationOf(prefs);
     const status = () => {
@@ -180,7 +209,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
     audio.addEventListener('playing', status);
     audio.addEventListener('pause', status);
     $('[data-station-name]').textContent = t.station(st);
-    $('[data-screen-off-note]').innerHTML = `${t.station(st)}<br>${t.screenOffNote()}`;
+    $('[data-screen-off-note]').innerHTML = `${t.station(st)}`;
     $('[data-open-radio]').addEventListener('click', () => {
       rc.hidden = false;
       $('[data-radio-toggle]').focus({ preventScroll: true });
@@ -206,6 +235,14 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 </script>
 
 <style>
+  .quick-card { position:absolute; inset-inline-end:96px; top:152px; width:640px; padding:24px 28px; border:2px solid var(--color-gold-400-60); border-radius:24px; background:var(--color-lapis-900); display:flex; flex-direction:column; gap:8px; }
+  .quick-card[hidden] { display:none; }
+  .quick-head { display:flex; align-items:center; justify-content:space-between; }
+  .quick-more { position:relative; width:72px; height:72px; border-radius:36px; justify-content:center; align-items:center; --rest-fill:var(--color-lapis-800); }
+  .quick-title { color:var(--color-gold-400); font-size:28px; margin-bottom:12px; }
+  .quick-card p { font-size:24px; }
+  .quick-item { position:relative; width:100%; min-height:68px; padding:16px 22px; font-size:24px; border-radius:22px; --rest-fill:var(--color-lapis-800); }
+
   .arch-btn {
     inset-inline-start: 176px; top: 904px; width: 440px; height: var(--layout-button-height);
     border-radius: calc(var(--layout-button-height) / 2); align-items: center; justify-content: center; gap: 14px;
@@ -220,6 +257,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   .pills { position: absolute; top: 56px; inset-inline-end: calc(1920px - var(--layout-courtyard-inset-inline-start) - var(--layout-courtyard-width) + 72px + 20px); display: flex; gap: 20px; }
   .pill { position: relative; height: 72px; padding: 0 28px; border-radius: 36px; align-items: center; gap: 14px; font-size: 24px; --rest-border: var(--color-line-soft); --rest-border-width: var(--border-chip-width); }
   .gear { inset-inline-start: calc(var(--layout-courtyard-inset-inline-start) + var(--layout-courtyard-width) - 72px); top: 56px; width: 72px; height: 72px; border-radius: 36px; align-items: center; justify-content: center; --rest-border: var(--color-line-soft); --rest-border-width: var(--border-chip-width); }
+  .icons-only .pill-label { display: none; }
   .radio-pill .bars { display: none; }
   :global(.tv.radio-on) .radio-pill .bars { display: inline-flex; }
   :global(.tv.radio-on) .radio-pill .radio-off { display: none; }
@@ -238,21 +276,25 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
   .label { position: absolute; inset-inline-start: var(--layout-courtyard-inset-inline-start); font-size: var(--font-size-label); color: var(--color-mist-400); }
   .fav-label { top: 478px; }
-  .more-label { top: 722px; }
-  .fav { top: 520px; width: var(--layout-tile-favourite-width); height: var(--layout-tile-favourite-height); padding: 22px 24px; flex-direction: column; justify-content: space-between; align-items: flex-start; font-size: var(--font-size-body-l); font-weight: 500; text-align: start; }
-  .more { top: 764px; width: calc((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6); height: var(--layout-tile-more-height); border-radius: var(--radius-cell); padding: 18px; align-items: flex-end; font-size: var(--font-size-label); text-align: start; }
+  .more-label { top: 842px; }
+  .fav { inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + var(--column) * ((var(--layout-courtyard-width) - 40px) / 3 + 20px)); top:calc(516px + var(--row) * 156px); width:calc((var(--layout-courtyard-width) - 40px) / 3); height:132px; padding: 22px 24px; flex-direction: column; justify-content: space-between; align-items: flex-start; font-size: var(--font-size-body-l); font-weight: 500; text-align: start; }
+  .more { top: 890px; width: calc((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6); height:94px; border-radius: var(--radius-cell); padding: 18px; align-items: flex-end; font-size: var(--font-size-label); text-align: start; }
+  :global(.tv[data-home-layout="classic"]) .fav { inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + var(--slot) * ((var(--layout-courtyard-width) - 60px) / 4 + 20px)); top:516px; width:calc((var(--layout-courtyard-width) - 60px) / 4); height:196px; }
+  :global(.tv[data-home-layout="classic"]) .fav[data-extra] { display:none; }
+  :global(.tv[data-home-layout="classic"]) .more-label { top:724px; }
+  :global(.tv[data-home-layout="classic"]) .more { top:772px; }
   .all { white-space: pre-line; padding: 12px; --rest-fill: transparent; --rest-border: var(--color-line-dash); --rest-border-width: 0; border: 2px dashed var(--color-line-dash); }
   .all:focus { border-color: transparent; }
 
-  .card { position: absolute; inset-inline-end: var(--space-safe-inline); bottom: var(--space-safe-block); width: var(--layout-toast-width); padding: 32px 36px; border-radius: var(--radius-panel); background: var(--color-plaster-100); color: var(--color-lapis-900); display: flex; flex-direction: column; gap: 10px; box-shadow: 0 0 0 6px var(--color-on-plaster-border); --spatial-navigation-contain: contain; }
+  .card { position: absolute; inset-inline-end: var(--space-safe-inline); bottom: var(--space-safe-block); width: var(--layout-toast-width); padding: 32px 36px; border-radius: var(--radius-panel); background: var(--color-lapis-900); color: var(--color-plaster-100); display: flex; flex-direction: column; gap: 10px; box-shadow: 0 0 0 2px var(--color-gold-400); --spatial-navigation-contain: contain; }
   .card[hidden] { display: none; }
-  .card-label { display: flex; align-items: center; gap: 12px; font-size: var(--font-size-caption); color: var(--color-on-plaster-label); }
+  .card-label { display: flex; align-items: center; gap: 12px; font-size: var(--font-size-caption); color: var(--color-gold-400); }
   .card-title { font-size: var(--font-size-title); line-height: var(--font-line-height-title); }
-  .card-sub { font-size: 24px; color: var(--color-on-plaster-secondary); }
+  .card-sub { font-size: 24px; color: var(--color-mist-400); }
   .card-buttons { display: flex; gap: 16px; margin-top: 14px; }
-  .card-btn { position: relative; height: 68px; padding: 0 32px; border-radius: 34px; align-items: center; font-size: 24px; --rest-fill: transparent; --rest-border: var(--color-on-plaster-button-border); --rest-border-width: 2px; color: var(--color-lapis-900); }
-  .card-btn.filled { --rest-fill: var(--color-lapis-900); --rest-border-width: 0; color: var(--color-plaster-100); }
-  .card .card-btn:focus { background: var(--focus-fill); color: var(--focus-text); outline-color: var(--color-lapis-900); outline-offset: var(--focus-on-light-ring-offset); }
+  .card-btn { position: relative; height: 68px; padding: 0 32px; border-radius: 34px; align-items: center; font-size: 24px; --rest-fill: transparent; --rest-border: var(--color-line-soft); --rest-border-width: 2px; color: var(--color-plaster-100); }
+  .card-btn.filled { --rest-fill: var(--color-lapis-800); --rest-border-width: 0; color: var(--color-plaster-100); }
+  .card .card-btn:focus { background: var(--focus-fill); color: var(--focus-text); outline-color: var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 
   .radio-card { position: absolute; inset-inline-end: calc(1920px - var(--layout-courtyard-inset-inline-start) - var(--layout-courtyard-width)); top: 152px; width: 720px; padding: 32px 36px 28px; border-radius: var(--radius-panel); background: var(--color-lapis-800); box-shadow: inset 0 0 0 var(--border-chip-width) var(--color-line-dash); display: flex; flex-direction: column; gap: 20px; --spatial-navigation-contain: contain; }
   .radio-card[hidden] { display: none; }

@@ -1,3 +1,4 @@
+import { prayerLabel } from '../lib/prayer-icon';
 // All apps (AllAppsActivity): example apps, the live next-prayer chip and the favourite notes.
 import type { Ctx, Model } from '../lib/ctx';
 import { duration, secondsUntil } from '../lib/prayer';
@@ -35,7 +36,7 @@ export function appsModel(c: Ctx): Model {
   const { t, day, now } = c;
   return {
     html: {
-      chipLabel: t.chip(prayerNames(c)[day.nextIndex]),
+      chipLabel: prayerLabel(day.nextIndex, t.chip(prayerNames(c)[day.nextIndex])),
       chipTime: t.d(duration(secondsUntil(day.nextTime, now), false)),
     },
   };
