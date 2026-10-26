@@ -170,6 +170,16 @@ final class Tokens {
     static final float LAYOUT_HOME_TILE_MAX_HEIGHT = 156f;
     /** layout.home.tile-classic-height */
     static final float LAYOUT_HOME_TILE_CLASSIC_HEIGHT = 196f;
+    /** layout.home.app-icon-size */
+    static final float LAYOUT_HOME_APP_ICON_SIZE = 72f;
+    /** layout.home.app-icon-classic-size */
+    static final float LAYOUT_HOME_APP_ICON_CLASSIC_SIZE = 88f;
+    /** layout.home.app-inset-inline */
+    static final float LAYOUT_HOME_APP_INSET_INLINE = 20f;
+    /** layout.home.app-inset-block */
+    static final float LAYOUT_HOME_APP_INSET_BLOCK = 18f;
+    /** layout.home.app-icon-gap */
+    static final float LAYOUT_HOME_APP_ICON_GAP = 8f;
     /** layout.home.recent-height */
     static final float LAYOUT_HOME_RECENT_HEIGHT = 94f;
     /** layout.home.countdown-size */
@@ -304,6 +314,14 @@ final class Tokens {
     static final float LAYOUT_SETTINGS_LAYOUT_CARD_HEIGHT = 400f;
     /** layout.settings.layout-preview-height */
     static final float LAYOUT_SETTINGS_LAYOUT_PREVIEW_HEIGHT = 302f;
+    /** background.max-width */
+    static final float BACKGROUND_MAX_WIDTH = 1920f;
+    /** background.max-height */
+    static final float BACKGROUND_MAX_HEIGHT = 1080f;
+    /** background.preview-width */
+    static final float BACKGROUND_PREVIEW_WIDTH = 480f;
+    /** background.preview-height */
+    static final float BACKGROUND_PREVIEW_HEIGHT = 270f;
     /** radius.quick-button */
     static final float RADIUS_QUICK_BUTTON = 22f;
     /** radius.icon-button */

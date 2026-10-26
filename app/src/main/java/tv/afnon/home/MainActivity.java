@@ -454,9 +454,11 @@ public class MainActivity extends Screen {
         FocusTile b = new FocusTile(this, Tokens.RADIUS_TILE);
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(Ui.ipx(20), Ui.ipx(18), Ui.ipx(20), Ui.ipx(18));
+        col.setPadding(Ui.ipx(Tokens.LAYOUT_HOME_APP_INSET_INLINE), Ui.ipx(Tokens.LAYOUT_HOME_APP_INSET_BLOCK),
+            Ui.ipx(Tokens.LAYOUT_HOME_APP_INSET_INLINE), Ui.ipx(Tokens.LAYOUT_HOME_APP_INSET_BLOCK));
         ImageView icon = new ImageView(this);
-        icon.setScaleType(ImageView.ScaleType.FIT_START);
+        icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        icon.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         Drawable d = Apps.icon(this, pkg);
         if (d != null) icon.setImageDrawable(d);
         String name = pkg == null ? "" : Apps.name(this, t, pkg);
@@ -464,7 +466,9 @@ public class MainActivity extends Screen {
         label.setText(name);
         label.setSingleLine(true);
         label.setEllipsize(TextUtils.TruncateAt.END);
-        int iconSize = Ui.ipx(classicHome ? 56 : 40);
+        float desired = classicHome ? Tokens.LAYOUT_HOME_APP_ICON_CLASSIC_SIZE : Tokens.LAYOUT_HOME_APP_ICON_SIZE;
+        int available = Ui.ipx(home.tileHeight - 2 * Tokens.LAYOUT_HOME_APP_INSET_BLOCK - Tokens.LAYOUT_HOME_APP_ICON_GAP) - label.getLineHeight();
+        int iconSize = Math.max(1, Math.min(Ui.ipx(desired), available));
         col.addView(icon, new LinearLayout.LayoutParams(iconSize, iconSize));
         col.addView(new View(this), new LinearLayout.LayoutParams(1, 0, 1));
         col.addView(label, new LinearLayout.LayoutParams(-1, -2));

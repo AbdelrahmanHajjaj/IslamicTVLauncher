@@ -8,6 +8,14 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 class JavaChecks(unittest.TestCase):
+    def test_background_resolution_and_memory_budget(self):
+        with tempfile.TemporaryDirectory() as output:
+            source = ROOT / "app/src/main/java/tv/afnon/home"
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+                *(str(source / name) for name in ("Tokens.java", "BackgroundSize.java")),
+                str(ROOT / "tests/BackgroundSizeCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.BackgroundSizeCheck"], check=True, capture_output=True)
+
     def test_home_layout_modes_and_prayer_selection(self):
         with tempfile.TemporaryDirectory() as output:
             source = ROOT / "app/src/main/java/tv/afnon/home"
@@ -58,8 +66,8 @@ class JavaChecks(unittest.TestCase):
             self.assertGreater(float(path.get("stroke-width")), 0)
             png = (ROOT / f"app/src/main/res/drawable-nodpi/{resource}.png").read_bytes()
             self.assertEqual(png[:8], b"\x89PNG\r\n\x1a\n")
-            self.assertEqual(struct.unpack(">II", png[16:24]), (480, 270))
-            self.assertLess(len(png), 60000, "Static pattern masks must stay small")
+            self.assertEqual(struct.unpack(">II", png[16:24]), (1920, 1080), "Home must not enlarge a preview-resolution mask")
+            self.assertLess(len(png), 200000, "Static pattern masks must stay small")
             self.assertFalse((ROOT / f"app/src/main/res/drawable/{resource}.xml").exists())
 
     def test_phone_package_and_home_guards(self):
