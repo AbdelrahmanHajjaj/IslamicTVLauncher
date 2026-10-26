@@ -3,7 +3,7 @@
 import { homeChoice } from '../lib/home-layout';
 import { THEMES, BACKGROUNDS } from '../scripts/appearance';
 import voicesJson from '../data/adhans.json';
-import type { Ctx } from '../lib/ctx';
+import { makeCtx, type Ctx } from '../lib/ctx';
 import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
 import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET } from '../lib/prayer';
 import type { Text } from '../lib/text';
@@ -65,7 +65,7 @@ export const DOCK_MODES = ['hidden', 'tab', 'off'] as const;
 const DARK = [0, 15, -1];
 const CLOCKS = ['system', '12', '24'] as const;
 
-export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = false, homePage = false): Row[] {
+export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = false): Row[] {
   const { t } = c;
   const p = c.prefs as SPrefs;
   const facing = loadFacing();
@@ -75,22 +75,12 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
   }));
   const city = cityOf(p);
   const st = stationOf(p);
-  if (homePage) {
-    const mode = homeChoice(p.homeCountdown, 2);
-    return [
-      { id: 'homeCountdown', kind: 'carousel', label: t.s('homeCountdown'), help: '', segs: t.list('homeCountdowns'), selected: mode },
-      { id: 'homePosition', kind: 'carousel', label: t.s('homePosition'), help: '', segs: mode === 2 ? ['—'] : t.list(mode === 1 ? 'homeBars' : 'homeSides'), selected: mode === 2 ? 0 : homeChoice(mode === 1 ? p.homeBar : p.homeSide, mode === 1 ? 1 : 2) },
-      { id: 'homePrayers', kind: 'carousel', label: t.s('homePrayers'), help: '', segs: t.list('homePrayerModes'), selected: homeChoice(p.homePrayers, 4) },
-      { id: 'homeFavourites', kind: 'carousel', label: t.s('homeFavourites'), help: '', segs: t.list('homeLayouts'), selected: p.homeLayout === 'classic' ? 1 : 0 },
-      { id: 'homeReset', kind: 'value', label: t.s('homeReset'), help: '' },
-      { id: 'homeApply', kind: 'value', label: t.s('applyAppearance'), help: '' },
-    ];
-  }
+  const mode = homeChoice(p.homeCountdown, 2);
   switch (section) {
     case PRAYER: return [
       { id: 'city', kind: 'value', label: t.s('location'), help: locationHelp(t, city.lat, city.lng), value: placeOf(t, city) },
       { id: 'method', kind: 'value', label: t.s('method'), help: methodAngles(t, methodOf(p)), value: t.methodName(methodOf(p)) },
-      { id: 'school', kind: 'seg', label: t.s('asrSchool'), help: t.s('asrSchoolHelp'), segs: t.list('asrSchools'), selected: p.hanafi ? 1 : 0 },
+      { id: 'school', kind: 'seg', label: t.s('asrSchool'), help: t.s('preview') + t.sep() + previewHtml(c), segs: t.list('asrSchools'), selected: p.hanafi ? 1 : 0 },
       { id: 'offsets', kind: 'value', label: t.s('prayerOffsets'), help: t.s('prayerOffsetsHelp'), value: t.offsetCount(prayerOffsets(p).filter(n => n !== 0).length) },
       { id: 'hijri', kind: 'step', label: t.s('hijriAdjust'), help: (t.ar ? 'اليوم: ' : 'Today: ') + hijri(t, c.day), value: t.days(p.hijriOffset) },
       { id: 'room', kind: 'value', label: t.s('roomTitle'), help: t.s('roomHelp'), value: facing < 0 ? t.s('notSet') : t.bearingLabel(facing) },
@@ -113,15 +103,19 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
       { id: 'clock', kind: 'seg', label: t.s('clockRow'), help: t.s('clockHelp'), segs: t.list('clocks').map(t.d), selected: Math.max(0, CLOCKS.indexOf(p.clock)) },
       { id: 'quickLabels', kind: 'toggle', label: t.s('quickLabels'), help: '', on: p.quickLabels ?? false },
       { id: 'dockMode', kind: 'value', label: t.s('prayerDock'), help: '', value: t.list('dockModes')[DOCK_MODES.indexOf(p.dockMode ?? 'hidden')] },
-      { id: 'homeLayout', kind: 'value', label: t.s('homeLayout'), help: '', value: t.list('homeLayouts')[p.homeLayout === 'classic' ? 1 : 0] },
       { id: 'dockPosition', kind: 'seg', label: t.s('dockPosition'), help: '', segs: t.list('dockPositions'), selected: p.dockPosition === 'top' ? 0 : 1 },
 
     ];
     case APPEARANCE: return [
+      { id: 'homeCountdown', kind: 'carousel', label: t.s('homeCountdown'), help: '', segs: t.list('homeCountdowns'), selected: mode },
+      { id: 'homePosition', kind: 'carousel', label: t.s('homePosition'), help: '', segs: mode === 2 ? ['—'] : t.list(mode === 1 ? 'homeBars' : 'homeSides'), selected: mode === 2 ? 0 : homeChoice(mode === 1 ? p.homeBar : p.homeSide, mode === 1 ? 1 : 2) },
+      { id: 'homePrayers', kind: 'carousel', label: t.s('homePrayers'), help: '', segs: t.list('homePrayerModes'), selected: homeChoice(p.homePrayers, 4) },
+      { id: 'homeFavourites', kind: 'carousel', label: t.s('homeFavourites'), help: '', segs: t.list('homeLayouts'), selected: p.homeLayout === 'classic' ? 1 : 0 },
       { id: 'theme', kind: 'carousel', label: t.s('themeRow'), help: '', segs: t.list('themeNames').slice(0, THEMES.length), selected: Math.max(0, THEMES.indexOf(p.theme ?? 'mihrab')) },
       { id: 'background', kind: 'carousel', label: t.s('backgroundRow'), help: '', segs: t.list('backgroundNames'), selected: Math.max(0, BACKGROUNDS.indexOf(p.background ?? 'theme')) },
       { id: 'lighting', kind: 'step', label: t.s('lightingRow'), help: '', value: t.d(`${p.lighting ?? 35}%`) },
       { id: 'reduceMotion', kind: 'toggle', label: t.s('reduceMotion'), help: '', on: p.reduceMotion ?? false },
+      { id: 'homeReset', kind: 'value', label: t.s('homeReset'), help: '' },
       { id: 'apply', kind: 'value', label: t.s('applyAppearance'), help: '' },
     ];
     case NETWORK: return [{ id: 'network', kind: 'value', label: t.s('networkRow'), help: t.s('networkHelp'), value: '' }];
@@ -183,11 +177,10 @@ export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 'var(
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
   else if (r.kind === 'carousel') {
-    const home = r.id.startsWith('home');
     control = [r.selected! - 1, r.selected!, r.selected! + 1].map(k => {
       const valid = k >= 0 && k < r.segs!.length;
-      const label = home && k !== r.selected ? (valid ? ((k < r.selected!) !== t.ar ? '‹' : '›') : '') : r.segs![k] ?? '';
-      return `<span class="slide${k === r.selected ? ' on' : ''}${home ? ' home-choice' : ''}" ${valid ? `data-seg="${k}"` : ''}>${esc(label)}</span>`;
+      const label = k !== r.selected ? (valid ? ((k < r.selected!) !== t.ar ? '‹' : '›') : '') : r.segs![k] ?? '';
+      return `<span class="slide${k === r.selected ? ' on' : ''} home-choice" ${valid ? `data-seg="${k}"` : ''}>${esc(label)}</span>`;
     }).join('');
   }
   else if (r.kind === 'seg')
@@ -207,11 +200,12 @@ export function navHtml(t: Text, section: number) {
 }
 
 /** The rows; the one being edited shows its draft. */
-export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null, offsetsPage = false, homePage = false) =>
-  rowsFor(c, section, radioOn, offsetsPage, homePage).map((r, i) => {
-    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE || homePage ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
+export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null, offsetsPage = false) =>
+  rowsFor(c, section, radioOn, offsetsPage).map((r, i) => {
+    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE ? '0px' : 'var(--layout-settings-rows-top)');
     const shown = r.prayer !== undefined ? { ...r, value: c.t.offsetMinutes(edit.draft), help: clock(c.t, new Date(c.day.times[r.prayer].getTime() + (edit.draft - savedDraft(c, r)) * 60000), c.h24) } : r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
-    return rowHtml(c.t, shown, i, true, section === APPEARANCE || homePage ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
+    if (r.id === 'school') shown.help = c.t.s('preview') + c.t.sep() + previewHtml(makeCtx(c.lang, { ...c.prefs, hanafi: edit.draft === 1 }, c.now, c.mode));
+    return rowHtml(c.t, shown, i, true, section === APPEARANCE ? '0px' : 'var(--layout-settings-rows-top)');
   }).join('');
 export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);
 

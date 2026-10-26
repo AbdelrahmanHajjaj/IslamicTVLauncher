@@ -65,12 +65,14 @@ export function homeModel(c: Ctx): Model {
     html: {
       clock: clock(t, now, h24, 0.4),
       gdate: gregorian(t, now),
-      hdate: hijri(t, day) + t.sep() + day.city[t.lang],
+      hdate: hijri(t, day),
       ...arch.html,
+      homePrayerTime: clock(t, day.nextTime, h24, .55),
+      archSub: day.city[t.lang],
       cells: cellsHtml(c),
       cardTitle: prayerLabel(day.nextIndex, t.apTitle(names[day.nextIndex], minutes, duration(arch.left, false))),
       cardSub: t.apSub(clock(t, day.nextTime, h24)),
     },
-    attr: { ...arch.attr, card: { 'data-for': String(day.nextTime.getTime()), 'data-left': String(arch.left) } },
+    attr: { ...arch.attr, archCount: { ...arch.attr.archCount, 'data-very-long': String(arch.left >= 36000) }, card: { 'data-for': String(day.nextTime.getTime()), 'data-left': String(arch.left) } },
   };
 }

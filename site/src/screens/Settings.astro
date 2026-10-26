@@ -1,11 +1,10 @@
 ---
-// Settings (SettingsActivity): the section sidebar with the Asr preview, the open section's rows, and a list
+// Settings (SettingsActivity): the section sidebar, the open section's rows, and a list
 // chooser over the screen. The rows really change this browser's prefs, so Home and the rest follow them.
 import Icon from '../components/Icon.astro';
-import { prayerLabel } from '../lib/prayer-icon';
 import type { Ctx } from '../lib/ctx';
 import { href } from '../lib/site';
-import { navHtml, previewHtml, rowsHtml, sectionName, PRAYER } from './settings';
+import { navHtml, rowsHtml, sectionName, PRAYER } from './settings';
 interface Props { ctx: Ctx }
 const { ctx } = Astro.props;
 const { t, lang } = ctx;
@@ -17,28 +16,11 @@ const { t, lang } = ctx;
       <h2 class="title display-bold">{t.s('settings')}</h2>
     </div>
     <div data-navs set:html={navHtml(t, PRAYER)} />
-    <div class="preview">
-      <span class="pl" set:html={prayerLabel(3, t.s('preview'))} />
-      <span class="pv display num" data-k="preview" set:html={previewHtml(ctx)} />
-    </div>
   </aside>
   <div class="label caps" data-label>{sectionName(t, PRAYER)}</div>
   <div class="appearance-preview" data-appearance-preview hidden>
-    <svg class="appearance-home" viewBox="0 0 480 270" role="img" aria-label={t.s('appearancePreview')}>
-      <rect x="22" y="35" width="136" height="213" rx="68" fill="var(--color-lapis-800)" stroke="var(--color-gold-400)"/>
-      <text x="60" y="136" font-size="24" class="display" fill="var(--color-plaster-100)">{t.d('12:34')}</text>
-      <rect x="190" y="52" width="140" height="4" rx="2" fill="var(--color-mist-400)"/>
-      <rect x="190" y="66" width="70" height="4" rx="2" fill="var(--color-gold-400)"/>
-      {Array.from({length:9}, (_,i) => <g transform={`translate(${190 + i % 3 * 87} ${96 + Math.floor(i / 3) * 50})`}>
-        <rect width="77" height="40" rx="5" fill={i === 0 ? 'var(--color-gold-400)' : 'var(--color-lapis-800)'}/>
-        <rect x="12" y="13" width="14" height="14" rx="3" fill={i === 0 ? 'var(--color-lapis-900)' : 'var(--color-mist-400)'}/>
-        <rect x="34" y="18" width="31" height="3" rx="1" fill={i === 0 ? 'var(--color-lapis-900)' : 'var(--color-mist-400)'}/>
-      </g>)}
-    </svg>
-    <div class="appearance-caption"><span>{t.s('appearancePreview')}</span><h3 data-theme-name></h3><div class="swatches">{['lapis-950','lapis-800','gold-400','plaster-100'].map(c => <i style={`background:var(--color-${c})`}/>)}</div></div>
-  </div>
-  <div class="appearance-preview home-preview" data-home-preview hidden>
-    <div class="appearance-home" data-home-plan></div><p class="appearance-caption">{t.s('homeHelp')}</p>
+    <div class="appearance-home" data-home-plan></div>
+    <div class="appearance-caption"><span>{t.s('homeHelp')}</span><h3 data-theme-name></h3><div class="swatches">{['lapis-950','lapis-800','gold-400','plaster-100'].map(c => <i style={`background:var(--color-${c})`}/>)}</div></div>
   </div>
   <div class="rows" data-rows set:html={rowsHtml(ctx, PRAYER)} />
   <div class="saved" data-saved role="status">{t.s('saved')}</div>
@@ -58,7 +40,7 @@ const { t, lang } = ctx;
   import type { Ctx } from '../lib/ctx';
   import type { Lang } from '../lib/text';
   import {
-    APPEARANCE, DOCK_MODES, REMIND, VOICES, chooserHtml, citiesOf, commit, countries, methodItems, regionOf, moveDraft, pick, previewHtml, rowsFor, rowsHtml,
+    APPEARANCE, DOCK_MODES, REMIND, VOICES, chooserHtml, citiesOf, commit, countries, methodItems, regionOf, moveDraft, pick, rowsFor, rowsHtml,
     savedDraft, sectionName, stationChoice, stationsOf, type Edit, type SPrefs,
   } from './settings';
 
@@ -77,37 +59,45 @@ const { t, lang } = ctx;
 
     let section = 0;
     let offsetsPage = false;
-    let homeDraft: SPrefs | null = null;
-    let homeParentRow = 0;
     let offsetsParentRow = 0;
     let appearanceDraft: SPrefs | null = null;
-    const rowCtx = () => homeDraft ? { ...ctx, prefs: homeDraft } : appearanceDraft && section === APPEARANCE ? { ...ctx, prefs: appearanceDraft } : ctx;
+    const rowCtx = () => appearanceDraft && section === APPEARANCE ? { ...ctx, prefs: appearanceDraft } : ctx;
     let edit: Edit | null = null;
     let lastRows = rowsEl.innerHTML;
     let radioOn = false;
     let ctx!: Ctx;
 
     const rowEls = () => [...rowsEl.querySelectorAll<HTMLElement>('[data-row]')];
-    const focusRow = (i: number) => { const r = rowEls(); r[Math.max(0, Math.min(r.length - 1, i))]?.focus({ preventScroll: true }); };
+    const focusRow = (i: number) => {
+      const r = rowEls()[Math.max(0, Math.min(rowEls().length - 1, i))];
+      if (!r) return;
+      r.focus({ preventScroll: true });
+      if (section === APPEARANCE) {
+        const pad = parseFloat(getComputedStyle(rowsEl).paddingTop);
+        if (r.offsetTop - pad < rowsEl.scrollTop) rowsEl.scrollTop = r.offsetTop - pad;
+        else if (r.offsetTop + r.offsetHeight + pad > rowsEl.scrollTop + rowsEl.clientHeight)
+          rowsEl.scrollTop = r.offsetTop + r.offsetHeight + pad - rowsEl.clientHeight;
+      }
+    };
     const focusedRow = () => { const a = document.activeElement as HTMLElement | null; return a && rowsEl.contains(a) ? +(a.dataset.row ?? -1) : -1; };
-    const focusNav = () => navs[section].focus({ preventScroll: true });
+    const focusNav = () => { if (section === APPEARANCE) { appearanceDraft = { ...ctx.prefs }; edit = null; rerender(); } navs[section].focus({ preventScroll: true }); };
 
     // The rows are re-rendered only when their HTML changes (a pref, the date), keeping focus on the same row.
     const rerender = () => {
       $('[data-appearance-preview]').hidden = section !== APPEARANCE;
       if (appearanceDraft) appearance($('[data-appearance-preview]'), appearanceDraft);
       $('[data-theme-name]').textContent = ctx.t.list('themeNames')[Math.max(0, THEMES.indexOf(rowCtx().prefs.theme ?? 'mihrab'))];
-      $('[data-home-preview]').hidden = !homeDraft;
-      if (homeDraft) $('[data-home-plan]').innerHTML = homePreview(homeDraft, rtl);
-      $('[data-label]').textContent = homeDraft ? ctx.t.s('homeLayout') : offsetsPage ? ctx.t.s('prayerOffsets') : sectionName(ctx.t, section);
-      const h = rowsHtml(rowCtx(), section, radioOn, edit, offsetsPage, !!homeDraft);
+      rowsEl.classList.toggle('scrolling', section === APPEARANCE);
+      if (appearanceDraft) $('[data-home-plan]').innerHTML = homePreview(appearanceDraft, rtl);
+      $('[data-label]').textContent = offsetsPage ? ctx.t.s('prayerOffsets') : sectionName(ctx.t, section);
+      const h = rowsHtml(rowCtx(), section, radioOn, edit, offsetsPage);
       if (h === lastRows) return;
       const fi = focusedRow();
       rowsEl.innerHTML = h;
       lastRows = h;
       if (fi >= 0) focusRow(fi);
     };
-    const update = live((c) => ({ html: { preview: previewHtml(c) } }), (c) => { ctx = c; rerender(); });
+    const update = live(() => ({ html: {} }), (c) => { ctx = c; rerender(); });
     // ✓ Saved at the end of the hint line after every save, as long as motion.saved-lifetime.
     const savedEl = $('[data-saved]');
     const lifetime = parseFloat(getComputedStyle(savedEl).getPropertyValue('--motion-saved-lifetime')) * 1000 || 2000;
@@ -119,14 +109,14 @@ const { t, lang } = ctx;
     };
     const save = (p: SPrefs | null) => {
       if (!p) return;
-      if (homeDraft) { homeDraft = p; rerender(); }
-      else if (section === APPEARANCE) { appearanceDraft = p; rerender(); }
+      if (section === APPEARANCE) { appearanceDraft = p; rerender(); }
       else { update(p); showSaved(); }
     };
 
     const setSection = (n: number) => {
-      if (n === section && !offsetsPage && !homeDraft) return;
-      offsetsPage = false; homeDraft = null;
+      if (n === section && !offsetsPage) return;
+      offsetsPage = false;
+      rowsEl.scrollTop = 0;
       section = n;
       appearanceDraft = n === APPEARANCE ? { ...ctx.prefs } : null;
       edit = null;
@@ -267,7 +257,7 @@ const { t, lang } = ctx;
     const setEdit = (e: Edit | null) => { edit = e; rerender(); };
     const endEdit = (keep: boolean) => {
       if (!edit) return;
-      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[edit.row], draft = edit.draft;
+      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[edit.row], draft = edit.draft;
       setEdit(null);
       if (!keep) return;
       if (r.id === 'lang') { if (draft !== r.selected) goLang(draft); }
@@ -276,12 +266,9 @@ const { t, lang } = ctx;
 
     /** OK opens or edits a row; carousels preview directly with Left/Right. */
     const act = (i: number) => {
-      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[i];
+      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[i];
       if (!r) return;
-      if (r.id === 'homeApply' && homeDraft) {
-        const draft = homeDraft; homeDraft = null; update(draft); showSaved(); focusRow(homeParentRow);
-      }
-      else if (r.id === 'homeReset' && homeDraft) save({ ...homeDraft, homeCountdown: 0, homeSide: 0, homeBar: 0, homePrayers: 0, homeLayout: 'two_rows' });
+      if (r.id === 'homeReset' && appearanceDraft) save({ ...appearanceDraft, homeCountdown: 0, homeSide: 0, homeBar: 0, homePrayers: 0, homeLayout: 'two_rows' });
       else if (r.id === 'apply' && appearanceDraft) { update(appearanceDraft); showSaved(); }
       else if (r.kind === 'carousel') return;
       else if (r.kind === 'seg' || r.kind === 'step') setEdit({ row: i, draft: savedDraft(rowCtx(), r) });
@@ -292,7 +279,6 @@ const { t, lang } = ctx;
       else if (r.id === 'adhan') save({ ...p(), adhan: !ctx.prefs.adhan });
       else if (r.kind === 'value') {
         if (r.id === 'offsets') { offsetsPage = true; offsetsParentRow = i; rerender(); focusRow(0); }
-        else if (r.id === 'homeLayout') { homeDraft = { ...ctx.prefs }; homeParentRow = i; rerender(); focusRow(0); }
         else if (r.id === 'remoteButtons') openRemoteButtons();
         else if (r.id === 'dockMode') open(ctx.t.s('prayerDock'), ctx.t.list('dockModes').map((label, k) => ({ label, chosen: DOCK_MODES[k] === (ctx.prefs.dockMode ?? 'hidden') })), k => save({ ...p(), dockMode: DOCK_MODES[k] }));
         else if (r.id === 'city') openRegions();
@@ -345,18 +331,17 @@ const { t, lang } = ctx;
         if (back) endEdit(false);
         else if (ok) endEdit(true);
         else if (horiz) {
-          const draft = moveDraft(rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[edit.row], edit.draft, toEnd);
+          const draft = moveDraft(rowsFor(rowCtx(), section, radioOn, offsetsPage)[edit.row], edit.draft, toEnd);
           if (draft !== edit.draft) setEdit({ ...edit, draft });
         }
         return;
       }
       // Carousels consume Left/Right; other rows return to sections toward the start.
-      if (back && homeDraft) { homeDraft = null; rerender(); focusRow(homeParentRow); }
-      else if (back && offsetsPage) { offsetsPage = false; rerender(); focusRow(offsetsParentRow); }
+      if (back && offsetsPage) { offsetsPage = false; rerender(); focusRow(offsetsParentRow); }
       else if (back) focusNav();
       else if (vert) focusRow(+row + vert);
       else if (horiz) {
-        const r = rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[+row];
+        const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[+row];
         if (r.kind === 'carousel') save(pick(rowCtx(), r.id, Math.max(0, Math.min(r.segs!.length - 1, r.selected! + toEnd))));
         else if (toEnd < 0) focusNav();
       }
@@ -386,7 +371,7 @@ const { t, lang } = ctx;
       const i = +rowEl.dataset.row!;
       const seg = el.closest<HTMLElement>('[data-seg]');
       const step = el.closest<HTMLElement>('[data-step]');
-      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage, !!homeDraft)[i];
+      const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[i];
       if (seg && (r.kind === 'seg' || r.kind === 'carousel')) {
         if (r.id === 'lang') goLang(+seg.dataset.seg!);
         else save(pick(rowCtx(), r.id, +seg.dataset.seg!));
@@ -413,8 +398,8 @@ const { t, lang } = ctx;
   .settings .appearance-preview[hidden] { display: none; }
   .settings .appearance-home { width: var(--layout-settings-preview-width); height: var(--layout-settings-preview-height); flex: none; background: var(--scene-image); background-color: var(--color-lapis-900); background-size: cover; }
   .settings .appearance-caption { font-size: var(--font-size-label); color: var(--color-mist-400); }
-  .settings .home-preview svg { display: block; width: 100%; height: 100%; }
-  .settings .home-preview p { width: var(--layout-settings-appearance-caption-width); margin: 0; }
+  .settings .appearance-home svg { display: block; width: 100%; height: 100%; }
+  .settings .appearance-caption { width: var(--layout-settings-appearance-caption-width); }
   .settings .appearance-caption h3 { font-size: var(--font-size-appearance-title); color: var(--color-plaster-100); margin: 12px 0 24px; }
   .settings .swatches { display: flex; gap: var(--layout-settings-swatch-gap); }
   .settings .swatches i { width: var(--space-6); height: var(--space-6); border-radius: 50%; }
@@ -430,12 +415,6 @@ const { t, lang } = ctx;
   }
   .settings .nav.open { --rest-fill: var(--color-lapis-800); --rest-border: var(--color-gold-400); --rest-border-width: 2px; color: var(--color-plaster-100); }
   .settings .nav:focus, .tv:not(:focus-within) .settings .nav[data-focus-start] { color: var(--focus-text); }
-  .settings .preview {
-    position: absolute; inset-inline-start: 96px; top: 900px; width: 424px; height: 124px; padding: 20px var(--space-4);
-    border-radius: var(--radius-row); background: var(--color-lapis-800); display: flex; flex-direction: column; justify-content: center; gap: 4px;
-  }
-  .settings .pl { font-size: var(--font-size-caption); color: var(--color-mist-400); }
-  .settings .pv { font-size: var(--font-size-display-xs); color: var(--color-gold-400); line-height: 1.2; }
   .settings .label { position: absolute; inset-inline-start: var(--layout-settings-content-start); top: 56px; font-size: var(--font-size-label); color: var(--color-mist-400); }
   .settings .hints { inset-inline-start: var(--layout-settings-content-start); top: 976px; }
   .settings .saved {
@@ -444,6 +423,8 @@ const { t, lang } = ctx;
   }
   .settings .saved.on { opacity: 1; }
 
+  .settings .rows.scrolling { position:absolute; inset-inline-start:calc(var(--layout-settings-content-start) - var(--layout-settings-scroll-padding)); top:calc(var(--layout-settings-appearance-top) - var(--layout-settings-scroll-padding)); width:calc(var(--layout-settings-row-width) + 2 * var(--layout-settings-scroll-padding)); height:calc(var(--layout-settings-appearance-rows-height) - var(--focus-ring-offset) - var(--focus-ring-width)); overflow-y:auto; overflow-x:hidden; padding:var(--layout-settings-scroll-padding); display:flex; flex-direction:column; gap:var(--layout-settings-row-gap); }
+  .settings .rows.scrolling .srow { position:relative; inset-inline-start:auto; top:auto !important; flex:none; }
   /* Rows: label and help at the start, the control at the end. */
   .settings .srow {
     inset-inline-start: var(--layout-settings-content-start); width: var(--layout-settings-row-width); height: var(--layout-settings-row-height); padding: 0 var(--layout-settings-row-padding); align-items: center; justify-content: space-between;
