@@ -27,6 +27,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ### Changed and fixed
 
+- Enlarged Home favourite icons to 72 design pixels (88 in Classic), with automatic shrinkage in shorter cards. Card dimensions and focus spacing stay unchanged; labels remain visible in both languages.
+- Fixed soft Home backgrounds caused by stretching a 480×270 preview bitmap. Home now caches the scene at the app's resolution, capped at 1920×1080, with full-HD pattern masks. Settings retains its small preview and downsamples masks before decoding; no animation loop or new dependency is added.
 - Expanded from eight to twenty themes with Glass, Frost, Cinema, Carbon, Neon, Blueprint, Signal, Arcade, Dusk, Oasis, Brass and Mosaic. Six new surface treatments change card shapes, borders, fills and Home typography. Glass uses translucency without blur; no artwork, fonts or dependencies were added. Old selections and Custom imports remain compatible. Native/browser previews match, and the build checks the 25 MB APK limit.
 - Aligned Home prayer-card names and times left in English and right in Arabic, with the icon above the name and Now/Next at the opposite end of the top row.
 
