@@ -27,6 +27,7 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ### Changed and fixed
 
+- All apps no longer expires its catalogue after two seconds on Home. List/label preparation and icon decoding run off the UI thread, with visible icons delivered in batches of five. Package changes refresh cached data, and rebuilding or closing the screen discards outdated loading results.
 - Home focus begins at the first favourite; Down traverses favourites/recent apps to All apps, and Up reaches the quick controls including Today & Qibla. Rebuilding Home preserves the focused app when it remains visible. App metadata is cached and All apps creates tiles as rows enter view; package changes refresh the list even when the count is unchanged.
 - Removed the unused All apps dock, footer instructions and adhan dismissal hints. Replaced ambiguous Home settings/Qibla symbols with a cog and compass, and enlarged prayer icons.
 - Unified Arabic/English additions and RTL layout; the preview shares native city/method/icon/pattern data and includes both Home layouts. Browser offset editing now mirrors all six native rows, including draft/save/cancel, centred adjusted times, clock formats and Arabic digits.

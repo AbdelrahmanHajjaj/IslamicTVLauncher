@@ -70,8 +70,9 @@ for completed checks and remaining hardware tests.
   launches through Afnon, including assigned remote buttons, and stays on the TV.
 - **App management.** Hold OK in All apps to add, reorder or replace a favourite. Replacement returns
   to Home so you can select its destination. Uninstall opens Android's confirmation for removable apps.
-  An optional system-utility filter keeps media apps, games and Play Store visible. The app list caches
-  metadata and creates tiles as rows enter view; its unused bottom dock and instructional footer are removed.
+  An optional system-utility filter keeps media apps, games and Play Store visible. The app list reuses
+  cached metadata and labels until they need refreshing. All apps prepares its list in the background and
+  loads icons in batches of five as rows enter view; its unused bottom dock and instructional footer are removed.
 - **Themes and backgrounds.** Eight palettes—Mihrab, Aurora, Ember, Forest, Midnight, Rose, Sand and
   Slate—plus validated custom JSON themes. Sixteen named backgrounds and a theme-default option include
   panorama, daylight, mountains, dunes, halo, night sky and eight Islamic-inspired line patterns.
