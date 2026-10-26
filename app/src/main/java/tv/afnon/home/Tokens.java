@@ -403,19 +403,19 @@ final class Tokens {
     /** surface.glass.edge */
     static final float SURFACE_GLASS_EDGE = 0.38f;
     /** surface.cinema.radius */
-    static final float SURFACE_CINEMA_RADIUS = 6f;
+    static final float SURFACE_CINEMA_RADIUS = 12f;
     /** surface.outline.radius */
     static final float SURFACE_OUTLINE_RADIUS = 10f;
     /** surface.outline.stroke */
     static final float SURFACE_OUTLINE_STROKE = 2f;
     /** surface.blocks.radius */
-    static final float SURFACE_BLOCKS_RADIUS = 4f;
+    static final float SURFACE_BLOCKS_RADIUS = 12f;
     /** surface.blocks.stripe */
     static final float SURFACE_BLOCKS_STRIPE = 4f;
     /** surface.soft.radius */
     static final float SURFACE_SOFT_RADIUS = 42f;
     /** surface.frame.radius */
-    static final float SURFACE_FRAME_RADIUS = 0f;
+    static final float SURFACE_FRAME_RADIUS = 12f;
     /** surface.frame.stroke */
     static final float SURFACE_FRAME_STROKE = 3f;
     /** surface.arch-stroke */
