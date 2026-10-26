@@ -4,6 +4,10 @@ import java.util.Map;
 
 /** Bounds and readability checks, independent of Android for local tests. */
 final class ThemeSpec {
+    static final String[] SURFACES = {"classic", "glass", "cinema", "outline", "blocks", "soft", "frame"};
+    static void surface(String name) {
+        if (!java.util.Arrays.asList(SURFACES).contains(name)) throw new IllegalArgumentException("Unknown surface");
+    }
     static final String[] BACKGROUNDS = {"lattice", "solid", "panorama", "daylight", "mountains", "dunes", "halo", "night_sky", "arches", "eight_point_stars", "mashrabiya", "arabesque", "star_tiles", "rosettes", "octagon_lattice", "corner_medallions"};
     static final String[] COLORS = {"lapis-950", "lapis-900", "lapis-800", "lapis-700", "gold-400", "gold-200", "plaster-100", "mist-400"};
     static int color(String value) {
@@ -20,6 +24,17 @@ final class ThemeSpec {
             for (String ink : new String[]{"plaster-100", "mist-400", "gold-400"})
                 if (contrast(colors.get(ground), colors.get(ink)) < 4.5)
                     throw new IllegalArgumentException("Insufficient contrast: " + ink + " on " + ground);
+        }
+    }
+    static void validate(Map<String, Integer> colors, String background, int light, String surface) {
+        surface(surface);
+        validate(colors, background, light);
+        if ("glass".equals(surface)) {
+            // Even over a white pixel the translucent panel must keep its text legible.
+            int composite = ThemeSurface.mix(0xffffffff, colors.get("lapis-800"), Tokens.SURFACE_GLASS_OPACITY);
+            for (String ink : new String[]{"plaster-100", "mist-400", "gold-400"})
+                if (contrast(composite, colors.get(ink)) < 4.5)
+                    throw new IllegalArgumentException("Insufficient glass contrast: " + ink);
         }
     }
     static double contrast(int a, int b) {

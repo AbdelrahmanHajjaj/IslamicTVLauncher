@@ -1,5 +1,7 @@
 package tv.afnon.home;
 
+import static tv.afnon.home.FavouriteChoice.*;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -21,9 +23,9 @@ import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.text.format.DateFormat;
 import android.text.style.RelativeSizeSpan;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -46,28 +48,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-/** Afnon Home: the mihrab arch on the start side, the courtyard (clock, prayer strip, apps) beside it. */
+/** Afnon Home: independently arranged countdown, prayer information and app rows. */
 public class MainActivity extends Screen {
 
-    // Leave space between the section label and the first row's focus ring.
-    private static final int LABEL_ABOVE_FAV = 468;
-
-    private static final int ARCH = 0, WIFI = 1, SETTINGS = 2, F0 = 3, M0 = 12, ALL = 17, RADIO = 18, INPUTS = 19, NODES = 20;
-
     private final View[] nodes = new View[NODES];
-    private final TextView[] cellTag = new TextView[6], cellName = new TextView[6], cellTime = new TextView[6];
+    private final TextView[] cellIcon = new TextView[6], cellTag = new TextView[6], cellName = new TextView[6], cellTime = new TextView[6];
     private final View[] cell = new View[6];
     private final String[] nodePackage = new String[NODES];
     private FocusGlow focusGlow;
     private String replacementPackage;
 
-    private TextView clock, gdate, hdate, wifiName;
+    private TextView clock, gdate, hdate, wifiName, homePrayerTime;
     private int favouriteCount, recentCount;
     private boolean classicHome;
+    private HomeLayout home;
     private PrayerDay day;
     private long lastMinute = -1;
     private int lastFav = F0;
-    private boolean archFocused;
     /** What Home was built with, so it rebuilds when All apps changes favourites or apps come and go. */
     private String builtApps = "";
     /** The reminder card (design/Home.dc.html, mode "approach") and the prayer it is for. */
@@ -184,31 +181,43 @@ public class MainActivity extends Screen {
         render(false);
         // The prayer the card was about has arrived (the call takes over) or the card outlived its prayer.
         if (card != null && day != null && !day.nextTime.equals(cardFor)) dismissReminder();
+        if (hasWindowFocus() && card == null && radioCard == null && replacementPackage == null
+                && (quickMenu == null || !quickMenu.isShowing()) && Appearance.cycleIfDue(this)) {
+            loadSettings(null);
+            build(); // Recolours every view and restores the focused app/control.
+        }
     }
 
     // ---------------------------------------------------------------- layout
 
     @Override
     void build() {
+        int previousNode = currentNode();
+        String previousPackage = previousNode < 0 ? null : nodePackage[previousNode];
         newRoot();
+        if (Appearance.surface().modern()) { display = ui400; displayBold = ui600; }
         java.util.Arrays.fill(nodePackage, null);
         java.util.Arrays.fill(nodes, null);
         focusGlow = Prefs.of(this).getBoolean("focus_lighting", false) ? new FocusGlow(this) : null;
         if (focusGlow != null) root.addView(focusGlow, new FrameLayout.LayoutParams(-1, -1));
         card = null;   // a reminder card went with the old root
         radioCard = null;
-        buildArch(488, 26, 12, Palette.GOLD_200, 8);
+        List<String> favs = Apps.slots(this, t);
+        classicHome = Prefs.classicHome(this);
+        home = new HomeLayout(Prefs.homeCountdown(this), Prefs.homeSide(this), Prefs.homeBar(this),
+            Prefs.homePrayers(this), favs.size(), classicHome, rtl, Prefs.quickLabels(this));
+        favouriteCount = home.count;
+        buildCountdown();
+        nodes[QIBLA] = quickPill(t.today(), Icon.COMPASS, () -> startActivity(new Intent(this, PrayerDayActivity.class)));
 
-        nodes[ARCH] = archButton();
-
-        // Courtyard: clock and dates, then Wi-Fi and Settings at the end side.
+        // The header stays available in every Home layout.
         LinearLayout when = new LinearLayout(this);
         when.setOrientation(LinearLayout.VERTICAL);
         clock = text(display, 96, Palette.PLASTER_100);
         clock.setIncludeFontPadding(false);
         clock.setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
         clock.setFontFeatureSettings("tnum");
-        // Under the clock the Hijri date (with the city) first, then the Gregorian, smaller and in mist.
+        // Dates stay beside the Mihrab; location belongs under its countdown.
         hdate = text(ui400, 26, Palette.PLASTER_100);
         gdate = text(ui400, 24, Palette.MIST_400);
         when.addView(clock);
@@ -218,82 +227,94 @@ public class MainActivity extends Screen {
         ((LinearLayout.LayoutParams) gdate.getLayoutParams()).topMargin = Ui.ipx(6);
         lineHeight(clock, 1f);
         when.setClipChildren(false);
-        place(when, Tokens.COURT_X, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        place(when, home.x, Tokens.SPACE_SAFE_BLOCK, home.width, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // Quick controls end beside Settings; the clock keeps its own space.
         nodes[INPUTS] = inputPill();
         nodes[RADIO] = radioPill();
         nodes[WIFI] = wifiPill();
+        nodes[SETTINGS] = settingsButton();
         LinearLayout pills = new LinearLayout(this);
         pills.setClipChildren(false);
         float reach = FocusTile.REACH;
-        pills.addView(nodes[INPUTS], new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach)));
-        LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach));
-        rlp.setMarginStart(Ui.ipx(16 - 2 * reach));
-        pills.addView(nodes[RADIO], rlp);
-        LinearLayout.LayoutParams wlp = new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach));
-        wlp.setMarginStart(Ui.ipx(20 - 2 * reach));
-        pills.addView(nodes[WIFI], wlp);
-        FrameLayout.LayoutParams plp = new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.END);
-        plp.setMarginEnd(Ui.ipx(1920 - (Tokens.COURT_X + Tokens.COURT_W) + 72 + 20 - reach));
-        plp.topMargin = Ui.ipx(56 - reach);
-        root.addView(pills, plp);
-        nodes[SETTINGS] = settingsButton();
+        pills.setGravity(Gravity.END);
+        for (int n : new int[] {QIBLA, INPUTS, RADIO, WIFI, SETTINGS}) {
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(n == SETTINGS ? Ui.ipx(Tokens.LAYOUT_BUTTON_HEIGHT + 2 * reach) : -2, Ui.ipx(Tokens.LAYOUT_BUTTON_HEIGHT + 2 * reach));
+            if (n != QIBLA) lp.setMarginStart(Ui.ipx(Tokens.LAYOUT_HOME_GAP - 2 * reach));
+            pills.addView(nodes[n], lp);
+        }
+        place(pills, home.x - reach, home.quickY - reach, home.width + 2 * reach, Tokens.LAYOUT_BUTTON_HEIGHT + 2 * reach);
 
         // The prayer strip: information only, never focusable.
-        float cw = (Tokens.COURT_W - 5 * 12) / 6f;
-        for (int i = 0; i < 6; i++) {
+        java.util.Arrays.fill(cell, null);
+        int slots = HomeLayout.prayers(home.table, -1, 0).length;
+        float cw = Math.min(Tokens.LAYOUT_HOME_TILE_MAX_WIDTH, (home.width - (slots - 1) * 12) / Math.max(1, slots));
+        for (int i = 0; i < slots; i++) {
             LinearLayout v = new LinearLayout(this);
             v.setOrientation(LinearLayout.VERTICAL);
-            v.setPadding(Ui.ipx(20), Ui.ipx(16), Ui.ipx(20), Ui.ipx(16));
+            v.setPadding(Ui.ipx(Tokens.LAYOUT_HOME_CELL_INSET), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING), Ui.ipx(Tokens.LAYOUT_HOME_CELL_INSET), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING));
             cellTag[i] = text(ui400, 20, Palette.PLASTER_100);
+            cellIcon[i] = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.PLASTER_100);
+            cellIcon[i].setIncludeFontPadding(false);
+            cellIcon[i].setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             cellName[i] = text(ui400, 26, Palette.PLASTER_100);
-            cellTime[i] = text(ui400, 34, Palette.PLASTER_100);
+            cellTime[i] = text(ui400, Tokens.FONT_SIZE_BODY_L, Palette.PLASTER_100);
+            cellTag[i].setIncludeFontPadding(false);
+            cellTag[i].setSingleLine(true);
+            cellTag[i].setEllipsize(TextUtils.TruncateAt.END);
+            cellName[i].setSingleLine(true);
+            cellName[i].setEllipsize(TextUtils.TruncateAt.END);
             cellTime[i].setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
-            cellTime[i].setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+            for (TextView label : new TextView[]{cellName[i], cellTime[i]}) {
+                label.setGravity(Gravity.START);
+                label.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+            }
+            cellTag[i].setGravity(Gravity.END);
+            cellTag[i].setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
             cellTime[i].setFontFeatureSettings("tnum");
             cellTime[i].setSingleLine(true);
-            v.addView(cellTag[i], new LinearLayout.LayoutParams(-1, 0, 1));
+            LinearLayout head = new LinearLayout(this);
+            head.setOrientation(LinearLayout.HORIZONTAL);
+            head.addView(cellIcon[i], new LinearLayout.LayoutParams(-2, -2));
+            head.addView(cellTag[i], new LinearLayout.LayoutParams(0, -2, 1));
+            v.addView(head, new LinearLayout.LayoutParams(-1, 0, 1));
             v.addView(cellName[i], new LinearLayout.LayoutParams(-1, -2));
             v.addView(cellTime[i], new LinearLayout.LayoutParams(-1, -2));
             lineHeight(cellName[i], 1.1f);
             lineHeight(cellTime[i], 1.1f);
             v.setClipChildren(false);
             cell[i] = v;
-            place(v, Tokens.COURT_X + i * (cw + 12), 290, cw, 146);
+            place(v, home.x + i * (cw + 12), home.tableY, cw, Tokens.LAYOUT_HOME_TABLE_HEIGHT);
         }
 
         TextView fav = caps(text(ui400, 22, Palette.MIST_400));
         fav.setText(replacementPackage == null ? t.fav() : t.replaceWith(Apps.name(this, t, replacementPackage)));
         fav.setSingleLine(true);
-        fav.setMaxWidth(Ui.ipx(Tokens.COURT_W));
+        fav.setMaxWidth(Ui.ipx(home.width));
         fav.setEllipsize(TextUtils.TruncateAt.END);
-        place(fav, Tokens.COURT_X, LABEL_ABOVE_FAV, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        List<String> favs = Apps.slots(this, t);
-        classicHome = Prefs.classicHome(this);
-        favouriteCount = FavouriteChoice.visibleCount(favs.size(), classicHome);
-        int columns = FavouriteChoice.columns(favouriteCount, classicHome);
-        float fw = (Tokens.COURT_W - (columns - 1) * 20) / columns;
+        if (favouriteCount > 0) place(fav, home.x, home.labelY, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int columns = home.columns;
+        float fw = home.tileWidth;
         for (int i = 0; i < favouriteCount; i++) {
             nodes[F0 + i] = favouriteTile(favs.get(i), F0 + i,
-                Tokens.COURT_X + (i % columns) * (fw + 20), 516 + (i / columns) * 156, fw);
+                home.x + (i % columns) * (fw + Tokens.LAYOUT_HOME_GAP), home.favouritesY + (i / columns) * (home.tileHeight + Tokens.LAYOUT_HOME_GAP), fw);
         }
 
         TextView recent = caps(text(ui400, 22, Palette.MIST_400));
         recent.setText(t.recentApps());
-        place(recent, Tokens.COURT_X, classicHome ? 724 : 842, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        float mw = (Tokens.COURT_W - 5 * 20) / 6f;
+        place(recent, home.x, home.recentLabelY, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        float mw = (home.width - 5 * 20) / 6f;
         List<String> recentApps = Apps.recent(this);
         recentCount = recentApps.size();
         for (int i = 0; i < recentCount; i++) {
-            nodes[M0 + i] = moreTile(recentApps.get(i), M0 + i, Tokens.COURT_X + i * (mw + 20), classicHome ? 772 : 890, mw);
+            nodes[M0 + i] = moreTile(recentApps.get(i), M0 + i, home.x + i * (mw + 20), home.recentY, mw);
         }
-        nodes[ALL] = allAppsTile(Tokens.COURT_X + 5 * (mw + 20), classicHome ? 772 : 890, mw);
+        nodes[ALL] = allAppsTile(home.x + 5 * (mw + 20), home.recentY, mw);
 
         for (int i = 0; i < NODES; i++) {
             final int n = i;
             if (nodes[i] == null) continue;
-            nodes[i].setOnFocusChangeListener((v, has) -> { if (has) onNodeFocused(n); else if (n == ARCH) setArchFocused(false); });
+            nodes[i].setOnFocusChangeListener((v, has) -> { if (has) onNodeFocused(n); });
         }
 
         if (replacementPackage != null) {
@@ -309,30 +330,74 @@ public class MainActivity extends Screen {
         builtApps = appsKey();
         lastMinute = -1;
         render(true);
-        firstApp().requestFocus();
+        View restore = previousNode >= 0 ? nodes[previousNode] : null;
+        if (previousPackage != null) {
+            restore = null;
+            for (int i = 0; i < NODES; i++) if (previousPackage.equals(nodePackage[i])) { restore = nodes[i]; break; }
+        }
+        if (restore == null || !restore.isFocusable()) restore = firstApp();
+        restore.requestFocus();
     }
 
-    private View archButton() {
-        FocusTile b = new FocusTile(this, 36);
-        b.setRest(0, Palette.GOLD_400_60, 2);
-        LinearLayout row = new LinearLayout(this);
-        row.setGravity(Gravity.CENTER);
-        Icon compass = new Icon(this, Icon.COMPASS, 1.8f);
-        TextView label = text(ui400, 26, Palette.PLASTER_100);
-        label.setText(t.today());
-        row.addView(compass, new LinearLayout.LayoutParams(Ui.ipx(30), Ui.ipx(30)));
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
-        lp.setMarginStart(Ui.ipx(14));
-        row.addView(label, lp);
-        b.addView(row, new FrameLayout.LayoutParams(-1, -1));
-        b.setLook(f -> {
-            int c = f ? Palette.LAPIS_900 : Palette.PLASTER_100;
-            label.setTextColor(c);
-            compass.setColor(c);
-        });
-        b.setOnClickListener(v -> startActivity(new Intent(this, PrayerDayActivity.class)));
-        placeTile(b, 176, 904, 440, 72);
-        return b;
+    private void buildCountdown() {
+        arch = null;
+        archLabel = archName = archCount = archSub = archSub2 = null;
+        homePrayerTime = null;
+        if (home.mode == HomeLayout.HIDDEN) return;
+        boolean compact = home.mode == HomeLayout.COMPACT;
+        float inset = Tokens.LAYOUT_HOME_PANEL_INSET;
+        if (!compact) {
+            arch = new ArchView(this);
+            place(arch, home.panelX, home.panelY, Tokens.LAYOUT_HOME_MIHRAB_WIDTH, Tokens.LAYOUT_HOME_MIHRAB_HEIGHT);
+            TextView verse = text(sacred, Tokens.FONT_SIZE_SACRED, Palette.GOLD_400);
+            verse.setText("إِنَّ الصَّلَاةَ كَانَتْ\nعَلَى الْمُؤْمِنِينَ\nكِتَابًا مَّوْقُوتًا");
+            verse.setTextDirection(View.TEXT_DIRECTION_RTL);
+            verse.setGravity(Gravity.CENTER);
+            lineHeightPixels(verse, Ui.ipx(Tokens.FONT_SIZE_SACRED * 1.55f));
+            place(verse, home.panelX + inset, home.panelY + Tokens.LAYOUT_HOME_VERSE_TOP,
+                Tokens.LAYOUT_HOME_MIHRAB_WIDTH - 2 * inset, -2);
+            TextView ref = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.MIST_400);
+            ref.setText(t.ref()); ref.setGravity(Gravity.CENTER);
+            place(ref, home.panelX + inset, home.panelY + Tokens.LAYOUT_HOME_REFERENCE_TOP,
+                Tokens.LAYOUT_HOME_MIHRAB_WIDTH - 2 * inset, -2);
+        }
+        LinearLayout info = new LinearLayout(this);
+        info.setOrientation(compact ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
+        info.setGravity(Gravity.CENTER);
+        if (compact) {
+            info.setBackground(Appearance.panel(Palette.LAPIS_800, Tokens.RADIUS_CELL));
+            info.setPadding(Ui.ipx(inset), 0, Ui.ipx(inset), 0);
+        }
+        archLabel = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.MIST_400);
+        archName = text(displayBold, compact ? Tokens.FONT_SIZE_HEADING : Tokens.LAYOUT_HOME_PRAYER_NAME_SIZE, Palette.GOLD_400);
+        archCount = text(display, compact ? Tokens.LAYOUT_HOME_COMPACT_COUNTDOWN_SIZE : Tokens.LAYOUT_HOME_COUNTDOWN_SIZE, Palette.PLASTER_100);
+        archCount.setTextDirection(View.TEXT_DIRECTION_LTR);
+        archCount.setFontFeatureSettings("tnum");
+        archSub = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.MIST_400);
+        archSub2 = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.GOLD_200);
+        homePrayerTime = text(ui400, compact ? Tokens.FONT_SIZE_BODY : Tokens.FONT_SIZE_SACRED, Palette.PLASTER_100);
+        LinearLayout name = new LinearLayout(this), detail = new LinearLayout(this);
+        name.setOrientation(LinearLayout.VERTICAL); detail.setOrientation(LinearLayout.VERTICAL);
+        name.setGravity(Gravity.CENTER); detail.setGravity(Gravity.CENTER);
+        name.addView(archLabel); name.addView(archName);
+        if (compact) detail.addView(homePrayerTime);
+        detail.addView(archSub); detail.addView(archSub2);
+        for (TextView v : new TextView[] {archLabel, archName, homePrayerTime, archCount, archSub, archSub2}) {
+            v.setGravity(Gravity.CENTER); v.setIncludeFontPadding(false);
+        }
+        info.addView(name, new LinearLayout.LayoutParams(compact ? 0 : -1, -2, compact ? 1 : 0));
+        if (!compact) {
+            info.addView(homePrayerTime, new LinearLayout.LayoutParams(-1, -2));
+            ((LinearLayout.LayoutParams) homePrayerTime.getLayoutParams()).bottomMargin = Ui.ipx(Tokens.SPACE_3);
+        }
+        info.addView(archCount, new LinearLayout.LayoutParams(compact ? 0 : -1, compact ? -2 : 0, 1));
+        info.addView(detail, new LinearLayout.LayoutParams(compact ? 0 : -1, -2, compact ? 1 : 0));
+        lineHeight(archName, 1.15f); lineHeight(archCount, 1f);
+        info.setClipChildren(false);
+        place(info, compact ? home.x : home.panelX + inset,
+            compact ? home.panelY : home.panelY + Tokens.LAYOUT_HOME_INFO_TOP,
+            compact ? home.width : Tokens.LAYOUT_HOME_MIHRAB_WIDTH - 2 * inset,
+            compact ? Tokens.LAYOUT_HOME_BAR_HEIGHT : Tokens.LAYOUT_HOME_MIHRAB_HEIGHT - Tokens.LAYOUT_HOME_INFO_TOP - inset);
     }
 
     private View inputPill() {
@@ -359,6 +424,7 @@ public class MainActivity extends Screen {
         row.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
         Icon icon = new Icon(this, Icon.WIFI, 2f);
         wifiName = text(ui400, 24, Palette.PLASTER_100);
+        updateWifi(); // A foreground theme rebuild does not run onResume again.
         wifiName.setTextDirection(View.TEXT_DIRECTION_LTR);
         wifiName.setSingleLine(true); wifiName.setMaxWidth(Ui.ipx(180));
         wifiName.setEllipsize(TextUtils.TruncateAt.END);
@@ -387,7 +453,6 @@ public class MainActivity extends Screen {
         b.setContentDescription(t.settings());
         b.setLook(f -> gear.setColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> startSafely(new Intent(this, SettingsActivity.class)));
-        placeEnd(b, 1920 - (Tokens.COURT_X + Tokens.COURT_W), 56, 72, 72);
         return b;
     }
 
@@ -395,9 +460,11 @@ public class MainActivity extends Screen {
         FocusTile b = new FocusTile(this, Tokens.RADIUS_TILE);
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(Ui.ipx(20), Ui.ipx(18), Ui.ipx(20), Ui.ipx(18));
+        col.setPadding(Ui.ipx(Tokens.LAYOUT_HOME_APP_INSET_INLINE), Ui.ipx(Tokens.LAYOUT_HOME_APP_INSET_BLOCK),
+            Ui.ipx(Tokens.LAYOUT_HOME_APP_INSET_INLINE), Ui.ipx(Tokens.LAYOUT_HOME_APP_INSET_BLOCK));
         ImageView icon = new ImageView(this);
-        icon.setScaleType(ImageView.ScaleType.FIT_START);
+        icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        icon.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         Drawable d = Apps.icon(this, pkg);
         if (d != null) icon.setImageDrawable(d);
         String name = pkg == null ? "" : Apps.name(this, t, pkg);
@@ -405,7 +472,9 @@ public class MainActivity extends Screen {
         label.setText(name);
         label.setSingleLine(true);
         label.setEllipsize(TextUtils.TruncateAt.END);
-        int iconSize = Ui.ipx(classicHome ? 56 : 40);
+        float desired = classicHome ? Tokens.LAYOUT_HOME_APP_ICON_CLASSIC_SIZE : Tokens.LAYOUT_HOME_APP_ICON_SIZE;
+        int available = Ui.ipx(home.tileHeight - 2 * Tokens.LAYOUT_HOME_APP_INSET_BLOCK - Tokens.LAYOUT_HOME_APP_ICON_GAP) - label.getLineHeight();
+        int iconSize = Math.max(1, Math.min(Ui.ipx(desired), available));
         col.addView(icon, new LinearLayout.LayoutParams(iconSize, iconSize));
         col.addView(new View(this), new LinearLayout.LayoutParams(1, 0, 1));
         col.addView(label, new LinearLayout.LayoutParams(-1, -2));
@@ -413,7 +482,7 @@ public class MainActivity extends Screen {
         b.setLook(f -> label.setTextColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> activateApp(pkg));
         nodePackage[node] = pkg;
-        placeTile(b, x, y, w, classicHome ? 196 : 132);
+        placeTile(b, x, y, w, home.tileHeight);
         return b;
     }
 
@@ -465,20 +534,27 @@ public class MainActivity extends Screen {
             day = new PrayerDay(this, new Date(now.getTime() + 1000));
             renderMinute(now);
         }
-        renderCountdown(day, now, archFocused);
+        if (archCount != null) {
+            long left = secondsUntil(day.nextTime, now);
+            archCount.setText(t.d(duration(left, true)));
+            float size = Ui.px(home.mode == HomeLayout.COMPACT ? Tokens.LAYOUT_HOME_COMPACT_COUNTDOWN_SIZE
+                : left >= 36000 ? Tokens.FONT_SIZE_DISPLAY_L : left >= 3600 ? Tokens.FONT_SIZE_DISPLAY_XL_HOURS : Tokens.LAYOUT_HOME_COUNTDOWN_SIZE);
+            if (Appearance.surface().modern()) size *= Tokens.SURFACE_MODERN_COUNTDOWN_SCALE;
+            if (archCount.getTextSize() != size) { archCount.setTextSize(TypedValue.COMPLEX_UNIT_PX, size); lineHeight(archCount, 1f); }
+        }
+        if (arch != null) arch.setState(secondsUntil(day.nextTime, now) <= Tokens.APPROACH_MIN * 60L ? ArchView.APPROACHING : ArchView.REST);
     }
 
     private void renderMinute(Date now) {
         readClockFormat();
         clock.setText(time(now, 0.4f));
         gdate.setText(gregorian(now));
-        hdate.setText(hijri(day) + t.sep() + t.city());
+        hdate.setText(hijri(day));
 
         String[] names = t.prayerNames();
         if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
-        String nextTime = time(day.nextTime, 1f).toString();
         String label = t.nextPrayer(), name = names[day.nextIndex];
-        String sub = t.adhanAt() + " " + nextTime + t.sep() + t.city(), sub2 = "";
+        String sub2 = "";
         if (day.friday && day.nextIndex == PrayerDay.DHUHR) label = t.jumuahLabel();
         if (day.friday) sub2 = t.kahf();
         if (day.ramadan) {
@@ -486,16 +562,31 @@ public class MainActivity extends Screen {
             if (day.nextIndex == PrayerDay.MAGHRIB) {
                 label = t.iftarIn();
                 name = t.iftar();
-                sub = t.prayerNames()[PrayerDay.MAGHRIB] + " " + nextTime + t.sep() + t.city();
             }
         }
-        archLabel.setText(label);
-        PrayerIcon.set(archName, day.nextIndex, name);
-        archSub.setText(t.d(sub));
-        archSub2.setText(t.d(sub2));
-        archSub2.setVisibility(sub2.isEmpty() ? View.GONE : View.VISIBLE);
+        if (archLabel != null) {
+            archLabel.setText(label);
+            PrayerIcon.set(archName, day.nextIndex, name);
+            homePrayerTime.setText(time(day.nextTime, .55f));
+            archSub.setText(t.city());
+            archSub2.setText(t.d(sub2));
+            archSub2.setVisibility(sub2.isEmpty() ? View.GONE : View.VISIBLE);
+        }
 
-        for (int i = 0; i < 6; i++) {
+        int[] prayers = HomeLayout.prayers(home.table, day.nowIndex, day.nextIndex);
+        for (int slot = 0; slot < prayers.length; slot++) {
+            int i = prayers[slot];
+            if (i < 0) {
+                cell[slot].setBackground(Appearance.prayerPanel(Palette.LAPIS_800));
+                cellIcon[slot].setText("");
+                cellTag[slot].setText(t.nowTag()); cellName[slot].setText("—"); cellTime[slot].setText("—");
+                cell[slot].setContentDescription(t.noCurrentPrayer());
+                for (TextView v : new TextView[] {cellTag[slot], cellName[slot], cellTime[slot]}) {
+                    v.setTextColor(Palette.MIST_400); v.setTypeface(ui400);
+                }
+                continue;
+            }
+            cell[slot].setContentDescription(null);
             String tag = i == day.nowIndex ? t.nowTag() : (i == day.nextIndex ? t.nextTag() : "");
             if (day.ramadan && i == PrayerDay.FAJR) tag = t.suhoorTag();
             if (day.ramadan && i == PrayerDay.MAGHRIB) tag = t.iftarTag();
@@ -506,26 +597,19 @@ public class MainActivity extends Screen {
             else if (i == day.nextIndex) { bg = 0; fg = Palette.GOLD_400; ring = Palette.GOLD_400; bold = true; }
             else if (past) { bg = Palette.LAPIS_800_60; fg = Palette.MIST_400; bold = false; }
             else { bg = Palette.LAPIS_800; fg = Palette.PLASTER_100; bold = false; }
-            GradientDrawable g = new GradientDrawable();
-            g.setCornerRadius(Ui.px(Tokens.RADIUS_CELL));
-            g.setColor(bg);
+            GradientDrawable g = Appearance.prayerPanel(bg);
             if (ring != 0) g.setStroke(Ui.ipx(3), ring);
-            cell[i].setBackground(g);
-            PrayerIcon.set(cellTag[i], i, tag);
-            cellName[i].setText(names[i]);
-            // English 12-hour ("12:41 PM") is too wide for a cell at 34px; Arabic's ص/م is narrow enough.
-            float timeSize = Ui.px(!h24 && !t.ar ? 30 : 34);
-            if (cellTime[i].getTextSize() != timeSize) {
-                cellTime[i].setTextSize(TypedValue.COMPLEX_UNIT_PX, timeSize);
-                lineHeight(cellTime[i], 1.1f);
-            }
-            cellTime[i].setText(time(day.times[i], 0.55f));
+            cell[slot].setBackground(g);
+            cellTag[slot].setText(tag);
+            PrayerIcon.set(cellIcon[slot], i, "");
+            cellName[slot].setText(names[i]);
+            cellTime[slot].setText(time(day.times[i], 0.55f));
             Typeface tf = bold ? ui600 : ui400;
-            for (TextView v : new TextView[] {cellTag[i], cellName[i], cellTime[i]}) v.setTextColor(fg);
-            cellTag[i].setTypeface(ui400);
-            cellName[i].setTypeface(tf);
-            cellTime[i].setTypeface(tf);
-            if (!t.ar) cellTag[i].setLetterSpacing(0.2f);
+            for (TextView v : new TextView[] {cellIcon[slot], cellTag[slot], cellName[slot], cellTime[slot]}) v.setTextColor(fg);
+            cellTag[slot].setTypeface(ui400);
+            cellName[slot].setTypeface(tf);
+            cellTime[slot].setTypeface(tf);
+            if (!t.ar) cellTag[slot].setLetterSpacing(0.2f);
         }
     }
 
@@ -540,13 +624,8 @@ public class MainActivity extends Screen {
     private void onNodeFocused(int n) {
         if (focusGlow != null) focusGlow.show(nodePackage[n]);
         if (n >= F0 && n < M0) lastFav = n;
-        setArchFocused(n == ARCH);
     }
 
-    private void setArchFocused(boolean f) {
-        archFocused = f;
-        if (arch != null) render(false);
-    }
 
     // ---------------------------------------------------------------- radio
 
@@ -847,47 +926,23 @@ public class MainActivity extends Screen {
         return super.dispatchKeyEvent(e);
     }
 
-    /** design/FocusMap.dc.html, written for LTR; in Arabic every Left/Right swaps. */
+    /** The focus map uses logical directions; Arabic swaps Left/Right. */
     private void move(int key) {
         if (rtl && key == KeyEvent.KEYCODE_DPAD_LEFT) key = KeyEvent.KEYCODE_DPAD_RIGHT;
         else if (rtl && key == KeyEvent.KEYCODE_DPAD_RIGHT) key = KeyEvent.KEYCODE_DPAD_LEFT;
         int from = currentNode();
-        int columns = FavouriteChoice.columns(favouriteCount, classicHome);
         if (replacementPackage != null) {
             int to = FavouriteChoice.move(from - F0, favouriteCount,
                 key == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : key == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0,
-                key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0, classicHome);
+                key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0, home.columns);
             if (to >= 0) nodes[F0 + to].requestFocus();
             return;
         }
         if (from < 0) { firstApp().requestFocus(); return; }
-        boolean left = key == KeyEvent.KEYCODE_DPAD_LEFT, right = key == KeyEvent.KEYCODE_DPAD_RIGHT;
-        boolean up = key == KeyEvent.KEYCODE_DPAD_UP, down = key == KeyEvent.KEYCODE_DPAD_DOWN;
-        int to = -1;
-        switch (from) {
-            case ARCH: to = right ? F0 : up ? INPUTS : -1; break;
-            case INPUTS: to = left ? ARCH : right ? RADIO : down ? F0 : -1; break;
-            case RADIO: to = left ? INPUTS : right ? WIFI : down ? F0 : -1; break;
-            case WIFI: to = left ? RADIO : right ? SETTINGS : down ? F0 + columns / 2 : -1; break;
-            case SETTINGS: to = left ? WIFI : down ? F0 + columns - 1 : -1; break;
-            default:
-                if (from >= F0 && from < F0 + favouriteCount) {
-                    int slot = from - F0, col = slot % columns;
-                    if (left) to = col == 0 ? ARCH : from - 1;
-                    else if (right && col < columns - 1 && slot + 1 < favouriteCount) to = from + 1;
-                    else if (up) to = slot >= columns ? from - columns : col == 0 ? RADIO : col == columns - 1 ? SETTINGS : WIFI;
-                    else if (down) {
-                        if (slot < columns && favouriteCount > columns) to = F0 + Math.min(favouriteCount - 1, slot + columns);
-                        else to = recentCount == 0 ? ALL : M0 + Math.min(recentCount - 1, col * 5 / columns);
-                    }
-                } else if (from >= M0) {
-                    if (left) to = from == ALL ? (recentCount == 0 ? ARCH : M0 + recentCount - 1) : from == M0 ? ARCH : from - 1;
-                    else if (right) to = from == ALL ? -1 : from < M0 + recentCount - 1 ? from + 1 : ALL;
-                    else if (up) to = Math.min(F0 + favouriteCount - 1, lastFav);
-                    else if (down) to = ALL;
-                }
-        }
-        if (to >= 0 && nodes[to] != null) nodes[to].requestFocus();
+        int to = FavouriteChoice.homeMove(from, favouriteCount, recentCount, home.columns, lastFav,
+            key == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : key == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0,
+            key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0);
+        if (nodes[to] != null) nodes[to].requestFocus();
     }
 
     private View firstApp() {
@@ -899,6 +954,7 @@ public class MainActivity extends Screen {
 
     private int currentNode() {
         View f = getCurrentFocus();
+        if (f == null) return -1;
         for (int i = 0; i < NODES; i++) if (nodes[i] == f) return i;
         return -1;
     }

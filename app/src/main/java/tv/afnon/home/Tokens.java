@@ -140,6 +140,66 @@ final class Tokens {
     static final float SPACE_SAFE_INLINE = 96f;
     /** space.safe-block */
     static final float SPACE_SAFE_BLOCK = 56f;
+    /** layout.home.width */
+    static final float LAYOUT_HOME_WIDTH = 1920f;
+    /** layout.home.top */
+    static final float LAYOUT_HOME_TOP = 248f;
+    /** layout.home.bottom */
+    static final float LAYOUT_HOME_BOTTOM = 1008f;
+    /** layout.home.gap */
+    static final float LAYOUT_HOME_GAP = 24f;
+    /** layout.home.mihrab-width */
+    static final float LAYOUT_HOME_MIHRAB_WIDTH = 600f;
+    /** layout.home.mihrab-height */
+    static final float LAYOUT_HOME_MIHRAB_HEIGHT = 900f;
+    /** layout.home.panel-gap */
+    static final float LAYOUT_HOME_PANEL_GAP = 64f;
+    /** layout.home.mihrab-content-top */
+    static final float LAYOUT_HOME_MIHRAB_CONTENT_TOP = 290f;
+    /** layout.home.labelled-controls-top */
+    static final float LAYOUT_HOME_LABELLED_CONTROLS_TOP = 260f;
+    /** layout.home.bar-height */
+    static final float LAYOUT_HOME_BAR_HEIGHT = 100f;
+    /** layout.home.table-height */
+    static final float LAYOUT_HOME_TABLE_HEIGHT = 112f;
+    /** layout.home.label-height */
+    static final float LAYOUT_HOME_LABEL_HEIGHT = 56f;
+    /** layout.home.tile-max-width */
+    static final float LAYOUT_HOME_TILE_MAX_WIDTH = 640f;
+    /** layout.home.tile-max-height */
+    static final float LAYOUT_HOME_TILE_MAX_HEIGHT = 156f;
+    /** layout.home.tile-classic-height */
+    static final float LAYOUT_HOME_TILE_CLASSIC_HEIGHT = 196f;
+    /** layout.home.app-icon-size */
+    static final float LAYOUT_HOME_APP_ICON_SIZE = 72f;
+    /** layout.home.app-icon-classic-size */
+    static final float LAYOUT_HOME_APP_ICON_CLASSIC_SIZE = 88f;
+    /** layout.home.app-inset-inline */
+    static final float LAYOUT_HOME_APP_INSET_INLINE = 20f;
+    /** layout.home.app-inset-block */
+    static final float LAYOUT_HOME_APP_INSET_BLOCK = 18f;
+    /** layout.home.app-icon-gap */
+    static final float LAYOUT_HOME_APP_ICON_GAP = 8f;
+    /** layout.home.recent-height */
+    static final float LAYOUT_HOME_RECENT_HEIGHT = 94f;
+    /** layout.home.countdown-size */
+    static final float LAYOUT_HOME_COUNTDOWN_SIZE = 150f;
+    /** layout.home.compact-countdown-size */
+    static final float LAYOUT_HOME_COMPACT_COUNTDOWN_SIZE = 56f;
+    /** layout.home.prayer-name-size */
+    static final float LAYOUT_HOME_PRAYER_NAME_SIZE = 88f;
+    /** layout.home.panel-inset */
+    static final float LAYOUT_HOME_PANEL_INSET = 32f;
+    /** layout.home.verse-top */
+    static final float LAYOUT_HOME_VERSE_TOP = 124f;
+    /** layout.home.reference-top */
+    static final float LAYOUT_HOME_REFERENCE_TOP = 290f;
+    /** layout.home.info-top */
+    static final float LAYOUT_HOME_INFO_TOP = 368f;
+    /** layout.home.cell-inset */
+    static final float LAYOUT_HOME_CELL_INSET = 20f;
+    /** layout.home.cell-padding */
+    static final float LAYOUT_HOME_CELL_PADDING = 10f;
     /** layout.arch.width */
     static final float ARCH_W = 600f;
     /** layout.arch.height */
@@ -188,6 +248,8 @@ final class Tokens {
     static final float LAYOUT_GAP_MORE = 20f;
     /** layout.gap-prayer-cells */
     static final float LAYOUT_GAP_PRAYER_CELLS = 12f;
+    /** layout.all-apps.icon-size */
+    static final float LAYOUT_ALL_APPS_ICON_SIZE = 72f;
     /** layout.tile-favourite.width */
     static final float LAYOUT_TILE_FAVOURITE_WIDTH = 248f;
     /** layout.tile-favourite.height */
@@ -208,6 +270,10 @@ final class Tokens {
     static final float LAYOUT_BANNER_WIDTH = 640f;
     /** layout.side-panel-width */
     static final float LAYOUT_SIDE_PANEL_WIDTH = 600f;
+    /** layout.settings.home-choice-width */
+    static final float LAYOUT_SETTINGS_HOME_CHOICE_WIDTH = 320f;
+    /** layout.settings.home-arrow-width */
+    static final float LAYOUT_SETTINGS_HOME_ARROW_WIDTH = 56f;
     /** layout.settings.sidebar-width */
     static final float LAYOUT_SETTINGS_SIDEBAR_WIDTH = 560f;
     /** layout.settings.row-width */
@@ -226,6 +292,10 @@ final class Tokens {
     static final float LAYOUT_SETTINGS_ROW_PADDING = 28f;
     /** layout.settings.appearance-top */
     static final float LAYOUT_SETTINGS_APPEARANCE_TOP = 410f;
+    /** layout.settings.appearance-rows-height */
+    static final float LAYOUT_SETTINGS_APPEARANCE_ROWS_HEIGHT = 632f;
+    /** layout.settings.scroll-padding */
+    static final float LAYOUT_SETTINGS_SCROLL_PADDING = 24f;
     /** layout.settings.appearance-caption-width */
     static final float LAYOUT_SETTINGS_APPEARANCE_CAPTION_WIDTH = 500f;
     /** layout.settings.preview-width */
@@ -246,6 +316,14 @@ final class Tokens {
     static final float LAYOUT_SETTINGS_LAYOUT_CARD_HEIGHT = 400f;
     /** layout.settings.layout-preview-height */
     static final float LAYOUT_SETTINGS_LAYOUT_PREVIEW_HEIGHT = 302f;
+    /** background.max-width */
+    static final float BACKGROUND_MAX_WIDTH = 1920f;
+    /** background.max-height */
+    static final float BACKGROUND_MAX_HEIGHT = 1080f;
+    /** background.preview-width */
+    static final float BACKGROUND_PREVIEW_WIDTH = 480f;
+    /** background.preview-height */
+    static final float BACKGROUND_PREVIEW_HEIGHT = 270f;
     /** radius.quick-button */
     static final float RADIUS_QUICK_BUTTON = 22f;
     /** radius.icon-button */
@@ -314,6 +392,38 @@ final class Tokens {
     static final int BORDER_CHIP_COLOR = 0x40EFE7D6;
     /** border.chip.width */
     static final float BORDER_CHIP_WIDTH = 2f;
+    /** surface.prayer-radius-max */
+    static final float SURFACE_PRAYER_RADIUS_MAX = 28f;
+    /** surface.modern-countdown-scale */
+    static final float SURFACE_MODERN_COUNTDOWN_SCALE = 0.86f;
+    /** surface.glass.radius */
+    static final float SURFACE_GLASS_RADIUS = 32f;
+    /** surface.glass.stroke */
+    static final float SURFACE_GLASS_STROKE = 2f;
+    /** surface.glass.opacity */
+    static final float SURFACE_GLASS_OPACITY = 0.86f;
+    /** surface.glass.edge */
+    static final float SURFACE_GLASS_EDGE = 0.38f;
+    /** surface.cinema.radius */
+    static final float SURFACE_CINEMA_RADIUS = 12f;
+    /** surface.outline.radius */
+    static final float SURFACE_OUTLINE_RADIUS = 10f;
+    /** surface.outline.stroke */
+    static final float SURFACE_OUTLINE_STROKE = 2f;
+    /** surface.blocks.radius */
+    static final float SURFACE_BLOCKS_RADIUS = 12f;
+    /** surface.blocks.stripe */
+    static final float SURFACE_BLOCKS_STRIPE = 4f;
+    /** surface.soft.radius */
+    static final float SURFACE_SOFT_RADIUS = 42f;
+    /** surface.frame.radius */
+    static final float SURFACE_FRAME_RADIUS = 12f;
+    /** surface.frame.stroke */
+    static final float SURFACE_FRAME_STROKE = 3f;
+    /** surface.arch-stroke */
+    static final float SURFACE_ARCH_STROKE = 3f;
+    /** surface.arch-inner */
+    static final float SURFACE_ARCH_INNER = 1.5f;
     /** motion.focus */
     static final long DUR_FOCUS_MS = 120;
     /** motion.panel-slide */
@@ -332,6 +442,10 @@ final class Tokens {
     static final long MOTION_CALL_AUTO_DISMISS_MS = 600000;
     /** motion.call-silent-dismiss: The call screen set to close when the adhan ends, with no adhan playing */
     static final long MOTION_CALL_SILENT_DISMISS_MS = 60000;
+    /** timing.appearance-short */
+    static final int APPEARANCE_CYCLE_SHORT_MIN = 15;
+    /** timing.appearance-long */
+    static final int APPEARANCE_CYCLE_LONG_MIN = 30;
     /** timing.approach: Before a prayer, the arch switches to its approaching outline */
     static final int APPROACH_MIN = 15;
 }

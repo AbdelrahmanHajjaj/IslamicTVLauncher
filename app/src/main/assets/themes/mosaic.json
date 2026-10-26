@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "colors": {
+    "lapis-950": "#09191D",
+    "lapis-900": "#102930",
+    "lapis-800": "#193B42",
+    "lapis-700": "#254B51",
+    "gold-400": "#F0CA8C",
+    "gold-200": "#FFE6BA",
+    "plaster-100": "#EFF8F5",
+    "mist-400": "#B9D8D4"
+  },
+  "surface": "frame",
+  "background": "star_tiles",
+  "lighting": 55
+}

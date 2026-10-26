@@ -6,12 +6,15 @@ import Icon from '../components/Icon.astro';
 import type { Ctx } from '../lib/ctx';
 import { stationOf, STATIONS } from '../lib/data';
 import { href } from '../lib/site';
-import { homeModel } from './home';
+import { homeModel, archModel } from './home';
+import { HOME } from '../lib/home-layout';
 
 interface Props { ctx: Ctx }
 const { ctx } = Astro.props;
 const { t, lang } = ctx;
 const m = homeModel(ctx);
+const arch = archModel(ctx);
+Object.assign(arch.html, m.html);
 const ar = t.ar;
 const station = stationOf(ctx.prefs);
 const cardHidden = ctx.mode !== 'reminder';
@@ -29,10 +32,11 @@ const more = ar ? ['يوتيوب ميوزك', 'متجر Play', 'مشغل الو�
 const allCount = 14;
 const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this opens' };
 ---
-<Arch ctx={ctx} infoTop={488} subSize={26} subGap={12} sub2Color="var(--color-gold-200)" sub2Gap={8} />
-<a class="ft arch-btn" href={href('prayer-day', lang) + '#tv'}>
-  <Icon name="compass" /> <span>{t.s('today')}</span>
-</a>
+<div class="home-countdown">
+  <Arch ctx={ctx} model={arch} infoTop={340} subSize={20} subGap={0} sub2Color="var(--color-gold-200)" sub2Gap={0}>
+    <div slot="time" class="prayer-time num" data-k="homePrayerTime" set:html={m.html.homePrayerTime} />
+  </Arch>
+</div>
 
 <div class="when">
   <div class="clock display num" data-k="clock" set:html={m.html.clock} />
@@ -41,12 +45,14 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 </div>
 
 <div class:list={["pills", {"icons-only": !ctx.prefs.quickLabels}]}>
+  <a class="ft pill" data-qibla href={href('prayer-day', lang) + '#tv'} aria-label={t.s('today')}><Icon name="compass" /><span class="pill-label">{t.s('today')}</span></a>
   <button class="ft pill" data-open-inputs aria-label={t.s('inputsTitle')}><Icon name="input" stroke={2} /> <span class="pill-label">{t.s('inputsTitle')}</span></button>
   <button class="ft pill radio-pill" data-open-radio aria-label={t.s('radio')}>
     <span class="radio-off"><Icon name="radio" stroke={2} /></span>
     <span class="bars mini" aria-hidden="true"><i></i><i></i><i></i></span>
     <span class="radio-label pill-label">{t.s('radio')}</span>
   </button>
+
   <button class="ft pill" data-open-wifi data-toast={`${W.site} Wi-Fi`} aria-label="Wi-Fi">
     <Icon name="wifi" stroke={2} /> <span class="pill-label" dir="ltr">Wi-Fi</span>
   </button>
@@ -60,7 +66,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 <div class="label fav-label caps">{t.s('fav')}</div>
 {favs.map((f, i) => (
   <button class="ft fav" {...(cardHidden && i === 0 ? { 'data-focus-start': '' } : {})} data-extra={i >= 4 ? "true" : undefined} style={`--slot:${i};--column:${i % 3};--row:${Math.floor(i / 3)}`} data-toast={`${W.site} ${f.label}`}>
-    <Icon name={f.icon} size={44} />
+    <Icon name={f.icon} class="app-icon" size={HOME['app-icon-size']} />
     <span>{f.label}</span>
   </button>
 ))}
@@ -123,7 +129,8 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
 <script>
   import { live, loadPrefs } from '../scripts/live';
-  import { homeModel } from './home';
+  import { homeModel, archModel } from './home';
+  import { homeLayout, homePrayers, HOME } from '../lib/home-layout';
   import { stationOf } from '../lib/data';
   import { makeText, type Lang } from '../lib/text';
 
@@ -147,6 +154,30 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
     live(homeModel, (c) => {
       $('.pills').classList.toggle('icons-only', !c.prefs.quickLabels);
       stage.dataset.homeLayout = c.prefs.homeLayout === 'classic' ? 'classic' : 'two_rows';
+      const h = homeLayout(c.prefs, stage.querySelectorAll('.fav').length, c.t.ar);
+      stage.dataset.countdown = String(h.mode);
+      const rect = (el: HTMLElement, x: number, y: number, w?: number, height?: number) => {
+        el.style.insetInlineStart = `${x}px`; el.style.top = `${y}px`;
+        if (w !== undefined) el.style.width = `${w}px`;
+        if (height !== undefined) el.style.height = `${height}px`;
+      };
+      rect($('.when'), h.x, 56, h.width);
+      rect($('.pills'), h.x, h.quickY, h.width - 72 - HOME.gap);
+      rect($('.gear'), h.x + h.width - 72, h.quickY);
+      const panel = $('.home-countdown'); panel.hidden = h.mode === 2;
+      rect(panel, h.mode === 0 ? h.panelX : h.x, h.panelY, h.mode === 0 ? HOME['mihrab-width'] : h.width, h.mode === 0 ? HOME['mihrab-height'] : HOME['bar-height']);
+      const cells = $('.cells'), slots = homePrayers(h.table, -1, 0).length;
+      cells.hidden = slots === 0;
+      const cw = Math.min(HOME['tile-max-width'], (h.width - (slots - 1) * 12) / Math.max(1, slots));
+      rect(cells, h.x, h.tableY, slots * cw + Math.max(0, slots - 1) * 12);
+      cells.style.gridTemplateColumns = `repeat(${Math.max(1, slots)}, minmax(0, 1fr))`;
+      rect($('.fav-label'), h.x, h.labelY); $('.fav-label').hidden = h.count === 0;
+      stage.querySelectorAll<HTMLElement>('.fav').forEach((tile, i) => {
+        tile.hidden = i >= h.count;
+        rect(tile, h.x + i % h.columns * (h.tileWidth + HOME.gap), h.favouritesY + Math.floor(i / h.columns) * (h.tileHeight + HOME.gap), h.tileWidth, h.tileHeight);
+      });
+      rect($('.more-label'), h.x, h.recentLabelY);
+      stage.querySelectorAll<HTMLElement>('.more').forEach((tile, i) => rect(tile, h.x + i * (h.width + 20) / 6, h.recentY, (h.width - 100) / 6));
       const left = Math.ceil((c.day.nextTime.getTime() - c.now.getTime()) / 1000);
       const remind = c.prefs.remind * 60;
       const due = (forced || (remind > 0 && left > 0 && left <= remind)) && card.dataset.for !== dismissedFor;
@@ -235,26 +266,46 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 </script>
 
 <style>
+  .clock, .home-countdown :global(.display), .home-countdown :global(.display-bold) { font-family:var(--home-display, var(--display)); }
+  .home-countdown :global(.display-bold) { font-weight:var(--home-display-weight, var(--display-weight)); }
   .quick-card { position:absolute; inset-inline-end:96px; top:152px; width:640px; padding:24px 28px; border:2px solid var(--color-gold-400-60); border-radius:24px; background:var(--color-lapis-900); display:flex; flex-direction:column; gap:8px; }
   .quick-card[hidden] { display:none; }
   .quick-head { display:flex; align-items:center; justify-content:space-between; }
-  .quick-more { position:relative; width:72px; height:72px; border-radius:36px; justify-content:center; align-items:center; --rest-fill:var(--color-lapis-800); }
+  .quick-more { position:relative; width:72px; height:72px; border-radius:36px; justify-content:center; align-items:center; --rest-fill:var(--surface-fill, var(--color-lapis-800)); }
   .quick-title { color:var(--color-gold-400); font-size:28px; margin-bottom:12px; }
   .quick-card p { font-size:24px; }
-  .quick-item { position:relative; width:100%; min-height:68px; padding:16px 22px; font-size:24px; border-radius:22px; --rest-fill:var(--color-lapis-800); }
+  .quick-item { position:relative; width:100%; min-height:68px; padding:16px 22px; font-size:24px; border-radius:22px; --rest-fill:var(--surface-fill, var(--color-lapis-800)); }
 
-  .arch-btn {
-    inset-inline-start: 176px; top: 904px; width: 440px; height: var(--layout-button-height);
-    border-radius: calc(var(--layout-button-height) / 2); align-items: center; justify-content: center; gap: 14px;
-    --rest-fill: transparent; --rest-border: var(--color-gold-400-60); --rest-border-width: 2px;
-  }
-  .when { position: absolute; inset-inline-start: var(--layout-courtyard-inset-inline-start); top: 56px; display: flex; flex-direction: column; gap: 6px; }
+  .home-countdown { position:absolute; }
+  .home-countdown[hidden], .cells[hidden], .fav[hidden] { display:none; }
+  .home-countdown :global(.arch) { inset-inline-start:0; top:0; width:100%; height:100%; }
+  .home-countdown :global(.verse), .home-countdown :global(.ref), .home-countdown :global(.info) { inset-inline-start:var(--layout-home-panel-inset); width:calc(100% - 2 * var(--layout-home-panel-inset)); }
+  .home-countdown :global(.verse) { top:var(--layout-home-verse-top); }
+  .home-countdown :global(.ref) { top:var(--layout-home-reference-top); }
+  .home-countdown :global(.rule) { display:none; }
+  .home-countdown :global(.info) { top:var(--layout-home-info-top) !important; height:calc(100% - var(--layout-home-info-top) - var(--layout-home-panel-inset)); }
+  .home-countdown :global(.label), .home-countdown :global(.sub2) { font-size:var(--font-size-caption); }
+  .home-countdown :global(.name) { font-size:var(--layout-home-prayer-name-size); }
+  .home-countdown :global(.count) { flex:1; display:grid; place-items:center; font-size:calc(var(--layout-home-countdown-size) * var(--home-countdown-scale, 1)); }
+  .home-countdown :global(.count[data-long='true']) { font-size:calc(var(--font-size-display-xl-hours) * var(--home-countdown-scale, 1)); }
+  .home-countdown :global(.count[data-very-long='true']) { font-size:calc(var(--font-size-display-l) * var(--home-countdown-scale, 1)); }
+  .prayer-time { font-size:var(--font-size-sacred); margin-bottom:var(--space-3); }
+  :global(.tv[data-countdown="1"]) .home-countdown { border-radius:var(--radius-cell); background:var(--surface-fill, var(--color-lapis-800)); box-shadow:inset 0 0 0 var(--surface-stroke, 0px) var(--surface-edge, transparent); }
+  :global(.tv[data-countdown="1"]) .home-countdown :global(.arch), :global(.tv[data-countdown="1"]) .home-countdown :global(.verse), :global(.tv[data-countdown="1"]) .home-countdown :global(.ref) { display:none; }
+  :global(.tv[data-countdown="1"]) .home-countdown :global(.info) { top:0 !important; height:100%; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); grid-template-rows:repeat(3, 1fr); }
+  :global(.tv[data-countdown="1"]) .home-countdown :global(.label) { grid-area:1 / 1; align-self:end; }
+  :global(.tv[data-countdown="1"]) .home-countdown :global(.name) { grid-area:2 / 1 / 4; align-self:start; font-size:var(--font-size-heading); }
+  :global(.tv[data-countdown="1"]) .home-countdown :global(.count) { grid-area:1 / 2 / 4; font-size:calc(var(--layout-home-compact-countdown-size) * var(--home-countdown-scale, 1)); }
+  :global(.tv[data-countdown="1"]) .home-countdown :global(.sub) { grid-area:2 / 3; align-self:center; }
+  :global(.tv[data-countdown="1"]) .home-countdown :global(.sub2) { grid-area:3 / 3; align-self:start; }
+  :global(.tv[data-countdown="1"]) .prayer-time { grid-area:1 / 3; align-self:end; margin:0; font-size:var(--font-size-body); }
+  .when { position: absolute; inset-inline-start: var(--space-safe-inline); top: 56px; display: flex; flex-direction: column; gap: 6px; }
   .clock { font-size: var(--font-size-display-l); line-height: var(--font-line-height-display); }
-  /* The Hijri date (with the city) first, then the Gregorian, smaller and in mist. */
+  /* Dates stay beside the Mihrab; location belongs under its countdown. */
   .hdate { font-size: var(--font-size-body); margin-top: 4px; }
-  .gdate { font-size: 24px; color: var(--color-mist-400); margin-top: 14px; }
+  .gdate { font-size: 24px; color: var(--color-mist-400); margin-top: 0; }
 
-  .pills { position: absolute; top: 56px; inset-inline-end: calc(1920px - var(--layout-courtyard-inset-inline-start) - var(--layout-courtyard-width) + 72px + 20px); display: flex; gap: 20px; }
+  .pills { justify-content:flex-end; position: absolute; top: 56px; display: flex; gap: var(--layout-home-gap); }
   .pill { position: relative; height: 72px; padding: 0 28px; border-radius: 36px; align-items: center; gap: 14px; font-size: 24px; --rest-border: var(--color-line-soft); --rest-border-width: var(--border-chip-width); }
   .gear { inset-inline-start: calc(var(--layout-courtyard-inset-inline-start) + var(--layout-courtyard-width) - 72px); top: 56px; width: 72px; height: 72px; border-radius: 36px; align-items: center; justify-content: center; --rest-border: var(--color-line-soft); --rest-border-width: var(--border-chip-width); }
   .icons-only .pill-label { display: none; }
@@ -264,25 +315,27 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   :global(.tv.radio-on) .radio-pill:not(:focus) { --rest-border: var(--color-gold-400); }
 
   .cells { position: absolute; inset-inline-start: var(--layout-courtyard-inset-inline-start); top: 290px; width: var(--layout-courtyard-width); display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--layout-gap-prayer-cells); }
-  .cells :global(.cell) { height: var(--layout-prayer-cell-height); border-radius: var(--radius-cell); padding: 16px 20px; display: flex; flex-direction: column; background: var(--color-lapis-800); }
-  .cells :global(.tag) { flex: 1; font-size: var(--font-size-caption); }
-  .cells :global(.name) { font-size: var(--font-size-body); line-height: 1.1; }
-  .cells :global(.time) { font-size: 34px; line-height: 1.1; white-space: nowrap; }
+  .cells :global(.cell) { height: var(--layout-home-table-height); border-radius: min(var(--radius-cell), var(--surface-prayer-radius-max)); padding: var(--layout-home-cell-padding) var(--layout-home-cell-inset); display: flex; flex-direction: column; text-align:start; background: var(--surface-fill, var(--color-lapis-800)); box-shadow:inset 0 0 0 var(--surface-stroke, 0px) var(--surface-edge, transparent); }
+  .cells :global(.prayer-head) { display:flex; justify-content:space-between; align-items:flex-start; flex:1; }
+  .cells :global(.prayer-symbol) { font-size:var(--font-size-caption); line-height:1; }
+  .cells :global(.prayer-symbol .prayer-icon) { margin-inline-end:0; }
+  .cells :global(.tag) { text-align:end; font-size: var(--font-size-caption); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cells :global(.name) { white-space:nowrap; font-size: var(--font-size-body); line-height: 1.1; }
+  .cells :global(.time) { font-size: 30px; line-height: 1.1; white-space: nowrap; }
   :global(:lang(en)) .cells :global(.time) { font-size: 30px; }
-  .cells :global(.cell[data-state='now']) { background: var(--color-plaster-100); color: var(--color-lapis-900); }
+  .cells :global(.cell[data-state='now']) { background: var(--color-plaster-100); color: var(--color-lapis-900); box-shadow:none; }
   .cells :global(.cell[data-state='next']) { background: transparent; color: var(--color-gold-400); box-shadow: inset 0 0 0 var(--border-next-prayer-width) var(--border-next-prayer-color); }
-  .cells :global(.cell[data-state='past']) { background: var(--color-lapis-800-60); color: var(--color-mist-400); }
+  .cells :global(.cell[data-state='past']) { background: color-mix(in srgb, var(--surface-fill, var(--color-lapis-800)) 60%, transparent); color: var(--color-mist-400); }
   .cells :global(.cell:is([data-state='now'], [data-state='next']) :is(.name, .time)) { font-weight: 600; }
 
   .label { position: absolute; inset-inline-start: var(--layout-courtyard-inset-inline-start); font-size: var(--font-size-label); color: var(--color-mist-400); }
   .fav-label { top: 478px; }
   .more-label { top: 842px; }
-  .fav { inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + var(--column) * ((var(--layout-courtyard-width) - 40px) / 3 + 20px)); top:calc(516px + var(--row) * 156px); width:calc((var(--layout-courtyard-width) - 40px) / 3); height:132px; padding: 22px 24px; flex-direction: column; justify-content: space-between; align-items: flex-start; font-size: var(--font-size-body-l); font-weight: 500; text-align: start; }
+  .fav { inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + var(--column) * ((var(--layout-courtyard-width) - 40px) / 3 + 20px)); top:calc(516px + var(--row) * 156px); width:calc((var(--layout-courtyard-width) - 40px) / 3); height:132px; padding: var(--layout-home-app-inset-block) var(--layout-home-app-inset-inline); gap:var(--layout-home-app-icon-gap); flex-direction: column; justify-content: space-between; align-items: flex-start; font-size: var(--font-size-control); font-weight: 500; text-align: start; }
+  .fav :global(.app-icon) { width:var(--layout-home-app-icon-size); height:var(--layout-home-app-icon-size); min-height:0; flex-shrink:1; }
+  .fav > span { flex-shrink:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  :global([data-home-layout='classic']) .fav :global(.app-icon) { width:var(--layout-home-app-icon-classic-size); height:var(--layout-home-app-icon-classic-size); }
   .more { top: 890px; width: calc((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6); height:94px; border-radius: var(--radius-cell); padding: 18px; align-items: flex-end; font-size: var(--font-size-label); text-align: start; }
-  :global(.tv[data-home-layout="classic"]) .fav { inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + var(--slot) * ((var(--layout-courtyard-width) - 60px) / 4 + 20px)); top:516px; width:calc((var(--layout-courtyard-width) - 60px) / 4); height:196px; }
-  :global(.tv[data-home-layout="classic"]) .fav[data-extra] { display:none; }
-  :global(.tv[data-home-layout="classic"]) .more-label { top:724px; }
-  :global(.tv[data-home-layout="classic"]) .more { top:772px; }
   .all { white-space: pre-line; padding: 12px; --rest-fill: transparent; --rest-border: var(--color-line-dash); --rest-border-width: 0; border: 2px dashed var(--color-line-dash); }
   .all:focus { border-color: transparent; }
 
@@ -293,7 +346,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   .card-sub { font-size: 24px; color: var(--color-mist-400); }
   .card-buttons { display: flex; gap: 16px; margin-top: 14px; }
   .card-btn { position: relative; height: 68px; padding: 0 32px; border-radius: 34px; align-items: center; font-size: 24px; --rest-fill: transparent; --rest-border: var(--color-line-soft); --rest-border-width: 2px; color: var(--color-plaster-100); }
-  .card-btn.filled { --rest-fill: var(--color-lapis-800); --rest-border-width: 0; color: var(--color-plaster-100); }
+  .card-btn.filled { --rest-fill: var(--surface-fill, var(--color-lapis-800)); --rest-border-width: 0; color: var(--color-plaster-100); }
   .card .card-btn:focus { background: var(--focus-fill); color: var(--focus-text); outline-color: var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 
   .radio-card { position: absolute; inset-inline-end: calc(1920px - var(--layout-courtyard-inset-inline-start) - var(--layout-courtyard-width)); top: 152px; width: 720px; padding: 32px 36px 28px; border-radius: var(--radius-panel); background: var(--color-lapis-800); box-shadow: inset 0 0 0 var(--border-chip-width) var(--color-line-dash); display: flex; flex-direction: column; gap: 20px; --spatial-navigation-contain: contain; }

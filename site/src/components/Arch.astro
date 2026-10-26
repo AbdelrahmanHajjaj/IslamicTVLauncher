@@ -20,6 +20,7 @@ const m = model ?? archModel(ctx);
 <div class="info" style={`top:${infoTop}px`}>
   <div class="label caps" data-k="archLabel" set:html={m.html.archLabel} />
   <div class="name display-bold" data-k="archName" set:html={m.html.archName} />
+  <slot name="time" />
   <div class="count display num" dir="ltr" data-k="archCount" data-a="archCount" data-long={m.attr.archCount['data-long']} set:html={m.html.archCount} />
   <div class="sub" style={`font-size:${subSize}px;margin-top:${subGap}px`} data-k="archSub" set:html={m.html.archSub} />
   <div class="sub2" style={`color:${sub2Color};margin-top:${sub2Gap}px`} data-k="archSub2" set:html={m.html.archSub2} />
@@ -27,8 +28,9 @@ const m = model ?? archModel(ctx);
 
 <style>
   .arch { position: absolute; inset-inline-start: var(--layout-arch-inset-inline-start); top: var(--layout-arch-top); overflow: visible; }
-  .outer { fill: var(--color-lapis-800); stroke: var(--border-arch-rest-color); stroke-width: var(--border-arch-rest-width); transition: stroke var(--motion-focus); }
+  .outer { fill: var(--surface-fill, var(--color-lapis-800)); stroke: var(--surface-edge, var(--border-arch-rest-color)); stroke-width: var(--surface-arch-stroke, var(--border-arch-rest-width)); transition: stroke var(--motion-focus); }
   .inner { fill: none; stroke: var(--color-arch-inner); stroke-width: 1.5; }
+  :global(.tv[data-surface]:not([data-surface="classic"]):not([data-surface="frame"])) .inner { display: none; }
   /* Focused while its button has focus (or is the default focus on arrival); approaching wins. */
   :global(.tv:has(.arch-btn:focus)) .outer,
   :global(.tv:has(.arch-btn[data-focus-start]):not(:focus-within)) .outer { stroke: var(--border-arch-focused-color); stroke-width: var(--border-arch-focused-width); }

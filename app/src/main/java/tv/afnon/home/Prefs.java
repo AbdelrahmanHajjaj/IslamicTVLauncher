@@ -411,9 +411,15 @@ final class Prefs {
 
     static boolean classicHome(Context c) { return "classic".equals(of(c).getString("home_layout", "two_rows")); }
 
+    static int homeCountdown(Context c) { return HomeLayout.clamp(of(c).getInt("home_countdown", 0), HomeLayout.HIDDEN); }
+    static int homeSide(Context c) { return HomeLayout.clamp(of(c).getInt("home_side", 0), 2); }
+    static int homeBar(Context c) { return HomeLayout.clamp(of(c).getInt("home_bar", 0), 1); }
+    static int homePrayers(Context c) { return HomeLayout.clamp(of(c).getInt("home_prayers", 0), HomeLayout.NONE); }
+
     static String key(Context c) {
         SharedPreferences p = of(c);
         return p.getString("locale", "") + "|" + p.getString("digits", "") + "|" + clock24(c) + "|" + cityIndex(c)
-            + "|" + method(c) + "|" + madhab(c) + "|" + java.util.Arrays.toString(prayerOffsets(c)) + "|" + hijriOffset(c) + "|" + p.getInt("facing", -1) + "|" + Appearance.key(c) + "|" + Appearance.reduced(c) + "|" + p.getBoolean("hide_system_apps", false) + "|" + p.getString("dock_mode", "hidden") + "|" + p.getString("dock_position", "bottom") + "|" + quickLabels(c) + "|" + classicHome(c);
+            + "|" + method(c) + "|" + madhab(c) + "|" + java.util.Arrays.toString(prayerOffsets(c)) + "|" + hijriOffset(c) + "|" + p.getInt("facing", -1) + "|" + Appearance.key(c) + "|" + Appearance.reduced(c) + "|" + p.getBoolean("hide_system_apps", false) + "|" + p.getString("dock_mode", "hidden") + "|" + p.getString("dock_position", "bottom") + "|" + quickLabels(c) + "|" + classicHome(c)
+            + "|" + homeCountdown(c) + "|" + homeSide(c) + "|" + homeBar(c) + "|" + homePrayers(c) + "|" + Appearance.cycleMinutes(c);
     }
 }

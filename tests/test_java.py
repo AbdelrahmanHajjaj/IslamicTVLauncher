@@ -8,6 +8,29 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 class JavaChecks(unittest.TestCase):
+    def test_appearance_rotation_policy(self):
+        with tempfile.TemporaryDirectory() as output:
+            source = ROOT / "app/src/main/java/tv/afnon/home"
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+                str(source / "Tokens.java"), str(source / "AppearanceCycle.java"), str(ROOT / "tests/AppearanceCycleCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.AppearanceCycleCheck"], check=True, capture_output=True)
+
+    def test_background_resolution_and_memory_budget(self):
+        with tempfile.TemporaryDirectory() as output:
+            source = ROOT / "app/src/main/java/tv/afnon/home"
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+                *(str(source / name) for name in ("Tokens.java", "BackgroundSize.java")),
+                str(ROOT / "tests/BackgroundSizeCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.BackgroundSizeCheck"], check=True, capture_output=True)
+
+    def test_home_layout_modes_and_prayer_selection(self):
+        with tempfile.TemporaryDirectory() as output:
+            source = ROOT / "app/src/main/java/tv/afnon/home"
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+                *(str(source / name) for name in ("Tokens.java", "FavouriteChoice.java", "HomeLayout.java")),
+                str(ROOT / "tests/HomeLayoutCheck.java")], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.HomeLayoutCheck"], check=True, capture_output=True)
+
     def test_prayer_vectors_cover_each_prayer_in_order(self):
         import re
         import xml.etree.ElementTree as ET
@@ -50,8 +73,8 @@ class JavaChecks(unittest.TestCase):
             self.assertGreater(float(path.get("stroke-width")), 0)
             png = (ROOT / f"app/src/main/res/drawable-nodpi/{resource}.png").read_bytes()
             self.assertEqual(png[:8], b"\x89PNG\r\n\x1a\n")
-            self.assertEqual(struct.unpack(">II", png[16:24]), (480, 270))
-            self.assertLess(len(png), 60000, "Static pattern masks must stay small")
+            self.assertEqual(struct.unpack(">II", png[16:24]), (1920, 1080), "Home must not enlarge a preview-resolution mask")
+            self.assertLess(len(png), 200000, "Static pattern masks must stay small")
             self.assertFalse((ROOT / f"app/src/main/res/drawable/{resource}.xml").exists())
 
     def test_phone_package_and_home_guards(self):
@@ -65,16 +88,29 @@ class JavaChecks(unittest.TestCase):
 
     def test_theme_bounds_and_preset_contrast(self):
         import json
+        import re
+        source = ROOT / "app/src/main/java/tv/afnon/home"
+        native = re.findall(r'"([^"]+)"', re.search(r'PRESETS = \{([^}]+)', (source / "Appearance.java").read_text()).group(1))
+        browser = re.search(r'const presets:.*? = \{([^}]+)', (ROOT / "site/src/scripts/appearance.ts").read_text()).group(1)
+        self.assertEqual(native, ["mihrab", *[name.strip() for name in browser.split(",")], "custom"])
+        self.assertEqual(len(native) - 1, 20, "Twenty built-in themes; imported Custom is separate")
+        assets = ROOT / "app/src/main/assets/themes"
+        self.assertEqual(set(native[1:-1]), {path.stem for path in assets.glob("*.json")})
+        labels = re.search(r'String\[\] themeNames\(\).*', (source / "Text.java").read_text(encoding="utf-8")).group(0)
+        for language in re.findall(r'new String\[\] \{([^}]+)', labels):
+            self.assertEqual(len(re.findall(r'"[^"]+"', language)), len(native))
         javac, java = shutil.which("javac"), shutil.which("java")
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([javac, "-encoding", "UTF-8", "-d", output,
                 str(ROOT / "app/src/main/java/tv/afnon/home/ThemeSpec.java"),
+                str(ROOT / "app/src/main/java/tv/afnon/home/ThemeSurface.java"),
+                str(ROOT / "app/src/main/java/tv/afnon/home/Tokens.java"),
                 str(ROOT / "tests/ThemeCheck.java")], check=True, capture_output=True)
             subprocess.run([java, "-cp", output, "tv.afnon.home.ThemeCheck"], check=True, capture_output=True)
-            for path in (ROOT / "app/src/main/assets/themes").glob("*.json"):
+            for path in assets.glob("*.json"):
                 with self.subTest(theme=path.stem):
                     preset = json.loads(path.read_text(encoding="utf-8"))
-                    values = [*preset["colors"].values(), preset["background"]]
+                    values = [*preset["colors"].values(), preset["background"], preset.get("surface", "classic")]
                     subprocess.run([java, "-cp", output, "tv.afnon.home.ThemeCheck", *values], check=True, capture_output=True)
 
     def test_remote_capture_waits_for_a_complete_press(self):

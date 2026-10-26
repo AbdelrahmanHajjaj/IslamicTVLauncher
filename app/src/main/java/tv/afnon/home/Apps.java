@@ -1,8 +1,10 @@
 package tv.afnon.home;
 
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -51,18 +53,34 @@ final class Apps {
     }
 
     private static List<String> cached;
-    private static long cachedAt;
     private static final Map<String, ApplicationInfo> appInfo = new HashMap<>();
+    private static final Map<String, String> appLabels = new HashMap<>();
+    private static boolean watchingPackages;
+    private static final BroadcastReceiver packageChanges = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent intent) { invalidate(); }
+    };
 
-    static synchronized void invalidate() { cached = null; appInfo.clear(); }
+    static synchronized void invalidate() { cached = null; appInfo.clear(); appLabels.clear(); }
+
+    private static void watchPackages(Context c) {
+        if (watchingPackages) return;
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED); filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_CHANGED); filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        filter.addDataScheme("package");
+        Context app = c.getApplicationContext();
+        if (android.os.Build.VERSION.SDK_INT >= 33) app.registerReceiver(packageChanges, filter, Context.RECEIVER_NOT_EXPORTED);
+        else app.registerReceiver(packageChanges, filter);
+        watchingPackages = true;
+    }
 
     /**
-     * Every app that has a TV or a phone-style launcher entry, one per package, not hidden. Cached for two
-     * seconds: one screen build asks several times, and each query is slow on this TV.
+     * Every app with a TV or phone-style launcher entry. Watch changes even while screens are stopped;
+     * leaving Home idle must not expire the catalogue just before All apps opens.
      */
     static synchronized List<String> installed(Context c) {
-        long now = android.os.SystemClock.uptimeMillis();
-        if (cached != null && now - cachedAt < 2000) return new ArrayList<>(cached);
+        watchPackages(c);
+        if (cached != null) return new ArrayList<>(cached);
         appInfo.clear();
         PackageManager pm = c.getPackageManager();
         Set<String> found = new LinkedHashSet<>();
@@ -74,7 +92,6 @@ final class Apps {
         }
         cached = new ArrayList<>(found);
         java.util.Collections.sort(cached);
-        cachedAt = now;
         return new ArrayList<>(cached);
     }
 
@@ -163,12 +180,16 @@ final class Apps {
         return value;
     }
 
-    static String name(Context c, Text t, String pkg) {
+    static synchronized String name(Context c, Text t, String pkg) {
         if (t.ar && AR_NAMES.containsKey(pkg)) return AR_NAMES.get(pkg);
         if (EN_NAMES.containsKey(pkg)) return EN_NAMES.get(pkg);
+        String label = appLabels.get(pkg);
+        if (label != null) return label;
         try {
             PackageManager pm = c.getPackageManager();
-            return pm.getApplicationLabel(info(c, pkg)).toString();
+            label = pm.getApplicationLabel(info(c, pkg)).toString();
+            appLabels.put(pkg, label);
+            return label;
         } catch (PackageManager.NameNotFoundException e) {
             return pkg;
         }

@@ -1,8 +1,10 @@
 // Settings (SettingsActivity): sections, each section's rows and the Asr preview, as HTML strings so the same
 // code renders the page at build time and re-renders it in the browser after every change.
+import { homeChoice } from '../lib/home-layout';
+import { CYCLE_MINUTES, cycleMinutes } from '../lib/appearance-cycle';
 import { THEMES, BACKGROUNDS } from '../scripts/appearance';
 import voicesJson from '../data/adhans.json';
-import type { Ctx } from '../lib/ctx';
+import { makeCtx, type Ctx } from '../lib/ctx';
 import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
 import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET } from '../lib/prayer';
 import type { Text } from '../lib/text';
@@ -74,11 +76,12 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
   }));
   const city = cityOf(p);
   const st = stationOf(p);
+  const mode = homeChoice(p.homeCountdown, 2);
   switch (section) {
     case PRAYER: return [
       { id: 'city', kind: 'value', label: t.s('location'), help: locationHelp(t, city.lat, city.lng), value: placeOf(t, city) },
       { id: 'method', kind: 'value', label: t.s('method'), help: methodAngles(t, methodOf(p)), value: t.methodName(methodOf(p)) },
-      { id: 'school', kind: 'seg', label: t.s('asrSchool'), help: t.s('asrSchoolHelp'), segs: t.list('asrSchools'), selected: p.hanafi ? 1 : 0 },
+      { id: 'school', kind: 'seg', label: t.s('asrSchool'), help: t.s('preview') + t.sep() + previewHtml(c), segs: t.list('asrSchools'), selected: p.hanafi ? 1 : 0 },
       { id: 'offsets', kind: 'value', label: t.s('prayerOffsets'), help: t.s('prayerOffsetsHelp'), value: t.offsetCount(prayerOffsets(p).filter(n => n !== 0).length) },
       { id: 'hijri', kind: 'step', label: t.s('hijriAdjust'), help: (t.ar ? 'اليوم: ' : 'Today: ') + hijri(t, c.day), value: t.days(p.hijriOffset) },
       { id: 'room', kind: 'value', label: t.s('roomTitle'), help: t.s('roomHelp'), value: facing < 0 ? t.s('notSet') : t.bearingLabel(facing) },
@@ -101,15 +104,20 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
       { id: 'clock', kind: 'seg', label: t.s('clockRow'), help: t.s('clockHelp'), segs: t.list('clocks').map(t.d), selected: Math.max(0, CLOCKS.indexOf(p.clock)) },
       { id: 'quickLabels', kind: 'toggle', label: t.s('quickLabels'), help: '', on: p.quickLabels ?? false },
       { id: 'dockMode', kind: 'value', label: t.s('prayerDock'), help: '', value: t.list('dockModes')[DOCK_MODES.indexOf(p.dockMode ?? 'hidden')] },
-      { id: 'homeLayout', kind: 'value', label: t.s('homeLayout'), help: '', value: t.list('homeLayouts')[p.homeLayout === 'classic' ? 1 : 0] },
       { id: 'dockPosition', kind: 'seg', label: t.s('dockPosition'), help: '', segs: t.list('dockPositions'), selected: p.dockPosition === 'top' ? 0 : 1 },
 
     ];
     case APPEARANCE: return [
+      { id: 'homeCountdown', kind: 'carousel', label: t.s('homeCountdown'), help: '', segs: t.list('homeCountdowns'), selected: mode },
+      { id: 'homePosition', kind: 'carousel', label: t.s('homePosition'), help: '', segs: mode === 2 ? ['—'] : t.list(mode === 1 ? 'homeBars' : 'homeSides'), selected: mode === 2 ? 0 : homeChoice(mode === 1 ? p.homeBar : p.homeSide, mode === 1 ? 1 : 2) },
+      { id: 'homePrayers', kind: 'carousel', label: t.s('homePrayers'), help: '', segs: t.list('homePrayerModes'), selected: homeChoice(p.homePrayers, 4) },
+      { id: 'homeFavourites', kind: 'carousel', label: t.s('homeFavourites'), help: '', segs: t.list('homeLayouts'), selected: p.homeLayout === 'classic' ? 1 : 0 },
       { id: 'theme', kind: 'carousel', label: t.s('themeRow'), help: '', segs: t.list('themeNames').slice(0, THEMES.length), selected: Math.max(0, THEMES.indexOf(p.theme ?? 'mihrab')) },
       { id: 'background', kind: 'carousel', label: t.s('backgroundRow'), help: '', segs: t.list('backgroundNames'), selected: Math.max(0, BACKGROUNDS.indexOf(p.background ?? 'theme')) },
       { id: 'lighting', kind: 'step', label: t.s('lightingRow'), help: '', value: t.d(`${p.lighting ?? 35}%`) },
+      { id: 'appearanceCycle', kind: 'carousel', label: t.s('appearanceCycle'), help: t.s('appearanceCycleHelp'), segs: t.list('appearanceCycleChoices'), selected: CYCLE_MINUTES.indexOf(cycleMinutes(p.appearanceCycle)) },
       { id: 'reduceMotion', kind: 'toggle', label: t.s('reduceMotion'), help: '', on: p.reduceMotion ?? false },
+      { id: 'homeReset', kind: 'value', label: t.s('homeReset'), help: '' },
       { id: 'apply', kind: 'value', label: t.s('applyAppearance'), help: '' },
     ];
     case NETWORK: return [{ id: 'network', kind: 'value', label: t.s('networkRow'), help: t.s('networkHelp'), value: '' }];
@@ -146,8 +154,13 @@ export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
 export function pick(c: Ctx, id: string, i: number): SPrefs | null {
   const p = { ...(c.prefs as SPrefs) };
   switch (id) {
+    case 'homeCountdown': return { ...p, homeCountdown: homeChoice(i, 2) };
+    case 'homePosition': return p.homeCountdown === 2 ? p : p.homeCountdown === 1 ? { ...p, homeBar: homeChoice(i, 1) } : { ...p, homeSide: homeChoice(i, 2) };
+    case 'homePrayers': return { ...p, homePrayers: homeChoice(i, 4) };
+    case 'homeFavourites': return { ...p, homeLayout: i === 1 ? 'classic' : 'two_rows' };
     case 'theme': return { ...p, theme: THEMES[i] };
     case 'background': return { ...p, background: BACKGROUNDS[i] };
+    case 'appearanceCycle': return { ...p, appearanceCycle: CYCLE_MINUTES[i] ?? 0 };
     case 'school': return { ...p, hanafi: i === 1 };
     case 'remind': return { ...p, remind: REMIND[i] };
     case 'resume': return { ...p, radioResume: i === 0 };
@@ -166,8 +179,13 @@ const chevron = '<svg class="chev" width="22" height="22" viewBox="0 0 24 24" fi
 export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 'var(--layout-settings-rows-top)') {
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
-  else if (r.kind === 'carousel')
-    control = [r.selected! - 1, r.selected!, r.selected! + 1].map(k => `<span class="slide${k === r.selected ? ' on' : ''}" ${k >= 0 && k < r.segs!.length ? `data-seg="${k}"` : ''}>${esc(r.segs![k] ?? '')}</span>`).join('');
+  else if (r.kind === 'carousel') {
+    control = [r.selected! - 1, r.selected!, r.selected! + 1].map(k => {
+      const valid = k >= 0 && k < r.segs!.length;
+      const label = k !== r.selected ? (valid ? ((k < r.selected!) !== t.ar ? '‹' : '›') : '') : r.segs![k] ?? '';
+      return `<span class="slide${k === r.selected ? ' on' : ''} home-choice" ${valid ? `data-seg="${k}"` : ''}>${esc(label)}</span>`;
+    }).join('');
+  }
   else if (r.kind === 'seg')
     control = `<span class="track">${r.segs!.map((s, k) => `<span class="seg${k === r.selected ? ' on' : ''}" data-seg="${k}">${esc(s)}</span>`).join('')}</span>`;
   else if (r.kind === 'step')
@@ -187,9 +205,10 @@ export function navHtml(t: Text, section: number) {
 /** The rows; the one being edited shows its draft. */
 export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null, offsetsPage = false) =>
   rowsFor(c, section, radioOn, offsetsPage).map((r, i) => {
-    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
+    if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE ? '0px' : 'var(--layout-settings-rows-top)');
     const shown = r.prayer !== undefined ? { ...r, value: c.t.offsetMinutes(edit.draft), help: clock(c.t, new Date(c.day.times[r.prayer].getTime() + (edit.draft - savedDraft(c, r)) * 60000), c.h24) } : r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
-    return rowHtml(c.t, shown, i, true, section === APPEARANCE ? 'var(--layout-settings-appearance-top)' : 'var(--layout-settings-rows-top)');
+    if (r.id === 'school') shown.help = c.t.s('preview') + c.t.sep() + previewHtml(makeCtx(c.lang, { ...c.prefs, hanafi: edit.draft === 1 }, c.now, c.mode));
+    return rowHtml(c.t, shown, i, true, section === APPEARANCE ? '0px' : 'var(--layout-settings-rows-top)');
   }).join('');
 export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);
 
@@ -209,17 +228,8 @@ export const citiesOf = (t: Text, country: string) => CITIES.filter((c) => (t.ar
 export const methodItems = (t: Text, p: Prefs): Item[] => METHODS.map((m) => ({ label: t.methodName(m), chosen: m === methodOf(p) }));
 export const stationsOf = (reciters: boolean) => STATIONS.filter((s) => !!s.reciter === reciters);
 
-function layoutPreview(classic: boolean) {
-  const columns = classic ? 4 : 3, count = classic ? 4 : 6, width = classic ? 60 : 82;
-  const tile = (x: number, y: number, w: number, h: number, color: string) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="var(--color-${color})"/>`;
-  return `<svg viewBox="0 0 480 270" aria-hidden="true"><rect x="22" y="30" width="136" height="218" rx="68" fill="var(--color-lapis-800)"/>${tile(52,130,76,4,'gold-400')}${tile(190,30,95,7,'plaster-100')}${tile(190,46,140,3,'mist-400')}`
-    + Array.from({length:6},(_,i)=>tile(190+i*44,64,40,31,i===0?'gold-400':'lapis-800')).join('')
-    + Array.from({length:count},(_,i)=>tile(190+i%columns*(width+6),116+Math.floor(i/columns)*42,width,classic?64:36,i===0?'gold-400':'lapis-800')).join('')
-    + Array.from({length:6},(_,i)=>tile(190+i*44,220,40,24,'lapis-700')).join('')+'</svg>';
-}
-
-export function chooserHtml(t: Text, title: string, items: Item[], horizontal = false) {
+export function chooserHtml(t: Text, title: string, items: Item[]) {
   return `<div class="ch-card"><div class="ch-title display-bold">${esc(title)}</div><div class="ch-list">`
-    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}">${horizontal ? layoutPreview(i === 1) : ""}${esc(it.label)}</button>`).join('')
+    + items.map((it, i) => `<button class="ft ch-item${it.chosen ? ' chosen' : ''}" data-item="${i}">${esc(it.label)}</button>`).join('')
     + '</div></div>';
 }

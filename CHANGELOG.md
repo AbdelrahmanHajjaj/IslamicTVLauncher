@@ -6,13 +6,23 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ### Added in IslamicTVLauncher (Afnon)
 
+- Cinema, Carbon, Signal, Arcade, Brass and Mosaic now use subtle 12-pixel corners through their shared theme profiles, including app cards, Home prayer boxes, Settings rows and navigation tabs.
+- All apps icons now fill a 72-pixel area, matching standard Home icons. English and Arabic app labels align with their card's start edge, including Latin names in Arabic layouts.
+- Unsupported TV settings shortcuts skip Google's placeholder activity and fall back to actual TV Settings, avoiding the misleading "No application can handle this action" message when the prayer service is unavailable.
+- Wi-Fi quick-control labels retain their text after an automatic theme rotation.
+- Optional random appearance in Home & appearance: Off, every 15 minutes or every 30 minutes. Each rotation chooses a different built-in theme and background while preserving layout and focused app. It uses Home's existing tick, defers during menus/reminders or other screens, and never wakes the TV. Apply restarts the interval; Off keeps the current appearance.
+- Home customization with a live layout preview, Apply, Back-to-cancel and reset. Choose a mihrab on either side, a compact countdown at the top/bottom, or hide it; independently show all prayer times, current, next, both, or none. Favourite and recent-app regions reflow while preserving saved apps and prayer-alert settings. Arabic/English browser previews mirror these controls.
+- Permanent Today & Qibla quick control at the outer end of the quick-action row, beyond Inputs, replacing the mihrab button. Remote navigation reaches every remaining control even with both prayer sections hidden or no favourites.
+- Restored the full-size mihrab with the clock beside it. Next prayer name, prayer time, large countdown and location fill the panel. Wider app rows use four columns for six favourites without the mihrab; focus spacing protects labels and adjacent panels.
+- One Home & appearance page combines layout, theme and background in a shared preview, with scrolling controls, one Apply and Back cancellation. The Asr school row now shows its own live draft time instead of a separate sidebar card.
+
 - Fork app and screensaver name, while retaining package `tv.afnon.home` and compatible signed updates.
 - Leamington Spa in the UK catalog: 137 cities across 43 countries. Its default still needs an official local timetable comparison before an upstream city PR. Browser introductory totals derive from the catalog.
 - Nineteen offline calculation methods, six per-prayer offsets (including sunrise), and a larger centred adjusted-time preview with − / value / + controls, 12/24-hour formatting and Arabic digits. Saved offsets apply to displays and alerts.
 - Settings previews for reminder banners and adhan, using current audio settings without consuming scheduled alerts. Theme-aware reminder styling and six shared prayer icons throughout native and browser prayer displays.
-- Two favourite rows for up to nine apps, a Classic four-tile layout, and horizontal layout cards with miniature previews. Both preserve the saved favourites and include a row of recent apps plus All apps.
+- Two favourite rows for up to nine apps and a Classic four-tile layout, selected in the Home customization preview. Both preserve the saved favourites and include a row of recent apps plus All apps.
 - Favourite replacement by selecting a destination on Home; Android uninstall confirmation for removable apps; optional system-utility filtering that retains media apps, games and Play Store.
-- Eight theme presets and validated custom JSON themes. A separate appearance page previews horizontal theme/background choices before Apply; ambient light, reduced motion and off-by-default app focus lighting.
+- Twenty theme presets and validated custom JSON themes. The shared Home & appearance page previews theme/background choices before Apply; ambient light, reduced motion and off-by-default app focus lighting.
 - Sixteen named local backgrounds plus theme default, including eight theme-coloured line patterns: Arches, Eight-point stars, Mashrabiya, Arabesque, Star tiles, Rosettes, Octagon lattice and Corner medallions. Small cached drawings; no wallpaper downloads or idle animation loop.
 - Home/input switching with registered HDMI/CEC and tuner entries, a Home entry and an Advanced inputs header button. Wi-Fi opens the system network panel; All apps has a Settings cog.
 - An optional full-width prayer bar over apps/inputs, with current/next prayer styling, top/bottom placement, hidden/tab/off modes, mirrored RTL controls and a minimize button. Quick-control labels share one setting with Home.
@@ -22,7 +32,13 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ### Changed and fixed
 
-- Home focus begins at the first favourite; Down traverses favourites/recent apps to All apps, and Left reaches Today & Qibla. App metadata is cached and All apps creates tiles as rows enter view; package changes refresh the list even when the count is unchanged.
+- Enlarged Home favourite icons to 72 design pixels (88 in Classic), with automatic shrinkage in shorter cards. Card dimensions and focus spacing stay unchanged; labels remain visible in both languages.
+- Fixed soft Home backgrounds caused by stretching a 480×270 preview bitmap. Home now caches the scene at the app's resolution, capped at 1920×1080, with full-HD pattern masks. Settings retains its small preview and downsamples masks before decoding; no animation loop or new dependency is added.
+- Expanded from eight to twenty themes with Glass, Frost, Cinema, Carbon, Neon, Blueprint, Signal, Arcade, Dusk, Oasis, Brass and Mosaic. Six new surface treatments change card shapes, borders, fills and Home typography. Glass uses translucency without blur; no artwork, fonts or dependencies were added. Old selections and Custom imports remain compatible. Native/browser previews match, and the build checks the 25 MB APK limit.
+- Aligned Home prayer-card names and times left in English and right in Arabic, with the icon above the name and Now/Next at the opposite end of the top row.
+
+- All apps no longer expires its catalogue after two seconds on Home. List/label preparation and icon decoding run off the UI thread, with visible icons delivered in batches of five. Package changes refresh cached data, and rebuilding or closing the screen discards outdated loading results.
+- Home focus begins at the first favourite; Down traverses favourites/recent apps to All apps, and Up reaches the quick controls including Today & Qibla. Rebuilding Home preserves the focused app when it remains visible. App metadata is cached and All apps creates tiles as rows enter view; package changes refresh the list even when the count is unchanged.
 - Removed the unused All apps dock, footer instructions and adhan dismissal hints. Replaced ambiguous Home settings/Qibla symbols with a cog and compass, and enlarged prayer icons.
 - Unified Arabic/English additions and RTL layout; the preview shares native city/method/icon/pattern data and includes both Home layouts. Browser offset editing now mirrors all six native rows, including draft/save/cancel, centred adjusted times, clock formats and Arabic digits.
 - Ordinary updates to an existing Home no longer repeat the initial handover/rollback; setup preserves the selected screensaver. Three text-layout calls now respect the declared Android 8 minimum.

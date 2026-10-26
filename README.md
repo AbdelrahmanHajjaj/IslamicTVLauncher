@@ -10,7 +10,7 @@ Arabic and English · 137 cities in 43 countries · 19 calculation methods · 14
 
 [This fork](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher) · [Original Afnon](https://github.com/egyjs/afnon-android-tv-launcher) · [Build and install](#install) · [Contribution plan](docs/CONTRIBUTION-PLAN.md)
 
-![Home in Arabic, with personal city text redacted](docs/screenshots/home-ar.png)
+![Arabic Home browser preview using demonstration data](docs/screenshots/custom-home-browser-ar.png)
 
 </div>
 
@@ -19,7 +19,7 @@ Arabic and English · 137 cities in 43 countries · 19 calculation methods · 14
 > *Indeed, prayer has been decreed upon the believers at fixed times.* (An-Nisa 4:103)
 
 Afnon replaces the stock Android TV launcher with a home screen for prayer times, favourite apps and
-Quran radio. The next prayer and its countdown sit inside a mihrab arch. Prayer reminders and the
+Quran radio. Show the next-prayer countdown in a mihrab or compact bar, or hide it. Prayer reminders and the
 adhan can appear over other apps; an optional compact prayer bar provides times and quick controls
 without returning to Home.
 
@@ -55,20 +55,35 @@ for completed checks and remaining hardware tests.
 - **Quran radio.** Cairo by default, with Nablus, Shabab FM, Qatar, Jordan and ten reciter channels.
   Live audio level bars, pause/resume around the adhan and screen-off listening. TCL Audio Only is used
   where supported; other TVs get a dim black-screen fallback.
-- **Two Home layouts.** Two balanced rows of up to nine favourites, or a Classic row showing the
-  first four as larger tiles. Horizontal selection cards preview both layouts; switching keeps the
-  complete favourites list. Up to five recent apps and All apps remain below. Recent history records
+- **Customizable Home.** In **Settings → Home & appearance**, choose a mihrab
+  on either side (or follow the language), a compact countdown at the top/bottom, or hide the countdown.
+  Independently show all prayer times, current only, next only, current and next, or hide the table.
+  Current-only modes show a neutral dash when there is no current prayer. The app area reflows into the
+  available space. The full-size mihrab shows the next prayer, its time, a large countdown and location,
+  with the clock beside it. Preview layout, theme and background together with Left/Right, scroll through
+  the choices, then **Apply changes** to save the page, or Back to cancel;
+  **Reset layout to default** resets the draft. Adhan, reminders and the screensaver keep their settings.
+- **Favourite rows.** Up to nine favourites across two rows, or a Classic row showing the
+  first four. The Home layout preview includes both choices; switching keeps the
+  complete favourites list. Without the mihrab, six favourites use four columns and two rows;
+  focus rings have room around labels and neighbouring panels. Up to five recent apps and All apps remain below. Recent history records
   launches through Afnon, including assigned remote buttons, and stays on the TV.
 - **App management.** Hold OK in All apps to add, reorder or replace a favourite. Replacement returns
   to Home so you can select its destination. Uninstall opens Android's confirmation for removable apps.
-  An optional system-utility filter keeps media apps, games and Play Store visible. The app list caches
-  metadata and creates tiles as rows enter view; its unused bottom dock and instructional footer are removed.
-- **Themes and backgrounds.** Eight palettes—Mihrab, Aurora, Ember, Forest, Midnight, Rose, Sand and
-  Slate—plus validated custom JSON themes. Sixteen named backgrounds and a theme-default option include
+  An optional system-utility filter keeps media apps, games and Play Store visible. The app list reuses
+  cached metadata and labels until they need refreshing. All apps prepares its list in the background and
+  loads icons in batches of five as rows enter view; its unused bottom dock and instructional footer are removed.
+  Larger icons fill more of each app card on both Home and All apps.
+- **Themes and backgrounds.** Twenty themes with classic, glass, cinema, outlined, bold-block,
+  soft and framed treatments, plus validated custom JSON themes. See the [theme catalogue](docs/THEMES.md#built-in-themes). Sixteen named backgrounds and a theme-default option include
   panorama, daylight, mountains, dunes, halo, night sky and eight Islamic-inspired line patterns.
   Horizontal lists update the miniature preview immediately; **Apply changes** saves the page.
   Ambient light, reduced motion and optional app-coloured focus lighting are separate controls.
-- **Quick controls.** Home has Inputs, Radio, Wi-Fi and Settings. Inputs lists Home, registered HDMI
+  Optional random theme and background changes run every **15 or 30 minutes** while Home is active;
+  rotation is off by default. Sharper themes retain their square character with slightly rounded corners,
+  shared by app cards, prayer cards and Settings controls.
+- **Quick controls.** Home has Today & Qibla, Inputs, Radio, Wi-Fi and Settings. Today & Qibla sits
+  at the outer end, beyond Inputs, even when the countdown and prayer table are hidden. Inputs lists Home, registered HDMI
   sources and Live TV; **⋯ Advanced inputs** opens the TV's own source chooser. Wi-Fi opens Android's
   network panel for the current connection and available networks. A shared label switch controls Home
   and prayer-bar buttons. All apps also has a launcher Settings cog.
@@ -86,28 +101,27 @@ for completed checks and remaining hardware tests.
 
 Arabic/RTL and English/LTR layouts include the new controls, with Arabic-Indic or Latin digits.
 The launcher uses plain Java and Android Views with adhan-java; no AndroidX, Kotlin or Compose.
-Backgrounds are small cached local drawings and eight transparent pattern masks totalling about 60 KB,
-with editable [shared SVG sources](afnon-mihrab/patterns/README.md). There is no video, blur, wallpaper download or idle animation
+Backgrounds are cached local drawings and eight transparent pattern masks totalling about 245 KB,
+with editable [shared SVG sources](afnon-mihrab/patterns/README.md). Home renders up to 1920×1080;
+Settings keeps a separate small preview. See the [memory trade-off](docs/THEMES.md#tv-references-and-cost).
+There is no video, blur, wallpaper download or idle animation
 loop. This is more functionality than CleanYourTV's minimal Home; no equivalent memory or speed claim is made.
 See [themes and controls](docs/THEMES.md) for the detailed behaviour.
 
 ## Screens
 
-Real TCL 50C641K captures from 25 October 2026, reduced for the README. Home city text is redacted;
-the images are not generated mockups. [Capture notes and additional screens](docs/screenshots/README.md).
+Updated 26 October 2026. Home images are browser previews with demonstration data, not a published
+prayer timetable. Settings and All apps are real TCL 50C641K captures in both languages.
+[Capture notes and additional screens](docs/screenshots/README.md) include the earlier offset and prayer-bar captures.
 
 | English | العربية |
 |---|---|
-| ![Home in English, city text redacted](docs/screenshots/home-en.png) | ![Home in Arabic, city text redacted](docs/screenshots/home-ar.png) |
-| Two favourite rows, recent apps and quick controls. | صفّان للمفضلة، والتطبيقات الأخيرة، والتحكم السريع. |
-| ![Home layout preview cards](docs/screenshots/layouts-en.png) | ![Arabic Home layout preview cards](docs/screenshots/layouts-ar.png) |
-| Preview Two favourite rows or Classic before applying. | معاينة تخطيط الصفّين أو الصف الكلاسيكي قبل التطبيق. |
-| ![Offsets with centred adjusted times](docs/screenshots/offsets-en.png) | ![Arabic offsets with centred adjusted times](docs/screenshots/offsets-ar.png) |
-| Adjusted times stay centred in either language. | الأوقات بعد التعديل في وسط البطاقات في اللغتين. |
-| ![Theme and Rosettes background preview](docs/screenshots/appearance-en.png) | ![Arabic theme and background preview](docs/screenshots/appearance-ar.png) |
-| Preview themes, patterns and lighting, then apply. | معاينة الألوان والزخارف والإضاءة، ثم حفظها. |
-| ![Slim prayer bar over Settings](docs/screenshots/prayer-bar-en.png) | ![Mirrored Arabic prayer bar](docs/screenshots/prayer-bar-ar.png) |
-| Full-width prayer bar with current and next prayer. | شريط بعرض الشاشة مع تمييز الصلاة الحالية والتالية. |
+| ![Browser Home in English](docs/screenshots/custom-home-browser-en.png) | ![Browser Home in Arabic](docs/screenshots/custom-home-browser-ar.png) |
+| Browser preview: full mihrab, prayer cards and larger app icons. | معاينة المتصفح: محراب كامل وبطاقات الصلاة وأيقونات تطبيقات أكبر. |
+| ![Native Settings in English](docs/screenshots/custom-settings-en.png) | ![Native Settings in Arabic](docs/screenshots/custom-settings-ar.png) |
+| TV Settings with the shared subtle corners. | إعدادات التلفاز بزوايا مستديرة قليلًا ومتناسقة. |
+| ![Native All apps in English](docs/screenshots/custom-apps-en.png) | ![Native All apps in Arabic](docs/screenshots/custom-apps-ar.png) |
+| TV All apps with larger icons and language-aware labels. | كل التطبيقات على التلفاز بأيقونات أكبر ومحاذاة أسماء حسب اللغة. |
 
 ## Install
 
@@ -134,10 +148,20 @@ recovery backup on your PC; restore only recorded changes with `tools/restore.sh
 
 ### From an Android phone
 
-Build `:installer:assembleDebug` and copy the installer APK to your phone. Choose **Install a local
-Afnon APK** and select the launcher APK built from this branch. Follow Prepare and Connect, then
-approve debugging on the TV. The installer performs setup over ADB; the TV APK remains the launcher.
-Export the installer's private recovery record to phone storage before clearing its data.
+Build both `:app:assembleDebug` and `:installer:assembleDebug`. The two APKs have different roles:
+
+| APK path in this checkout | Install on | Purpose |
+|---|---|---|
+| `installer/build/outputs/apk/debug/installer-debug.apk` | Android 8+ phone | Connect to the TV and guide installation, initial setup and recovery |
+| `app/build/outputs/apk/debug/app-debug.apk` | Android 8+ TV | The launcher, prayer features and TV settings |
+
+Copy both files to your phone and install the phone APK. Choose **Install a local Afnon APK** and
+select the TV launcher APK. Follow Prepare and Connect, then approve debugging on the TV.
+After installation, the phone wizard can set the city, language, adhan and spoken-reminder switches,
+and favourites. It also offers optional reversible app cleanup and recovery export/restore.
+Theme, background and Home-layout choices are configured on the TV. The launcher runs independently
+after setup; the phone does not need to stay connected. Export the installer's private recovery record
+to phone storage before clearing its data.
 
 The upstream-download option installs the original Afnon release. To install fork features, choose
 the local APK. A signing-key mismatch stops the update and keeps the installed launcher; use the
@@ -160,11 +184,12 @@ authorisations, restart the TV and verify that its ADB port is closed. Port 5555
 | City, calculation method, Asr school or Hijri date | Settings → Prayer times |
 | Adjust each prayer's time | Prayer times → Prayer time offsets; compare the centred time with your local timetable |
 | Choose 12/24-hour display, digits or language | Settings → Display & language |
-| Choose Home layout | Display & language → Home layout; Left/Right previews, OK applies, Back cancels |
+| Customize Home and appearance | Home & appearance; Left/Right previews, Up/Down scrolls, Apply saves the page, Back cancels |
 | Add, reorder or replace favourites | All apps → hold OK; replacement selects a tile on Home |
 | Hide system utilities | Display & language → Hide system apps in All apps; this does not disable packages |
 | Remove a removable app | All apps → hold OK → Uninstall → Android confirmation |
-| Colours, patterns and app-coloured lighting | Settings → Themes & backgrounds → Apply changes; [custom JSON guide](docs/THEMES.md) |
+| Colours, patterns and app-coloured lighting | Settings → Home & appearance → Apply changes; [custom JSON guide](docs/THEMES.md) |
+| Random theme and background changes | Home & appearance → Random appearance → Off / Every 15 minutes / Every 30 minutes → Apply changes |
 | Show or hide quick-button labels | Display & language → Quick control labels; affects Home and the prayer bar |
 | Prayer bar mode and position | Display & language → Prayer bar / Prayer bar position |
 | Assign a button to an app or the prayer bar | Settings → Device settings → Remote buttons |
@@ -174,7 +199,8 @@ authorisations, restart the TV and verify that its ADB port is closed. Port 5555
 | Re-enable a package or restore the original launcher | [Backup and recovery commands](tools/device.md) |
 
 Home selects the first favourite when pressed again. Down moves through favourites and recent apps
-to All apps; Left from the first column reaches Today & Qibla. Back minimizes the prayer bar or
+to All apps; Up from the first favourite reaches the quick controls. Today & Qibla is at the outer
+end beyond Inputs, mirrored in Arabic. Back minimizes the prayer bar or
 closes its popup. A returning app can retain its previously selected tile when Home has not rebuilt.
 
 Adhan opens the call screen over the current app, and Back returns to the previous activity. Individual
@@ -267,10 +293,12 @@ observed on one board is not proof for every TV from that brand.
   يدوي، والقيم الافتراضية تحتاج إلى المقارنة مع جدول المسجد المحلي.
 - **إزاحات لكل وقت** من −٣٠ إلى +٣٠ دقيقة، بما فيها الشروق. يظهر الوقت المعدّل بوضوح في وسط البطاقة،
   بتنسيق ١٢ أو ٢٤ ساعة. تبقى الإزاحات محفوظة عند تغيير المدينة أو طريقة الحساب، لذا راجعها بعدها.
-- **تخطيطان للرئيسية**: صفّان للمفضلة حتى تسعة تطبيقات، أو صف كلاسيكي بأربعة تطبيقات أكبر، مع صف
-  للتطبيقات الأخيرة وزر كل التطبيقات. تُعرض بطاقات معاينة قبل اختيار التخطيط.
-- **ثمانية أنماط ألوان وخلفيات محلية خفيفة** تشمل المناظر والزخارف الهندسية، مع معاينة فورية وزر
-  لحفظ التغييرات وإضاءة اختيارية تتبع التطبيق المحدد. العربية تعكس التخطيط واتجاه التنقل.
+- **رئيسية قابلة للتخصيص**: اختر المحراب وموقعه، أو عدّادًا مدمجًا أعلى الشاشة أو أسفلها، أو أخفِ العدّاد.
+  اعرض كل أوقات الصلاة، أو الحالية، أو التالية، أو الاثنتين، أو أخفِ الجدول. تتكيّف المفضلة مع المساحة؛
+  حتى تسعة تطبيقات في صفّين أو أول أربعة في صف كلاسيكي، مع أيقونات أكبر في الرئيسية وكل التطبيقات.
+- **عشرون نمطًا للألوان والتصميم وخلفيات محلية واضحة** تشمل المناظر والزخارف الهندسية. يجمع قسم
+  **الرئيسية والمظهر** التخطيط والألوان والخلفية في معاينة واحدة مع حفظ أو إلغاء التغييرات.
+  يمكن تبديل النمط والخلفية عشوائيًا كل ١٥ أو ٣٠ دقيقة؛ الخيار متوقف افتراضيًا. العربية تعكس التخطيط والتنقل.
 - **شريط صلاة رفيع** أعلى الشاشة أو أسفلها، يميّز الصلاة الحالية والتالية ويتيح الرئيسية والمدخلات
   والشبكة والإعدادات. يمكن فتحه بزر من الريموت أو إظهار لسان صغير أو إيقافه.
 - **١٤ صوت أذان و١٦ محطة وقناة قرآن**، وتنبيهات متوافقة مع الألوان، وزر لتجربة التنبيه أو الأذان.
@@ -278,7 +306,8 @@ observed on one board is not proof for every TV from that brand.
 - **مدخلات وشبكة وأزرار ريموت**: قائمة للمنزل وHDMI والتلفاز المباشر، وإعدادات المدخلات المتقدمة،
   ولوحة شبكة النظام. يمكن إخفاء أسماء أزرار التحكم وتعيين أزرار مدعومة لتطبيقات أخرى.
 - **تثبيت من الحاسوب أو هاتف أندرويد** مع نسخة استعادة وتعطيل قابل للتراجع للشاشة الأصلية.
-  يبقى متجر Play وخدماته والتطبيقات الموجودة، ولا تُحذف التطبيقات أثناء التنظيف.
+  يساعد تطبيق الهاتف أيضًا في اختيار المدينة واللغة والأذان والتنبيهات والمفضلة؛ يُضبط المظهر على التلفاز.
+  يبقى متجر Play وخدماته والتطبيقات الموجودة، ولا تُحذف التطبيقات أثناء التنظيف، ويعمل التلفاز مستقلًا بعد الإعداد.
 
 ابنِ التطبيق من هذا المصدر واتبع دليل التثبيت أعلاه. اختُبرت هذه النسخة على TCL 50C641K بنظام
 Android 11؛ اختبار مصدر HDMI حي واختبار الهاتف الكامل ما زالا مطلوبين. أغلق تصحيح الأخطاء بعد

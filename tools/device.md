@@ -59,3 +59,10 @@ Verify Home from another app and after reboot; HDMI/source menu, volume hold, Bl
 ## Local checks
 
 `python -S -B -m unittest discover -s tests -v` runs simulated-TV checks; it never connects to a TV. Build both apps with `./gradlew :app:assembleDebug :installer:assembleDebug`. Hardware checks remain separate.
+
+
+### Device-test cleanup
+
+Android instrumentation can stop the launcher process and leave its enabled accessibility service unbound. UI Automator hierarchy dumps can also suspend accessibility services temporarily and close their overlays. Capture prayer-bar screenshots directly with `screencap`, without a hierarchy dump between opening and capturing the bar.
+
+After instrumentation or UI automation, inspect `dumpsys accessibility`: an enabled entry alone does not prove the prayer/button service is running. Check that Afnon is bound and absent from the crashed-services list. If it was enabled before the test but remains disconnected, reconnect only Afnon through TV accessibility settings, preserving every other service. Verify Open prayer bar in Afnon Settings and the physical blue button, restore changed test preferences, and remove the test-only APK if the test installed it. Do not enable services that were disabled before testing or change the user's automatic-repair preference.

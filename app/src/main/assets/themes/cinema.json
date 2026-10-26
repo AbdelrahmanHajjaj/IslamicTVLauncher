@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "colors": {
+    "lapis-950": "#070709",
+    "lapis-900": "#101015",
+    "lapis-800": "#191920",
+    "lapis-700": "#22222C",
+    "gold-400": "#F0E4DA",
+    "gold-200": "#FFF4EB",
+    "plaster-100": "#F7F3F0",
+    "mist-400": "#C4BBC6"
+  },
+  "surface": "cinema",
+  "background": "solid",
+  "lighting": 0
+}

@@ -79,6 +79,7 @@ abstract class Screen extends Activity {
     @Override
     public void onConfigurationChanged(Configuration c) {
         super.onConfigurationChanged(c);
+        Apps.invalidate();
         boolean wasAr = t.ar;
         loadSettings(null);
         if (t.ar != wasAr) build();
@@ -332,6 +333,13 @@ abstract class Screen extends Activity {
     }
 
     // ---------------------------------------------------------------- helpers
+
+    static android.graphics.drawable.GradientDrawable round(int color, float radiusDesignPx) {
+        android.graphics.drawable.GradientDrawable d = new android.graphics.drawable.GradientDrawable();
+        d.setColor(color);
+        d.setCornerRadius(Ui.px(radiusDesignPx));
+        return d;
+    }
 
     TextView text(Typeface tf, float sizeDesignPx, int color) {
         TextView v = new TextView(this);

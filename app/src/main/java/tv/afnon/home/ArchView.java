@@ -16,14 +16,16 @@ final class ArchView extends View {
     private final Path outer = new Path();
     private final Path innerLine = new Path();
     private int state = REST;
+    private final ThemeSurface surface;
 
     ArchView(Context c) {
         super(c);
-        fill.setColor(Palette.LAPIS_800);
+        surface = Appearance.surface();
+        fill.setColor(surface.fill(Palette.LAPIS_800));
         stroke.setStyle(Paint.Style.STROKE);
         inner.setStyle(Paint.Style.STROKE);
         inner.setColor(Palette.ARCH_INNER);
-        inner.setStrokeWidth(Ui.px(1.5f));
+        inner.setStrokeWidth(Ui.px(Tokens.SURFACE_ARCH_INNER));
     }
 
     void setState(int s) {
@@ -62,11 +64,11 @@ final class ArchView extends View {
             stroke.setColor(Palette.PLASTER_100);
             stroke.setStrokeWidth(Ui.px(5));
         } else {
-            stroke.setColor(Palette.GOLD_400);
-            stroke.setStrokeWidth(Ui.px(3));
+            stroke.setColor(surface.archEdge());
+            stroke.setStrokeWidth(Ui.px(surface.archStroke()));
         }
         c.drawPath(outer, fill);
-        c.drawPath(innerLine, inner);
-        c.drawPath(outer, stroke);
+        if (surface.classic() || "frame".equals(surface.name)) c.drawPath(innerLine, inner);
+        if (stroke.getStrokeWidth() > 0) c.drawPath(outer, stroke);
     }
 }

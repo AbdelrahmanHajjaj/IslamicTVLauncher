@@ -225,15 +225,19 @@ value of validating the lifecycle and upgrades before expanding customization.
 
 ## Agreed Home customization scope
 
+Implemented on `feature/home_customization`: native Home, the transactional settings preview,
+permanent Today & Qibla quick access, and browser parity. See [local validation](LOCAL-VALIDATION.md) for checks and
+hardware limits. The later app-card, favourite-editing, grouping and backup ideas remain separate work.
+
 The follow-up discussion agreed to make Home adapt to configurable prayer information before
 finalizing the app-card improvements. Cameras, video backgrounds and a widget platform are excluded.
-This section records the agreed design; implementation is pending.
+This section records the implemented design.
 
 | Control | Choices | Layout behavior |
 |---|---|---|
 | Prayer countdown panel | Mihrab, compact bar, hidden | Mihrab supports either side; compact bar supports top or bottom; hidden releases the entire panel area |
 | Prayer information table | Current only, next only, current and next, all, hidden | One/two entries use compact cards; all retains the six timetable entries; hidden releases the table's space |
-| Today & Qibla access | Permanent upper quick-control button beside Wi-Fi | Available in every Home configuration; opens the existing Today & Qibla screen |
+| Today & Qibla access | Permanent button at the outer end of the quick-action row, beyond Inputs | Available in every Home configuration; opens the existing Today & Qibla screen |
 
 Remove the Today & Qibla button from the mihrab once the upper button exists. Use the existing
 compass icon, bilingual accessible label and quick-control label preference. The new button remains
@@ -248,6 +252,13 @@ quick controls, favourites and recent apps into those regions, preserving comfor
 spacing and safe screen margins. Do not leave an empty mihrab column or table row. Keep all saved
 favourites and the existing app-order rules. Provide a preview, Apply, Back-to-cancel and restoration
 of the default layout through the existing settings patterns.
+
+The refinement keeps the original 600×900 mihrab with the clock beside it. Its content is next prayer
+name, prayer time, large countdown, then location; Friday/Ramadan context remains underneath.
+Without the mihrab, six favourites use four columns across two rows. Spacing includes the focused
+tile's scale and ring. Home layout, theme and background share one **Home & appearance** page with a
+fixed preview, scrolling controls and one Apply action. The Asr draft time belongs in its calculation
+school row, so the unrelated sidebar preview is removed.
 
 Implementation detail to preserve: `PrayerDay.nowIndex` currently has no entry before Fajr or
 between sunrise and Dhuhr, while `nextIndex` always excludes sunrise. For the new filtered table,
@@ -282,6 +293,6 @@ bilingual text, run the affected checks, and capture sanitized real-TV evidence.
 live HDMI/audio interactions, reboot and idle screensaver behavior remain separate hardware checks;
 published screenshots do not substitute for them. See [local validation](LOCAL-VALIDATION.md).
 
-For this research-only change, validation is limited to source/screenshot inspection, APK identity,
-document links and the Git diff. Builds and tests were not rerun because application behavior did
-not change.
+The original research pass was limited to source/screenshot inspection, APK identity, document links
+and the Git diff. The subsequent Home implementation and its build, browser and TV checks are recorded
+in [local validation](LOCAL-VALIDATION.md).
