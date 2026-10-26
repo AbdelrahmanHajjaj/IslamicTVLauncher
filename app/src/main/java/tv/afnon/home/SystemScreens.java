@@ -13,6 +13,11 @@ final class SystemScreens {
     static void open(Context a, String action) {
         for (Intent i : new Intent[]{new Intent(action), new Intent(Settings.ACTION_SETTINGS),
                 new Intent(Intent.ACTION_MAIN).setPackage("com.android.tv.settings").addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)}) {
+            // Some TVs resolve unsupported settings actions to a stub that only shows an error toast.
+            // Starting it succeeds, so exception handling alone never reaches the working fallback.
+            ResolveInfo target = a.getPackageManager().resolveActivity(i, android.content.pm.PackageManager.MATCH_DEFAULT_ONLY);
+            if (target != null && target.activityInfo != null
+                    && "com.google.android.tv.frameworkpackagestubs".equals(target.activityInfo.packageName)) continue;
             try { if (!(a instanceof Activity)) i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); a.startActivity(i); return; } catch (ActivityNotFoundException | SecurityException ignored) { }
         }
         Toast.makeText(a, Screen.loadText(a).systemUnavailable(), Toast.LENGTH_LONG).show();
