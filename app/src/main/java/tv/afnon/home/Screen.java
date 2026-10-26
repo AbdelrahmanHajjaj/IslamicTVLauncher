@@ -79,6 +79,7 @@ abstract class Screen extends Activity {
     @Override
     public void onConfigurationChanged(Configuration c) {
         super.onConfigurationChanged(c);
+        Apps.invalidate();
         boolean wasAr = t.ar;
         loadSettings(null);
         if (t.ar != wasAr) build();

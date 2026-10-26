@@ -16,6 +16,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * All apps (design/AllApps.dc.html): five columns, four rows in view, paging a row at a time.
@@ -40,6 +44,10 @@ public class AllAppsActivity extends Screen {
     private long lastMinute = -1;
     /** The app to focus after a rebuild. */
     private String focusPkg;
+    private final Map<String, String> labels = new HashMap<>();
+    private final Map<String, ImageView> icons = new HashMap<>();
+    private final ExecutorService appLoader = Executors.newSingleThreadExecutor();
+    private volatile int loadGeneration;
 
     // Hold-OK handling and the arrange menu.
     private boolean okDown, okLong;
@@ -53,17 +61,22 @@ public class AllAppsActivity extends Screen {
 
     @Override protected void onResume() {
         if (resumed) Apps.invalidate();
+        int generation = loadGeneration;
         super.onResume();
-        if (resumed && (!apps.equals(Apps.allApps(this, t)) || !favs.equals(Apps.slots(this, t)))) build();
+        if (resumed && generation == loadGeneration) build();
         resumed = true;
     }
 
     @Override
     void build() {
+        int selected = current();
+        if (focusPkg == null && selected >= 0) focusPkg = apps.get(selected);
+        loadGeneration++;
         newRoot();
-        apps = Apps.allApps(this, t);
-        favs = Apps.slots(this, t);
+        apps = new ArrayList<>();
         tiles.clear();
+        icons.clear();
+        menu = null;
 
         backButton = new FocusTile(this, 36);
         backButton.setRest(Palette.LAPIS_800, Palette.LINE_SOFT, 2);
@@ -79,7 +92,7 @@ public class AllAppsActivity extends Screen {
         TextView title = text(displayBold, 64, Palette.PLASTER_100);
         title.setText(t.allTitle());
         count = text(ui400, 26, Palette.MIST_400);
-        count.setText(t.d(String.valueOf(apps.size())));
+
         head.addView(title);
         LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-2, -2);
         clp.setMarginStart(Ui.ipx(28));
@@ -120,16 +133,13 @@ public class AllAppsActivity extends Screen {
         settingsButton.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
         placeEnd(settingsButton, 96, 56, 72, 72);
 
-        // Build only the rows on screen; hidden app icons and views can wait until scrolling.
-        for (int i = 0; i < apps.size(); i++) tiles.add(null);
-
         setContentView(root);
         lastMinute = -1;
         onTick();
-        int start = focusPkg != null && apps.contains(focusPkg) ? apps.indexOf(focusPkg) : 0;
-        focusPkg = null;
-        topRow = 0;
-        focusTile(start);
+        if (selected == CHIP) chip.requestFocus();
+        else if (selected == SETTINGS) settingsButton.requestFocus();
+        else backButton.requestFocus();
+        loadApps();
     }
 
     private FocusTile appTile(String pkg) {
@@ -137,8 +147,7 @@ public class AllAppsActivity extends Screen {
         ImageView icon = new ImageView(this);
         icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
         icon.setPadding(Ui.ipx(8), Ui.ipx(8), Ui.ipx(8), Ui.ipx(8));
-        Drawable image = Apps.icon(this, pkg);
-        if (image != null) icon.setImageDrawable(image);
+        icons.put(pkg, icon);
         GradientDrawable iconBackground = new GradientDrawable();
         iconBackground.setCornerRadius(Ui.px(14));
         icon.setBackground(iconBackground);
@@ -153,7 +162,7 @@ public class AllAppsActivity extends Screen {
             sp.setMarginEnd(Ui.ipx(24)); sp.topMargin = Ui.ipx(22);
             tile.addView(star, sp);
         }
-        String name = Apps.name(this, t, pkg);
+        String name = labels.get(pkg);
         TextView label = text(ui500, 26, Palette.PLASTER_100);
         label.setText(name);
         label.setSingleLine(true);
@@ -168,6 +177,68 @@ public class AllAppsActivity extends Screen {
         });
         tile.setOnClickListener(v -> Apps.launch(this, pkg));
         return tile;
+    }
+
+    /** Package queries and labels must not delay the first frame or remote input. */
+    private void loadApps() {
+        int generation = loadGeneration;
+        Text language = t;
+        appLoader.execute(() -> {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            if (generation != loadGeneration) return;
+            android.content.Context app = getApplicationContext();
+            List<String> loadedApps = Apps.allApps(app, language);
+            List<String> loadedFavs = Apps.slots(app, language);
+            Map<String, String> loadedLabels = new HashMap<>();
+            for (String pkg : loadedApps) {
+                if (generation != loadGeneration) return;
+                loadedLabels.put(pkg, Apps.name(app, language, pkg));
+            }
+            runOnUiThread(() -> {
+                if (generation != loadGeneration || isDestroyed()) return;
+                boolean focusApps = getCurrentFocus() == backButton;
+                apps = loadedApps;
+                favs = loadedFavs;
+                labels.clear();
+                labels.putAll(loadedLabels);
+                count.setText(t.d(String.valueOf(apps.size())));
+                for (int i = 0; i < apps.size(); i++) tiles.add(null);
+                int start = focusPkg != null && apps.contains(focusPkg) ? apps.indexOf(focusPkg) : 0;
+                focusPkg = null;
+                topRow = 0;
+                View headerFocus = getCurrentFocus();
+                focusTile(start);
+                if (!focusApps && headerFocus != null) headerFocus.requestFocus();
+            });
+        });
+    }
+
+    /** Decode at most one row per batch; publish only completed rows to the UI. */
+    private void loadIcons(List<String> packages) {
+        if (packages.isEmpty()) return;
+        int generation = loadGeneration;
+        List<ImageView> targets = new ArrayList<>();
+        for (String pkg : packages) targets.add(icons.get(pkg));
+        appLoader.execute(() -> {
+            for (int start = 0; start < packages.size(); start += COLS) {
+                int first = start;
+                Drawable[] images = new Drawable[Math.min(COLS, packages.size() - first)];
+                for (int j = 0; j < images.length; j++) {
+                    if (generation != loadGeneration) return;
+                    images[j] = Apps.icon(getApplicationContext(), packages.get(first + j));
+                }
+                runOnUiThread(() -> {
+                    if (generation != loadGeneration || isDestroyed()) return;
+                    for (int j = 0; j < images.length; j++) targets.get(first + j).setImageDrawable(images[j]);
+                });
+            }
+        });
+    }
+
+    @Override protected void onDestroy() {
+        loadGeneration++;
+        appLoader.shutdownNow();
+        super.onDestroy();
     }
 
     // ---------------------------------------------------------------- live chip
@@ -195,12 +266,14 @@ public class AllAppsActivity extends Screen {
         if (row < topRow) topRow = row;
         else if (row >= topRow + VISIBLE_ROWS) topRow = row - VISIBLE_ROWS + 1;
         float shift = -Ui.px(topRow * (TILE_H + GAP));
+        List<String> pendingIcons = new ArrayList<>();
         for (int j = 0; j < tiles.size(); j++) {
             int r = j / COLS;
             boolean visible = r >= topRow && r < topRow + VISIBLE_ROWS;
             FocusTile tile = tiles.get(j);
             if (visible && tile == null) {
                 tile = appTile(apps.get(j));
+                pendingIcons.add(apps.get(j));
                 tiles.set(j, tile);
                 float w = (1728 - (COLS - 1) * GAP) / COLS;
                 placeTile(tile, 96 + (j % COLS) * (w + GAP), GRID_TOP + r * (TILE_H + GAP), w, TILE_H);
@@ -211,6 +284,7 @@ public class AllAppsActivity extends Screen {
             }
         }
         tiles.get(i).requestFocus();
+        loadIcons(pendingIcons);
     }
 
     private int current() {
