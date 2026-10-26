@@ -29,6 +29,8 @@ Glass is an 86%-opaque dark fill with a solid highlight outline. There is no liv
 
 `./gradlew :app:verifyApkSize` builds the debug APK and fails unless it is **strictly below 25,000,000 bytes**. It is included in `check` and the launcher CI workflow. The full local APK, including locally bundled audio, is measured in [local validation](LOCAL-VALIDATION.md).
 
+Cinema/Carbon, Signal/Arcade and Brass/Mosaic share a 12-pixel surface radius. It applies to app cards, prayer boxes, Settings rows and navigation tabs; circular quick controls and pill-shaped selectors keep their shapes. Native and browser previews read the same theme tokens.
+
 Prayer cards align their name and time to the start edge: left in English, right in Arabic. The icon sits above the name, with Now/Next or Ramadan status at the opposite end of the top row. This retains the card height and gives long names their own full-width line. Prayer cards use 20-pixel side padding and cap their corner radius at 28 pixels; larger app tiles retain the full theme radius. Current/next state colours stay distinct in every style.
 
 ## Custom themes
