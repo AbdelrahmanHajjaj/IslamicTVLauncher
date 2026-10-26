@@ -145,37 +145,45 @@ final class Tokens {
     /** layout.home.top */
     static final float LAYOUT_HOME_TOP = 248f;
     /** layout.home.bottom */
-    static final float LAYOUT_HOME_BOTTOM = 1024f;
+    static final float LAYOUT_HOME_BOTTOM = 1008f;
     /** layout.home.gap */
     static final float LAYOUT_HOME_GAP = 24f;
     /** layout.home.mihrab-width */
-    static final float LAYOUT_HOME_MIHRAB_WIDTH = 504f;
+    static final float LAYOUT_HOME_MIHRAB_WIDTH = 600f;
     /** layout.home.mihrab-height */
-    static final float LAYOUT_HOME_MIHRAB_HEIGHT = 756f;
+    static final float LAYOUT_HOME_MIHRAB_HEIGHT = 900f;
+    /** layout.home.panel-gap */
+    static final float LAYOUT_HOME_PANEL_GAP = 64f;
+    /** layout.home.mihrab-content-top */
+    static final float LAYOUT_HOME_MIHRAB_CONTENT_TOP = 290f;
+    /** layout.home.labelled-controls-top */
+    static final float LAYOUT_HOME_LABELLED_CONTROLS_TOP = 260f;
     /** layout.home.bar-height */
     static final float LAYOUT_HOME_BAR_HEIGHT = 100f;
     /** layout.home.table-height */
     static final float LAYOUT_HOME_TABLE_HEIGHT = 112f;
     /** layout.home.label-height */
-    static final float LAYOUT_HOME_LABEL_HEIGHT = 40f;
+    static final float LAYOUT_HOME_LABEL_HEIGHT = 56f;
     /** layout.home.tile-max-width */
-    static final float LAYOUT_HOME_TILE_MAX_WIDTH = 400f;
+    static final float LAYOUT_HOME_TILE_MAX_WIDTH = 640f;
     /** layout.home.tile-max-height */
-    static final float LAYOUT_HOME_TILE_MAX_HEIGHT = 196f;
+    static final float LAYOUT_HOME_TILE_MAX_HEIGHT = 156f;
+    /** layout.home.tile-classic-height */
+    static final float LAYOUT_HOME_TILE_CLASSIC_HEIGHT = 196f;
     /** layout.home.recent-height */
     static final float LAYOUT_HOME_RECENT_HEIGHT = 94f;
     /** layout.home.countdown-size */
-    static final float LAYOUT_HOME_COUNTDOWN_SIZE = 100f;
+    static final float LAYOUT_HOME_COUNTDOWN_SIZE = 150f;
     /** layout.home.compact-countdown-size */
     static final float LAYOUT_HOME_COMPACT_COUNTDOWN_SIZE = 56f;
     /** layout.home.prayer-name-size */
-    static final float LAYOUT_HOME_PRAYER_NAME_SIZE = 64f;
+    static final float LAYOUT_HOME_PRAYER_NAME_SIZE = 88f;
     /** layout.home.panel-inset */
     static final float LAYOUT_HOME_PANEL_INSET = 32f;
     /** layout.home.verse-top */
     static final float LAYOUT_HOME_VERSE_TOP = 124f;
     /** layout.home.reference-top */
-    static final float LAYOUT_HOME_REFERENCE_TOP = 316f;
+    static final float LAYOUT_HOME_REFERENCE_TOP = 290f;
     /** layout.home.info-top */
     static final float LAYOUT_HOME_INFO_TOP = 368f;
     /** layout.home.cell-padding */
@@ -270,6 +278,10 @@ final class Tokens {
     static final float LAYOUT_SETTINGS_ROW_PADDING = 28f;
     /** layout.settings.appearance-top */
     static final float LAYOUT_SETTINGS_APPEARANCE_TOP = 410f;
+    /** layout.settings.appearance-rows-height */
+    static final float LAYOUT_SETTINGS_APPEARANCE_ROWS_HEIGHT = 632f;
+    /** layout.settings.scroll-padding */
+    static final float LAYOUT_SETTINGS_SCROLL_PADDING = 24f;
     /** layout.settings.appearance-caption-width */
     static final float LAYOUT_SETTINGS_APPEARANCE_CAPTION_WIDTH = 500f;
     /** layout.settings.preview-width */

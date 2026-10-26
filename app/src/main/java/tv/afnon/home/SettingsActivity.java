@@ -27,8 +27,8 @@ import java.util.Locale;
 import java.util.function.IntConsumer;
 
 /**
- * Afnon Settings (design/Settings.dc.html): sections down the start side, the section's rows beside them, and a
- * preview of today's Asr under the current choices. Appearance waits for Apply; other changes save at once.
+ * Afnon Settings (design/Settings.dc.html): sections down the start side, the section's rows beside them, and
+ * a shared Home/appearance draft preview. Other changes save at once.
  * Other screens rebuild when they come back to the front.
  *
  * <p>Up/Down move between sections or rows. Left/Right preview carousel choices directly; other rows use OK
@@ -94,11 +94,10 @@ public class SettingsActivity extends Screen {
     private int section = PRAYER;
     private boolean onNav = true;
     private int rowIndex;
-    private boolean prayerOffsetsPage, homePage;
+    private boolean prayerOffsetsPage;
     private final int[] homeDraft = new int[5];
-    private int homeParentRow;
-    private View homePreview;
-    private TextView homeCaption;
+    private ScrollView appearanceRows;
+    private LinearLayout appearanceRowList;
     private HomeLayout homePreviewLayout;
     private int homePreviewSlots;
     private int offsetsParentRow;
@@ -113,7 +112,7 @@ public class SettingsActivity extends Screen {
     private final FocusTile[] nav = new FocusTile[SECTIONS];
     private final TextView[] navLabel = new TextView[SECTIONS];
     private final List<Row> rows = new ArrayList<>();
-    private TextView sectionLabel, previewValue;
+    private TextView sectionLabel;
     private TextView saved;
     private final Runnable hideSaved = () -> saved.animate().alpha(0).setDuration(Appearance.motion(Tokens.MOTION_OVERLAY_FADE_MS));
     /** The SEG or STEP row being edited (null: none) and its unsaved choice or amount. */
@@ -157,19 +156,6 @@ public class SettingsActivity extends Screen {
         place(head, 96, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         for (int i = 0; i < SECTIONS; i++) nav[i] = navItem(i);
-
-        LinearLayout preview = new LinearLayout(this);
-        preview.setOrientation(LinearLayout.VERTICAL);
-        preview.setPadding(Ui.ipx(24), Ui.ipx(20), Ui.ipx(24), Ui.ipx(20));
-        preview.setBackground(round(Palette.LAPIS_800, 16));
-        TextView pl = text(ui400, 20, Palette.MIST_400);
-        PrayerIcon.set(pl, PrayerDay.ASR, t.preview());
-        previewValue = text(display, Tokens.FONT_SIZE_DISPLAY_XS, Palette.GOLD_400);
-        preview.addView(pl);
-        preview.addView(previewValue);
-        lineHeight(previewValue, 1.2f);
-        ((LinearLayout.LayoutParams) previewValue.getLayoutParams()).topMargin += Ui.ipx(6);
-        place(preview, 96, 1080 - 56 - 124, 424, 124);
 
         sectionLabel = caps(text(ui400, Tokens.FONT_SIZE_LABEL, Palette.MIST_400));
         sectionLabel.setAllCaps(!t.ar);
@@ -233,40 +219,41 @@ public class SettingsActivity extends Screen {
     private void showSection() {
         for (Row r : rows) root.removeView(r.tile);
         rows.clear();
-        sectionLabel.setText(homePage ? t.homeLayout() : prayerOffsetsPage ? t.prayerOffsets() : sectionName(section));
+        sectionLabel.setText(prayerOffsetsPage ? t.prayerOffsets() : sectionName(section));
         if (section == NETWORK) sectionLabel.setText(t.sectionNetwork(null));
         for (int i = 0; i < SECTIONS; i++) styleNav(i);
         if (appearancePreview != null) root.removeView(appearancePreview);
         appearancePreview = null;
+        if (appearanceRows != null) root.removeView(appearanceRows);
+        appearanceRows = null;
         if (section == APPEARANCE) {
+            homeDraft[0] = Prefs.homeCountdown(this); homeDraft[1] = Prefs.homeSide(this);
+            homeDraft[2] = Prefs.homeBar(this); homeDraft[3] = Prefs.homePrayers(this);
+            homeDraft[4] = Prefs.classicHome(this) ? 1 : 0;
             themeChoice = Math.max(0, Arrays.asList(Appearance.PRESETS).indexOf(prefs().getString("theme", "mihrab")));
             backgroundChoice = Math.max(0, Arrays.asList(BACKGROUNDS).indexOf(prefs().getString("background", "theme")));
             lightChoice = prefs().getInt("lighting", -1);
             focusChoice = prefs().getBoolean("focus_lighting", false);
             motionChoice = Appearance.reduced(this);
             showAppearancePreview();
+            appearanceRows = new ScrollView(this);
+            appearanceRows.setClipToPadding(true);
+            int padding = Ui.ipx(Tokens.LAYOUT_SETTINGS_SCROLL_PADDING);
+            int edge = Ui.ipx(Tokens.SPACE_1);
+            appearanceRows.setPadding(edge, edge, edge, edge);
+            appearanceRowList = new LinearLayout(this);
+            appearanceRowList.setOrientation(LinearLayout.VERTICAL);
+            appearanceRowList.setClipChildren(false);
+            appearanceRowList.setClipToPadding(false);
+            appearanceRowList.setPadding(padding - edge, padding - edge, padding - edge, padding - edge);
+            appearanceRows.addView(appearanceRowList);
+            float outside = Tokens.LAYOUT_SETTINGS_SCROLL_PADDING + FocusTile.REACH;
+            place(appearanceRows, Tokens.LAYOUT_SETTINGS_CONTENT_START - outside, Tokens.LAYOUT_SETTINGS_APPEARANCE_TOP - outside,
+                Tokens.LAYOUT_SETTINGS_ROW_WIDTH + 2 * outside, Tokens.LAYOUT_SETTINGS_APPEARANCE_ROWS_HEIGHT);
         }
-        if (homePreview != null) root.removeView(homePreview);
-        if (homeCaption != null) root.removeView(homeCaption);
-        homePreview = null;
-        homeCaption = null;
-        if (homePage) {
-            homePreview = homeLayoutPreview();
-            place(homePreview, Tokens.LAYOUT_SETTINGS_CONTENT_START, ROWS_TOP,
-                Tokens.LAYOUT_SETTINGS_PREVIEW_WIDTH, Tokens.LAYOUT_SETTINGS_PREVIEW_HEIGHT);
-            homeCaption = text(ui400, Tokens.FONT_SIZE_BODY, Palette.MIST_400);
-            homeCaption.setText(t.homeHelp());
-            homeCaption.setGravity(Gravity.CENTER_VERTICAL);
-            placeEnd(homeCaption, Tokens.SPACE_SAFE_INLINE, ROWS_TOP,
-                Tokens.LAYOUT_SETTINGS_APPEARANCE_CAPTION_WIDTH, Tokens.LAYOUT_SETTINGS_PREVIEW_HEIGHT);
-        }
-        rows.addAll(homePage ? homeRows() : prayerOffsetsPage ? offsetRows() : rowsFor(section));
+        rows.addAll(prayerOffsetsPage ? offsetRows() : rowsFor(section));
         for (int i = 0; i < rows.size(); i++) addRow(rows.get(i), i);
         refresh();
-    }
-
-    private void closeHome() {
-        homePage = false; showSection(); focusRow(homeParentRow);
     }
 
     private List<Row> homeRows() {
@@ -294,21 +281,8 @@ public class SettingsActivity extends Screen {
                 String[] segs() { return t.homeLayouts(); }
                 int selected() { return homeDraft[4]; }
                 void select(int i) { homeDraft[4] = i; }
-            },
-            new Row(VALUE) {
-                String label() { return t.homeReset(); }
-                boolean saves() { return false; }
-                void open() { Arrays.fill(homeDraft, 0); refresh(); }
-            },
-            new Row(VALUE) {
-                String label() { return t.applyAppearance(); }
-                void open() {
-                    prefs().edit().putInt("home_countdown", homeDraft[0]).putInt("home_side", homeDraft[1])
-                        .putInt("home_bar", homeDraft[2]).putInt("home_prayers", homeDraft[3])
-                        .putString("home_layout", homeDraft[4] == 1 ? "classic" : "two_rows").apply();
-                    closeHome(); showSaved();
-                }
-            });
+            }
+        );
     }
 
     private View homeLayoutPreview() {
@@ -321,19 +295,18 @@ public class SettingsActivity extends Screen {
                 c.save(); c.scale(getWidth() / Tokens.LAYOUT_HOME_WIDTH, getHeight() / 1080f);
                 if (rtl) c.scale(-1, 1, 960, 540);
                 HomeLayout h = homePreviewLayout;
-                box(c, Tokens.SPACE_SAFE_INLINE, Tokens.SPACE_SAFE_BLOCK, 400, 100, Palette.PLASTER_100);
-                for (int i = 0; i < 5; i++) box(c, 1320 + i * 100, Tokens.SPACE_SAFE_BLOCK, 72, 72, i == 2 ? Palette.GOLD_400 : Palette.LAPIS_700);
-                if (h.mode == HomeLayout.MIHRAB) box(c, h.panelX, h.panelY, Tokens.LAYOUT_HOME_MIHRAB_WIDTH, Tokens.LAYOUT_HOME_MIHRAB_HEIGHT, Palette.LAPIS_700);
-                if (h.mode == HomeLayout.COMPACT) box(c, h.x, h.panelY, h.width, Tokens.LAYOUT_HOME_BAR_HEIGHT, Palette.LAPIS_700);
+                box(c, h.x, Tokens.SPACE_SAFE_BLOCK, 400, 100, previewStyle.colors[6]);
+                for (int i = 0; i < 5; i++) box(c, h.x + h.width - 472 + i * 100, h.quickY, 72, 72, i == 0 ? previewStyle.colors[4] : previewStyle.colors[3]);
+                if (h.mode == HomeLayout.MIHRAB) box(c, h.panelX, h.panelY, Tokens.LAYOUT_HOME_MIHRAB_WIDTH, Tokens.LAYOUT_HOME_MIHRAB_HEIGHT, previewStyle.colors[3]);
+                if (h.mode == HomeLayout.COMPACT) box(c, h.x, h.panelY, h.width, Tokens.LAYOUT_HOME_BAR_HEIGHT, previewStyle.colors[3]);
                 int slots = homePreviewSlots;
                 float cw = Math.min(Tokens.LAYOUT_HOME_TILE_MAX_WIDTH, (h.width - (slots - 1) * 12) / Math.max(1, slots));
-                for (int i = 0; i < slots; i++) box(c, h.x + i * (cw + 12), h.tableY, cw, Tokens.LAYOUT_HOME_TABLE_HEIGHT, Palette.GOLD_400);
-                for (int i = 0; i < h.count; i++) box(c, h.x + i % h.columns * (h.tileWidth + Tokens.LAYOUT_HOME_GAP), h.favouritesY + i / h.columns * (h.tileHeight + Tokens.LAYOUT_HOME_GAP), h.tileWidth, h.tileHeight, Palette.LAPIS_700);
-                for (int i = 0; i < 6; i++) box(c, h.x + i * (h.width + 20) / 6, h.recentY, (h.width - 100) / 6, Tokens.LAYOUT_HOME_RECENT_HEIGHT, Palette.LAPIS_800);
+                for (int i = 0; i < slots; i++) box(c, h.x + i * (cw + 12), h.tableY, cw, Tokens.LAYOUT_HOME_TABLE_HEIGHT, previewStyle.colors[4]);
+                for (int i = 0; i < h.count; i++) box(c, h.x + i % h.columns * (h.tileWidth + Tokens.LAYOUT_HOME_GAP), h.favouritesY + i / h.columns * (h.tileHeight + Tokens.LAYOUT_HOME_GAP), h.tileWidth, h.tileHeight, previewStyle.colors[3]);
+                for (int i = 0; i < 6; i++) box(c, h.x + i * (h.width + 20) / 6, h.recentY, (h.width - 100) / 6, Tokens.LAYOUT_HOME_RECENT_HEIGHT, previewStyle.colors[2]);
                 c.restore();
             }
         };
-        plan.setBackground(Appearance.background(this));
         plan.setContentDescription(t.homeHelp());
         return plan;
     }
@@ -368,7 +341,11 @@ public class SettingsActivity extends Screen {
                 },
                 new Row(SEG) {
                     String label() { return t.asrSchool(); }
-                    String help() { return t.asrSchoolHelp(); }
+                    String help() {
+                        PrayerDay shown = editing == this ? new PrayerDay(new Date(), Prefs.where(c), Prefs.method(c),
+                            draft == 1 ? Madhab.HANAFI : Madhab.SHAFI, Prefs.hijriOffset(c), Prefs.prayerOffsets(c)) : day;
+                        return t.preview() + t.sep() + time(shown.times[PrayerDay.ASR], 1f);
+                    }
                     String[] segs() { return t.asrSchools(); }
                     int selected() { return Prefs.madhab(c) == Madhab.HANAFI ? 1 : 0; }
                     void select(int i) { Prefs.setMadhab(c, i == 1 ? Madhab.HANAFI : Madhab.SHAFI); }
@@ -546,20 +523,10 @@ public class SettingsActivity extends Screen {
                 new Row(VALUE) {
                     String label() { return t.openDock(); }
                     void open() { if (!RemoteKeys.toggleDock()) SystemScreens.open(c, Settings.ACTION_ACCESSIBILITY_SETTINGS); }
-                },
-                new Row(VALUE) {
-                    String label() { return t.homeLayout(); }
-                    int selected() { return Prefs.classicHome(c) ? 1 : 0; }
-                    String value() { return t.homeLayouts()[selected()]; }
-                    void open() {
-                        homeParentRow = rowIndex;
-                        homeDraft[0] = Prefs.homeCountdown(c); homeDraft[1] = Prefs.homeSide(c);
-                        homeDraft[2] = Prefs.homeBar(c); homeDraft[3] = Prefs.homePrayers(c);
-                        homeDraft[4] = Prefs.classicHome(c) ? 1 : 0;
-                        homePage = true; showSection(); focusRow(0);
-                    }
                 });
-            case APPEARANCE: return Arrays.asList(
+            case APPEARANCE: {
+                List<Row> appearance = new ArrayList<>(homeRows());
+                appearance.addAll(Arrays.asList(
                 new Row(CAROUSEL) {
                     String label() { return t.themeRow(); }
                     String[] segs() { return Arrays.copyOf(t.themeNames(), Appearance.PRESETS.length - (prefs().contains("theme_json") ? 0 : 1)); }
@@ -594,15 +561,25 @@ public class SettingsActivity extends Screen {
                     boolean saves() { return false; }
                 },
                 new Row(VALUE) {
+                    String label() { return t.homeReset(); }
+                    boolean saves() { return false; }
+                    void open() { Arrays.fill(homeDraft, 0); refresh(); }
+                },
+                new Row(VALUE) {
                     String label() { return t.applyAppearance(); }
                     void open() {
                         android.content.SharedPreferences.Editor save = prefs().edit()
+                            .putInt("home_countdown", homeDraft[0]).putInt("home_side", homeDraft[1])
+                            .putInt("home_bar", homeDraft[2]).putInt("home_prayers", homeDraft[3])
+                            .putString("home_layout", homeDraft[4] == 1 ? "classic" : "two_rows")
                             .putString("theme", Appearance.PRESETS[themeChoice]).putString("background", BACKGROUNDS[backgroundChoice])
                             .putBoolean("focus_lighting", focusChoice).putBoolean("reduce_motion", motionChoice);
                         if (lightChoice < 0) save.remove("lighting"); else save.putInt("lighting", lightChoice);
                         save.apply(); relaunch(); showSaved();
                     }
-                });
+                }));
+                return appearance;
+            }
             case NETWORK: return Arrays.asList(
                 new Row(VALUE) {
                     String label() { return t.networkRow(); }
@@ -677,7 +654,6 @@ public class SettingsActivity extends Screen {
     protected void onResume() {
         super.onResume();
         // Settings has its own task; returning from Home discards an unapplied appearance draft.
-        if (homePage) { homePage = false; rowIndex = homeParentRow; showSection(); focusRow(rowIndex); }
         if (section == APPEARANCE) {
             editing = null;
             showSection();
@@ -735,20 +711,23 @@ public class SettingsActivity extends Screen {
             r.tile.addView(r.help, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_OFFSET_TIME_WIDTH), -2, Gravity.CENTER));
         }
         r.tile.setLook(f -> render(r, f));
-        placeTile(r.tile, 640, (section == APPEARANCE || homePage ? Tokens.LAYOUT_SETTINGS_APPEARANCE_TOP : ROWS_TOP) + i * (ROW_H + ROW_GAP), Tokens.LAYOUT_SETTINGS_ROW_WIDTH, ROW_H);
+        if (appearanceRows != null) {
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, Ui.ipx(ROW_H + 2 * FocusTile.REACH));
+            if (i > 0) lp.topMargin = Ui.ipx(ROW_GAP - 2 * FocusTile.REACH);
+            appearanceRowList.addView(r.tile, lp);
+        } else placeTile(r.tile, Tokens.LAYOUT_SETTINGS_CONTENT_START, ROWS_TOP + i * (ROW_H + ROW_GAP), Tokens.LAYOUT_SETTINGS_ROW_WIDTH, ROW_H);
     }
 
     /** Refresh rows and previews from saved settings or the appearance draft. */
     private void refresh() {
         if (appearancePreview != null) updateAppearancePreview();
-        if (homePreview != null) {
-            homePreviewLayout = new HomeLayout(homeDraft[0], homeDraft[1], homeDraft[2], homeDraft[3], Apps.slots(this, t).size(), homeDraft[4] == 1, rtl);
+        if (appearancePreview != null) {
+            homePreviewLayout = new HomeLayout(homeDraft[0], homeDraft[1], homeDraft[2], homeDraft[3], Apps.slots(this, t).size(), homeDraft[4] == 1, rtl, Prefs.quickLabels(this));
             homePreviewSlots = HomeLayout.prayers(homePreviewLayout.table, -1, 0).length;
-            homePreview.invalidate();
+            appearancePreview.getChildAt(0).invalidate();
         }
         day = new PrayerDay(this, new Date());
         for (Row r : rows) render(r, r.tile.isFocused());
-        previewValue.setText(time(day.times[PrayerDay.ASR], 1f));
     }
 
     private void render(Row r, boolean focused) {
@@ -782,14 +761,14 @@ public class SettingsActivity extends Screen {
                 for (int i = selected - 1; i <= selected + 1; i++) {
                     TextView chip = text(ui400, Tokens.FONT_SIZE_LABEL, i == selected ? Palette.PLASTER_100 : ink);
                     chip.setText(i >= 0 && i < names.length ? names[i] : "");
-                    if (homePage && i != selected) chip.setText(i < 0 || i >= names.length ? "" : (i < selected) != rtl ? "‹" : "›");
+                    if (section == APPEARANCE && i != selected) chip.setText(i < 0 || i >= names.length ? "" : (i < selected) != rtl ? "‹" : "›");
                     chip.setGravity(Gravity.CENTER);
                     chip.setSingleLine(true);
                     chip.setEllipsize(android.text.TextUtils.TruncateAt.END);
                     chip.setPadding(Ui.ipx(12), 0, Ui.ipx(12), 0);
                     if (i == selected) chip.setBackground(round(Palette.LAPIS_700, 26));
                     else chip.setAlpha(.65f);
-                    float width = homePage ? (i == selected ? Tokens.LAYOUT_SETTINGS_HOME_CHOICE_WIDTH : Tokens.LAYOUT_SETTINGS_HOME_ARROW_WIDTH) : Tokens.LAYOUT_SETTINGS_CAROUSEL_WIDTH;
+                    float width = section == APPEARANCE ? (i == selected ? Tokens.LAYOUT_SETTINGS_HOME_CHOICE_WIDTH : Tokens.LAYOUT_SETTINGS_HOME_ARROW_WIDTH) : Tokens.LAYOUT_SETTINGS_CAROUSEL_WIDTH;
                     r.control.addView(chip, new LinearLayout.LayoutParams(Ui.ipx(width), Ui.ipx(Tokens.LAYOUT_SETTINGS_CAROUSEL_HEIGHT)));
                 }
                 break;
@@ -859,6 +838,7 @@ public class SettingsActivity extends Screen {
     // ---------------------------------------------------------------- focus and keys
 
     private void focusNav() {
+        if (!onNav && section == APPEARANCE) { editing = null; showSection(); }
         onNav = true;
         nav[section].requestFocus();
     }
@@ -868,7 +848,15 @@ public class SettingsActivity extends Screen {
         rowIndex = i;
         Row r = rows.get(i);
         r.tile.requestFocus();
-
+        if (appearanceRows != null) r.tile.post(() -> {
+            if (appearanceRows == null || !r.tile.isFocused()) return;
+            int padding = Ui.ipx(Tokens.LAYOUT_SETTINGS_SCROLL_PADDING);
+            int top = r.tile.getTop() - padding, bottom = r.tile.getBottom() + padding;
+            int y = appearanceRows.getScrollY(), height = appearanceRows.getHeight()
+                - appearanceRows.getPaddingTop() - appearanceRows.getPaddingBottom();
+            if (top < y) appearanceRows.scrollTo(0, top);
+            else if (bottom > y + height) appearanceRows.scrollTo(0, bottom - height);
+        });
         styleNav(section);
     }
 
@@ -906,7 +894,6 @@ public class SettingsActivity extends Screen {
         if (i < 0 || i >= SECTIONS || i == section) return;
         section = i;
         prayerOffsetsPage = false;
-        homePage = false;
         showSection();
         focusNav();
     }
@@ -930,7 +917,6 @@ public class SettingsActivity extends Screen {
         if (k == KeyEvent.KEYCODE_BACK) {
             if (!down) {
                 if (editing != null) stopEditing(false);
-                else if (homePage) closeHome();
                 else if (prayerOffsetsPage) {
                     prayerOffsetsPage = false;
                     showSection();
@@ -1082,37 +1068,12 @@ public class SettingsActivity extends Screen {
         appearancePreview = new FrameLayout(this);
         previewKey = null;
         previewStyle = Appearance.style(this, Appearance.PRESETS[themeChoice], BACKGROUNDS[backgroundChoice], lightChoice);
-        View home = new View(this) {
-            final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-            @Override protected void onDraw(Canvas canvas) {
-                canvas.save(); canvas.scale(getWidth() / 480f, getHeight() / 270f);
-                if (rtl) { canvas.translate(480, 0); canvas.scale(-1, 1); }
-                p.setColor(previewStyle.colors[2]);
-                canvas.drawRoundRect(22, 35, 158, 248, 68, 68, p);
-                p.setColor(previewStyle.colors[4]); p.setStyle(Paint.Style.STROKE); p.setStrokeWidth(1);
-                canvas.drawRoundRect(22, 35, 158, 248, 68, 68, p); p.setStyle(Paint.Style.FILL);
-                // Text stays readable in Arabic; only the miniature layout is mirrored.
-                canvas.save(); if (rtl) canvas.scale(-1, 1, 90, 0);
-                p.setTypeface(display); p.setTextSize(24); p.setColor(previewStyle.colors[6]);
-                canvas.drawText(t.d("12:34"), 60, 136, p); canvas.restore();
-                p.setColor(previewStyle.colors[7]); canvas.drawRoundRect(190, 52, 330, 56, 2, 2, p);
-                p.setColor(previewStyle.colors[4]); canvas.drawRoundRect(190, 66, 260, 70, 2, 2, p);
-                for (int i = 0; i < 9; i++) {
-                    float x = 190 + i % 3 * 87, y = 96 + i / 3 * 50;
-                    p.setColor(i == 0 ? previewStyle.colors[4] : previewStyle.colors[2]);
-                    canvas.drawRoundRect(x, y, x + 77, y + 40, 5, 5, p);
-                    p.setColor(i == 0 ? previewStyle.colors[1] : previewStyle.colors[7]);
-                    canvas.drawRoundRect(x + 12, y + 13, x + 26, y + 27, 3, 3, p);
-                    canvas.drawRoundRect(x + 34, y + 18, x + 65, y + 21, 1, 1, p);
-                }
-                canvas.restore();
-            }
-        };
+        View home = homeLayoutPreview();
         home.setContentDescription(t.appearancePreview());
         appearancePreview.addView(home, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_PREVIEW_WIDTH), Ui.ipx(Tokens.LAYOUT_SETTINGS_PREVIEW_HEIGHT), Gravity.START));
         LinearLayout caption = new LinearLayout(this);
         caption.setOrientation(LinearLayout.VERTICAL);
-        TextView label = text(ui400, Tokens.FONT_SIZE_LABEL, Palette.MIST_400); label.setText(t.appearancePreview()); caption.addView(label);
+        TextView label = text(ui400, Tokens.FONT_SIZE_LABEL, Palette.MIST_400); label.setText(t.homeHelp()); caption.addView(label);
         appearanceName = text(displayBold, Tokens.FONT_SIZE_APPEARANCE_TITLE, Palette.PLASTER_100);
         caption.addView(appearanceName);
         appearanceSwatches = new LinearLayout(this);

@@ -23,6 +23,7 @@ import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.text.format.DateFormat;
 import android.text.style.RelativeSizeSpan;
 import android.view.Gravity;
@@ -57,7 +58,7 @@ public class MainActivity extends Screen {
     private FocusGlow focusGlow;
     private String replacementPackage;
 
-    private TextView clock, gdate, hdate, wifiName;
+    private TextView clock, gdate, hdate, wifiName, homePrayerTime;
     private int favouriteCount, recentCount;
     private boolean classicHome;
     private HomeLayout home;
@@ -198,7 +199,7 @@ public class MainActivity extends Screen {
         List<String> favs = Apps.slots(this, t);
         classicHome = Prefs.classicHome(this);
         home = new HomeLayout(Prefs.homeCountdown(this), Prefs.homeSide(this), Prefs.homeBar(this),
-            Prefs.homePrayers(this), favs.size(), classicHome, rtl);
+            Prefs.homePrayers(this), favs.size(), classicHome, rtl, Prefs.quickLabels(this));
         favouriteCount = home.count;
         buildCountdown();
         nodes[QIBLA] = quickPill(t.today(), Icon.COMPASS, () -> startActivity(new Intent(this, PrayerDayActivity.class)));
@@ -210,7 +211,7 @@ public class MainActivity extends Screen {
         clock.setIncludeFontPadding(false);
         clock.setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
         clock.setFontFeatureSettings("tnum");
-        // Under the clock the Hijri date (with the city) first, then the Gregorian, smaller and in mist.
+        // Dates stay beside the Mihrab; location belongs under its countdown.
         hdate = text(ui400, 26, Palette.PLASTER_100);
         gdate = text(ui400, 24, Palette.MIST_400);
         when.addView(clock);
@@ -220,30 +221,23 @@ public class MainActivity extends Screen {
         ((LinearLayout.LayoutParams) gdate.getLayoutParams()).topMargin = Ui.ipx(6);
         lineHeight(clock, 1f);
         when.setClipChildren(false);
-        place(when, Tokens.SPACE_SAFE_INLINE, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        place(when, home.x, Tokens.SPACE_SAFE_BLOCK, home.width, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // Quick controls end beside Settings; the clock keeps its own space.
         nodes[INPUTS] = inputPill();
         nodes[RADIO] = radioPill();
         nodes[WIFI] = wifiPill();
+        nodes[SETTINGS] = settingsButton();
         LinearLayout pills = new LinearLayout(this);
         pills.setClipChildren(false);
         float reach = FocusTile.REACH;
-        pills.addView(nodes[INPUTS], new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach)));
-        LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach));
-        rlp.setMarginStart(Ui.ipx(16 - 2 * reach));
-        pills.addView(nodes[RADIO], rlp);
-        LinearLayout.LayoutParams wlp = new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach));
-        wlp.setMarginStart(Ui.ipx(20 - 2 * reach));
-        pills.addView(nodes[QIBLA], wlp);
-        LinearLayout.LayoutParams qlp = new LinearLayout.LayoutParams(-2, Ui.ipx(72 + 2 * reach));
-        qlp.setMarginStart(Ui.ipx(20 - 2 * reach));
-        pills.addView(nodes[WIFI], qlp);
-        FrameLayout.LayoutParams plp = new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.END);
-        plp.setMarginEnd(Ui.ipx(1920 - (Tokens.COURT_X + Tokens.COURT_W) + 72 + 20 - reach));
-        plp.topMargin = Ui.ipx(56 - reach);
-        root.addView(pills, plp);
-        nodes[SETTINGS] = settingsButton();
+        pills.setGravity(Gravity.END);
+        for (int n : new int[] {QIBLA, INPUTS, RADIO, WIFI, SETTINGS}) {
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(n == SETTINGS ? Ui.ipx(Tokens.LAYOUT_BUTTON_HEIGHT + 2 * reach) : -2, Ui.ipx(Tokens.LAYOUT_BUTTON_HEIGHT + 2 * reach));
+            if (n != QIBLA) lp.setMarginStart(Ui.ipx(Tokens.LAYOUT_HOME_GAP - 2 * reach));
+            pills.addView(nodes[n], lp);
+        }
+        place(pills, home.x - reach, home.quickY - reach, home.width + 2 * reach, Tokens.LAYOUT_BUTTON_HEIGHT + 2 * reach);
 
         // The prayer strip: information only, never focusable.
         java.util.Arrays.fill(cell, null);
@@ -252,11 +246,13 @@ public class MainActivity extends Screen {
         for (int i = 0; i < slots; i++) {
             LinearLayout v = new LinearLayout(this);
             v.setOrientation(LinearLayout.VERTICAL);
-            v.setPadding(Ui.ipx(20), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING), Ui.ipx(20), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING));
+            v.setPadding(Ui.ipx(Tokens.SPACE_2), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING), Ui.ipx(Tokens.SPACE_2), Ui.ipx(Tokens.LAYOUT_HOME_CELL_PADDING));
             cellTag[i] = text(ui400, 20, Palette.PLASTER_100);
             cellName[i] = text(ui400, 26, Palette.PLASTER_100);
             cellTime[i] = text(ui400, Tokens.FONT_SIZE_BODY_L, Palette.PLASTER_100);
             cellTag[i].setIncludeFontPadding(false);
+            cellTag[i].setSingleLine(true);
+            cellTag[i].setEllipsize(TextUtils.TruncateAt.END);
             cellName[i].setSingleLine(true);
             cellName[i].setEllipsize(TextUtils.TruncateAt.END);
             cellTime[i].setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_LTR);
@@ -328,6 +324,7 @@ public class MainActivity extends Screen {
     private void buildCountdown() {
         arch = null;
         archLabel = archName = archCount = archSub = archSub2 = null;
+        homePrayerTime = null;
         if (home.mode == HomeLayout.HIDDEN) return;
         boolean compact = home.mode == HomeLayout.COMPACT;
         float inset = Tokens.LAYOUT_HOME_PANEL_INSET;
@@ -360,23 +357,29 @@ public class MainActivity extends Screen {
         archCount.setFontFeatureSettings("tnum");
         archSub = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.MIST_400);
         archSub2 = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.GOLD_200);
+        homePrayerTime = text(ui400, compact ? Tokens.FONT_SIZE_BODY : Tokens.FONT_SIZE_SACRED, Palette.PLASTER_100);
         LinearLayout name = new LinearLayout(this), detail = new LinearLayout(this);
         name.setOrientation(LinearLayout.VERTICAL); detail.setOrientation(LinearLayout.VERTICAL);
         name.setGravity(Gravity.CENTER); detail.setGravity(Gravity.CENTER);
         name.addView(archLabel); name.addView(archName);
+        if (compact) detail.addView(homePrayerTime);
         detail.addView(archSub); detail.addView(archSub2);
-        for (TextView v : new TextView[] {archLabel, archName, archCount, archSub, archSub2}) {
+        for (TextView v : new TextView[] {archLabel, archName, homePrayerTime, archCount, archSub, archSub2}) {
             v.setGravity(Gravity.CENTER); v.setIncludeFontPadding(false);
         }
         info.addView(name, new LinearLayout.LayoutParams(compact ? 0 : -1, -2, compact ? 1 : 0));
-        info.addView(archCount, new LinearLayout.LayoutParams(compact ? 0 : -1, -2, compact ? 1 : 0));
+        if (!compact) {
+            info.addView(homePrayerTime, new LinearLayout.LayoutParams(-1, -2));
+            ((LinearLayout.LayoutParams) homePrayerTime.getLayoutParams()).bottomMargin = Ui.ipx(Tokens.SPACE_3);
+        }
+        info.addView(archCount, new LinearLayout.LayoutParams(compact ? 0 : -1, compact ? -2 : 0, 1));
         info.addView(detail, new LinearLayout.LayoutParams(compact ? 0 : -1, -2, compact ? 1 : 0));
         lineHeight(archName, 1.15f); lineHeight(archCount, 1f);
         info.setClipChildren(false);
         place(info, compact ? home.x : home.panelX + inset,
             compact ? home.panelY : home.panelY + Tokens.LAYOUT_HOME_INFO_TOP,
             compact ? home.width : Tokens.LAYOUT_HOME_MIHRAB_WIDTH - 2 * inset,
-            compact ? Tokens.LAYOUT_HOME_BAR_HEIGHT : -2);
+            compact ? Tokens.LAYOUT_HOME_BAR_HEIGHT : Tokens.LAYOUT_HOME_MIHRAB_HEIGHT - Tokens.LAYOUT_HOME_INFO_TOP - inset);
     }
 
     private View inputPill() {
@@ -431,7 +434,6 @@ public class MainActivity extends Screen {
         b.setContentDescription(t.settings());
         b.setLook(f -> gear.setColor(f ? Palette.LAPIS_900 : Palette.PLASTER_100));
         b.setOnClickListener(v -> startSafely(new Intent(this, SettingsActivity.class)));
-        placeEnd(b, 1920 - (Tokens.COURT_X + Tokens.COURT_W), 56, 72, 72);
         return b;
     }
 
@@ -509,7 +511,13 @@ public class MainActivity extends Screen {
             day = new PrayerDay(this, new Date(now.getTime() + 1000));
             renderMinute(now);
         }
-        if (archCount != null) archCount.setText(t.d(duration(secondsUntil(day.nextTime, now), true)));
+        if (archCount != null) {
+            long left = secondsUntil(day.nextTime, now);
+            archCount.setText(t.d(duration(left, true)));
+            float size = Ui.px(home.mode == HomeLayout.COMPACT ? Tokens.LAYOUT_HOME_COMPACT_COUNTDOWN_SIZE
+                : left >= 36000 ? Tokens.FONT_SIZE_DISPLAY_L : left >= 3600 ? Tokens.FONT_SIZE_DISPLAY_XL_HOURS : Tokens.LAYOUT_HOME_COUNTDOWN_SIZE);
+            if (archCount.getTextSize() != size) { archCount.setTextSize(TypedValue.COMPLEX_UNIT_PX, size); lineHeight(archCount, 1f); }
+        }
         if (arch != null) arch.setState(secondsUntil(day.nextTime, now) <= Tokens.APPROACH_MIN * 60L ? ArchView.APPROACHING : ArchView.REST);
     }
 
@@ -517,13 +525,12 @@ public class MainActivity extends Screen {
         readClockFormat();
         clock.setText(time(now, 0.4f));
         gdate.setText(gregorian(now));
-        hdate.setText(hijri(day) + t.sep() + t.city());
+        hdate.setText(hijri(day));
 
         String[] names = t.prayerNames();
         if (day.friday) names[PrayerDay.DHUHR] = t.jumuah();
-        String nextTime = time(day.nextTime, 1f).toString();
         String label = t.nextPrayer(), name = names[day.nextIndex];
-        String sub = t.adhanAt() + " " + nextTime + t.sep() + t.city(), sub2 = "";
+        String sub2 = "";
         if (day.friday && day.nextIndex == PrayerDay.DHUHR) label = t.jumuahLabel();
         if (day.friday) sub2 = t.kahf();
         if (day.ramadan) {
@@ -531,13 +538,13 @@ public class MainActivity extends Screen {
             if (day.nextIndex == PrayerDay.MAGHRIB) {
                 label = t.iftarIn();
                 name = t.iftar();
-                sub = t.prayerNames()[PrayerDay.MAGHRIB] + " " + nextTime + t.sep() + t.city();
             }
         }
         if (archLabel != null) {
             archLabel.setText(label);
             PrayerIcon.set(archName, day.nextIndex, name);
-            archSub.setText(t.d(sub));
+            homePrayerTime.setText(time(day.nextTime, .55f));
+            archSub.setText(t.city());
             archSub2.setText(t.d(sub2));
             archSub2.setVisibility(sub2.isEmpty() ? View.GONE : View.VISIBLE);
         }
@@ -904,12 +911,12 @@ public class MainActivity extends Screen {
         if (replacementPackage != null) {
             int to = FavouriteChoice.move(from - F0, favouriteCount,
                 key == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : key == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0,
-                key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0, classicHome);
+                key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0, home.columns);
             if (to >= 0) nodes[F0 + to].requestFocus();
             return;
         }
         if (from < 0) { firstApp().requestFocus(); return; }
-        int to = FavouriteChoice.homeMove(from, favouriteCount, recentCount, classicHome, lastFav,
+        int to = FavouriteChoice.homeMove(from, favouriteCount, recentCount, home.columns, lastFav,
             key == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : key == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0,
             key == KeyEvent.KEYCODE_DPAD_UP ? -1 : key == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0);
         if (nodes[to] != null) nodes[to].requestFocus();

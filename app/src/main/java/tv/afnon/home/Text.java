@@ -375,7 +375,7 @@ final class Text {
     String systemUnavailable() { return ar ? "هذه الصفحة غير متاحة على التلفزيون" : "This settings page is unavailable on this TV"; }
     String applyAppearance() { return ar ? "تطبيق التغييرات" : "Apply changes"; }
     String appearancePreview() { return ar ? "معاينة الرئيسية" : "Home preview"; }
-    String sectionAppearance() { return ar ? "السمات والخلفيات" : "Themes & backgrounds"; }
+    String sectionAppearance() { return ar ? "الرئيسية والمظهر" : "Home & appearance"; }
     String[] themeNames() { return ar ? new String[] {"محراب", "شفق", "جمر", "غابة", "منتصف الليل", "وردي", "رمال", "أردوازي", "مخصصة"} : new String[] {"Mihrab", "Aurora", "Ember", "Forest", "Midnight", "Rose", "Sand", "Slate", "Custom"}; }
     String homeLayout() { return ar ? "تخطيط الرئيسية" : "Home layout"; }
     String homeCountdown() { return ar ? "العد التنازلي للصلاة" : "Prayer countdown"; }
