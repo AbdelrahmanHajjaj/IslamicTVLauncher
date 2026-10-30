@@ -52,6 +52,21 @@ python -S -B tools/device.py screensaver afnon
 
 Pass a listed `package/service` to select a custom installed screensaver. Google photo choices remain in Google's screensaver settings and depend on the TV firmware and installed services. Do not disable the package providing the selected saver.
 
+To check adhan over the selected screensaver on a connected TV, enable adhan and its prayer service,
+use a debug build containing audio assets, and stop any launcher radio playback first:
+
+```powershell
+python -S -B tools/check_adhan_screensaver.py --tv $env:TV
+python -S -B tools/check_adhan_screensaver.py --tv $env:TV --home-only --dismiss home
+```
+
+This explicit hardware check plays adhan audio, tests Back or Home dismissal, and returns Home.
+It uses the existing delayed call test and SystemUI's `Somnambulator` activity; firmware without that
+activity needs a manual screensaver check. It verifies that the screensaver exits, the call remains
+resumed and audio remains active beyond the temporary wake lock, dismissal stops playback, and
+preferences/screensaver selection remain unchanged. Raw diagnostic snapshots stay in ignored `state/`.
+It does not run as part of the offline unit suite. Confirm the sound with the TV's actual speakers too.
+
 ## Finish on the real TV
 
 Verify Home from another app and after reboot; HDMI/source menu, volume hold, Bluetooth pairing, voice, Wi-Fi, prayer alerts, radio and saver wake-up. Test remapped buttons on the physical remote: injected ADB keys do not prove accessibility interception works. Keep the stock launcher enabled until these checks pass. Compare startup and navigation before making speed claims. After installation, turn debugging off, revoke authorisations, reboot and confirm ADB can no longer connect.
