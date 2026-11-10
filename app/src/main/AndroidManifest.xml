@@ -106,7 +106,8 @@
             android:screenOrientation="landscape" />
 
         <!-- The call to prayer, opened by the remote buttons service. Its own task, so closing it returns to
-             whatever app was playing rather than to Home. -->
+             whatever app was playing rather than to Home. turnScreenOn is read before startup on API 27+;
+             API 26 uses the equivalent window flag in NowActivity. -->
         <activity
             android:name=".NowActivity"
             android:exported="false"
@@ -114,6 +115,8 @@
             android:launchMode="singleInstance"
             android:taskAffinity="tv.afnon.home.call"
             android:theme="@style/Theme.Afnon.Call"
+            android:turnScreenOn="true"
+            tools:targetApi="27"
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden|uiMode|locale|layoutDirection"
             android:screenOrientation="landscape" />
 

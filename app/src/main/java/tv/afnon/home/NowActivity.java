@@ -4,10 +4,12 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +43,10 @@ public class NowActivity extends Screen {
 
     @Override
     void build() {
+        if (Build.VERSION.SDK_INT < 27) {
+            // API 27+ reads turnScreenOn from the manifest before starting this activity.
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        }
         prayer = getIntent().getIntExtra("prayer", PrayerDay.DHUHR);
         time = new Date(getIntent().getLongExtra("time", System.currentTimeMillis()));
         readClockFormat();
@@ -101,8 +107,14 @@ public class NowActivity extends Screen {
         setContentView(root);
         updatePlayLabel();
         playButton.requestFocus();
+    }
 
-        if (!started) {
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        // A third-party dream can stop/resume this activity while waking. Wait until the call is actually
+        // visible before starting audio or its close countdown, rather than playing behind the dream.
+        if (hasFocus && !started) {
             started = true;
             if (Prefs.adhan(this)) startAdhan();
             scheduleClose();
@@ -150,6 +162,8 @@ public class NowActivity extends Screen {
             unmuteForAdhan(am);
         }
         player = Adhans.play(this, Prefs.voice(this, prayer == PrayerDay.FAJR));
+        // The dream must not restart while the adhan is playing; Android releases this with the window.
+        if (player != null) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (player != null) player.setOnCompletionListener(mp -> {
             stopAdhan();
             if (Prefs.callCloseMinutes(this) == 0) finish();
@@ -158,6 +172,7 @@ public class NowActivity extends Screen {
     }
 
     private void stopAdhan() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Adhans.stop(player);
         player = null;
         AudioManager am = getSystemService(AudioManager.class);
@@ -209,11 +224,11 @@ public class NowActivity extends Screen {
         return super.dispatchKeyEvent(e);
     }
 
-    /** Leaving the screen (Home, another app) ends the call: no adhan playing behind something else. */
+    /** Leaving a visible call ends it; an initial dream wake transition is not a user dismissal. */
     @Override
     protected void onStop() {
         super.onStop();
-        if (!isChangingConfigurations()) finish();
+        if (started && !isChangingConfigurations()) finish();
     }
 
     @Override
