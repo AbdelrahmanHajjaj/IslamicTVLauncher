@@ -46,6 +46,10 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 - Added offline prayer calculations using the existing cities/methods and a persistent,
   user-switchable service that opens Afnon once after a new TV boot. Requires Developer Mode.
 
+### Fixed
+
+- Adhan now exits third-party screensavers such as Google Backdrop before starting playback. The call screen survives Android's initial wake transition, keeps the display awake while audio plays, and still stops on Back or Home. The selected screensaver and prayer settings are preserved.
+
 ### Added in IslamicTVLauncher (Afnon)
 
 - Cinema, Carbon, Signal, Arcade, Brass and Mosaic now use subtle 12-pixel corners through their shared theme profiles, including app cards, Home prayer boxes, Settings rows and navigation tabs.

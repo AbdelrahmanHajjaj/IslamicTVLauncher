@@ -120,10 +120,12 @@ final class PrayerWatch {
         }
     }
 
-    /** Turns the screen back on (from TCL Audio Only or sleep) so the call can be seen; a no-op when it is on. */
+    /** Wake out of screensavers as well as TCL Audio Only so the call can become visible. */
     private void wakeScreen() {
         PowerManager pm = service.getSystemService(PowerManager.class);
-        if (pm == null || pm.isInteractive()) return;
+        // Dreaming is still "interactive", so do not skip this bounded fallback in that state.
+        // NowActivity also requests turnScreenOn: some TV firmware ignores app wake locks during dreams.
+        if (pm == null) return;
         try {
             @SuppressWarnings("deprecation")
             PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK
