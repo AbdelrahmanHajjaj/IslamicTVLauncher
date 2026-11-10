@@ -3,6 +3,7 @@ build/
 app/build/
 local.properties
 *.apk
+*.ipk
 .idea/
 *.iml
 # Downloaded by tools/fetch-adhans.sh (no licence to redistribute)

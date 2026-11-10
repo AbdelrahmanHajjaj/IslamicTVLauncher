@@ -1,0 +1,5 @@
+{
+  "name": "tv.afnon.bgprobe.service",
+  "version": "0.0.8",
+  "main": "service.js"
+}

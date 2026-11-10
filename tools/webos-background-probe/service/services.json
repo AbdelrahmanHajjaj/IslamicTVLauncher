@@ -1,0 +1,5 @@
+{
+  "id": "tv.afnon.bgprobe.service",
+  "description": "Temporary Afnon background scheduling test",
+  "services": [{"name": "tv.afnon.bgprobe.service", "description": "Afnon background test"}]
+}

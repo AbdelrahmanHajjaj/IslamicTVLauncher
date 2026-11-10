@@ -1,5 +1,11 @@
 # Fork and upstream contribution plan
 
+Current LG work: prepare `feature/lg-webos-port` against this fork's current `main`,
+with the webOS source/tests, probe history and platform-specific agent guidance.
+The Android screensaver fix is already in `main` through fork PR #4; keep the LG PR
+focused on the port and its guidance. Commit/push/PR creation is authorized for this work;
+merging, upstream submission and release publication are separate actions.
+
 The previous integration branch `feature/improvements_and_cleanup` was submitted as [fork PR #1](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher/pull/1).
 The owner has now authorized publishing `feature/home_customization` as a Home customization and appearance PR into this fork's `main`. Upstream proposals remain deferred.
 Read [CONTRIBUTING.md](../CONTRIBUTING.md) and the [PR template](../.github/pull_request_template.md) for each future submission.

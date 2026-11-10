@@ -9,6 +9,12 @@ the bar is calm, correct and reliable. A wrong Fajr time matters more than a mis
 
 Issues and pull requests are welcome in Arabic or English.
 
+This fork also includes a separate LG webOS application in `webos/`. Read
+[`AGENTS.md`](AGENTS.md) for the platform map and [`webos/AGENTS.md`](webos/AGENTS.md)
+for LG maintenance rules. The Java, ADB, accessibility-service and APK instructions
+below apply to Android. The LG port uses ES5, a webOS JS service and IPK packages;
+its build shares Android data and assets, not Android UI or system integrations.
+
 For this fork, also read the [fork/upstream contribution plan](docs/CONTRIBUTION-PLAN.md). It records
 proposed PR scopes and outstanding checks; the requirements below still apply.
 
@@ -84,10 +90,16 @@ can't be committed, add them to `tools/fetch-adhans.sh`.
 
 - One topic per PR. Small is fine.
 - Say which TV you tested on, and attach screenshots.
-- `./gradlew :app:assembleDebug` must build with no new warnings.
+- Android changes: `./gradlew :app:assembleDebug` must build with no new warnings.
+- LG changes: run `npm --prefix webos test` and `npm --prefix webos run test:browser`
+  with the prerequisites in [`webos/README.md`](webos/README.md#build-and-check).
+  Separate mocked browser evidence from actual TV picture/sound and remote checks.
+  A desktop preview is not a screenshot of the TV. Run probe tests only when changing
+  `tools/webos-background-probe/`; do not install a historical probe as routine QA.
 - **No personal data.** Before you push, check screenshots and logs for your Wi-Fi name, IP
   addresses, serial numbers, your home city or room direction if you'd rather keep them private,
-  and other apps' content playing behind Afnon. Never commit `state/` or `local.properties`.
+  and other apps' content playing behind Afnon. Never commit `state/`, `local.properties`,
+  pairing credentials, APK/IPK output or downloaded/generated speech recordings.
 - Be kind in reviews.
 
 By contributing you agree that your work is released under the repo's MIT licence.

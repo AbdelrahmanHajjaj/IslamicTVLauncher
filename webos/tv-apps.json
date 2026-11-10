@@ -1,0 +1,18 @@
+[
+  {"id":"netflix","ar":"Netflix","en":"Netflix","icon":"film"},
+  {"id":"amazon.global","ar":"Prime Video","en":"Prime Video","icon":"film"},
+  {"id":"youtube.leanback.v4","ar":"YouTube","en":"YouTube","icon":"tv"},
+  {"id":"com.webos.app.browser","ar":"متصفح الويب","en":"Web Browser","icon":"globe"},
+  {"id":"com.webos.app.smartshare","ar":"SmartShare","en":"SmartShare","icon":"folder"},
+  {"id":"com.webos.app.miracast","ar":"مشاركة الشاشة","en":"Screen Share","icon":"input"},
+  {"id":"com.webos.app.discovery","ar":"متجر LG","en":"LG Content Store","icon":"bag"},
+  {"id":"com.webos.app.livetv","ar":"البث التلفزيوني","en":"Live TV","icon":"tv"},
+  {"id":"com.webos.app.tvguide","ar":"دليل التلفاز","en":"TV Guide","icon":"news"},
+  {"id":"com.webos.app.scheduler","ar":"الجدول","en":"Scheduler","icon":"clock"},
+  {"id":"com.webos.app.connectionwizard","ar":"توصيل الأجهزة","en":"Device Connector","icon":"input"},
+  {"id":"com.webos.app.capturetv","ar":"محرر الصور LG","en":"LG Photo Editor","icon":"image"},
+  {"id":"com.webos.app.camera","ar":"الكاميرا","en":"Camera","icon":"image"},
+  {"id":"com.webos.app.notificationcenter","ar":"الإشعارات","en":"Notifications","icon":"bell"},
+  {"id":"com.webos.app.tvuserguide","ar":"دليل المستخدم","en":"User Guide","icon":"book"},
+  {"id":"com.palmdts.devmode","ar":"وضع المطور","en":"Developer Mode","icon":"gear"}
+]

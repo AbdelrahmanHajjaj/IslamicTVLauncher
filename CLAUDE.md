@@ -1,19 +1,25 @@
-# Afnon (أفنون): notes for Claude
+# Islamic TV Launcher: notes for Claude
+
+Read `AGENTS.md` first for repository-wide instructions and the platform map.
+LG work belongs in `webos/`; read `webos/AGENTS.md` and `webos/README.md` for its
+ES5/Node 0.10 constraints, Activity Manager service and hardware validation workflow.
+The Android rules below do not prohibit the LG service or embedded HDMI video.
 
 Afnon is an Android TV home screen (HOME launcher) built around the prayer day: next-prayer countdown in a mihrab
 arch, offline prayer times, Qibla, the adhan at prayer time, reminders, Friday/Ramadan modes and Quran Radio Cairo.
-Package `tv.afnon.home`. Public repo: github.com/egyjs/afnon-android-tv-launcher (MIT).
+Package `tv.afnon.home`. This fork is github.com/AbdelrahmanHajjaj/IslamicTVLauncher;
+upstream is github.com/egyjs/afnon-android-tv-launcher (MIT).
 
 Read `README.md` (features, install, TCL notes) and `CONTRIBUTING.md` (the rules below in full) before larger work.
 Releasing: `gh.md`. History: `CHANGELOG.md`. Design spec: `afnon-mihrab/HANDOFF.md` and `afnon-mihrab/design/`.
 Machine- and TV-specific details (TV address, adb path) live in `CLAUDE.local.md`, which is not committed.
 
-## Target device
+## Android target device
 
 TCL 55P7K, Google TV, Android 12, 1920×1080, ~1.8 GB RAM, weak GPU, D-pad remote only. Everything is checked on the
 real TV over ADB, never just in the build.
 
-## Hard rules
+## Android rules
 
 - Plain Java + Android Views. One dependency (adhan-java). No AndroidX, Kotlin or Compose.
 - No blur, video or shadows; animate transform/opacity only. No new timers or background services: prayer checks
@@ -101,6 +107,9 @@ plus a model (`(ctx) => {html, attr}`) that renders at build time and every seco
 layout changes in the app, update its component. `npm run dev` / `npm run build` in `site/`.
 
 ## Releases
+
+LG has its own package version and IPK build; see `webos/AGENTS.md`. Do not apply
+these Android signing, ADB or APK release steps to the LG port.
 
 Debug-signed as in upstream, with `~/.android/debug.keystore` on the maintainer's machine:
 releases must keep that key or installed TVs can't upgrade. Steps in `gh.md`; record changes in `CHANGELOG.md`

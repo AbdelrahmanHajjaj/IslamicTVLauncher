@@ -1,11 +1,19 @@
 # Releasing Afnon
 
+This document describes the **Android** release workflow inherited from upstream.
+This fork's destination is `AbdelrahmanHajjaj/IslamicTVLauncher`; preserve upstream
+attribution and use a feature branch/PR into the fork's `main` for normal changes.
+The LG port has separate version files, tests and IPK packaging documented in
+[`webos/AGENTS.md`](webos/AGENTS.md) and [`webos/README.md`](webos/README.md).
+Do not upload a local LG IPK or publish a release as part of a commit/PR request.
+
 How to version, release and publish Afnon on GitHub (`egyjs/afnon-android-tv-launcher`). Run everything from the
 repo root in Git Bash, with `TV` set to the test TV's address.
 
 ## How it is published today
 
-- No CI: there are no GitHub Actions workflows. The APK is built on the maintainer's machine and uploaded with `gh`.
+- Android, installer and preview checks run in `.github/workflows/`; release APKs
+  are still built and uploaded explicitly. These workflows do not validate LG hardware.
 - One release so far, **v0.1** (2026-10-21): tag `v0.1` on the first commit `89b4d02`, created by
   `gh release create` against `main`. Commits after it (README, design handoff) are unreleased.
 - One asset, `afnon.apk` (19.5 MB): `assembleDebug` output, debuggable, debug-signed, with the 14 adhan MP3s inside.

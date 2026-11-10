@@ -1,0 +1,124 @@
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) { require('./compat'); module.exports = factory(require('./data.json'), require('./adhan')); }
+  else { root.Afnon = factory(root.AfnonData, root.adhan); }
+}(this, function (data, adhan) {
+  'use strict';
+  var defaults = {lang: 'ar', city: 'cairo', method: null, hanafi: false, utcOffset: null,
+    automatic: false, adhan: true, remind: 15, remindVoice: false, announce: true, callClose: 0,
+    voice: 'alafasy', fajrVoice: 'chebae_fajr', volume: 60, bells: [true, false, true, true, true, true],
+    offsets: [0, 0, 0, 0, 0, 0], hijriOffset: 0, digits: 'auto', clock: '24',
+    dockPosition: 'top', dockAutoHide: 20, theme: 'mihrab', background: 'plain',
+    homeLayout: 'mihrab', archSide: 'auto', homeBar: 'top', prayerMode: 'all', quickLabels: false,
+    station: 'cairo', radioResume: true};
+  var methods = {EGYPTIAN: 'Egyptian', UMM_AL_QURA: 'UmmAlQura', MUSLIM_WORLD_LEAGUE: 'MuslimWorldLeague',
+    KARACHI: 'Karachi', DUBAI: 'Dubai', KUWAIT: 'Kuwait', QATAR: 'Qatar', NORTH_AMERICA: 'NorthAmerica',
+    MOON_SIGHTING_COMMITTEE: 'MoonsightingCommittee', SINGAPORE: 'Singapore', TURKEY: 'Turkey'};
+  function city(id) {
+    for (var i = 0; i < data.cities.length; i++) { if (data.cities[i].id === id) { return data.cities[i]; } }
+    return null;
+  }
+  function prefs(value) {
+    value = value || {};
+    var result = {};
+    Object.keys(defaults).forEach(function (k) {
+      var v = value[k] === undefined ? defaults[k] : value[k]; result[k] = Array.isArray(v) ? v.slice() : v;
+    });
+    if ((result.lang !== 'ar' && result.lang !== 'en') || !city(result.city) ||
+        (result.method !== null && data.methods.indexOf(result.method) < 0) || typeof result.hanafi !== 'boolean' ||
+        (result.utcOffset !== null && (typeof result.utcOffset !== 'number' || !isFinite(result.utcOffset) ||
+          result.utcOffset % 15 !== 0 || result.utcOffset < -720 || result.utcOffset > 840))) {
+      throw new Error('Invalid preferences');
+    }
+    function invalid(test) { if (test) { throw new Error('Invalid preferences'); } }
+    function integer(n, min, max) { return typeof n === 'number' && isFinite(n) && n % 1 === 0 && n >= min && n <= max; }
+    ['automatic', 'adhan', 'remindVoice', 'announce', 'radioResume', 'quickLabels'].forEach(function (k) { invalid(typeof result[k] !== 'boolean'); });
+    invalid([0, 5, 10, 15, 20, 30].indexOf(result.remind) < 0 || [0, 1, 5, 10].indexOf(result.callClose) < 0);
+    invalid(!integer(result.volume, 0, 100) || !integer(result.hijriOffset, -2, 2));
+    invalid(!Array.isArray(result.bells) || result.bells.length !== 6 || result.bells.some(function (v) { return typeof v !== 'boolean'; }) || result.bells[1]);
+    invalid(!Array.isArray(result.offsets) || result.offsets.length !== 6 || result.offsets.some(function (v) { return !integer(v, -30, 30); }));
+    invalid(!voice(result.voice) || !voice(result.fajrVoice) || !station(result.station));
+    invalid(['auto', 'western', 'eastern'].indexOf(result.digits) < 0 || ['12', '24'].indexOf(result.clock) < 0);
+    invalid(['top', 'bottom'].indexOf(result.dockPosition) < 0 || [0, 10, 20, 30].indexOf(result.dockAutoHide) < 0);
+    invalid(data.themes.indexOf(result.theme) < 0 || result.background !== 'plain' && data.patterns.indexOf(result.background) < 0);
+    invalid(['mihrab', 'compact', 'hidden'].indexOf(result.homeLayout) < 0 || ['auto', 'left', 'right'].indexOf(result.archSide) < 0 ||
+      ['top', 'bottom'].indexOf(result.homeBar) < 0 || ['all', 'current', 'next', 'both', 'none'].indexOf(result.prayerMode) < 0);
+    return result;
+  }
+  function voice(id) { for (var i = 0; i < data.voices.length; i++) { if (data.voices[i].id === id) { return data.voices[i]; } } return null; }
+  function station(id) { for (var i = 0; i < data.stations.length; i++) { if (data.stations[i].id === id) { return data.stations[i]; } } return null; }
+  // shortcut: snapshot of the LF6300's visible apps; refresh after installing/removing apps until LG permits enumeration.
+  function app(id) { for (var i = 0; i < data.apps.length; i++) { if (data.apps[i].id === id) { return data.apps[i]; } } return null; }
+  function input(id) {
+    var m = /^HDMI_([1-4])$/.exec(id);
+    if (m) { return {id: id, label: 'HDMI ' + m[1], url: 'ext://hdmi:' + m[1], type: 'service/webos-external', appId: 'com.webos.app.hdmi' + m[1]}; }
+    if (id === 'DTV' || id === 'ATV') { return {id: id, label: 'Live TV', url: 'tv://', type: 'service/webos-broadcast', appId: 'com.webos.app.livetv'}; }
+    m = /^(AV|COMP)_([12])$/.exec(id);
+    if (m && (m[1] !== 'COMP' || m[2] === '1')) {
+      return {id: id, label: m[1] + ' ' + m[2], url: 'ext://' + (m[1] === 'AV' ? 'av:' : 'comp:') + m[2],
+        type: 'service/webos-external', appId: 'com.webos.app.externalinput.' + (m[1] === 'AV' ? 'av' + m[2] : 'component')};
+    }
+    return null;
+  }
+  function wall(time, p) { return new Date(+time + (p.utcOffset === null ? -new Date(+time).getTimezoneOffset() : p.utcOffset) * 60000); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function clock(time, p) {
+    var d = wall(time, p), h = d.getUTCHours();
+    return (p.clock === '12' ? (h % 12 || 12) : pad(h)) + ':' + pad(d.getUTCMinutes()) +
+      (p.clock === '12' ? ' ' + (p.lang === 'ar' ? (h < 12 ? 'ص' : 'م') : (h < 12 ? 'AM' : 'PM')) : '');
+  }
+  function day(now, p) {
+    var c = city(p.city), name = p.method || c.method;
+    var params = methods[name] ? adhan.CalculationMethod[methods[name]]() : adhan.CalculationMethod.Other();
+    if (!methods[name]) {
+      var extra = data.presets[name];
+      params.fajrAngle = extra.fajr; params.ishaAngle = extra.isha; params.ishaInterval = extra.interval;
+    }
+    params.madhab = p.hanafi ? adhan.Madhab.Hanafi : adhan.Madhab.Shafi;
+    params.adjustments = {fajr: p.offsets[0], sunrise: p.offsets[1], dhuhr: p.offsets[2], asr: p.offsets[3], maghrib: p.offsets[4], isha: p.offsets[5]};
+    var date = wall(now, p), coords = new adhan.Coordinates(c.lat, c.lng);
+    function calculate(delta) {
+      return new adhan.PrayerTimes(coords, new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + delta), params);
+    }
+    var today = calculate(0), tomorrow = calculate(1);
+    var times = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(function (name) { return Math.floor(+today[name] / 60000) * 60000; });
+    if (times.some(function (time) { return !isFinite(time); }) || !isFinite(+tomorrow.fajr)) { throw new Error('Prayer times unavailable for this location and date'); }
+    return {times: times, tomorrowFajr: Math.floor(+tomorrow.fajr / 60000) * 60000};
+  }
+  function next(day, now) {
+    for (var i = 0; i < day.times.length; i++) { if (i !== 1 && day.times[i] > +now) { return {index: i, time: day.times[i]}; } }
+    return {index: 0, time: day.tomorrowFajr};
+  }
+  function duration(ms) {
+    var s = Math.max(0, Math.ceil(ms / 1000));
+    return Math.floor(s / 3600) + ':' + pad(Math.floor(s / 60) % 60) + ':' + pad(s % 60);
+  }
+  function hijri(now, p) {
+    var d = wall(now, p), n = Math.floor(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) / 86400000) + p.hijriOffset;
+    var months = data.hijri, low = 0, high = months.length - 1;
+    if (n < months[0][0] || n >= months[high][0]) { return null; }
+    while (low + 1 < high) { var mid = Math.floor((low + high) / 2); if (months[mid][0] <= n) { low = mid; } else { high = mid; } }
+    return {day: n - months[low][0] + 1, month: months[low][2] - 1, year: months[low][1]};
+  }
+  function qibla(p) { var c = city(p.city); return adhan.Qibla(new adhan.Coordinates(c.lat, c.lng)); }
+  function nextEvent(now, p, handled) {
+    if (!p.automatic) { return null; }
+    var best = null; handled = handled || [];
+    function add(kind, prayer, time, prayerTime) {
+      var id = kind + ':' + prayer + ':' + prayerTime;
+      if (time > +now && handled.indexOf(id) < 0 && (!best || time < best.time)) {
+        best = {id: id, kind: kind, prayer: prayer, time: time, prayerTime: prayerTime};
+      }
+    }
+    for (var delta = 0; delta < 3; delta++) {
+      var times = day(new Date(+now + delta * 86400000), p).times;
+      for (var i = 0; i < times.length; i++) {
+        if (i === 1 || !p.bells[i]) { continue; }
+        if (p.remind) { add('before', i, times[i] - p.remind * 60000, times[i]); }
+        if (p.adhan || p.announce) { add('call', i, times[i], times[i]); }
+      }
+    }
+    return best;
+  }
+  return {defaults: defaults, prefs: prefs, city: city, input: input, wall: wall, clock: clock, day: day, next: next,
+    duration: duration, voice: voice, station: station, app: app, hijri: hijri, qibla: qibla, nextEvent: nextEvent};
+}));

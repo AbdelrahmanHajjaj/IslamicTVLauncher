@@ -4,6 +4,48 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 ## [Unreleased]
 
+### LG webOS development port
+
+- Version 0.2.5 serializes overlapping prayer-schedule refreshes, including disable
+  and write-error recovery. Adds asynchronous service regressions and platform-specific
+  agent/contributor guidance. The last physically validated installation is 0.2.4.
+
+- Version 0.2.4 adds Settings' visible Back arrow, inline appearance carousels and a
+  larger preview, and confines patterns to Home. Alerts that interrupt another app
+  now close the launcher afterward to let LG restore that app instead of forcing HDMI.
+  Removes the webOS-only navigation tutorials, repeated Home branding and explanatory
+  footer text while retaining control labels, playback state and errors.
+
+- Version 0.2.3 adds All apps' top Back arrow, prayer chip, Settings and five-column
+  grid with return focus. Appearance now previews themes/layouts in an unsaved draft
+  with Apply/Cancel. It adds quick-control labels, current/current-and-next prayer
+  information, compact countdown placement and the five remaining bundled SVG patterns.
+
+- Version 0.2.2 moves Qibla, inputs, radio, LG settings and launcher Settings to
+  Android-style compact top icons. Home has streaming-app tiles and a 16-link TV app
+  grid based on the LF6300's visible-app inventory, with remote/pointer navigation.
+  Inventory refresh is external on webOS 2.2; hidden LG utilities remain excluded.
+
+- Version 0.2.1 shows all 14 adhan voices in a scrolling list with inline previews,
+  restores the originating settings row after an alert test, and uses Android's
+  central mihrab call layout with separate Stop/Play and Dismiss controls.
+
+- Version 0.2.0 adds grouped settings, local adhan/spoken playback, per-prayer switches
+  and minute adjustments, Hijri dates, Qibla, Quran radio, display and Home color/layout
+  options. In-app tests cover silent HDMI banners/cards, short/full adhan, speech and
+  a delayed background-service test. Optional scheduled alerts use a persistent next-event
+  activity with duplicate/late-callback protection; existing startup/input settings remain.
+
+- Version 0.1.1 uses the Islamic TV Launcher name, opens the controls when Magic Remote
+  pointer mode sends a click on the input picture, and moves the compact prayer strip
+  to the top. Home follows the Android mihrab/card layout; Arabic prayer names use
+  the menu font for compatibility with the older LG text renderer.
+
+- Added a separate Afnon app for the LG LF6300 / webOS 2.2: full-screen input viewing,
+  prayer bar, Home, Inputs and Arabic/English Settings without closing the app.
+- Added offline prayer calculations using the existing cities/methods and a persistent,
+  user-switchable service that opens Afnon once after a new TV boot. Requires Developer Mode.
+
 ### Fixed
 
 - Adhan now exits third-party screensavers such as Google Backdrop before starting playback. The call screen survives Android's initial wake transition, keeps the display awake while audio plays, and still stops on Back or Home. The selected screensaver and prayer settings are preserved.
