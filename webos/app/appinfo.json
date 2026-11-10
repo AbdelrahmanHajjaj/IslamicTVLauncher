@@ -1,0 +1,12 @@
+{
+  "id": "tv.afnon.webos",
+  "version": "0.2.5",
+  "vendor": "Islamic TV Launcher",
+  "type": "web",
+  "main": "index.html",
+  "title": "Islamic TV Launcher",
+  "icon": "icon.png",
+  "resolution": "1920x1080",
+  "disableBackHistoryAPI": true,
+  "handlesRelaunch": false
+}

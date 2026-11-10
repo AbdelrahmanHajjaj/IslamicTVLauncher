@@ -1,0 +1,5 @@
+{
+  "id": "tv.afnon.webos.service",
+  "description": "Islamic TV Launcher inputs, prayer alerts and startup",
+  "services": [{"name":"tv.afnon.webos.service","description":"Islamic TV Launcher prayer scheduling and once-per-boot startup"}]
+}

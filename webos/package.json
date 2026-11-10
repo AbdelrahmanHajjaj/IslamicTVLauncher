@@ -1,0 +1,16 @@
+{
+  "name": "afnon-webos",
+  "version": "0.2.5",
+  "private": true,
+  "scripts": {
+    "build": "node build.cjs",
+    "test": "node build.cjs && node test.cjs",
+    "test:browser": "node browser-test.cjs"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "acorn": "^8.15.0",
+    "playwright": "^1.56.0"
+  }
+}

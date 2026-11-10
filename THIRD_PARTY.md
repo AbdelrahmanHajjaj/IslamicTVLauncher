@@ -5,6 +5,7 @@ The MIT licence in `LICENSE` covers Afnon's own code. These parts belong to othe
 | What | Where | Licence |
 |---|---|---|
 | [adhan-java](https://github.com/batoulapps/adhan-java) by Batoul Apps | Gradle dependency | MIT |
+| [adhan-js](https://github.com/batoulapps/adhan-js) by Batoul Apps | Site dependency; bundled as ES5 in the LG webOS build | MIT; full notice included in the package |
 | [Amiri](https://github.com/aliftype/amiri) by Khaled Hosny | `app/src/main/res/font/amiri_*.ttf` | SIL Open Font Licence 1.1 |
 | [Alexandria](https://fonts.google.com/specimen/Alexandria) by Mohamed Gaber and Julieta Ulanovsky | `app/src/main/res/font/alexandria_*.ttf` | SIL Open Font Licence 1.1 |
 | [Marcellus](https://fonts.google.com/specimen/Marcellus) by Astigmatic | `app/src/main/res/font/marcellus_regular.ttf` | SIL Open Font Licence 1.1 |
@@ -12,6 +13,10 @@ The MIT licence in `LICENSE` covers Afnon's own code. These parts belong to othe
 | Spoken reminder lines (`tools/announce-lines.txt`) voiced by Microsoft's ar-SA-HamedNeural voice through [edge-tts](https://github.com/rany2/edge-tts) | Not in the source. `tools/fetch-announce.sh` records them; release APKs include them | Microsoft's speech service terms. Replaced on request. |
 | Quran radio stations: إذاعة القرآن الكريم in Cairo, Nablus, Qatar (two channels) and Jordan, and Shabab FM Quran (Nablus) | Played from each station's public stream, never stored | Belongs to each station. Afnon is not affiliated with any of them. |
 | Reciter channels from [mp3quran.net](https://mp3quran.net) (`backup.qurango.net`) | Played from the public stream, never stored | Belongs to mp3quran.net and the reciters. Afnon is not affiliated with it. |
+
+The local LG webOS development package also copies the existing adhan and spoken
+announcement assets, with the same source and rights status stated above; it does
+not add them to version control. Its radio list is generated from `Radio.STATIONS`.
 
 The stream addresses are in `Radio.STATIONS`. A station or reciter is removed on request from its rights holder.
 

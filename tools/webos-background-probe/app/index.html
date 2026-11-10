@@ -1,0 +1,17 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Afnon Background Test</title>
+<style>
+body { background: #163a3d; color: #fff4d6; font: 36px sans-serif; margin: 100px; }
+h1 { font-size: 62px; } p { line-height: 1.5; } small { color: #d6c9a5; }
+#hdmi { display: none; position: absolute; left: 480px; top: 280px; width: 1280px; height: 720px; }
+#counter { position: absolute; left: 100px; top: 450px; font-size: 48px; }
+#banner { display: none; position: absolute; z-index: 2; left: 520px; top: 320px; width: 1160px; padding: 20px; background: #163a3d; border: 3px solid #fff4d6; }
+</style></head><body>
+<h1>Afnon background test</h1>
+<p id="result">Test screen ready.</p>
+<small>One temporary reminder. Press Back to close.</small>
+<div id="counter"></div>
+<video id="hdmi" autoplay></video>
+<div id="banner">Afnon reminder test — HDMI should keep playing underneath.</div>
+<audio id="tone" preload="none"></audio>
+<script src="probe.js"></script></body></html>

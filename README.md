@@ -29,6 +29,13 @@ The TV app and its screensaver are named **IslamicTVLauncher (Afnon)**. The Andr
 `tv.afnon.home`: updates signed with the installed app's key preserve preferences and the Home
 assignment. It shares Afnon's installation identity and cannot be installed alongside it.
 
+A [LG webOS port](webos/README.md) lives in `webos/`: full-screen HDMI inside Islamic TV Launcher,
+prayer overlays, grouped settings, local adhan and voice previews, scheduled alerts, Today & Qibla,
+Quran radio, compact Home shortcuts and TV-app links, Home color/layout controls,
+and an optional once-per-boot startup service.
+In-app tests exercise banners, audio and background delivery; hardware validation is recorded separately.
+It targets the tested LG LF6300 / webOS 2.2 and is installed separately through Developer Mode.
+
 **Build this checkout for these features.** [Upstream APKs](https://github.com/egyjs/afnon-android-tv-launcher/releases)
 and the [upstream browser demo](https://egyjs.github.io/afnon-android-tv-launcher/) do not include all
 fork changes. The fork has been tested on **TCL 50C641K, Android 11**; upstream reports TCL 55P7K,

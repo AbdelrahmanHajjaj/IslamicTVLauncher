@@ -1,0 +1,228 @@
+@font-face { font-family: Alexandria; src: url('fonts/alexandria_regular.ttf'); }
+@font-face { font-family: Amiri; src: url('fonts/amiri_regular.ttf'); font-weight: 400; }
+@font-face { font-family: Marcellus; src: url('fonts/marcellus_regular.ttf'); }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+body, button { font: {{font.size.body}} Alexandria, sans-serif; color: {{color.plaster-100}}; }
+#stage { width: 1920px; height: 1080px; position: absolute; left: 0; top: 0; -webkit-transform-origin: 0 0; transform-origin: 0 0; }
+#input-video { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+#preview { display: none; position: absolute; width: 100%; height: 100%; background: {{color.lapis-950}}; text-align: center; padding-top: 410px; font-size: 64px; }
+#preview small { color: {{color.mist-400}}; font-size: 26px; }
+#screen { position: absolute; width: 100%; height: 100%; }
+.page { position: absolute; width: 100%; height: 100%; padding: 56px 96px; background: {{color.lapis-900}}; }
+.header { height: 100px; border-bottom: 1px solid {{color.lapis-700}}; }
+.brand { display: inline-block; font: 30px Alexandria, sans-serif; color: {{color.gold-400}}; line-height: 80px; }
+.header .subtitle { display: inline-block; margin: 0 32px; color: {{color.mist-400}}; }
+.clock { float: right; font-size: 64px; line-height: 1.4; direction: ltr; }
+[dir=rtl] .clock { float: left; }
+.arch { position: absolute; left: 96px; top: 124px; width: {{layout.home.mihrab-width}}; height: {{layout.home.mihrab-height}}; text-align: center; }
+[dir=rtl] .arch { left: auto; right: 96px; }
+.arch-shape { position: absolute; left: 0; top: 0; width: 100%; height: 100%; fill: {{color.lapis-800}}; stroke: {{color.gold-400}}; stroke-width: 2; }
+.arch-shape .inner { fill: none; stroke: {{color.arch-inner}}; stroke-width: 1.5; }
+.verse { position: absolute; left: 70px; top: 110px; width: 460px; font: 32px/1.55 Amiri, serif; color: {{color.gold-400}}; }
+.verse-ref { position: absolute; left: 40px; top: 274px; width: 520px; color: {{color.mist-400}}; font-size: 20px; }
+.arch-info { position: absolute; left: 40px; top: 348px; width: 520px; }
+.eyebrow { color: {{color.mist-400}}; font-size: {{font.size.label}}; margin: 0 0 20px; }
+.prayer-name { font: 72px/1.5 Alexandria, sans-serif; color: {{color.gold-400}}; margin: 0; letter-spacing: 0; }
+/* shortcut: use the menu font for Arabic names on old LG shaping engines; revisit with newer webOS targets. */
+[dir=ltr] .prayer-name { font: 68px Marcellus, serif; line-height: 1.8; }
+.prayer-time { margin: 0; color: {{color.plaster-100}}; font-size: 30px; }
+.countdown { color: {{color.plaster-100}}; font-size: 102px; direction: ltr; margin-top: 90px; }
+.city-name { color: {{color.mist-400}}; margin-top: 64px; font-size: 24px; }
+.courtyard { position: absolute; left: 744px; right: 96px; }
+[dir=rtl] .courtyard { left: 96px; right: 744px; }
+.home-clock { top: 56px; }
+.home-clock .clock { float: none; font-size: 88px; width: 570px; }
+[dir=rtl] .home-clock .clock { margin-left: auto; }
+[dir=rtl] .home-clock .clock { text-align: right; }
+.home-clock .muted { font-size: 24px; }
+.home-prayers { top: 290px; }
+.home-actions { top: 452px; }
+.home-quick { top: 56px; text-align: right; pointer-events: none; }
+[dir=rtl] .home-quick { text-align: left; }
+.home-quick .quick-button { width: 64px; height: 64px; min-height: 64px; padding: 15px; margin: 0 0 0 16px; border-radius: 30px; pointer-events: auto; }
+[dir=rtl] .home-quick .quick-button { margin: 0 16px 0 0; }
+.quick-button svg { display: block; width: 30px; height: 30px; }
+.quick-caption { display: none; position: absolute; top: 86px; right: 0; width: 450px; font-size: 22px; color: {{color.mist-400}}; pointer-events: none; }
+[dir=rtl] .quick-caption { left: 0; right: auto; }
+.quick-button:focus .quick-caption { display: block; }
+.home-apps, .app-grid { font-size: 0; }
+.app-tile { display: inline-block; vertical-align: top; font-size: 26px; }
+.app-tile svg { display: block; width: 52px; height: 52px; margin-bottom: 30px; }
+[dir=rtl] .app-tile svg { margin-left: auto; }
+.app-tile span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.home-apps .app-tile { width: 32%; height: 200px; margin: 0 2% 0 0; padding: 28px; }
+.home-apps .app-tile:last-child { margin: 0; }
+[dir=rtl] .home-apps .app-tile { margin: 0 0 0 2%; }
+[dir=rtl] .home-apps .app-tile:last-child { margin: 0; }
+.home-links { margin-top: 28px; }
+.home-links button { margin: 0 16px 0 0; }
+[dir=rtl] .home-links button { margin: 0 0 0 16px; }
+.home-links svg { width: 28px; height: 28px; vertical-align: middle; margin: 0 10px; }
+.app-grid { position: absolute; left: 80px; right: 80px; top: 184px; height: 800px; overflow-y: auto; padding: 16px; }
+.app-grid .app-tile { width: 18.4%; height: 168px; margin: 0 .8% 28px; padding: 20px 24px; }
+.app-grid .app-tile svg { width: 40px; height: 40px; margin-bottom: 18px; }
+.apps-heading { position: absolute; left: 96px; top: 56px; height: 88px; white-space: nowrap; }
+[dir=rtl] .apps-heading { right: 96px; left: auto; }
+.round-back { width: 72px; height: 72px; min-height: 72px; padding: 16px; border-radius: 36px; vertical-align: middle; }
+.round-back svg { display: block; }
+[dir=rtl] [data-action=apps-back] svg, [dir=rtl] [data-action=settings-back] svg { -webkit-transform: rotate(180deg); transform: rotate(180deg); }
+.settings-page .header .brand { margin: 0 24px; }
+.apps-heading h1 { display: inline-block; vertical-align: middle; font: 64px Marcellus, serif; margin: 0 28px; }
+[dir=rtl] .apps-heading h1 { font: 52px Alexandria, sans-serif; }
+.apps-count { font-size: 26px; color: {{color.mist-400}}; }
+.apps-tools { position: absolute; top: 56px; right: 96px; }
+[dir=rtl] .apps-tools { right: auto; left: 96px; }
+.next-chip { border-color: {{color.gold-400}}; border-radius: 36px; height: 72px; min-height: 72px; margin: 0 24px; }
+.next-chip span { margin: 0 8px; }
+.next-chip [data-app-time] { display: inline-block; direction: ltr; }
+.appearance-preview { position: absolute; top: 180px; left: 584px; width: 1240px; height: 396px; }
+[dir=rtl] .appearance-preview { left: 96px; }
+.appearance-model { display: inline-block; width: 704px; vertical-align: middle; }
+/* WebKit 538 keeps an inline SVG's full intrinsic height when CSS height is auto. */
+.appearance-model svg { display: block; width: 100%; height: 396px; border: 2px solid {{color.lapis-700}}; border-radius: 12px; }
+.appearance-caption { display: inline-block; width: 512px; padding: 0 36px; vertical-align: middle; }
+.appearance-caption h2 { font-size: 36px; font-weight: normal; margin: 0 0 16px; }
+.swatches span { display: inline-block; width: 48px; height: 48px; border: 1px solid {{color.mist-400}}; border-radius: 24px; margin: 0 8px; }
+.muted { color: {{color.mist-400}}; line-height: 1.8; }
+button { border: 2px solid {{color.lapis-700}}; border-radius: 14px; background: {{color.lapis-800}}; padding: 18px 28px; min-height: 76px; cursor: pointer; text-align: inherit; }
+button:focus { color: {{color.lapis-900}}; background: {{color.gold-400}}; border-color: {{color.plaster-100}}; outline: 4px solid {{color.plaster-100}}; outline-offset: 5px; }
+button:disabled { color: {{color.disabled-text}}; }
+.actions button { display: inline-block; margin: 12px; }
+.prayers { width: 100%; display: table; table-layout: fixed; border-spacing: 8px 0; }
+.prayer { display: table-cell; background: {{color.lapis-800}}; padding: 8px; text-align: start; border: 2px solid {{color.lapis-700}}; border-radius: 14px; font-size: 22px; }
+.prayer-tag { display: block; font-size: 18px; line-height: 1.2; }
+.prayer.next { border-color: {{color.gold-400}}; }
+.prayer.current { background: {{color.plaster-100}}; color: {{color.lapis-900}}; }
+.prayer.past { color: {{color.mist-400}}; }
+.prayer .time { display: block; direction: ltr; font-size: 30px; margin-top: 4px; text-align: start; }
+[dir=rtl] .prayer .time { text-align: right; }
+.bar { position: absolute; top: 0; left: 0; width: 100%; padding: {{layout.prayer-dock.padding-block}} 24px; background: {{color.lapis-900}}; border: 2px solid {{color.lapis-700}}; border-radius: 24px; }
+.dock-prayers { width: 1488px; }
+[dir=rtl] .dock-prayers { margin-left: auto; }
+.bar .prayer { padding: {{layout.prayer-dock.cell-padding-block}} 12px; font-size: {{font.size.compact-label}}; line-height: 1.15; }
+.bar .prayer-tag { font-size: {{font.size.compact-tag}}; }
+.bar .time { font-size: {{font.size.control}}; margin: 0; }
+.dock-actions { position: absolute; right: 24px; top: 22px; width: 352px; text-align: center; }
+[dir=rtl] .dock-actions { left: 24px; right: auto; }
+.icon-button { display: inline-block; width: 72px; min-height: {{layout.prayer-dock.button-size}}; height: {{layout.prayer-dock.button-size}}; padding: 10px 16px; margin: 0 8px; border-radius: 30px; }
+.icon-button svg { display: block; }
+.settings { width: 1300px; margin: 32px auto; }
+.settings button { display: block; width: 100%; margin-bottom: 16px; }
+.value { float: right; max-width: 64%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+[dir=rtl] .value { float: left; }
+.footnote { font-size: 22px; color: {{color.mist-400}}; margin: 20px 0; line-height: 1.8; }
+.picker { width: 1400px; margin: 36px auto; }
+.picker button.item { display: block; width: 100%; margin-bottom: 16px; }
+.picker .actions { text-align: center; }
+#notice { position: absolute; left: 220px; right: 220px; text-align: center; background: {{color.lapis-900}}; padding: 24px 36px; border: 2px solid {{color.gold-400}}; border-radius: 14px; display: none; }
+#notice { top: 64px; z-index: 5; }
+.error { color: {{color.gold-400}}; }
+.bar.bottom { top: auto; bottom: 0; }
+.settings-nav { position: absolute; top: 180px; left: 72px; width: 420px; }
+[dir=rtl] .settings-nav { left: auto; right: 72px; }
+.settings-nav button { display: block; width: 100%; margin-bottom: 12px; font-size: 25px; }
+.settings-nav .selected { border-color: {{color.gold-400}}; }
+.settings-rows { position: absolute; top: 172px; left: 560px; width: 1288px; height: 800px; overflow-y: auto; padding: 12px 24px 28px; }
+[dir=rtl] .settings-rows { left: 72px; }
+.settings-rows h2 { font-size: 25px; font-weight: normal; color: {{color.mist-400}}; margin: 4px 0 24px; }
+.settings-rows button { display: block; width: 100%; margin-bottom: 16px; font-size: 26px; min-height: 88px; }
+.settings-rows .value { max-width: 48%; color: {{color.gold-400}}; }
+.settings-rows button:focus .value { color: {{color.lapis-900}}; }
+.appearance-settings .settings-rows { top: 602px; height: 370px; }
+.carousel-row { position: relative; margin-bottom: 16px; }
+.settings-rows .carousel-main { margin: 0; padding-right: 580px; }
+[dir=rtl] .settings-rows .carousel-main { padding-left: 580px; padding-right: 28px; }
+.carousel-choice { position: absolute; right: 76px; top: 0; width: 460px; line-height: 88px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: {{color.gold-400}}; }
+[dir=rtl] .carousel-choice { left: 76px; right: auto; }
+.carousel-main:focus .carousel-choice { color: {{color.lapis-900}}; }
+.settings-rows .carousel-arrow { position: absolute; top: 8px; width: 56px; height: 72px; min-height: 72px; padding: 0; margin: 0; font-size: 42px; border-radius: 28px; text-align: center; }
+.carousel-arrow.previous { right: 540px; }
+.carousel-arrow.next { right: 12px; }
+[dir=rtl] .carousel-arrow.previous { left: 540px; right: auto; }
+[dir=rtl] .carousel-arrow.next { left: 12px; right: auto; }
+.carousel-arrow:disabled { opacity: .25; cursor: default; }
+.stepper, .media-page { margin: 100px auto; width: 1400px; text-align: center; }
+.stepper strong { display: block; font-size: 130px; margin: 40px; }
+.day-times { position: absolute; top: 196px; left: 96px; width: 1000px; }
+[dir=rtl] .day-times { left: auto; right: 96px; }
+.day-row { height: 112px; padding: 14px 22px; background: {{color.lapis-800}}; margin-bottom: 12px; border-radius: 14px; }
+.day-row > span { display: inline-block; width: 30%; }
+.day-row strong { display: inline-block; width: 30%; direction: ltr; }
+.day-row button { width: 32%; }
+.day-details { position: absolute; top: 196px; right: 96px; width: 630px; text-align: center; }
+[dir=rtl] .day-details { right: auto; left: 96px; }
+.day-details button { margin: 12px; }
+.qibla-arrow { font-size: 160px; color: {{color.gold-400}}; line-height: 240px; }
+.clock-page { text-align: center; padding-top: 300px; }
+.clock-page [data-clock] { font-size: 180px; direction: ltr; }
+.clock-page button { margin-top: 100px; }
+#overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
+.alert-box { pointer-events: auto; background: {{color.lapis-900}}; border: 3px solid {{color.gold-400}}; padding: 28px 44px; border-radius: 20px; }
+.alert-box h1 { font-size: 46px; font-weight: normal; margin: 0 0 14px; }
+.alert-box p { margin: 0 0 16px; }
+.banner-overlay .alert-box { position: absolute; left: 64px; right: 64px; top: 36px; min-height: 220px; }
+.banner-overlay button { position: absolute; right: 44px; top: 72px; }
+[dir=rtl] .banner-overlay button { right: auto; left: 44px; }
+.banner-overlay .alert-box { padding-right: 360px; }
+[dir=rtl] .banner-overlay .alert-box { padding-right: 44px; padding-left: 360px; }
+.card-overlay .alert-box { position: absolute; left: 510px; top: 250px; width: 900px; text-align: center; padding: 48px; }
+.audio-overlay { background: {{color.scrim}}; pointer-events: auto !important; }
+.audio-overlay .alert-box { position: absolute; left: 260px; right: 260px; top: 180px; text-align: center; padding: 72px; }
+.audio-overlay .alert-box h1 { font-size: 64px; line-height: 1.8; }
+.audio-overlay button { margin-top: 48px; }
+.call-frame { position: absolute; left: 600px; top: 110px; overflow: visible; pointer-events: none; }
+.call-frame .outer { fill: {{color.lapis-800}}; stroke: {{color.gold-200}}; stroke-width: 3; }
+.call-frame .inner { fill: none; stroke: {{color.arch-inner}}; stroke-width: 1.5; }
+.call-column { position: absolute; left: 640px; top: 230px; width: 640px; text-align: center; pointer-events: auto; }
+.call-verse { font: 54px/1.4 Amiri, serif; color: {{color.gold-400}}; }
+.call-label { margin: 32px 0 0; font-size: 22px; color: {{color.mist-400}}; }
+.call-name { font: 100px/1.5 Alexandria, sans-serif; color: {{color.plaster-100}}; }
+[dir=ltr] .call-name { font: 128px/1.1 Marcellus, serif; }
+.call-time { font-size: 64px; line-height: 1.2; color: {{color.gold-400}}; }
+.audio-overlay .call-column button { display: block; width: 420px; height: 76px; min-height: 76px; padding: 14px 20px; border-radius: 38px; font-size: 28px; margin: 18px auto 0; }
+.audio-overlay .call-column .call-play { margin-top: 36px; }
+.call-status { font-size: 22px; color: {{color.mist-400}}; margin-top: 20px; }
+.voice-count { margin: 22px 80px; color: {{color.mist-400}}; font-size: 24px; }
+.voice-list { position: absolute; top: 240px; left: 180px; right: 180px; height: 650px; overflow-y: auto; padding: 12px; }
+.voice-row { white-space: nowrap; margin-bottom: 16px; }
+.voice-name { width: 1160px; min-height: 84px; }
+.voice-preview { width: 300px; min-height: 84px; margin: 0 18px; }
+.voice-footer { position: absolute; bottom: 64px; left: 180px; right: 180px; }
+[data-side=left] .arch { left: 96px; right: auto; }
+[data-side=left] .courtyard { left: 744px; right: 96px; }
+[data-side=right] .arch { right: 96px; left: auto; }
+[data-side=right] .courtyard { right: 744px; left: 96px; }
+[data-layout=hidden] .home .arch { display: none; }
+[data-layout=hidden] .home .courtyard, [data-layout=compact] .home .courtyard { left: 96px; right: 96px; }
+[data-layout=compact] .home .arch { left: 96px; right: 96px; top: 242px; width: auto; height: 100px; background: {{color.lapis-800}}; border: 2px solid {{color.gold-400}}; border-radius: 18px; }
+[data-layout=compact] .arch-shape, [data-layout=compact] .verse, [data-layout=compact] .verse-ref, [data-layout=compact] .arch .eyebrow, [data-layout=compact] .city-name { display: none; }
+[data-layout=compact] .arch-info { left: 24px; right: 24px; width: auto; top: 6px; }
+[data-layout=compact] .prayer-name { font-size: 36px; display: inline-block; width: 30%; }
+[data-layout=compact] .prayer-time { display: inline-block; width: 30%; }
+[data-layout=compact] .countdown { display: inline-block; font-size: 48px; width: 30%; margin: 0; }
+[data-layout=compact] .home-clock { top: 40px; }
+[data-layout=compact] .home-clock .clock { font-size: 76px; }
+[data-layout=compact] .home-prayers { top: 370px; }
+[data-layout=compact] .home-actions { top: 540px; }
+[data-layout=compact][data-home-bar=bottom] .home .arch { top: auto; bottom: 64px; }
+[data-layout=compact][data-home-bar=bottom] .home-prayers { top: 290px; }
+[data-layout=compact][data-home-bar=bottom] .home-actions { top: 452px; }
+[data-prayers=none] .home-prayers { display: none; }
+[data-prayers=next] .home-prayers .prayer, [data-prayers=current] .home-prayers .prayer, [data-prayers=both] .home-prayers .prayer { display: none; }
+[data-prayers=next] .home-prayers .prayer.next, [data-prayers=current] .home-prayers .prayer.current,
+[data-prayers=both] .home-prayers .prayer.next, [data-prayers=both] .home-prayers .prayer.current { display: table-cell; }
+[data-quick-labels=true] .home-quick { top: 270px; font-size: 0; }
+[data-quick-labels=true] .home-quick .quick-button { width: 19%; margin: 0 .5%; padding: 8px; border-radius: 18px; }
+[data-quick-labels=true] .quick-button svg { float: left; width: 26px; height: 26px; }
+[dir=rtl] [data-quick-labels=true] .quick-button svg { float: right; }
+[data-quick-labels=true] .quick-caption { display: block; position: static; width: auto; font-size: 19px; line-height: 1.2; color: inherit; margin: 0 0 0 34px; text-align: center; }
+[dir=rtl] [data-quick-labels=true] .quick-caption { margin: 0 34px 0 0; }
+[data-quick-labels=true] .home-prayers { top: 362px; }
+[data-quick-labels=true] .home-actions { top: 520px; }
+[data-layout=compact][data-quick-labels=true] .home-quick { top: 250px; }
+[data-layout=compact][data-home-bar=top][data-quick-labels=true] .home .arch { top: 342px; }
+[data-layout=compact][data-home-bar=top][data-quick-labels=true] .home-prayers { top: 466px; }
+[data-layout=compact][data-home-bar=top][data-quick-labels=true] .home-actions { top: 616px; }
+[data-layout=compact][data-home-bar=bottom][data-quick-labels=true] .home-prayers { top: 362px; }
+[data-layout=compact][data-home-bar=bottom][data-quick-labels=true] .home-actions { top: 504px; }

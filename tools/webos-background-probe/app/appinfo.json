@@ -1,0 +1,9 @@
+{
+  "id": "tv.afnon.bgprobe",
+  "version": "0.0.8",
+  "vendor": "Afnon",
+  "type": "web",
+  "main": "index.html",
+  "title": "Afnon Background Test",
+  "icon": "icon.png"
+}
