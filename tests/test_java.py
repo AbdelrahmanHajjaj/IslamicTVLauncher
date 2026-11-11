@@ -159,7 +159,8 @@ class JavaChecks(unittest.TestCase):
                 str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/PrayerDay.java"),
                 *(str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home" / name) for name in
                   ("Prefs.java", "CityCatalog.java", "Tokens.java", "HomeLayout.java", "FavouriteChoice.java", "Reminders.java")),
-                *(str(ROOT / "tests" / name) for name in ("PrayerDayCheck.java", "PrefsCheck.java", "RemindersCheck.java"))], check=True, capture_output=True)
+                str(ROOT / "platforms/android-tv/src/androidTest/java/tv/afnon/home/PrayerDayCheck.java"),
+                *(str(ROOT / "tests" / name) for name in ("PrefsCheck.java", "RemindersCheck.java"))], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,
                 "tv.afnon.home.PrayerDayCheck"], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,

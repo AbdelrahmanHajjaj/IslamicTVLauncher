@@ -21,7 +21,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - run: chmod +x gradlew && ./gradlew -p platforms/android-tv verifyApkSize lintDebug --no-daemon --stacktrace
+      - run: chmod +x gradlew && ./gradlew -p platforms/android-tv verifyApkSize lintDebug assembleDebugAndroidTest --no-daemon --stacktrace
       - name: Aggregate launcher and installer tasks
         run: ./gradlew :app:assembleDebug :installer:assembleDebug --no-daemon --stacktrace
       - name: Launcher and recovery regression checks

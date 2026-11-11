@@ -85,17 +85,18 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.2, available Android emulator runtime evidence while physical LG is
-unreachable. Finish Q09.1's documentation commit if resuming between operations.
-Installed API 37 x86_64 image and usable WHPX exist; avdmanager is absent. Follow
-official emulator isolation docs and create a temporary AVD/config/data home only
-under ignored state, using existing hardware/image configuration without copying
-the user's userdata or changing the existing AVD. Use headless/no-audio/no-snapshot,
-an exclusive local port and verify emulator serial/AVD identity before any ADB action.
-If boot succeeds, add/run the smallest meaningful native core/actual ICU regression
-through the existing instrumentation setup; keep production behavior/IDs untouched.
-Close only the owned emulator afterward. No SDK downloads or OS/firmware changes.
-Record the exact API/image and gaps: an API 37 emulator is not the Android 11 TV.
+Next: Q09.3, preference-preserving upgrade evidence on the already isolated Android
+emulator while physical LG is unreachable. Q09.2 native runtime checks passed.
+Prepare a fresh ignored baseline-source build at the migration starting commit;
+preserve earlier evidence fixtures. Install it only on the owned emulator, seed
+representative valid preferences, then replace it with the current APK using the
+same certificate. Verify stored values and their interpretation without clearing
+data or making vendor/launcher/accessibility changes. Keep all helpers/results
+ignored. Before every ADB mutation verify the exact private AVD/serial identity.
+Use the existing SDK/image only; no downloads or OS/firmware changes. Close only
+the owned headless/no-audio/no-snapshot emulator afterward and verify the user's
+existing AVD configuration remains untouched. This API 37 phone image cannot
+close Android 11 TV, physical remote, HDMI, speaker or power acceptance.
 
 The current reviewed LG IPK is ready with exact payload equality; its one supported
 read-only device query timed out. No install, backup read, service/DOM or TV mutation
@@ -1066,3 +1067,33 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   configuration for any emulator checks; no new image/tool download. Emulator
   evidence can address native core/ICU integration but cannot close physical TV
   upgrade, old-Android, remote, HDMI, sound or power acceptance.
+
+### Q09.2 actual Android runtime and ICU evidence (2026-11-11)
+
+- Started an isolated fresh API 37.0 x86_64 Play Store / ai_glasses_compatible
+  emulator using the installed image, WHPX and private AVD/config/data homes.
+  Headless, no audio/cameras/snapshots; boot took 78 seconds. Existing user AVD
+  descriptor/config hashes stayed unchanged. No userdata copied or SDK downloaded.
+  Private session metadata guards exact AVD name/serial before ADB operations.
+- Reused the existing instrumentation runner with explicit `-e check prayer`;
+  no-argument appearance testing remains unchanged. Moved the byte-identical
+  PrayerDayCheck into the platform's test sources and kept root JVM tests calling
+  that canonical source. Added test-only ART/core/reminder assertions and 14 frozen
+  calendar fixtures independently agreed by existing preview Intl and LG adapters.
+  Cases cover supported table endpoints, DST, civil offsets, leap/year boundaries,
+  Ramadan and Friday. CI now compiles the standalone instrumentation APK too.
+- PASS: existing native prayer regressions and all core/reminder/ICU assertions on
+  API 37 / ICU 78.3.0.0; raw instrumentation result code -1. System timezone stayed
+  unchanged; runner restores process timezone and does not modify preferences, open
+  UI, schedule alerts or play media. Full 39 Python/Java regressions, standalone
+  test APK build and native lint pass (0 errors / unchanged 54 warnings).
+- Harness corrections before acceptance: ICU's default setter is not a public
+  compile-SDK API, so use the process-local standard Java setter. AGP emits the
+  configured runner, so delegate from it rather than adding a second manifest
+  runner. Normal instrumentation output hides its result code when stream text is
+  present; the private checker now requests raw output and verifies the code too.
+  No frozen expectation or production behavior changed to fit a test result.
+- Evidence: ignored q09-native-test-build.log, q09-java-tests.log and q09-emulator/
+  session, native-runtime-result.log and native-runtime-info.json; private helpers
+  retain identity guards. This is actual ART/ICU evidence on the stated emulator,
+  not a TV, older ICU or remote/lifecycle acceptance. Physical Q09 gates stay open.

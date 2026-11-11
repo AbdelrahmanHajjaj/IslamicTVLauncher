@@ -1,0 +1,16 @@
+[
+  {"zone":"UTC","at":"1999-01-19T00:00:00Z","offset":0,"hijri":[1419,9,1],"friday":false},
+  {"zone":"UTC","at":"2101-12-21T12:00:00Z","offset":0,"hijri":[1525,9,29],"friday":false},
+  {"zone":"Europe/London","at":"2026-03-29T00:30:00Z","offset":2,"hijri":[1447,9,12],"friday":false},
+  {"zone":"Europe/London","at":"2026-03-29T23:30:00Z","offset":-2,"hijri":[1447,9,9],"friday":false},
+  {"zone":"Europe/London","at":"2026-10-25T00:30:00Z","offset":1,"hijri":[1448,4,15],"friday":false},
+  {"zone":"Europe/London","at":"2026-10-25T01:30:00Z","offset":-1,"hijri":[1448,4,13],"friday":false},
+  {"zone":"Africa/Cairo","at":"2026-04-23T21:30:00Z","offset":2,"hijri":[1447,10,8],"friday":false},
+  {"zone":"Africa/Cairo","at":"2026-04-23T22:30:00Z","offset":-2,"hijri":[1447,10,5],"friday":true},
+  {"zone":"Africa/Cairo","at":"2026-10-29T21:30:00Z","offset":1,"hijri":[1448,4,19],"friday":false},
+  {"zone":"Africa/Cairo","at":"2026-12-31T22:30:00Z","offset":-1,"hijri":[1448,6,22],"friday":true},
+  {"zone":"UTC","at":"2026-02-18T12:00:00Z","offset":0,"hijri":[1447,8,1],"friday":false},
+  {"zone":"UTC","at":"2026-06-16T12:00:00Z","offset":-1,"hijri":[1447,11,29],"friday":false},
+  {"zone":"UTC","at":"2024-02-29T12:00:00Z","offset":0,"hijri":[1445,7,19],"friday":false},
+  {"zone":"UTC","at":"2026-11-11T12:00:00Z","offset":0,"hijri":[1448,5,1],"friday":false}
+]

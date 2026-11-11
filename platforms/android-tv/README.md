@@ -29,3 +29,23 @@ and [guarded installation and recovery](../../tools/device.md). Edit canonical d
 and design sources in `shared/` and `afnon-mihrab/`; regenerate their Java/XML/PNG
 outputs through the existing tools. Keep restricted audio and build/device state
 ignored. Automated checks do not replace physical TV, sound and remote acceptance.
+
+## Native runtime check
+
+Build `./gradlew :app:assembleDebugAndroidTest`. From the repository root, on an
+explicitly selected test device:
+
+```sh
+adb -s "$TV" install -r platforms/android-tv/build/outputs/apk/debug/app-debug.apk
+adb -s "$TV" install -r -t platforms/android-tv/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+adb -s "$TV" shell am instrument -w -e check prayer tv.afnon.home.test/tv.afnon.home.AppearanceCycleDeviceCheck
+```
+
+This explicit mode reuses `PrayerDayCheck.java` (also compiled by the root JVM
+regressions), checks real ART/core/reminder linkage and validates Android ICU against
+14 frozen calendar cases. They were cross-checked with the existing preview Intl
+and LG Umm al-Qura adapters, covering DST/civil offsets, leap/year boundaries,
+Ramadan and Friday. Update expected data only for an intentional calendar change.
+The runner restores process timezone defaults and does not write preferences, open
+UI, schedule alerts or play sound. Omitting `-e check prayer` retains the existing
+appearance-cycle UI test. Emulator results describe that image/API, not a physical TV or its older ICU.

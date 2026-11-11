@@ -11,11 +11,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.Map;
 
-/** Device-only deadline tests, with no test dependency or shortcut in the production app. */
+/** Device checks, with no test dependency or shortcut in the production app. */
 public final class AppearanceCycleDeviceCheck extends Instrumentation {
-    @Override public void onCreate(Bundle arguments) { super.onCreate(arguments); start(); }
+    private boolean prayerCheck;
+
+    @Override public void onCreate(Bundle arguments) {
+        String requested = arguments == null ? null : arguments.getString("check");
+        if (requested != null && !requested.equals("prayer")) throw new IllegalArgumentException("Unknown device check: " + requested);
+        prayerCheck = "prayer".equals(requested);
+        super.onCreate(arguments);
+        start();
+    }
 
     @Override public void onStart() {
+        if (prayerCheck) { PrayerRuntimeDeviceCheck.run(this); return; }
         SharedPreferences prefs = Prefs.of(getTargetContext());
         Map<String, ?> saved = prefs.getAll();
         Bundle result = new Bundle();
