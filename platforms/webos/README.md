@@ -186,13 +186,17 @@ or Android project is needed.
 npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
-ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build
+ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
 ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.5_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
 The `ares-*` commands come from LG's webOS CLI. Pair the TV using its Developer Mode
 app first. This checkout used CLI 3.2.6. Enable startup in Islamic TV Launcher Settings after install.
+
+`--no-minify` preserves the prebuilt ES5 files checked by the regression suite.
+Use `ares-device --system-info --device YOUR_LG_ALIAS` for read-only device info
+with this CLI; its older `ares-device-info` command is a deprecated stub.
 
 The build requires the local `state/media/{adhan,announce}/` recordings (see
 `tools/fetch-adhans.sh` and `tools/fetch-announce.sh` if absent). It reuses

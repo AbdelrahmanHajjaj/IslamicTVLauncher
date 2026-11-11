@@ -85,13 +85,23 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.1, old-LG hardware preflight and acceptance preparation. Finish Q08.3's
-commit if resuming between operations. Read the current LG AGENTS/README hardware
-workflow, inspect existing ignored device tooling, and make one bounded read-only
-connectivity/version/state check using the configured private alias. Keep addresses,
-keys and raw output ignored. Prepare the current reviewed IPK under ignored state;
-capture installed prefs/input/startup before any authorized in-place upgrade.
-Preserve installed IDs/data and do not uninstall as an upgrade workaround.
+Next: Q09.2, available Android emulator runtime evidence while physical LG is
+unreachable. Finish Q09.1's documentation commit if resuming between operations.
+Installed API 37 x86_64 image and usable WHPX exist; avdmanager is absent. Follow
+official emulator isolation docs and create a temporary AVD/config/data home only
+under ignored state, using existing hardware/image configuration without copying
+the user's userdata or changing the existing AVD. Use headless/no-audio/no-snapshot,
+an exclusive local port and verify emulator serial/AVD identity before any ADB action.
+If boot succeeds, add/run the smallest meaningful native core/actual ICU regression
+through the existing instrumentation setup; keep production behavior/IDs untouched.
+Close only the owned emulator afterward. No SDK downloads or OS/firmware changes.
+Record the exact API/image and gaps: an API 37 emulator is not the Android 11 TV.
+
+The current reviewed LG IPK is ready with exact payload equality; its one supported
+read-only device query timed out. No install, backup read, service/DOM or TV mutation
+occurred. Wait for changed availability before retrying; the watcher question is
+pending. Before any eventual in-place LG upgrade, capture prefs/input/startup and
+preserve IDs/data; do not uninstall as a workaround. Keep raw device details ignored.
 
 Audible/power tests require a human watcher under LG's rules. Ask for watcher/TV
 availability before those dependent actions; preparation and read-only diagnostics
@@ -1031,3 +1041,28 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   checkers. GitHub/Linux/KVM, phone/emulator and physical TVs were not run here.
   Old-LG actual integration, preference-preserving upgrade, picture/sound/remote/
   power and Android/ICU acceptance remain Q09. No deployment or publication occurred.
+
+### Q09.1 reviewed LG candidate and bounded preflight (2026-11-11)
+
+- Prepared ignored `q09-candidate/tv.afnon.webos_0.2.5_all.ipk` with CLI 3.2.6 and
+  `--no-minify`: 18,629,980 bytes. Parsed its ar/gzip/tar payload without extraction;
+  all 100 generated app/service files match source bytes exactly. Only additional
+  entry is generated package metadata. IDs, version, ES5, original media and full
+  notices are preserved. SHA/manifest/log/helper remain in ignored `q09-*` and
+  `check-q09-ipk.py`. Updated the public package command to preserve checked bytes.
+- CLI's old ares-device-info entry is a deprecated local stub. Confirmed installed
+  help/current official docs and used ares-device --system-info instead. Its one
+  bounded read-only query to the existing private alias reported connection timeout
+  (2.5 seconds), not a validation pass. No TV data read/changed and no install/test
+  activity occurred. Raw output remains private; do not repeat without changed state.
+- Package tool warned about newer-TV requiredACG eligibility and target Node age.
+  No unsupported manifest fields or modern-LG/store claim added to the old 2.2
+  target. Compatibility requires target-specific validation, already an explicit
+  boundary. Human watcher/TV availability was asked through the asynchronous input
+  tool; audible/power/remote tests have not started.
+- Independent opportunity: SDK inventory shows one API 37.0 x86_64 Play Store /
+  ai_glasses_compatible image, one existing medium_phone AVD and usable WHPX.
+  No avdmanager is installed. Preserve that user's AVD and use private new data/
+  configuration for any emulator checks; no new image/tool download. Emulator
+  evidence can address native core/ICU integration but cannot close physical TV
+  upgrade, old-Android, remote, HDMI, sound or power acceptance.
