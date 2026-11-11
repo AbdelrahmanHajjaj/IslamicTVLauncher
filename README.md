@@ -107,7 +107,8 @@ for completed checks and remaining hardware tests.
   input services and unrelated accessibility helpers are protected. Cleanup does not uninstall apps.
 
 Arabic/RTL and English/LTR layouts include the new controls, with Arabic-Indic or Latin digits.
-The launcher uses plain Java and Android Views with adhan-java; no AndroidX, Kotlin or Compose.
+The launcher UI uses Java and Android Views, with adhan-java for astronomy and a small
+Kotlin shared core for product rules. No AndroidX or Compose is used.
 Backgrounds are cached local drawings and eight transparent pattern masks totalling about 245 KB,
 with editable [shared SVG sources](afnon-mihrab/patterns/README.md). Home renders up to 1920×1080;
 Settings keeps a separate small preview. See the [memory trade-off](docs/THEMES.md#tv-references-and-cost).

@@ -1,0 +1,14 @@
+Kotlin standard library 2.2.10, by JetBrains and contributors.
+https://github.com/JetBrains/kotlin/tree/v2.2.10
+
+The accompanying license files are unchanged copies from:
+https://github.com/JetBrains/kotlin/tree/v2.2.10/license
+
+LICENSE.txt is the Kotlin project's Apache License 2.0 text. The other files
+cover third-party code identified in the upstream license/README.md for the
+standard library (JVM/JS collections, time, unsigned arithmetic and math/runtime
+helpers). Compiler, plugin and test-only dependencies are not bundled here.
+
+The JVM dependency graph also includes JetBrains annotations 13.0, by JetBrains,
+under the same Apache License 2.0 (LICENSE.txt). Artifact license declaration:
+https://repo1.maven.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.pom

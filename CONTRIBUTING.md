@@ -48,8 +48,9 @@ tell us how it went, even if everything worked:
 
 ## 3. Improve the launcher
 
-The code is deliberately plain: Java, Android Views, one dependency (adhan-java), no AndroidX, no
-Kotlin, no Compose. It has to stay smooth on a TV with under 2 GB of RAM, so:
+The Android UI stays in Java and Android Views; astronomy uses adhan-java and shared
+product rules use the Kotlin core. No AndroidX or Compose. It has to stay smooth on
+a TV with under 2 GB of RAM, so:
 
 - **No blur, video backgrounds or shadows.** Animate with transform and opacity only.
 - **No new timers or background services.** Prayer checks share one 15-second timer in the

@@ -5,6 +5,8 @@ The MIT licence in `LICENSE` covers Afnon's own code. These parts belong to othe
 | What | Where | Licence |
 |---|---|---|
 | [adhan-java](https://github.com/batoulapps/adhan-java) by Batoul Apps | Gradle dependency | MIT |
+| [Kotlin standard library 2.2.10](https://github.com/JetBrains/kotlin/tree/v2.2.10) by JetBrains and contributors | Shared JVM core runtime, bundled in Android | Apache 2.0 and the upstream standard-library third-party notices; full texts packaged under `assets/licenses/kotlin/` |
+| [JetBrains annotations 13.0](https://repo1.maven.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.pom) | Transitive Kotlin JVM runtime dependency | Apache 2.0; license and source attribution under `assets/licenses/kotlin/` |
 | [adhan-js](https://github.com/batoulapps/adhan-js) by Batoul Apps | Site dependency; bundled as ES5 in the LG webOS build | MIT; full notice included in the package |
 | [Amiri](https://github.com/aliftype/amiri) by Khaled Hosny | `shared/design/resources/font/amiri_*.ttf` | SIL Open Font Licence 1.1 |
 | [Alexandria](https://fonts.google.com/specimen/Alexandria) by Mohamed Gaber and Julieta Ulanovsky | `shared/design/resources/font/alexandria_*.ttf` | SIL Open Font Licence 1.1 |

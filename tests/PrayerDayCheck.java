@@ -74,5 +74,26 @@ public final class PrayerDayCheck {
         catch (IllegalArgumentException expected) {}
         try { day(new Date(), new int[] {31,0,0,0,0,0}); throw new AssertionError("Bad range accepted"); }
         catch (IllegalArgumentException expected) {}
+        for (int invalid : new int[] {Integer.MIN_VALUE, Integer.MAX_VALUE}) {
+            try { day(new Date(), new int[] {invalid,0,0,0,0,0}); throw new AssertionError("Extreme offset accepted"); }
+            catch (IllegalArgumentException expected) {}
+        }
+        PrayerDay morning = day(winter, new int[6]);
+        int[] beforeCurrent = {-1, 0, -1, 2, 3, 4}, atCurrent = {0, -1, 2, 3, 4, 5};
+        int[] beforeNext = {0, 2, 2, 3, 4, 5}, atNext = {2, 2, 3, 4, 5, 0};
+        for (int i = 0; i < 6; i++) {
+            Date boundary = morning.times[i];
+            PrayerDay before = day(new Date(boundary.getTime() - 1), new int[6]);
+            PrayerDay at = day(boundary, new int[6]);
+            check(before.nowIndex == beforeCurrent[i] && at.nowIndex == atCurrent[i], "Current prayer boundary " + i);
+            check(before.nextIndex == beforeNext[i] && at.nextIndex == atNext[i], "Next prayer boundary " + i);
+            check(before.times[0].equals(morning.times[0]), "Keep today's Fajr before Isha");
+            if (i < PrayerDay.ISHA) check(at.times[0].equals(morning.times[0]), "Keep today's Fajr at boundary " + i);
+            else check(at.times[0].equals(at.nextTime) && at.nextTime.after(boundary), "Only after Isha display tomorrow's Fajr");
+        }
+        PrayerDay afterIsha = day(morning.times[PrayerDay.ISHA], new int[6]);
+        PrayerDay atFajr = day(morning.times[PrayerDay.FAJR], new int[6]);
+        check(morning.suhoorEnd.equals(morning.times[0]), "Before dawn Suhoor ends at today's Fajr");
+        check(atFajr.suhoorEnd.equals(afterIsha.nextTime), "At Fajr Suhoor rolls to tomorrow without changing today's row");
     }
 }

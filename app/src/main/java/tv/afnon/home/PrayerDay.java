@@ -10,6 +10,8 @@ import com.batoulapps.adhan.PrayerTimes;
 import com.batoulapps.adhan.PrayerAdjustments;
 import com.batoulapps.adhan.Qibla;
 import com.batoulapps.adhan.data.DateComponents;
+import tv.afnon.core.PrayerRules;
+import tv.afnon.core.PrayerSelection;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -40,9 +42,7 @@ final class PrayerDay {
     PrayerDay(Date now, Coordinates where, PrayerMethod method, Madhab madhab, int hijriOffset, int[] offsets) {
         CalculationParameters params = method.getParameters();
         params.madhab = madhab;
-        if (offsets.length != 6) throw new IllegalArgumentException("Expected six prayer offsets");
-        for (int offset : offsets) if (Math.abs((long) offset) > Prefs.MAX_PRAYER_OFFSET)
-            throw new IllegalArgumentException("Prayer offset out of range");
+        PrayerRules.INSTANCE.validateOffsets(offsets);
         // Reuse these parameters for tomorrow too, so Fajr alerts and Suhoor share the displayed offset.
         params.adjustments = new PrayerAdjustments(offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5]);
         PrayerTimes today = new PrayerTimes(where, DateComponents.from(now), params);
@@ -53,24 +53,18 @@ final class PrayerDay {
         times[MAGHRIB] = minute(today.maghrib);
         times[ISHA] = minute(today.isha);
 
-        int latest = -1;
-        for (int i = 0; i < 6; i++) if (!times[i].after(now)) latest = i;
-        nowIndex = latest == SUNRISE ? -1 : latest;
-
-        int next = -1;
-        for (int i = 0; i < 6; i++) {
-            if (i != SUNRISE && times[i].after(now)) { next = i; break; }
-        }
         Calendar c = Calendar.getInstance();
         c.setTime(now);
         c.add(Calendar.DAY_OF_MONTH, 1);
         Date tomorrowFajr = minute(new PrayerTimes(where, DateComponents.from(c.getTime()), params).fajr);
-        if (next == -1) {
-            next = FAJR;
-            times[FAJR] = tomorrowFajr;
-        }
-        nextIndex = next;
-        nextTime = times[next];
+        double[] epochs = new double[6];
+        for (int i = 0; i < epochs.length; i++) epochs[i] = times[i].getTime();
+        PrayerSelection selected = PrayerRules.INSTANCE.select(epochs, tomorrowFajr.getTime(), now.getTime());
+        nowIndex = selected.getCurrent();
+        nextIndex = selected.getNext();
+        // Android displays tomorrow's Fajr in this slot only after today's prayers have passed.
+        if (nextIndex == FAJR && !times[FAJR].after(now)) times[FAJR] = tomorrowFajr;
+        nextTime = times[nextIndex];
         suhoorEnd = times[FAJR].after(now) ? times[FAJR] : tomorrowFajr;
 
         c.setTime(now);

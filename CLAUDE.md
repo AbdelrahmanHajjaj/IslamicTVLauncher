@@ -21,7 +21,7 @@ real TV over ADB, never just in the build.
 
 ## Android rules
 
-- Plain Java + Android Views. One dependency (adhan-java). No AndroidX, Kotlin or Compose.
+- Java + Android Views for UI; adhan-java for astronomy; Kotlin shared core for product rules. No AndroidX or Compose.
 - No blur, video or shadows; animate transform/opacity only. No new timers or background services: prayer checks
   share one 15 s timer in the accessibility service.
 - No network access except the chosen radio station's stream (hosts listed in `shared/data/stations.json` and the README's

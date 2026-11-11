@@ -11,6 +11,10 @@ today's times. Platform adapters retain astronomical calculation, calendar/timez
 resolution, persisted defaults, formatting, display conventions and OS integration.
 The core has no Android, DOM, filesystem, network or timer dependency.
 
+Android now calls the core for calculation offset validation and current/next
+selection. Its adapter retains adhan-java, ICU and the existing Fajr display/Suhoor
+conventions. LG/preview production adoption is the next ledger slice.
+
 Java callers use `tv.afnon.core.PrayerRules.INSTANCE`; the returned
 `PrayerSelection` exposes standard getters. JavaScript exposes the same namespace
 under the UMD module `IslamicTVLauncher:core`; load `kotlin-kotlin-stdlib.js` first
@@ -38,3 +42,6 @@ The JVM jar is under `build/libs/`. Production JavaScript is under
 `build/compileSync/js/main/productionExecutable/kotlin/`. These are generated
 outputs, never source files. Compiler and test tooling are development dependencies;
 include the applicable Kotlin runtime notices when packaging runtime artifacts.
+Canonical runtime notices are in `assets/licenses/kotlin/`; Android packages them
+through its asset source set. The native JVM regression uses the real core jar and
+its pinned Kotlin runtime, stubbing only Android context/calendar access.

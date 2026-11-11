@@ -85,14 +85,15 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q04.1, production adoption of the proven core in Android. Finish the Q03.6d
-commit if resuming between operations. Inspect current JVM/ES5 outputs and Java
-interop before changing callers. Link the real core, adopt offset validation and
-prayer selection, preserve native tomorrow-Fajr display/suhoor conventions and
-saved keys, and cover existing edge cases against the real JVM library (do not
-stub it in regressions). Package actual Kotlin runtime notices before linking it
-into a distributable artifact. LG/preview adoption follows as the next slice;
-remaining settings/calendar/unavailable-calculation cases stay in Q04. Keep OS
+Next: Q04.2, production core adoption in LG and preview. Finish the Q04.1 commit if
+resuming between operations. Inspect the existing generated UMD output and Q02
+interop proof before choosing the smallest packaging/loader bridge. Reuse the
+proven core for offset validation and current/next selection in both LG app/service
+and preview; validate JS input before integer-array conversion. Preserve LG's raw
+today row/separate tomorrow Fajr, preview's native-style Fajr replacement, existing
+defaults and saved keys. Package actual runtime notices and verify legacy ES5/API
+constraints, original/new date/offset/boundary outputs and available-host proof.
+Remaining settings/calendar/unavailable-calculation cases stay in Q04. Keep OS
 timers/scheduling/playback out of the core and defer reminder-policy work to Q05.
 Do not move platform directories yet (Q06). Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
@@ -417,3 +418,34 @@ Do not move platform directories yet (Q06). Private logs/helpers are under ignor
 - Existing token/SVG sources remain in `afnon-mihrab/`; generated Java/XML/CSS,
   vector metadata and regenerated mask fidelity were verified. Q03 is complete
   for the approved shared resources; production core adoption is still required.
+
+### Q04.1 Android production core adoption (2026-11-11)
+
+- Android now depends on `:core`. `PrayerDay` calls the real shared offset
+  validator and current/next selector; astronomy, date/time-zone/ICU handling,
+  native Fajr-row replacement, Suhoor, formatting and persisted settings remain
+  in the adapter. No UI, key/ID, timer, scheduler or media change.
+- Native regression compilation/runtime now includes the actual core JVM jar
+  and pinned Kotlin stdlib, with only Android context/settings/ICU stubbed. Added
+  exact prayer/sunrise boundaries, before/after-Isha display and Suhoor assertions
+  and extreme-offset rejection. PASS: all 38 Python/Java regressions and complete
+  core JVM/JS/Java-interop/ES5 checks. ICU accuracy itself is not proven by its JVM stub.
+- PASS: 9,576 exact original/core-backed adapter outputs across 19 methods,
+  three time zones, seasonal/DST dates, offsets and every prayer boundary.
+  Private evidence: `PrayerDay-before-core.java`, `NativeCoreParity.java`,
+  `check-native-core-parity.py` and `android-core-parity.json` under ignored state.
+- Six unchanged runtime license texts were copied from Kotlin's pinned v2.2.10
+  upstream license directory, including its identified stdlib third-party texts.
+  Source attribution also records transitive JetBrains annotations 13.0 (Apache 2
+  verified from the resolved artifact POM). Android packages the seven source/text
+  files from `shared/core/assets/licenses/kotlin/`. No compiler/test dependencies
+  are shipped. Root MIT/upstream notices are retained; Q07's broader audit remains.
+- PASS: clean linked APK/build/lint and final notice-only rebuild; actual DEX class
+  definitions include core, Kotlin runtime and annotations; all notice payloads
+  match source bytes. Final APK: 20,931,664 bytes, below 25,000,000. Current lint:
+  0 errors / 54 warnings; Q08 still must assess warning differences/tool findings.
+  Logs/artifact proof: ignored `android-core-{adoption,final,dependencies,python}.log`,
+  `android-core-artifact.json`, `kotlin-notice-sources.json`.
+- Build/contributor documentation and Unreleased notes now describe the actual
+  Java-UI/Kotlin-core boundary. No physical Android TV check (hardware pending);
+  unaffected preview/LG/installer suites were not repeated for this native slice.
