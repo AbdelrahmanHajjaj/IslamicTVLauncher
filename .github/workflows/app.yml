@@ -4,9 +4,9 @@ name: App
 on:
   push:
     branches: [main]
-    paths: ['app/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle/**', '.github/workflows/app.yml']
+    paths: ['app/**', 'shared/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle.properties', 'gradle/**', '.github/workflows/app.yml']
   pull_request:
-    paths: ['app/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle/**', '.github/workflows/app.yml']
+    paths: ['app/**', 'shared/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle.properties', 'gradle/**', '.github/workflows/app.yml']
   workflow_dispatch:
 
 permissions:

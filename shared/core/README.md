@@ -1,0 +1,40 @@
+# Islamic TV Launcher core
+
+Pure product rules compiled from one Kotlin source to a JVM library and ES5
+JavaScript. The migration queue and adoption decisions live only in
+[`docs/ARCHITECTURE-QUEUE.md`](../../docs/ARCHITECTURE-QUEUE.md).
+
+`PrayerRules` validates six integer prayer offsets in [-30, 30] and selects the
+current/next prayer from six already-calculated epoch-millisecond times plus
+tomorrow's Fajr. Sunrise is a marker, never an alert. Selection does not mutate
+today's times. Platform adapters retain astronomical calculation, calendar/timezone
+resolution, persisted defaults, formatting, display conventions and OS integration.
+The core has no Android, DOM, filesystem, network or timer dependency.
+
+Java callers use `tv.afnon.core.PrayerRules.INSTANCE`; the returned
+`PrayerSelection` exposes standard getters. JavaScript exposes the same namespace
+under the UMD module `IslamicTVLauncher:core`; load `kotlin-kotlin-stdlib.js` first
+in a browser or use the emitted CommonJS entry. JavaScript numeric-array parameters
+are `Float64Array` for epoch milliseconds and `Int32Array` for offsets. Adapters
+must validate untrusted values before converting them to integer arrays.
+
+## Build and check
+
+Use JDK 17 and the repository's Node 24. The ES5 check reuses the existing LG
+development dependency `acorn`; it does not need audio, a TV or LG device keys.
+
+```powershell
+npm.cmd --prefix webos ci --ignore-scripts
+./gradlew.bat :core:check :core:jvmJar --no-daemon
+```
+
+On Linux/macOS use `npm` and `./gradlew`. Common tests run on JVM and Node; a Java
+test exercises the JVM API. `legacyCheck` parses production JavaScript as ES5 and
+runs the legacy proof in browser and CommonJS contexts with modern APIs removed.
+It is part of `:core:check` and can be run separately with `node
+shared/core/test-legacy.cjs` after compilation.
+
+The JVM jar is under `build/libs/`. Production JavaScript is under
+`build/compileSync/js/main/productionExecutable/kotlin/`. These are generated
+outputs, never source files. Compiler and test tooling are development dependencies;
+include the applicable Kotlin runtime notices when packaging runtime artifacts.

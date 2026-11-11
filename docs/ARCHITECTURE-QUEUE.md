@@ -30,7 +30,7 @@ identities, Arabic/English, RTL/LTR, accessibility and exact religious text.
   Node 0.10.25 compatibility. Support newer LG through this project when validated.
 - Eventual layout: `shared/{core,data,design}`, `platforms/{android-tv,webos}`,
   existing installer, site and tools. Move paths after dependency boundaries work.
-- Evaluate Kotlin Multiplatform JVM + ES5 first. The approved rewrite permits a
+- Use Kotlin Multiplatform JVM + ES5, selected by Q02's actual-host proof. The approved rewrite permits a
   narrowly scoped Kotlin core despite the inherited Java-only guidance. Adoption
   depends on measured legacy-host compatibility, size and integration evidence.
 - Reuse existing adhan-java/adhan-js adapters initially. Do not rewrite astronomy.
@@ -74,8 +74,8 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | --- | --- | --- |
 | Q00 | Done | Create branch, persistent goal and this ledger; route future migration work here. |
 | Q01 | Done | Baseline: dependency/caller map, current behavior differences, executable checks/tool/media availability and performance evidence; record results without private device details. |
-| Q02 | Active | Portable-core proof: shared offset/next-prayer behavior on JVM and ES5 app/service hosts; meaningful common fixtures, native-Java integration, legacy API checks, size/startup/memory evidence and actual LG probe where available; select technology with recorded rationale. |
-| Q03 | Queued | Canonical resource extraction: move source ownership out of Android; migrate all generators/consumers and fixtures together; verify catalog/text/token equivalence and deterministic regeneration. |
+| Q02 | Done | Portable-core proof: shared offset/next-prayer behavior on JVM and ES5 app/service hosts; meaningful common fixtures, native-Java integration, legacy API checks, size/startup/memory evidence and actual LG probe where available; select technology with recorded rationale. |
+| Q03 | Active | Canonical resource extraction: move source ownership out of Android; migrate all generators/consumers and fixtures together; verify catalog/text/token equivalence and deterministic regeneration. |
 | Q04 | Queued | Core domain migration: extract settings and prayer-day rules in complete tested slices; cover date rollover, tomorrow Fajr, DST, offsets, Hijri range, unavailable calculations and deliberate platform differences. |
 | Q05 | Queued | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
 | Q06 | Queued | Separate platform projects/builds: migrate paths only after boundaries work; update Gradle, npm, installer, tools, generated outputs, tests and CI; add no empty future-platform projects. |
@@ -85,11 +85,13 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q02. Add an isolated, additive shared-core proof; production apps continue to
-use their existing behavior until the runtime decision is supported by evidence.
-Q02's runtime proof precedes production core adoption; a syntax-only ES5 pass does
-not establish old-TV compatibility. Record findings here and keep the queue moving
-only when each item's prerequisites are met.
+Next: Q03. Start with canonical city data, preserving existing IDs, order, defaults
+and `Prefs.City` consumers. Inspect the affected source/generator/tests only; migrate
+one catalog at a time with exact old/new data comparisons and affected regression
+checks. Do not move platform directories yet (Q06). Production apps still use their
+existing domain implementations until Q04. Build logs and private LG helpers are
+under ignored `state/platform-core/`; do not publish them. Finish the Q02 commit
+before editing Q03 source if resuming between these operations.
 
 ## Evidence and decisions
 
@@ -129,3 +131,49 @@ only when each item's prerequisites are met.
 - Proof candidate: Kotlin 2.2.10 is already in the local Gradle cache and its
   documented compatibility includes Gradle 8.9 / AGP 8.5.2. Keep those existing build
   tools unchanged. Source: https://kotlinlang.org/docs/multiplatform/multiplatform-compatibility-guide.html.
+
+### Q02 accepted foundation (2026-11-11)
+
+- Additive `shared/core` candidate: offset validation and nonmutating current/next
+  prayer selection. Production Android/LG callers have not switched to it.
+- PASS: 4 common tests on JVM and JavaScript, plus a native-Java caller test.
+  PASS: ES5 parsing and 31 assertions in both browser and CommonJS VM hosts with
+  modern APIs removed. Runtime JS plus its pruned Kotlin stdlib: 16,794 bytes;
+  JVM core jar: 3,309 bytes. Kotlin JS test tooling uses npm and the installed Node;
+  retain strict repository policy rather than adding Node/Yarn download repositories.
+- Existing paired LG profile recovered through local CLI config. Isolated files
+  were uploaded, checked and removed; installed source/preferences/schedules were
+  not changed. Inspector forwarding was closed after each bounded evaluation.
+- PASS on actual LG Node 0.10.25: 31 assertions; one-run load 32 ms, checks 20 ms;
+  RSS 9,867,264 -> 10,240,000 bytes. PASS on actual WebKit 538.2: 31 assertions in
+  CommonJS and real browser-UMD modes; storage/focus unchanged and temporary globals
+  restored. Browser-UMD load/check: 7/18 ms (warm proof). These are tiny proof
+  measurements, not app performance claims. Private JSON evidence:
+  `state/platform-core/lg-core-proof.json`, `lg-webkit-proof.json` and
+  `lg-webkit-browser-proof.json`.
+- Selected Kotlin 2.2.10. Required stable tool correction: AGP 8.10.1 + Gradle
+  8.11.1 (official distribution SHA256 pinned; wrapper regenerated with the wrapper
+  task). The previous AGP lint could not read metadata; no suppression or
+  experimental lint override remains. Java 17 and app SDK levels are unchanged.
+  Sources: Android Kotlin-support table and
+  https://developer.android.com/build/releases/agp-8-10-0-release-notes.
+- PASS: clean linked-core APK/lint, installer build/lint, then clean normal APK/
+  lint and complete `:core:check`. Reject hidden metadata diagnostics even if a
+  Gradle task exits zero. Clean normal APK: 20,066,700 bytes, no core/Kotlin runtime
+  descriptors, runtime dependency graph remains adhan-java only. Clean trial APK:
+  20,903,595 bytes with core/runtime descriptors; incremental cost 836,895 bytes,
+  under 25,000,000. Trial injection is ignored tooling, not a source dependency.
+  Use clean paired measurements; mixed incremental trial builds retained stale
+  dex content and produced misleading sizes. Final logs: `foundation-final.log`
+  and `android-core-final.log`; artifact inspections: `*-apk-inspection.json`.
+- New lint reports 0 errors and 55/15 warnings, versus the old-engine 54/14.
+  The extra recommendations concern Gradle 8.14.6 availability and installer
+  compileSdk 35 availability. Q08 must resolve/assess these explicit tool findings;
+  do not claim warning-count equivalence or lower the final quality gate silently.
+- Core CI runs common JVM/JS, Java interop and ES5 checks. App CI watches shared
+  sources and Gradle properties. Keep generated artifacts/media/private helpers
+  ignored and retain the generated Kotlin JS npm test lockfile.
+- On later production adoption, package the Kotlin runtime's Apache-2.0 notices
+  in the actual Android/LG artifacts and update third-party documentation. Android
+  hardware integration/performance and complete LG UI/service acceptance remain
+  Q09 gates; this proof is not a user-facing platform migration.

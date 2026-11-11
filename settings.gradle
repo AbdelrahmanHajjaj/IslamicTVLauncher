@@ -20,3 +20,5 @@ dependencyResolutionManagement {
 rootProject.name = "IslamicTVLauncher"
 include ':app'
 include ':installer'
+include ':core'
+project(':core').projectDir = file('shared/core')
