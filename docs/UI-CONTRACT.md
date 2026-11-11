@@ -70,21 +70,27 @@ toggle alone does not establish a behavioral failure or capability restriction.
 
 ## Enforcement
 
-`shared/data/ui-contract.json` defines the Settings controls, six-offset editor and
-LG test pane. `tools/catalogs.mjs` generates the portable `UiCatalog`; `UiContract`
+`shared/data/ui-contract.json` defines the Settings controls, six-offset editor,
+five per-prayer adhan switches and LG test pane. Sunrise is informational, with
+no adhan control or focus stop. `tools/catalogs.mjs` generates the portable `UiCatalog`; `UiContract`
 checks IDs, kinds and coverage. Android Row objects tag their actual views; LG
 rows/carousels expose `data-ui` and use the catalog's canonical label references.
 The native `check=ui` instrumentation and LG browser suite enumerate those controls
 in Arabic and English, then require every definition to be bound or declared in a
 shell's gap file. See [declared gaps](UI-GAPS.md). These checks enforce control
 coverage. Numeric range references reuse the core prayer/Hijri limits and shared
-percentage bounds; native steppers validate their ranges and LG's editor consumes
+percentage bounds, plus room bearing 0–359°; native steppers validate their ranges and LG's editor consumes
 them through its actual binding. Semantic choice values resolve canonical catalog
 references during generation. Both renderers validate actual option models; native
 popup lists also check their IDs/counts and LG validates the chosen offered value
 before saving. Coverage aggregates countdown-position and imported-theme variants,
 then requires explicit partial-option gaps. Stored keys, aliases and choice ordering
-remain platform-owned. Linked-editor workflows still need their own conformance.
+remain platform-owned. The actual five switches are exercised in both languages
+in each shell, including persisted values and return focus. Native room-direction
+checks cover physical compass directions in RTL/LTR, wraparound, save/cancel and
+return to the originating control. Clockwise remains physical Right in either
+language. The unset saved bearing stays unset until confirmed. LG's absent room
+editor remains an explicit gap. Other linked actions require their own conformance.
 
 The implementation must provide one portable definition, shared focus rules and
 per-shell bindings. Conformance checks must:

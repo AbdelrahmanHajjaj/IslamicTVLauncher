@@ -96,13 +96,13 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.5c2 linked editor/action coverage for per-prayer switches and favourite
-operations, with actual bindings and relevant activation/return/save/cancel checks.
-Settings choice values and numeric bounds are verified in both renderers. Keep the rest
-bounded to actual controls, including per-prayer switches and favourite operations;
+Next: Q09.5c2 favourite operations, with actual bindings and relevant activation,
+return and save/cancel checks. Five per-prayer switches and native room direction
+are now verified. Settings choice values and numeric bounds are verified in both renderers. Keep the rest
+bounded to actual favourite controls/actions;
 no generic widget engine, new features or forced LG cosmetic ports. Unimplemented
 LG features may remain hidden, with explicit definitions/gaps as the owner approved.
-Q09.5c1 is software-verified: 76 controls, actual Android/LG rows, canonical labels
+The catalog now has 81 controls, actual Android/LG bindings, canonical labels
 and complete binding/gap coverage in both languages. Settings option models and
 conditional variants now have full declared coverage; linked-editor workflow
 conformance is next. LG source is still 0.2.8; it is not packaged or
@@ -1632,3 +1632,54 @@ unrelated renderer redesign, transport or future shell.
   lg-browser-complete,native-regressions}.log and private choice-runtime records.
   Linked per-prayer/favourite controls and editor flows are next; physical Android
   and the final 0.2.8 old-LG host/UI checks remain open.
+
+### Q09.5c2 linked prayer screen: diagnosis in progress
+
+- Actual native source exposes six adhan toggles, including sunrise, despite core
+  policy excluding sunrise from every alert. LG already exposes only five. Added
+  an actual-view regression before changing production code: sunrise interaction
+  must not write a setting or remain an actionable/focusable adhan row. Preserve
+  any existing bell_1 value; no preference deletion or new sunrise alert.
+- Next bind the five real prayer switches through shared IDs, test round trips,
+  and cover the existing room-direction editor's save/cancel/return behavior.
+  Favourite operations follow sequentially. No TV update or audible test here.
+
+### Q09.5c2 prayer controls and room editor: verified (2026-11-11)
+
+- Added five semantic per-prayer toggle IDs. Core isPrayer accepts only the five
+  exact indexes, shared by selection/reminder policy and actual native/LG controls;
+  prayerAdhanId rejects sunrise and malformed numbers. Catalog now has 81 controls.
+  Room direction is a numeric value with a shared 0–359° range, using its existing
+  native editor and storage. LG's missing room editor remains an explicit gap.
+- Reproduced the native sunrise defect before production edits: activating its
+  apparent adhan switch wrote a preference although sunrise can never alert.
+  Removed that misleading focus/click/bell affordance, kept the visible time/status
+  and preserved any existing bell_1 value. Native arrows skip the information row;
+  the preview matches, with a disabled row, no bell/action and no adhan label.
+- Actual API 37 native conformance passes in Arabic/English: all five bound switches
+  mutate their corresponding stored flag and visible state; sunrise cannot mutate
+  preferences. Room checks cover physical compass directions in either language,
+  359/0 wrap, Back cancellation, OK saving, launch from its actual Settings row,
+  return focus and rendered saved bearing. Every changed flag/bearing and the full
+  original preference object are restored. No alert/media/OS action is triggered.
+- Native fixture initially stayed in touch mode and lost focus across a rebuild;
+  real D-pad input establishes the precondition before direct handler checks. LG's
+  mock stores before its asynchronous reply; wait for the actual redrawn button
+  after each toggle, not merely the mock storage write. The unsynchronized test
+  once dropped Back while save was busy; synchronized full bilingual workflows pass.
+- PASS: 21 JVM/20 JS common tests; 66 stripped ES5/browser/CommonJS assertions,
+  combined production JS 76,930 bytes; canonical generation/isolation/freshness,
+  full preview tests/build and tokens check; full LG ES5/build/service/async suite
+  and bilingual browser flows, including five toggle round trips and originating
+  Settings return; all 39 native Python/Java regressions. Native build/lint/test APK
+  and actual UI checks pass; APK 21,124,952 bytes, lint 0 errors/55 existing warnings.
+- Fourth prior closed-session record preserved before resuming only the owned
+  emulator. Final shutdown/offline serial/exited process and unchanged original
+  AVD hashes verified. No emulator/TV inspector/test activity remains pending.
+  No TV update, sound or power test occurred; accepted LG remains 0.2.7 in Browser.
+- Evidence: ignored ui-prayer-{core-check,legacy-final,final-native-build,
+  final-native-check,native-regressions,preview-test,preview-build,lg-complete,
+  lg-browser-synchronized,catalog-final,tokens-final,emulator-closure}.log and
+  private ui-contract-emulator/prayer-{red,green}-result.log. The red regression
+  failed on the original production screen before the fix. Next: favourite actions,
+  then the final 0.2.8 old-LG host/UI check. Physical Android remains open.

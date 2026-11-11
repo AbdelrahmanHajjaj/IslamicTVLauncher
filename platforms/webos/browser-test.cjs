@@ -178,6 +178,28 @@ const server = http.createServer((req, res) => {
       await page.locator('[data-action=section][data-value=prayer]').click();
       await page.locator('[data-action=offsets]').click();
       await collect('offsets');
+      await page.locator('[data-action=section][data-value=prayer]').click();
+      await page.locator('[data-action=prayer-day]').click();
+      const prayerBindings = await page.locator('[data-action=bell]').evaluateAll(items => items.map(el => ({id: el.getAttribute('data-ui'), kind: el.getAttribute('data-ui-kind')})));
+      assert.equal(prayerBindings.length, 5);
+      assert.equal(new Set(prayerBindings.map(c => c.id)).size, 5);
+      for (const control of prayerBindings) { assert.equal(control.kind, 'toggle'); seen.add(control.id); }
+      const bellsBefore = await page.evaluate(() => window.Afnon.prefs(JSON.parse(localStorage.getItem('fixture')).prefs).bells);
+      for (const index of [0, 2, 3, 4, 5]) {
+        const bell = page.locator('[data-action=bell][data-value="' + index + '"]');
+        for (const value of [!bellsBefore[index], bellsBefore[index]]) {
+          const previous = await bell.elementHandle();
+          await bell.click();
+          // The mock persists before replying; wait for the real save callback to redraw.
+          await page.waitForFunction(el => !el.isConnected, previous);
+          await previous.dispose();
+          assert.equal(await page.evaluate(index => JSON.parse(localStorage.getItem('fixture')).prefs.bells[index], index), value);
+        }
+      }
+      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')).prefs.bells), bellsBefore);
+      await page.keyboard.press('Escape');
+      await page.waitForSelector('.settings-page');
+      assert.equal(await page.locator(':focus').getAttribute('data-ui'), 'prayer.today', 'Back restores the originating setting');
       await page.evaluate(({bound, gaps}) => window['tv.afnon:core'].tv.afnon.core.UiContract.validateCoverage(bound, gaps),
         {bound: [...seen], gaps: uiGaps.map(gap => gap.id)});
       await page.evaluate(({offered, gaps}) => {

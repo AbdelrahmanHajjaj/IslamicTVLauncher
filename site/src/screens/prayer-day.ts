@@ -1,6 +1,7 @@
 import { prayerLabel } from '../lib/prayer-icon';
 // Prayer day's live content, from PrayerDayActivity.render/renderMinute/renderPicker and QiblaView.
 import { Coordinates, Qibla } from 'adhan';
+import portable from '@islamic-tv/core';
 import type { Ctx, Model } from '../lib/ctx';
 import { methodOf } from '../lib/data';
 import { DHUHR, SUNRISE, clock, duration, gregorian, hijri, secondsUntil } from '../lib/prayer';
@@ -8,6 +9,7 @@ import type { Text } from '../lib/text';
 import { archModel, prayerNames } from './home';
 
 const BELLS = 'afnon-bells', FACING = 'afnon-facing';
+export const prayerRules = portable.tv.afnon.core.PrayerRules;
 
 /** Each prayer's adhan bell (Prefs.bell): on by default except Sunrise, which has no adhan. */
 export function loadBells(): boolean[] {
@@ -75,7 +77,7 @@ export function prayerDayModel(c: Ctx): Model {
     html['n' + i] = prayerLabel(i, names[i]);
     html['s' + i] = state === 'now' ? t.s('rowNow') : state === 'past' ? t.passed(i === SUNRISE) : t.in(duration(secondsUntil(time, now), false));
     html['t' + i] = clock(t, time, h24, 0.55);
-    attr['r' + i] = { 'data-state': state, 'data-bell': String(bells[i]), 'aria-label': `${names[i]} · ${t.bell(bells[i])}` };
+    attr['r' + i] = { 'data-state': state, 'data-bell': String(bells[i]), 'aria-label': prayerRules.isPrayer(i) ? `${names[i]} · ${t.bell(bells[i])}` : names[i] };
   });
 
   if (facing < 0) {

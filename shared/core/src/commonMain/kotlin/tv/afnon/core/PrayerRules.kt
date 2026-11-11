@@ -12,6 +12,12 @@ object PrayerRules {
     const val MAX_OFFSET_MINUTES = 30
     const val MAX_HIJRI_OFFSET_DAYS = 2
 
+    // Exact numeric matches keep untrusted JS fractions/large indexes from becoming prayers.
+    fun isPrayer(index: Double): Boolean = when (index) {
+        0.0, 2.0, 3.0, 4.0, 5.0 -> true
+        else -> false
+    }
+
     // Double keeps untrusted JS numbers intact until after validation and clamping.
     fun normalizeOffset(minutes: Double): Int {
         if (!minutes.isFinite() || minutes % 1.0 != 0.0) return 0
@@ -34,10 +40,10 @@ object PrayerRules {
         var next = -1
         for (i in times.indices) {
             if (times[i] <= now) current = i
-            if (next == -1 && i != 1 && times[i] > now) next = i
+            if (next == -1 && isPrayer(i.toDouble()) && times[i] > now) next = i
         }
         return PrayerSelection(
-            if (current == 1) -1 else current,
+            if (isPrayer(current.toDouble())) current else -1,
             if (next == -1) 0 else next,
             if (next == -1) tomorrowFajr else times[next],
         )

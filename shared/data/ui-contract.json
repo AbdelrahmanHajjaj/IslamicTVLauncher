@@ -52,9 +52,10 @@
   {
     "id": "prayer.facing",
     "section": "prayer",
-    "kind": "action",
+    "kind": "number",
     "label": "roomTitle",
-    "save": "action"
+    "save": "immediate",
+    "range": "bearing"
   },
   {
     "id": "prayer.today",
@@ -635,5 +636,40 @@
     "kind": "action",
     "label": "resetOffsets",
     "save": "action"
+  },
+  {
+    "id": "prayer.adhan-fajr",
+    "section": "prayer-day",
+    "kind": "toggle",
+    "label": "prayerNames:0",
+    "save": "immediate"
+  },
+  {
+    "id": "prayer.adhan-dhuhr",
+    "section": "prayer-day",
+    "kind": "toggle",
+    "label": "prayerNames:2",
+    "save": "immediate"
+  },
+  {
+    "id": "prayer.adhan-asr",
+    "section": "prayer-day",
+    "kind": "toggle",
+    "label": "prayerNames:3",
+    "save": "immediate"
+  },
+  {
+    "id": "prayer.adhan-maghrib",
+    "section": "prayer-day",
+    "kind": "toggle",
+    "label": "prayerNames:4",
+    "save": "immediate"
+  },
+  {
+    "id": "prayer.adhan-isha",
+    "section": "prayer-day",
+    "kind": "toggle",
+    "label": "prayerNames:5",
+    "save": "immediate"
   }
 ]

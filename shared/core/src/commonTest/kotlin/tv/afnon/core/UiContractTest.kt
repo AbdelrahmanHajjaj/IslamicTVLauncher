@@ -6,6 +6,18 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 
 class UiContractTest {
+    @Test fun fivePrayerControlsExcludeSunriseAndKeepTheirIndexes() {
+        for (prayer in listOf(0, 2, 3, 4, 5)) {
+            val control = UiContract.bind(UiContract.prayerAdhanId(prayer.toDouble()), "toggle")
+            assertEquals("prayerNames:$prayer", control.labelKey)
+            assertEquals("prayer-day", control.section)
+        }
+        assertEquals(5, UiContract.controls().count { it.id.startsWith("prayer.adhan-") })
+        for (index in listOf(1.0, -1.0, 6.0, 0.5, Double.NaN)) {
+            assertFailsWith<IllegalArgumentException> { UiContract.prayerAdhanId(index) }
+        }
+    }
+
     @Test fun choiceValuesAreSemanticAndCoverageAccountsForExplicitGaps() {
         assertEquals(listOf("mihrab", "compact", "hidden"), UiContract.choices("appearance.countdown").toList())
         assertEquals(listOf("two_rows", "classic"), UiContract.choices("appearance.favourites").toList())
@@ -28,6 +40,8 @@ class UiContractTest {
         }
         assertEquals(-PrayerRules.MAX_HIJRI_OFFSET_DAYS, UiContract.minimum("prayer.hijri"))
         assertEquals(PrayerRules.MAX_HIJRI_OFFSET_DAYS, UiContract.maximum("prayer.hijri"))
+        assertEquals(0, UiContract.minimum("prayer.facing"))
+        assertEquals(359, UiContract.maximum("prayer.facing"))
         for (id in arrayOf("reminders.volume", "appearance.lighting")) {
             assertEquals(0, UiContract.minimum(id))
             assertEquals(100, UiContract.maximum(id))

@@ -6,7 +6,8 @@ JavaScript. The migration queue and adoption decisions live only in
 
 `PrayerRules` normalizes/validates six integer prayer offsets in [-30, 30] and selects the
 current/next prayer from six already-calculated epoch-millisecond times plus
-tomorrow's Fajr. Sunrise is a marker, never an alert. Selection does not mutate
+tomorrow's Fajr. `isPrayer` identifies the five exact prayer indexes; sunrise is
+a marker, never an alert or adhan switch. Selection does not mutate
 today's times. Platform adapters retain astronomical calculation, calendar/timezone
 resolution, persisted defaults, formatting, display conventions and OS integration.
 The core has no Android, DOM, filesystem, network or timer dependency.
@@ -33,12 +34,13 @@ Actual native rows and LG rows/carousels carry these IDs. Their conformance chec
 enumerate real views/DOM controls in both languages, rather than a support manifest.
 Shell gap declarations generate the [gap report](../../docs/UI-GAPS.md).
 Numeric controls reference named ranges; `minimum`/`maximum` reuse `PrayerRules`
-for prayer/Hijri limits and define 0–100 percentages. Native steppers validate
+for prayer/Hijri limits and define 0–100 percentages and 0–359° room bearings. Native steppers validate
 their bounds; LG's actual numeric editor reads them from its bound control ID.
 Choice values are semantic strings, with catalog references resolved during
 generation. `choices` returns a copy; `validateChoices` rejects unknown/duplicate
 values, while `validateChoiceCoverage` accounts for offered conditional variants
-and explicit platform option gaps. Stored-value conversions remain in the shells.
+and explicit platform option gaps. `prayerAdhanId` maps each of the five prayer
+indexes to its toggle definition and rejects sunrise. Stored-value conversions remain in the shells.
 
 Java callers use `tv.afnon.core.PrayerRules.INSTANCE`; the returned
 `PrayerSelection` exposes standard getters. JavaScript exposes the same namespace

@@ -94,5 +94,11 @@ function verifyIslamicTVCore(core) {
   check(rejected, 'unknown UI choice rejected');
   var languageChoices = ui.choices('display.language'); languageChoices[0] = 'changed';
   check(ui.choices('display.language')[0] === 'system', 'UI choice snapshot isolation');
+  check(rules.isPrayer(0) && rules.isPrayer(5) && !rules.isPrayer(1), 'five prayer indexes only');
+  check(!rules.isPrayer(0.5) && !rules.isPrayer(4294967297) && !rules.isPrayer(NaN), 'untrusted JS prayer indexes');
+  rejected = false;
+  try { ui.prayerAdhanId(1); } catch (sunrise) { rejected = true; }
+  check(ui.prayerAdhanId(2) === 'prayer.adhan-dhuhr' && rejected, 'per-prayer UI mapping excludes sunrise');
+  check(ui.minimum('prayer.facing') === 0 && ui.maximum('prayer.facing') === 359, 'numeric bearing contract');
   return {checks: checks};
 }

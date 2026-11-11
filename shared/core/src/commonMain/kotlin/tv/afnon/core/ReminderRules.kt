@@ -24,7 +24,7 @@ object ReminderRules {
         require(now.isFinite() && windowMs.isFinite() && windowMs > 0) { "Invalid reminder window" }
         for (i in times.indices) {
             val since = now - times[i]
-            if (i != 1 && since >= 0 && since < windowMs && eligibleMask and (1 shl i) != 0) return i
+            if (PrayerRules.isPrayer(i.toDouble()) && since >= 0 && since < windowMs && eligibleMask and (1 shl i) != 0) return i
         }
         return -1
     }
@@ -56,7 +56,7 @@ object ReminderRules {
             if (id !in handled) best = ReminderEvent(id, kind, prayer, time, prayerTime)
         }
         for (times in days) for (i in times.indices) {
-            if (i == 1 || bellMask and (1 shl i) == 0) continue
+            if (!PrayerRules.isPrayer(i.toDouble()) || bellMask and (1 shl i) == 0) continue
             if (minutes > 0) add("before", i, times[i] - minutes * 60000.0, times[i])
             if (callEnabled) add("call", i, times[i], times[i])
         }

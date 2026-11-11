@@ -1,11 +1,11 @@
 ---
 // Prayer day (PrayerDayActivity): title and dates, Home pill, the arch (method and Asr school below the
-// countdown), six rows with their status and an adhan bell each, the Qibla panel and the room-direction picker.
+// countdown), six times and five adhan switches, the Qibla panel and the room-direction picker.
 import Arch from '../components/Arch.astro';
 import Icon from '../components/Icon.astro';
 import type { Ctx } from '../lib/ctx';
 import { href } from '../lib/site';
-import { prayerDayModel, pickerModel } from './prayer-day';
+import { prayerDayModel, pickerModel, prayerRules } from './prayer-day';
 
 interface Props { ctx: Ctx }
 const { ctx } = Astro.props;
@@ -45,12 +45,13 @@ const dial = (needle: string, north: string, a: Record<string, Record<string, st
 
 {day.times.map((_, i) => (
   <button class="ft row day-row" data-row={i} data-a={'r' + i} data-state={m.attr!['r' + i]['data-state']} data-bell={m.attr!['r' + i]['data-bell']}
+    disabled={!prayerRules.isPrayer(i)}
     aria-label={m.attr!['r' + i]['aria-label']} style={`top:${236 + i * 116}px`}
-    {...{ [toEnd]: '.room-btn', [toStart]: `[data-row="${i}"]` }} {...(i === day.times.length - 1 ? { 'data-nav-down': `[data-row="${i}"]` } : {})} {...(i === 0 ? { 'data-nav-up': '.home-pill' } : {})} {...(i === day.nextIndex ? { 'data-focus-start': '' } : {})}>
+    {...{ [toEnd]: '.room-btn', [toStart]: `[data-row="${i}"]` }} data-nav-down={`[data-row="${i === 0 ? 2 : Math.min(day.times.length - 1, i + 1)}"]`} data-nav-up={i === 0 ? '.home-pill' : `[data-row="${i === 2 ? 0 : i - 1}"]`} {...(i === day.nextIndex ? { 'data-focus-start': '' } : {})}>
     <span class="r-name" data-k={'n' + i} set:html={m.html['n' + i]} />
     <span class="r-status" data-k={'s' + i} set:html={m.html['s' + i]} />
     <span class="r-time display num" data-k={'t' + i} set:html={m.html['t' + i]} />
-    <span class="bell"><Icon name="bell" size={26} stroke={2} /></span>
+    <span class="bell" style={{ visibility: prayerRules.isPrayer(i) ? 'visible' : 'hidden' }}><Icon name="bell" size={26} stroke={2} /></span>
   </button>
 ))}
 
@@ -85,7 +86,7 @@ const dial = (needle: string, north: string, a: Record<string, Record<string, st
 
 <script>
   import { live, bind } from '../scripts/live';
-  import { prayerDayModel, pickerModel, loadBells, saveBells, loadFacing, saveFacing } from './prayer-day';
+  import { prayerDayModel, pickerModel, prayerRules, loadBells, saveBells, loadFacing, saveFacing } from './prayer-day';
   import type { Ctx } from '../lib/ctx';
 
   const stage = document.querySelector<HTMLElement>('.tv')!;
@@ -108,6 +109,7 @@ const dial = (needle: string, north: string, a: Record<string, Record<string, st
 
     // OK on a row turns its adhan on or off. Focus on a row is remembered for Left/Right from the room button.
     rows.forEach((r, i) => {
+      if (!prayerRules.isPrayer(i)) return;
       r.addEventListener('click', () => {
         const b = loadBells();
         b[i] = !b[i];

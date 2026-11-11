@@ -12,6 +12,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   Numeric editors also share validated prayer/Hijri and percentage limits.
   Choice values use shared semantic IDs with explicit option gaps; stored keys,
   defaults and platform-specific ordering remain intact.
+  Five per-prayer adhan switches and the 0–359° room-direction editor also bind
+  through the contract. Android and its preview now keep sunrise informational,
+  removing a switch that could never produce an alert; saved preferences remain intact.
 
 - Android and LG share deterministic Home focus rules. LG starts on its app
   content, moves Up to the top controls and Down beyond the final app row to All

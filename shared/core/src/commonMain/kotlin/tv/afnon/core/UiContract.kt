@@ -29,13 +29,26 @@ object UiContract {
         return control
     }
 
-    fun minimum(id: String): Int = if (bind(id, "number").range == "percent") 0 else -maximum(id)
+    fun minimum(id: String): Int = when (bind(id, "number").range) {
+        "percent", "bearing" -> 0
+        else -> -maximum(id)
+    }
 
     fun maximum(id: String): Int = when (bind(id, "number").range) {
         "prayer-offset" -> PrayerRules.MAX_OFFSET_MINUTES
         "hijri-offset" -> PrayerRules.MAX_HIJRI_OFFSET_DAYS
         "percent" -> 100
+        "bearing" -> 359
         else -> throw IllegalArgumentException("Unknown UI number range: $id")
+    }
+
+    fun prayerAdhanId(prayer: Double): String = when (prayer) {
+        0.0 -> "prayer.adhan-fajr"
+        2.0 -> "prayer.adhan-dhuhr"
+        3.0 -> "prayer.adhan-asr"
+        4.0 -> "prayer.adhan-maghrib"
+        5.0 -> "prayer.adhan-isha"
+        else -> throw IllegalArgumentException("No adhan control for prayer index: $prayer")
     }
 
     fun choices(id: String): Array<String> = bind(id, "choice").options.copyOf()

@@ -3,6 +3,7 @@
   var A = window.Afnon, D = window.AfnonData;
   var homeNavigation = window['tv.afnon:core'].tv.afnon.core.HomeNavigation;
   var uiContract = window['tv.afnon:core'].tv.afnon.core.UiContract;
+  var prayerRules = window['tv.afnon:core'].tv.afnon.core.PrayerRules;
   var tv = typeof window.PalmServiceBridge !== 'undefined';
   var prefs = A.prefs(), startup = false, loaded = false, busy = false;
   var input = null, inputs = [], view = 'input', picker = null, page = 0;
@@ -327,7 +328,7 @@
         var today = schedule(now), h = A.hijri(now, prefs), bearing = A.qibla(prefs);
         html = '<section class="page">' + header(t('اليوم والقبلة', 'Today & Qibla')) + '<div class="day-times">' + today.times.map(function (time, i) {
           return '<div class="day-row"><span>' + s('prayerNames')[i] + '</span><strong>' + digits(A.clock(time, prefs)) + '</strong>' +
-            (i === 1 ? '<span class="muted">' + t('لا أذان للشروق', 'No adhan') + '</span>' : button('bell', onOff(prefs.bells[i]), i, '', t('أذان ', 'Adhan for ') + s('prayerNames')[i])) + '</div>';
+            (!prayerRules.isPrayer(i) ? '<span class="muted">' + t('لا أذان للشروق', 'No adhan') + '</span>' : button('bell', onOff(prefs.bells[i]), i, '', t('أذان ', 'Adhan for ') + s('prayerNames')[i], uiContract.bind(uiContract.prayerAdhanId(i), 'toggle'))) + '</div>';
         }).join('') + '</div><div class="day-details"><h2>' + escape(city[prefs.lang]) + '</h2><p>' +
           (h ? digits(h.day + ' ' + s('hijriMonths')[h.month] + ' ' + h.year) : t('التاريخ الهجري غير متاح', 'Hijri date unavailable')) +
           '</p><div class="qibla-arrow" style="-webkit-transform:rotate(' + bearing + 'deg);transform:rotate(' + bearing + 'deg)">↑</div><h2>' +
@@ -725,7 +726,7 @@
     if (action === 'tests') { section = 'tests'; show('settings'); return; }
     if (action === 'offsets') { section = 'offsets'; render(); return; }
     if (action === 'reset-offsets') { next.offsets = [0, 0, 0, 0, 0, 0]; savePrefs(next, action); return; }
-    if (action === 'bell') { if ([0, 2, 3, 4, 5].indexOf(Number(value)) < 0) { return; } next.bells[Number(value)] = !next.bells[Number(value)]; savePrefs(next, '[data-action=bell][data-value="' + value + '"]', 'prayer-day'); return; }
+    if (action === 'bell') { if (!prayerRules.isPrayer(Number(value))) { return; } next.bells[Number(value)] = !next.bells[Number(value)]; savePrefs(next, '[data-action=bell][data-value="' + value + '"]', 'prayer-day'); return; }
     if (['automatic', 'adhan', 'remindVoice', 'announce', 'radioResume', 'quickLabels'].indexOf(action) >= 0) { next[action] = !next[action]; savePrefs(next, action); return; }
     if (action === 'language') { next.lang = prefs.lang === 'ar' ? 'en' : 'ar'; savePrefs(next, action); }
     if (action === 'hanafi') { next.hanafi = !next.hanafi; savePrefs(next, action); }

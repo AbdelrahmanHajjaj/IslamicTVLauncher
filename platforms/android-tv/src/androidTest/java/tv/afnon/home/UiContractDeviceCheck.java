@@ -91,6 +91,7 @@ final class UiContractDeviceCheck {
                     if (mode < 2) key(test, active[0], towardEnd);
                 }
                 key(test, active[0], KeyEvent.KEYCODE_BACK);
+                bound.addAll(PrayerUiDeviceCheck.run(test, active[0]));
                 UiContract.INSTANCE.validateCoverage(bound.toArray(new String[0]), gaps);
                 for (Map.Entry<String, Set<String>> entry : offered.entrySet()) {
                     UiContract.INSTANCE.validateChoiceCoverage(entry.getKey(), entry.getValue().toArray(new String[0]),
@@ -99,7 +100,7 @@ final class UiContractDeviceCheck {
                 test.runOnMainSync(() -> active[0].finish());
                 test.waitForIdleSync(); active[0] = null;
             }
-            result.putString("stream", "Native UI contract passed: Arabic/English real settings rows, six offset steppers, semantic kinds, canonical labels and full binding/gap coverage.\n");
+            result.putString("stream", "Native UI contract passed: Arabic/English settings, six offsets, five prayer switches, room direction save/cancel/return, semantic kinds, canonical labels and full binding/gap coverage.\n");
             code = Activity.RESULT_OK;
         } catch (Throwable error) {
             result.putString("stream", trace + android.util.Log.getStackTraceString(error));
@@ -118,12 +119,18 @@ final class UiContractDeviceCheck {
         test.finish(code, result);
     }
 
-    private static void key(Instrumentation test, Activity settings, int key) {
-        test.runOnMainSync(() -> {
+    static void key(Instrumentation test, Activity settings, int key) {
+        onMain(test, () -> {
             settings.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, key));
             settings.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, key));
         });
         test.waitForIdleSync();
+    }
+
+    static void onMain(Instrumentation test, Runnable action) {
+        Throwable[] failure = new Throwable[1];
+        test.runOnMainSync(() -> { try { action.run(); } catch (Throwable error) { failure[0] = error; } });
+        if (failure[0] != null) throw new AssertionError("Native UI interaction", failure[0]);
     }
 
     private static void collect(Instrumentation test, SettingsActivity settings, Set<String> all, String section, Map<String, Set<String>> offered) {

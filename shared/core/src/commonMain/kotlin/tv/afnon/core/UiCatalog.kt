@@ -9,7 +9,7 @@ internal object UiCatalog {
         UiControl("prayer.zone", "prayer", "choice", "timeZone", "immediate", "", arrayOf("system", "-720", "-705", "-690", "-675", "-660", "-645", "-630", "-615", "-600", "-585", "-570", "-555", "-540", "-525", "-510", "-495", "-480", "-465", "-450", "-435", "-420", "-405", "-390", "-375", "-360", "-345", "-330", "-315", "-300", "-285", "-270", "-255", "-240", "-225", "-210", "-195", "-180", "-165", "-150", "-135", "-120", "-105", "-90", "-75", "-60", "-45", "-30", "-15", "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360", "375", "390", "405", "420", "435", "450", "465", "480", "495", "510", "525", "540", "555", "570", "585", "600", "615", "630", "645", "660", "675", "690", "705", "720", "735", "750", "765", "780", "795", "810", "825", "840")),
         UiControl("prayer.offsets", "prayer", "action", "prayerOffsets", "action", "", emptyArray()),
         UiControl("prayer.hijri", "prayer", "number", "hijriAdjust", "immediate", "hijri-offset", emptyArray()),
-        UiControl("prayer.facing", "prayer", "action", "roomTitle", "action", "", emptyArray()),
+        UiControl("prayer.facing", "prayer", "number", "roomTitle", "immediate", "bearing", emptyArray()),
         UiControl("prayer.today", "prayer", "action", "today", "action", "", emptyArray()),
         UiControl("reminders.enabled", "reminders", "toggle", "scheduledAlerts", "immediate", "", emptyArray()),
         UiControl("reminders.before", "reminders", "choice", "remind", "immediate", "", arrayOf("5", "10", "15", "20", "30", "0")),
@@ -79,5 +79,10 @@ internal object UiCatalog {
         UiControl("offsets.maghrib", "offsets", "number", "prayerNames:4", "immediate", "prayer-offset", emptyArray()),
         UiControl("offsets.isha", "offsets", "number", "prayerNames:5", "immediate", "prayer-offset", emptyArray()),
         UiControl("offsets.reset", "offsets", "action", "resetOffsets", "action", "", emptyArray()),
+        UiControl("prayer.adhan-fajr", "prayer-day", "toggle", "prayerNames:0", "immediate", "", emptyArray()),
+        UiControl("prayer.adhan-dhuhr", "prayer-day", "toggle", "prayerNames:2", "immediate", "", emptyArray()),
+        UiControl("prayer.adhan-asr", "prayer-day", "toggle", "prayerNames:3", "immediate", "", emptyArray()),
+        UiControl("prayer.adhan-maghrib", "prayer-day", "toggle", "prayerNames:4", "immediate", "", emptyArray()),
+        UiControl("prayer.adhan-isha", "prayer-day", "toggle", "prayerNames:5", "immediate", "", emptyArray()),
     )
 }

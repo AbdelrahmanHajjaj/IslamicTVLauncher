@@ -6,6 +6,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class PrayerRulesTest {
+    @Test fun onlyFiveExactIndexesArePrayers() {
+        for (index in listOf(0.0, 2.0, 3.0, 4.0, 5.0)) assertEquals(true, PrayerRules.isPrayer(index))
+        for (index in listOf(-1.0, 1.0, 6.0, 0.5, 4294967297.0, Double.NaN, Double.POSITIVE_INFINITY)) {
+            assertEquals(false, PrayerRules.isPrayer(index))
+        }
+    }
+
     private val times = doubleArrayOf(1000.0, 2000.0, 4000.0, 6000.0, 8000.0, 10000.0)
 
     @Test

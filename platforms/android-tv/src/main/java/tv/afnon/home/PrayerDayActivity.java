@@ -13,9 +13,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import tv.afnon.core.PrayerRules;
+import tv.afnon.core.UiContract;
+
 /**
- * Prayer day (design/PrayerDay.dc.html), opened with OK on the arch: the six times with their status and an
- * adhan bell each, and the Qibla. Up/Down move through the rows, Up from the first reaches the Home pill, OK on
+ * Prayer day (design/PrayerDay.dc.html), opened with OK on the arch: six times with their status, adhan bells
+ * for the five prayers, and the Qibla. Up/Down move through controls, Up from the first reaches Home, OK on
  * a row turns its adhan on or off, Back returns Home. Toward the end side, the Qibla panel's room-direction
  * button opens a picker (with a how-to tip) for the way the viewer faces, so the dial can point from the sofa.
  */
@@ -112,6 +115,9 @@ public class PrayerDayActivity extends Screen {
     private FocusTile prayerRow(int i) {
         FocusTile b = new FocusTile(this, 16);
         b.setFocusScale(1.04f);
+        boolean prayer = PrayerRules.INSTANCE.isPrayer(i);
+        if (prayer) b.setTag(UiContract.INSTANCE.bind(UiContract.INSTANCE.prayerAdhanId(i), "toggle"));
+        else { b.setFocusable(false); b.setClickable(false); }
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
         r.setPaddingRelative(Ui.ipx(28), 0, Ui.ipx(20), 0);
@@ -124,6 +130,7 @@ public class PrayerDayActivity extends Screen {
         rowTime[i].setMinWidth(Ui.ipx(120));
         rowTime[i].setSingleLine(true);
         bell[i] = new FrameLayout(this);
+        if (!prayer) bell[i].setVisibility(View.INVISIBLE);
         bellIcon[i] = new Icon(this, Icon.BELL, 2f);
         bell[i].addView(bellIcon[i], new FrameLayout.LayoutParams(Ui.ipx(26), Ui.ipx(26), Gravity.CENTER));
 
@@ -133,7 +140,7 @@ public class PrayerDayActivity extends Screen {
         r.addView(bell[i], gap(new LinearLayout.LayoutParams(Ui.ipx(56), Ui.ipx(56))));
         b.addView(r, new FrameLayout.LayoutParams(-1, -1));
         b.setLook(f -> paintRow(i));
-        b.setOnClickListener(v -> {
+        if (prayer) b.setOnClickListener(v -> {
             String key = "bell_" + i;
             prefs().edit().putBoolean(key, !bellOn(i)).apply();
             paintRow(i);
@@ -194,6 +201,7 @@ public class PrayerDayActivity extends Screen {
 
         roomButton = new FocusTile(this, 32);
         roomButton.setRest(Palette.LAPIS_700, 0, 0);
+        roomButton.setTag(UiContract.INSTANCE.bind("prayer.facing", "number"));
         roomLabel = text(ui400, 22, Palette.PLASTER_100);
         roomLabel.setGravity(Gravity.CENTER);
         roomButton.addView(roomLabel, new FrameLayout.LayoutParams(-1, -1));
@@ -205,7 +213,8 @@ public class PrayerDayActivity extends Screen {
     /** The picker: a dimmed screen with the tip, the value and a preview dial. Keys are handled in dispatchKeyEvent. */
     private void openPicker() {
         int f = facing();
-        pickerFacing = f < 0 ? 0 : f;
+        int turn = UiContract.INSTANCE.maximum("prayer.facing") + 1;
+        pickerFacing = f < 0 ? UiContract.INSTANCE.minimum("prayer.facing") : Math.floorMod(f, turn);
         pickerPressed = false;
         picker = new FrameLayout(this);
         picker.setBackgroundColor(Palette.SCRIM_MENU);
@@ -407,6 +416,7 @@ public class PrayerDayActivity extends Screen {
         else if (from == HOME) to = k == KeyEvent.KEYCODE_DPAD_DOWN ? 0 : -1;
         else if (k == KeyEvent.KEYCODE_DPAD_UP) to = from == 0 ? HOME : from - 1;
         else to = Math.min(ROWS - 1, from + 1);
+        if (to >= 0 && to < ROWS && !PrayerRules.INSTANCE.isPrayer(to)) to += k == KeyEvent.KEYCODE_DPAD_UP ? -1 : 1;
         if (to == HOME) homePill.requestFocus();
         else if (to == ROOM) roomButton.requestFocus();
         else if (to >= 0) row[to].requestFocus();
@@ -432,7 +442,7 @@ public class PrayerDayActivity extends Screen {
             else if (k == KeyEvent.KEYCODE_DPAD_LEFT) v -= 5;
             else if (k == KeyEvent.KEYCODE_DPAD_UP) v = (v / 45 + 1) * 45;
             else if (k == KeyEvent.KEYCODE_DPAD_DOWN) v = ((v + 44) / 45 - 1) * 45;
-            pickerFacing = ((v % 360) + 360) % 360;
+            pickerFacing = Math.floorMod(v, UiContract.INSTANCE.maximum("prayer.facing") + 1);
             renderPicker();
         }
         return true;

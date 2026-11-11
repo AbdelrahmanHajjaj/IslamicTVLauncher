@@ -58,7 +58,7 @@ public class SettingsActivity extends Screen {
             this.kind = kind;
             contract = UiContract.INSTANCE.control(id);
             String semantic = contract.getKind();
-            boolean valid = kind == VALUE ? semantic.equals("choice") || semantic.equals("action")
+            boolean valid = kind == VALUE ? semantic.equals("choice") || semantic.equals("action") || semantic.equals("number")
                 : kind == SEG ? semantic.equals("choice") || semantic.equals("toggle")
                 : semantic.equals(kind == STEP ? "number" : kind == TOGGLE ? "toggle" : "choice");
             if (!valid) throw new IllegalArgumentException("Wrong UI row kind: " + id);

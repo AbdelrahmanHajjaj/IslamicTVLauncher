@@ -13,7 +13,7 @@ const choiceSources = {
   backgrounds: ['theme', ...appearance.proceduralBackgrounds, ...appearance.patterns],
   zones: ['system', ...Array.from({length: 105}, (_, i) => String(-720 + i * 15))],
 };
-const sections = ['prayer', 'reminders', 'radio', 'display', 'appearance', 'network', 'device', 'tests', 'offsets'];
+const sections = ['prayer', 'reminders', 'radio', 'display', 'appearance', 'network', 'device', 'tests', 'offsets', 'prayer-day'];
 const kinds = ['choice', 'toggle', 'number', 'action'];
 
 export function uiChoices(control) {
@@ -31,7 +31,7 @@ export function validateUiContract(controls, strings) {
     if (typeof id !== 'string' || !/^[a-z]+(?:\.[a-z][a-z0-9-]*)+$/.test(id) || ids.has(id) ||
         !sections.includes(section) || !kinds.includes(kind) ||
         !['immediate', 'appearance', 'action'].includes(save) || (kind === 'action') !== (save === 'action') ||
-        (kind === 'number' ? !['prayer-offset', 'hijri-offset', 'percent'].includes(range) : range !== undefined) ||
+        (kind === 'number' ? !['prayer-offset', 'hijri-offset', 'percent', 'bearing'].includes(range) : range !== undefined) ||
         (kind === 'choice' ? !uiChoices(control).length ||
           uiChoices(control).some(value => typeof value !== 'string' || !/^-?[a-zA-Z0-9_][a-zA-Z0-9_-]*$/.test(value)) ||
           new Set(uiChoices(control)).size !== uiChoices(control).length : choices !== undefined) ||
