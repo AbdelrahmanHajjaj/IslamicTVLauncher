@@ -8,6 +8,8 @@ acceptance and hardware gates live in [the durable queue](docs/ARCHITECTURE-QUEU
 LG versions, tests and IPK packaging are separate; follow
 [its guide](platforms/webos/README.md) and [agent rules](platforms/webos/AGENTS.md).
 An Android release does not publish an LG package or prove either TV's behavior.
+Installer CI retains APKs and bilingual emulator captures as workflow artifacts;
+it does not publish a prerelease or push a screenshots branch.
 
 ## Destination, versions and signing
 

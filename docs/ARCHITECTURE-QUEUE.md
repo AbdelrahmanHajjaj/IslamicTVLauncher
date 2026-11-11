@@ -85,12 +85,18 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q08.1, final automated/code/build review. Finish Q07.2's commit if resuming
-between operations. Inspect the final diff and existing lint/dependency diagnostics
-first. Resolve introduced defects without broad upgrades or unrelated UI changes.
-Review inherited installer CI's automatic prerelease/branch publication against
-the explicit-release workflow, existing glob tooling deprecation, and the installer
-warning increase from Q01's 14 to 15. Run current core, Android/installer build/lint/
+Next: Q08.1b, finish notice-header review and controlled lint comparison, then
+Q08.2 targeted build/test-tool advisory remediation. Finish Q08.1a's CI commit if
+resuming between operations. Fix the truncated SUPERCOP attribution line/extra EOF
+blank in the newly collected SPAKE2 native notice; preserve all 13 verbatim license
+files, including seven original trailing-whitespace lines in pinned BoringSSL text.
+Complete the original-installer/current-tool lint control and review live npm audit
+reports under ignored `review-*-audit.json`: LG/core package have zero advisories;
+preview has six low/moderate build-tool findings, Kotlin-generated JS test tree has
+five including a high serialize-javascript issue. Research supported narrow
+patch/test-tool configuration using official docs; avoid runtime/core/compiler or
+unrelated broad upgrades. Keep all tests/legacy output contracts. Run current core,
+Android/installer build/lint/
 size, Python/Java, preview generated/tests/build/client and LG ES5/service/browser
 checks; repeat only affected checks after any fix. Measure before claiming speed
 or memory gains. Review stage/private-file safety and record exact remaining gaps.
@@ -891,3 +897,22 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   Full third-party license text adds source lines intentionally; implementation
   changes are the existing generator's four lines, fidelity checks and three LG
   copy lines. No dependency upgrade, release, device deployment or remote mutation.
+
+### Q08.1a installer CI publication boundary (2026-11-11)
+
+- Inherited installer CI published/overwrote a prerelease on same-repo PRs and
+  force-pushed emulator captures to a screenshots branch. Removed those remote
+  mutation steps and per-job contents-write grants. Existing build/emulator jobs,
+  their dependency and APK artifact remain; screenshots now use the existing
+  upload-artifact action pattern. CI retains read-only repository permission.
+  Release guide/changelog describe the resulting reviewable artifact workflow.
+- PASS: YAML-parsed assertions verify read-only access, PR/manual triggers, both
+  artifact contracts, emulator command/dependency and absence of release/push/token
+  mutation steps. Evidence: ignored `check-installer-ci.cjs`. GitHub/Linux/KVM
+  workflow was not run; no remote release or branch was modified/deleted.
+- Live npm audits were collected read-only without lock changes. LG and core's own
+  package have zero findings; preview build tools have six low/moderate findings;
+  Kotlin-generated JS tests have five including high serialize-javascript. Narrow
+  supported remediation and full verification continue in Q08.2; no audit gate was
+  suppressed. `npm explain glob` correctly reports none in LG (its warning was from
+  the already-used preview tool installation); preview has multiple glob branches.

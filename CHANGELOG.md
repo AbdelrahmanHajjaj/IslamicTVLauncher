@@ -6,6 +6,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- Installer CI keeps APKs and bilingual emulator screenshots as artifacts;
+  opening a PR no longer publishes a prerelease or pushes a screenshots branch.
+
 - Distributions carry the original project/CleanYourTV MIT texts. Android TV and
   installer APKs also retain full notices/source references for existing runtime dependencies.
 
