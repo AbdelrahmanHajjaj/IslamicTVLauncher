@@ -85,12 +85,12 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.4, canonical adhan voice catalog. Finish the Q03.3 commit if resuming
-between operations, then inspect `Adhans.VOICES`, default selections, voice lookup,
-fetch scripts, preview settings and LG build. Preserve all IDs/order, bilingual
-names, default regular/Fajr choices and media filenames. Keep restricted recordings
-ignored. Migrate generators/consumers and validation together; compare exact old/new
-metadata and packaged filenames. Do not play audio as a catalog check.
+Next: Q03.5, canonical bilingual text. Finish the Q03.4 commit if resuming between
+operations, then inspect `Text.java`, preview extraction/templates and LG string
+consumers. Migrate plain templates first if necessary; preserve exact Arabic,
+Quranic content, punctuation, parameters, digit substitution and intentional native
+formatting. Keep platform formatting code in adapters. Compare old/new text outputs
+and generated data before deleting extraction. Remaining design/assets follow text.
 Do not move platform directories yet (Q06). Production apps retain their existing
 domain implementations until Q04. Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
@@ -238,3 +238,23 @@ domain implementations until Q04. Private logs/helpers are under ignored
 - No playback, TV deployment or codec/TLS/hardware claim. Existing saved station
   keys and Cairo fallback are unchanged. Installer/core logic was unaffected;
   their suites were not repeated for this catalog-only increment.
+
+### Q03.4 canonical adhan voices (2026-11-11)
+
+- `shared/data/voices.json` owns the 14 ordered IDs/bilingual names and original
+  download filenames. Generated `VoiceCatalog` preserves the `Adhans.VOICES` API;
+  preview/LG consume canonical metadata. The two Java-scraping paths and obsolete
+  ignored preview JSON were removed. Playback/default preference keys are untouched.
+- The Bash/curl fetcher reads generated `tools/adhan-sources.tsv`, retaining its
+  existing prerequisites and exact URLs without needing Node at download time.
+  Rights status and ignored audio policy are unchanged.
+- PASS: malformed metadata rejection, generated Java/TSV fidelity, exact labels/
+  ordering/source filenames against old snapshots, packaged LG metadata and all
+  14 MP3 hashes. Bash syntax and all 14 mocked downloads passed; a second run skipped
+  existing files. Initial Bash sandbox signal-pipe denial was environmental; the
+  approved isolated run passed without network requests.
+- PASS: preview tests/18-page build/data/tokens, Android size/build/lint and LG
+  ES5/service/bilingual browser suites. Private evidence: ignored `voices-*.log`,
+  `voices-before.json`, `fetch-adhans-before.sh` and `voice-fetch-check/`. No TV
+  deployment, audible check or recording download. Unaffected installer/core suites
+  were not repeated in this increment.

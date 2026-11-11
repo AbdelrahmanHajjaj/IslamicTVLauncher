@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { validateCatalog, validateMethods, validateStations } from './catalogs.mjs';
+import { validateCatalog, validateMethods, validateStations, validateVoices } from './catalogs.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
 const regions = JSON.parse(readFileSync(new URL('../shared/data/regions.json', import.meta.url)));
@@ -78,4 +78,27 @@ assert.deepEqual([...radio.matchAll(stationRows)].map(m => ({
   id: JSON.parse(m[1]), ar: JSON.parse(m[2]), en: JSON.parse(m[3]),
   whereAr: JSON.parse(m[4]), whereEn: JSON.parse(m[5]), url: JSON.parse(m[6]), reciter: m[7] === 'true',
 })), stations, 'Java radio catalog must preserve all station/reciter fields and order');
-console.log('PASS: canonical catalog validation and complete Java city/region/radio fidelity');
+const voices = JSON.parse(readFileSync(new URL('../shared/data/voices.json', import.meta.url)));
+validateVoices(voices);
+for (const change of [
+  voice => { voice.id = '../voice'; },
+  voice => { voice.ar = ''; },
+  voice => { voice.en = 'bad\tlabel'; },
+  voice => { voice.sourceFile = '../clip.mp3'; },
+  voice => { voice.sourceFile = 'clip\t.mp3'; },
+  voice => { voice.sourceFile = 'clip.wav'; },
+]) {
+  const modified = structuredClone(voices);
+  change(modified[1]);
+  assert.throws(() => validateVoices(modified), /Invalid voice/);
+}
+assert.throws(() => validateVoices([...voices, voices[1]]), /Invalid voice/);
+assert.throws(() => validateVoices(voices.slice(1)), /defaults/);
+assert.throws(() => validateVoices(voices.filter(voice => voice.id !== 'chebae_fajr')), /defaults/);
+const voiceJava = readFileSync(new URL('../app/src/main/java/tv/afnon/home/VoiceCatalog.java', import.meta.url), 'utf8');
+const voiceRows = new RegExp(String.raw`\{${Array(3).fill(quoted).join(', ')}\},`, 'g');
+assert.deepEqual([...voiceJava.matchAll(voiceRows)].map(m => ({id: JSON.parse(m[1]), ar: JSON.parse(m[2]), en: JSON.parse(m[3])})),
+  voices.map(({id, ar, en}) => ({id, ar, en})), 'Java voice catalog must preserve all labels and order');
+const downloads = readFileSync(new URL('./adhan-sources.tsv', import.meta.url), 'utf8').trimEnd().split('\n').slice(1);
+assert.deepEqual(downloads.map(row => row.split('\t')), voices.map(voice => [voice.id, voice.sourceFile]));
+console.log('PASS: canonical catalog validation and complete Java city/region/radio/voice fidelity');

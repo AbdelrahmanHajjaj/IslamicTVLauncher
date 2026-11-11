@@ -15,13 +15,12 @@ const data = {
   cities: json('shared/data/cities.json'), methods: methods.map(method => method.id),
   presets: Object.fromEntries(methods.filter(method => method.preset).map(method => [method.id, {...method.preset, ...(method.methodAdjustments ? {methodAdjustments: method.methodAdjustments} : {})}])),
   strings: json('site/src/data/strings.json'),
-  stations: json('shared/data/stations.json'), apps: json('webos/tv-apps.json'), voices: [], themes: [], hijri: []
+  stations: json('shared/data/stations.json'), apps: json('webos/tv-apps.json'),
+  voices: json('shared/data/voices.json').map(({id, ar, en}) => ({id, ar, en})), themes: [], hijri: []
 };
-for (const match of read('app/src/main/java/tv/afnon/home/Adhans.java').matchAll(/\{"(\w+)", "([^"]+)", "([^"]+)"\}/g)) {
-  data.voices.push({id: match[1], ar: match[2], en: match[3]});
-  write(path.join(out, 'app/audio/adhan', match[1] + '.mp3'), fs.readFileSync(path.join(root, 'app/src/main/assets/adhan', match[1] + '.mp3')));
+for (const voice of data.voices) {
+  write(path.join(out, 'app/audio/adhan', voice.id + '.mp3'), fs.readFileSync(path.join(root, 'app/src/main/assets/adhan', voice.id + '.mp3')));
 }
-if (data.voices.length !== 14) throw new Error('Adhan voice extraction changed');
 for (const prayer of ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumuah']) {
   for (const kind of ['before', 'now']) {
     const name = kind + '_' + prayer + '.mp3';

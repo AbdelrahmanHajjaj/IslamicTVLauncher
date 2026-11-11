@@ -16,9 +16,10 @@ The MIT licence in `LICENSE` covers Afnon's own code. These parts belong to othe
 
 The local LG webOS development package also copies the existing adhan and spoken
 announcement assets, with the same source and rights status stated above; it does
-not add them to version control. Its radio list is generated from `Radio.STATIONS`.
+not add them to version control. Voice metadata comes from `shared/data/voices.json`;
+its radio list comes from `shared/data/stations.json`.
 
-The stream addresses are in `Radio.STATIONS`. A station or reciter is removed on request from its rights holder.
+The stream addresses are in `shared/data/stations.json`. A station or reciter is removed on request from its rights holder.
 
 The fonts can be renamed or bundled under the OFL, but not sold on their own. The full text is at
 https://openfontlicense.org.

@@ -49,6 +49,20 @@ export function validateStations(stations) {
   }
 }
 
+export function validateVoices(voices) {
+  if (!Array.isArray(voices) || voices[0]?.id !== 'alafasy' || !voices.some(voice => voice?.id === 'chebae_fajr')) {
+    throw new Error('Voice catalog must retain regular and Fajr defaults');
+  }
+  const ids = new Set();
+  for (const voice of voices) {
+    if (!voice || !['id', 'ar', 'en', 'sourceFile'].every(key => typeof voice[key] === 'string' && voice[key].trim() && !/[\u0000-\u001f]/.test(voice[key])) ||
+        !/^[a-z][a-z0-9_]*$/.test(voice.id) || ids.has(voice.id) || !/^[A-Za-z0-9 ()-]+\.mp3$/.test(voice.sourceFile)) {
+      throw new Error('Invalid voice identity, labels or source filename');
+    }
+    ids.add(voice.id);
+  }
+}
+
 export function validateCatalog(cities, regions) {
   if (!Array.isArray(cities) || !cities.length || cities[0]?.id !== 'cairo') throw new Error('City catalog must retain Cairo as its fallback');
   if (!Array.isArray(regions) || !regions.length) throw new Error('Missing regions');
@@ -78,8 +92,10 @@ function generate() {
   const cities = JSON.parse(read('shared/data/cities.json'));
   const regions = JSON.parse(read('shared/data/regions.json'));
   const stations = JSON.parse(read('shared/data/stations.json'));
+  const voices = JSON.parse(read('shared/data/voices.json'));
   validateCatalog(cities, regions);
   validateStations(stations);
+  validateVoices(voices);
   const rows = cities.map(c => '        new Prefs.City(' + [c.id, c.ar, c.en, c.countryAr, c.countryEn].map(value => JSON.stringify(value)).concat(c.lat, c.lng, 'PrayerMethod.' + c.method, 'Madhab.' + (c.hanafi ? 'HANAFI' : 'SHAFI')).join(', ') + '),');
   const groups = regions.map(region => '        {' + region.map(value => JSON.stringify(value)).join(', ') + '},');
   const source = '// Generated from shared/data/{cities,regions}.json by tools/catalogs.mjs. Do not edit.\n' +
@@ -99,10 +115,18 @@ function generate() {
   const nativeStations = '// Generated from shared/data/stations.json by tools/catalogs.mjs. Do not edit.\n' +
     'package tv.afnon.home;\n\nfinal class RadioCatalog {\n    private RadioCatalog() {}\n\n' +
     '    static final Radio.Station[] STATIONS = {\n' + stationRows.join('\n') + '\n    };\n}\n';
+  const voiceRows = voices.map(voice => '        {' + ['id', 'ar', 'en'].map(key => JSON.stringify(voice[key])).join(', ') + '},');
+  const nativeVoices = '// Generated from shared/data/voices.json by tools/catalogs.mjs. Do not edit.\n' +
+    'package tv.afnon.home;\n\nfinal class VoiceCatalog {\n    private VoiceCatalog() {}\n\n' +
+    '    static final String[][] VOICES = {\n' + voiceRows.join('\n') + '\n    };\n}\n';
+  const voiceSources = '# Generated from shared/data/voices.json by tools/catalogs.mjs. Do not edit.\n' +
+    voices.map(voice => voice.id + '\t' + voice.sourceFile).join('\n') + '\n';
   for (const [destination, output] of [
     ['app/src/main/java/tv/afnon/home/CityCatalog.java', source],
     ['app/src/main/java/tv/afnon/home/PrayerMethod.java', nativeMethods],
     ['app/src/main/java/tv/afnon/home/RadioCatalog.java', nativeStations],
+    ['app/src/main/java/tv/afnon/home/VoiceCatalog.java', nativeVoices],
+    ['tools/adhan-sources.tsv', voiceSources],
   ]) {
     if (args[0] === '--check') {
       if (read(destination) !== output) throw new Error(destination + ' is stale; run node tools/catalogs.mjs');
@@ -110,7 +134,7 @@ function generate() {
       writeFileSync(resolve(root, destination), output);
     }
   }
-  console.log(args[0] === '--check' ? 'Catalogs match canonical data' : 'Generated Android city, method and radio catalogs');
+  console.log(args[0] === '--check' ? 'Catalogs match canonical data' : 'Generated Android catalogs and adhan download list');
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) generate();

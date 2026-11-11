@@ -11,7 +11,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateCatalog, validateStations } from '../../tools/catalogs.mjs';
+import { validateCatalog, validateStations, validateVoices } from '../../tools/catalogs.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const src = (f) => readFileSync(resolve(root, 'app/src/main/java/tv/afnon/home', f), 'utf8');
@@ -96,6 +96,7 @@ validateCatalog(
 );
 
 validateStations(JSON.parse(readFileSync(resolve(root, 'shared/data/stations.json'), 'utf8')));
+validateVoices(JSON.parse(readFileSync(resolve(root, 'shared/data/voices.json'), 'utf8')));
 
 // ---------------------------------------------------------------- fonts (the app's own files)
 
@@ -113,15 +114,6 @@ const shotsOut = resolve(root, 'site/public/screenshots');
 mkdirSync(shotsOut, { recursive: true });
 for (const f of readdirSync(shotsIn)) copyFileSync(resolve(shotsIn, f), resolve(shotsOut, f));
 console.log('copied docs/screenshots to site/public/screenshots');
-
-// ---------------------------------------------------------------- Adhans.VOICES (Settings: adhan voice lists)
-
-const adhans = src('Adhans.java');
-const voicesBlock = /String\[\]\[\] VOICES = \{([\s\S]*?)\n\s*\};/.exec(adhans)[1];
-const voices = [...voicesBlock.matchAll(new RegExp(String.raw`\{${STR}, ${STR}, ${STR}\}`, 'g'))]
-  .map((m) => ({ id: unescape(m[1]), ar: unescape(m[2]), en: unescape(m[3]) }));
-if (!voices.length) throw new Error('Adhans.VOICES not found');
-write('adhans.json', voices);
 
 const prayerIcons = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(name => {
   const xml = readFileSync(resolve(root, `app/src/main/res/drawable/ic_prayer_${name}.xml`), 'utf8');

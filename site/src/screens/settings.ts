@@ -3,7 +3,7 @@
 import { homeChoice } from '../lib/home-layout';
 import { CYCLE_MINUTES, cycleMinutes } from '../lib/appearance-cycle';
 import { THEMES, BACKGROUNDS } from '../scripts/appearance';
-import voicesJson from '../data/adhans.json';
+import voicesJson from '../../../shared/data/voices.json';
 import { makeCtx, type Ctx } from '../lib/ctx';
 import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
 import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET } from '../lib/prayer';

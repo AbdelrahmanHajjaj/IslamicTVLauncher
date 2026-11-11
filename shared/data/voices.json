@@ -1,0 +1,86 @@
+[
+  {
+    "id": "alafasy",
+    "ar": "مشاري العفاسي",
+    "en": "Mishary Alafasy",
+    "sourceFile": "Athan Mishary Alafasi.mp3"
+  },
+  {
+    "id": "almalki",
+    "ar": "حمدان المالكي",
+    "en": "Hamdan Al-Malki",
+    "sourceFile": "Athan Hamdan Almalki.mp3"
+  },
+  {
+    "id": "alarkani",
+    "ar": "إبراهيم الأركاني",
+    "en": "Ibrahim Al-Arkani",
+    "sourceFile": "Athan Ibrahim Al-Arkani.mp3"
+  },
+  {
+    "id": "chebae_fajr",
+    "ar": "مالك شيباي (أذان الفجر)",
+    "en": "Malek Chebae (Fajr)",
+    "sourceFile": "Athan Al-fajer - Malek chebae.mp3"
+  },
+  {
+    "id": "alhamathani",
+    "ar": "ماجد الهمذاني",
+    "en": "Majed Al-Hamathani",
+    "sourceFile": "Athan Majed Al-hamathani.mp3"
+  },
+  {
+    "id": "alzahrani",
+    "ar": "منصور الزهراني",
+    "en": "Mansoor Az-Zahrani",
+    "sourceFile": "Athan Mansoor Az-Zahrani.mp3"
+  },
+  {
+    "id": "deghreri",
+    "ar": "حمد الدغريري",
+    "en": "Hamad Al-Deghreri",
+    "sourceFile": "Athan Hamad Deghreri.mp3"
+  },
+  {
+    "id": "alqatami",
+    "ar": "ناصر القطامي",
+    "en": "Nasser Al-Qatami",
+    "sourceFile": "Athan Nasser Alqatami.mp3"
+  },
+  {
+    "id": "khatba",
+    "ar": "صهيب خطبا",
+    "en": "Suhaib Khatba",
+    "sourceFile": "Athan Suhaib Khatba.mp3"
+  },
+  {
+    "id": "menshawy",
+    "ar": "محمد صديق المنشاوي",
+    "en": "Mohammad Al-Menshawy",
+    "sourceFile": "Athan Mohammad Almenshawy.mp3"
+  },
+  {
+    "id": "refaat",
+    "ar": "محمد رفعت",
+    "en": "Mohammad Refaat",
+    "sourceFile": "Athan Mohammad Ref3at.mp3"
+  },
+  {
+    "id": "abdulbasit",
+    "ar": "عبد الباسط عبد الصمد",
+    "en": "Abdul Basit",
+    "sourceFile": "Athan Abed Albase6.mp3"
+  },
+  {
+    "id": "nuyne",
+    "ar": "أحمد نعينع",
+    "en": "Ahmad Nuaina",
+    "sourceFile": "Athan Ahmad Nuyne3.mp3"
+  },
+  {
+    "id": "makkah",
+    "ar": "الحرم المكي",
+    "en": "Makkah, Al-Haram",
+    "sourceFile": "Athan Makkah.mp3"
+  }
+]

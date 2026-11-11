@@ -87,8 +87,9 @@ choosing for everyone. Afnon gives users the choice wherever scholars differ.
 ## 5. Audio
 
 Only add recordings you have the right to share, and say where each one comes from and under what
-licence. Recordings go in `app/src/main/assets/adhan/` and their list in `Adhans.java`. If they
-can't be committed, add them to `tools/fetch-adhans.sh`.
+licence. Recordings go in `app/src/main/assets/adhan/`; metadata and download filenames
+belong in `shared/data/voices.json`. Run `node tools/catalogs.mjs` to update the
+native catalog and fetch list. Do not commit recordings without permission to distribute them.
 
 ## Pull requests
 
