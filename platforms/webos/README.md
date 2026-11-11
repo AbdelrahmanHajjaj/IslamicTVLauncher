@@ -240,9 +240,15 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
-Version 0.2.5 adds serialized scheduling with asynchronous overlap, disable and
-write-failure regressions. It has not been installed on the TV; the physical
-observations below belong to 0.2.4 and earlier. Do not relabel them as 0.2.5 tests.
+Version 0.2.5 adds serialized scheduling and the portable shared core. On the
+LF6300 / webOS 2.2, its in-place upgrade from 0.2.4 preserved all 30 preference
+values, HDMI 1 and the entire enabled-startup state. Prayer rescheduling succeeded;
+the owner confirmed unchanged picture/sound with no visible error. All 100 installed
+app/service payload files matched the reviewed build. The installed service core
+passed 30 adapter assertions on Node 0.10.25; live WebKit 538.2 confirmed the shared
+core, offset/sunrise rules and a ready HDMI decoder without error. These observations
+do not validate other models/firmware. The separately versioned observations below
+still belong to 0.2.4 and earlier; do not relabel them as 0.2.5 tests.
 
 Version 0.2.3 adds the All apps header and appearance draft workflow. Live TV DOM
 checks confirmed five app columns, Back restoring Home's All apps focus, all 20 theme

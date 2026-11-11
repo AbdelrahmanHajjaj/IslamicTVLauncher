@@ -85,16 +85,22 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.4, physical device acceptance when availability changes. Q09.2 native
+Next: Q09.4, finish watched LG remote, bilingual, alert/media and power acceptance.
+In-place upgrade 0.2.4 to 0.2.5 passed: 30 preference values, selected HDMI 1 and
+entire startup state preserved. Owner confirms picture/sound match with no error.
+Await physical remote/focus response before changing the UI; then run bounded
+tests sequentially and cancel any pending one-shot if stopping. Restore any
+temporary language/settings changes against the private before snapshot.
+Q09.2 native
 ART/ICU and Q09.3 preference-preserving emulator upgrades passed. The owned temporary
 emulator is closed, ADB serial offline and its launcher process exited; the user's
 existing AVD descriptor/config hashes remain unchanged. No independent required
 software work remains in this approved queue. Do not create speculative tasks or
 repeat passing suites to fill the hardware wait.
 
-Execution is blocked at Q09.4 after three consecutive goal turns with the same
-physical-device/watcher availability condition. The full objective remains
-incomplete. Resume this cursor when actual availability changes.
+The previous Q09.4 blocked audit remains historical. Owner presence is new evidence
+allowing watched LG acceptance now. The full objective remains incomplete;
+Android hardware acceptance still awaits actual availability.
 
 Resume with reachable old LG and a watcher for picture/sound/remote/power tests,
 or the actual Android TV around 2026-11-25. Capture existing preferences/input/
@@ -102,14 +108,11 @@ startup before an in-place update; preserve installed IDs, certificate and data.
 Never uninstall/clear data to make an upgrade pass. The API 37 phone emulator
 cannot close Android 11 TV, older ICU, physical remote, HDMI, speaker or power gates.
 
-The current reviewed LG IPK is ready with exact payload equality; its one supported
-read-only device query timed out. No install, backup read, service/DOM or TV mutation
-occurred. Owner replied on 2026-11-11: watcher later; keep checks read-only for now.
-Wait for changed reachability before retrying diagnostics. Do not install/relaunch,
-change settings/activities, play alerts or perform power tests until the owner is
-ready for watched acceptance. Before any eventual in-place LG upgrade, capture
-prefs/input/startup and preserve IDs/data; do not uninstall as a workaround. Keep
-raw device details ignored.
+The current reviewed LG IPK is ready with exact payload equality. Earlier read-only
+query timed out; the new bounded query after owner presence succeeded (1.4 seconds).
+Owner then confirmed readiness for watched acceptance. Before the in-place LG
+upgrade, capture prefs/input/startup and preserve IDs/data; do not uninstall as a
+workaround. Keep raw device details ignored.
 
 Audible/power tests require a human watcher under LG's rules. Ask for watcher/TV
 availability before those dependent actions; preparation and read-only diagnostics
@@ -1171,3 +1174,48 @@ notices (99 entries). Do not add new UIs, transports or future shells.
 - The physical acceptance gate and persistent goal remain blocked/incomplete.
   This reply records a constraint, not readiness to resume watched device tests.
   No runtime/source/artifact or TV state changed.
+
+### Owner beside LG: resume read-only preflight (2026-11-11)
+
+- Owner reports being next to LG now. Resume a bounded read-only connection/state
+  check, preserving the earlier failure evidence. Clarify whether the earlier
+  explicit read-only restriction is lifted for watched upgrade/media/remote/power
+  acceptance; no dependent mutation before that answer. Do not repeat an unchanged
+  failed connection without further device/network evidence.
+
+### Watched LG acceptance authorized (2026-11-11)
+
+- Bounded read-only system-info query succeeded using the existing private alias
+  in 1.4 seconds. Prior timeout evidence retained; no TV mutation during preflight.
+  Owner explicitly answered "Ready for the watched LG checks" to the in-place
+  update / picture-sound / remote / power question. Earlier read-only limit lifted
+  for these queued checks. Proceed sequentially with backups and no uninstall.
+- Raw preflight remains ignored in q094-system-info-private.log and
+  q094-preflight.json. Continue Q09.4; Android physical acceptance stays open.
+
+### Q09.4.1 real LG upgrade and installed-runtime evidence (2026-11-11)
+
+- Captured the installed 0.2.4 manifest, full service state/preferences, selected
+  and current input, startup state and boot ID in ignored q094-lg-before-service/.
+  Direct developer-shell access to the service's private settings file was denied;
+  used its documented read-only status API instead. No root/permission workaround.
+- Rechecked reviewed IPK against all 100 source payload files and frozen SHA, then
+  closed only our app, installed 0.2.5 in place and relaunched. CLI confirmed each
+  step. After-snapshot proves all 30 saved preference values and entire startup
+  state unchanged, HDMI 1 retained, same boot, no UI error and successful prayer
+  rescheduling. No uninstall/data clearing or firmware/vendor setting change.
+- PASS: all 100 installed app/service files match current build SHA-256 bytes.
+  Existing 30-assertion adapter proof passes directly against the installed core
+  on actual Node 0.10.25, without writing TV files. Live WebKit 538.2 DOM confirms
+  shared core loaded, offset clamp 100 to 30, sunrise current=-1/next=2; input is
+  ext://hdmi:1, readyState=4, no video error or visible notice, English/LTR.
+- Inspector uses this TV's legacy pagelist.json and /devtools/page socket, as
+  confirmed by the installed CLI and TV's own inspector source. Initial modern
+  /json inventory was unsupported; corrected the private checker. Closed one
+  completed checker whose old socket close handshake stalled; the owned inspector
+  forwarding session remains for the remaining tests.
+- Human evidence: owner explicitly confirms picture/sound match before upgrade,
+  with no visible error. Asked for physical OK/Home/arrows/Settings/Back sequence;
+  answer pending. Alert/media, Arabic/RTL and actual power acceptance remain open.
+  No one-shot test armed yet. Private q094-* contains backups, exact parity, host,
+  installed payload, DOM and operation evidence; do not publish raw device state.
