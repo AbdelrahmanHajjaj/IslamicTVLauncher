@@ -22,3 +22,11 @@ extraction; update them only for an intentional, reviewed formatting change.
 An-Nisa 4:103 verse (including its three-line layout) and adhan call. All three
 renderers were compared before extraction. Any change requires an intentional
 religious-text review; a visually similar character is not sufficient.
+
+`reminder-events.json` freezes 5,190 LG next-event outputs from the unchanged
+adapter at `6fb81fa` (adhan-js 4.4.6, host UTC, fixed UTC+2 preference). It covers
+automatic off/on, lead times, adhan/announcement combinations, bell masks, exact
+reminder/prayer boundaries and exclusion of the first handled event. The app and
+service must match it during core extraction; update only for an intentional,
+reviewed reminder-policy change. Native reminder policies differ and are checked
+independently by `RemindersCheck.java`.

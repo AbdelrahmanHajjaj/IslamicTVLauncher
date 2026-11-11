@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class PrefsCheck {
-    private static final class Memory implements SharedPreferences {
+    static final class Memory implements SharedPreferences {
         final Map<String, Object> values = new HashMap<>();
         int writes;
         public int getInt(String key, int fallback) { return (Integer) values.getOrDefault(key, fallback); }
@@ -23,14 +23,17 @@ public final class PrefsCheck {
         }
     }
     private static void check(boolean ok, String message) { if (!ok) throw new AssertionError(message); }
-    public static void main(String[] args) {
-        Memory saved = new Memory();
-        Context context = new Context() {
+    static Context context(Memory saved) {
+        return new Context() {
             public SharedPreferences getSharedPreferences(String name, int mode) {
                 check(name.equals("afnon") && mode == MODE_PRIVATE, "Retain the existing preference store");
                 return saved;
             }
         };
+    }
+    public static void main(String[] args) {
+        Memory saved = new Memory();
+        Context context = context(saved);
         check(java.util.Arrays.equals(Prefs.prayerOffsets(context), new int[6]), "Default offsets stay zero");
         saved.values.put("theme", "aurora"); saved.values.put("startup", true); saved.values.put("input", "HDMI_2");
         for (int prayer = 0; prayer < 6; prayer++) {

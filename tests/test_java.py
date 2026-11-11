@@ -148,6 +148,7 @@ class JavaChecks(unittest.TestCase):
                 "Context.java": "package android.content; public class Context { public static final int MODE_PRIVATE = 0; public SharedPreferences getSharedPreferences(String name, int mode) { throw new UnsupportedOperationException(); } }",
                 "SharedPreferences.java": "package android.content; public interface SharedPreferences { int getInt(String k, int d); String getString(String k, String d); boolean getBoolean(String k, boolean d); Editor edit(); interface Editor { Editor putInt(String k, int v); Editor putString(String k, String v); Editor putBoolean(String k, boolean v); void apply(); } }",
                 "DateFormat.java": "package android.text.format; public class DateFormat { public static boolean is24HourFormat(android.content.Context c) { return true; } }",
+                "Screen.java": "package tv.afnon.home; final class Screen { static long secondsUntil(java.util.Date when, java.util.Date now) { return Math.max(0, (when.getTime() - now.getTime() + 999) / 1000); } }",
                 "IslamicCalendar.java": "package android.icu.util; public class IslamicCalendar extends java.util.GregorianCalendar { public static final int RAMADAN = 8; public enum CalculationType { ISLAMIC_UMALQURA } public void setCalculationType(CalculationType t) {} }",
                 "Appearance.java": "package tv.afnon.home; final class Appearance { static String key(android.content.Context c) { return \"\"; } static boolean reduced(android.content.Context c) { return false; } static int cycleMinutes(android.content.Context c) { return 0; } }",
             }
@@ -158,12 +159,14 @@ class JavaChecks(unittest.TestCase):
                 str(ROOT / "app/src/main/java/tv/afnon/home/PrayerMethod.java"),
                 str(ROOT / "app/src/main/java/tv/afnon/home/PrayerDay.java"),
                 *(str(ROOT / "app/src/main/java/tv/afnon/home" / name) for name in
-                  ("Prefs.java", "CityCatalog.java", "Tokens.java", "HomeLayout.java", "FavouriteChoice.java")),
-                str(ROOT / "tests/PrayerDayCheck.java"), str(ROOT / "tests/PrefsCheck.java")], check=True, capture_output=True)
+                  ("Prefs.java", "CityCatalog.java", "Tokens.java", "HomeLayout.java", "FavouriteChoice.java", "Reminders.java")),
+                *(str(ROOT / "tests" / name) for name in ("PrayerDayCheck.java", "PrefsCheck.java", "RemindersCheck.java"))], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,
                 "tv.afnon.home.PrayerDayCheck"], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,
                 "tv.afnon.home.PrefsCheck"], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,
+                "tv.afnon.home.RemindersCheck"], check=True, capture_output=True)
 
     def test_system_filter_keeps_media_games_and_store(self):
         import os

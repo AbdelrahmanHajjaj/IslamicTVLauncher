@@ -85,11 +85,17 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q05.1, characterize reminder policy and select a small common contract.
-Finish the Q04.3b commit if resuming between operations. Inspect native prayer
-watch/callers, LG `nextEvent`/service activities and existing expiry/deduplication/
-overlap tests before editing. Preserve different enabled/default states and event
-windows; keep clocks, timers, persistence, OS scheduling and playback in shells.
+Next: Q05.2, native reminder eligibility/window extraction. Finish Q05.1's test
+commit if resuming between operations. Add pure `ReminderRules` functions for due
+call, due announcement, reminder window and ceiling minutes; pass numeric epochs,
+native bell mask/flags and the existing window explicitly. Adapt `Reminders.java`
+without changing `PrayerWatch` keys/claim order/lifecycle or Home/screensaver/media.
+Verify the characterized truth table, common JVM/JS/ES5 behavior, native build/
+lint/size and actual Java caller before committing. Q05.3 will migrate LG's future
+event enumeration and inclusive delivery window; it must retain exact persisted
+`kind:prayer:epoch` IDs, three adapter-calculated days, handled exclusion and ties.
+Preserve different enabled/default states and event windows; keep clocks, timers,
+persistence, OS scheduling and playback in shells.
 Do not create a universal scheduler, transport or new always-running service.
 Q04's core settings/selection contracts are adopted in all production consumers;
 date/ICU/Intl/astronomical engines deliberately remain adapters. No storage schema
@@ -539,3 +545,34 @@ Do not move platform directories yet (Q06). Private logs/helpers are under ignor
   changed after Q04.3a, so unchanged app/LG/preview builds, lint, size and browser
   checks were not repeated. No TV deployment or hardware accuracy claim. Q04's
   software extraction/coverage is complete; hardware acceptance remains Q09.
+
+### Q05.1 reminder-policy characterization (2026-11-11)
+
+- Native policy: global adhan + per-prayer bell gates calls in [0,120000) ms;
+  announcements cover adhan-off/bell-off prayers when enabled. Sunrise is excluded
+  even if its stored bell is true. Before-prayer reminders ignore those audio/bell
+  switches and use positive rounded-up seconds <= lead*60; nonpositive lead is off.
+  Native defaults remain audio/announcement/spoken reminder on, lead 15 minutes.
+- Native watcher retains persisted per-kind `prayer:epoch` keys, claims before
+  playback, defers for screensaver state and skips asleep unless radio plays.
+  These device/lifecycle behaviors stay in the shell. Home uses its own card via
+  the existing watcher callback; browser forced-demo screens are not a scheduler.
+- LG policy: automatic defaults off; three calculated day sets, strictly future
+  events, bells gate both reminder and call, call exists if adhan or announcement
+  is on; handled IDs are excluded, ties keep first iteration order. Activity and
+  pending-display windows are [0,90000] ms inclusive. Early callbacks do not claim;
+  due/expired production callbacks claim before delivery, retaining last 24 IDs.
+  Existing generation guards, serialized refresh/cancellation, persistence, audio
+  mode and app-return behavior remain LG integration responsibilities.
+- PASS before production edits: native real-Prefs/Reminders characterization of
+  all 64 bell masks x adhan/announcement flags x six prayer/window boundaries;
+  reminder rounding/off/ceiling-minute boundaries. PASS: 5,190 frozen next-event
+  outputs each on LG app-VM and service adapters (source `6fb81fa`), automatic/
+  lead/audio/bell/handled combinations. Public fixture and provenance live under
+  `tests/fixtures/reminder-events.json` / README; runtime/native sources unchanged.
+- PASS: exact -1/0/90000/90001 ms LG delivery/claim boundaries, stale generation,
+  repeated display, clock rollback, pending-display expiry and manual-test edges,
+  alongside existing asynchronous overlap/disable/failure-recovery/cancellation
+  regressions. PASS: all 38 Python/Java regressions. Ignored evidence:
+  `reminders-{native,webos,python}-before.log`. No new product behavior; unchanged
+  build/browser suites and unavailable physical TVs were not retested.

@@ -71,6 +71,9 @@ assert.notEqual(A.nextEvent(new Date(day.times[0] - 1), enabled, [event.id]).id,
 assert.equal(A.nextEvent(now, A.prefs({automatic: true, bells: [false, false, false, false, false, false]})), null);
 assert.equal(A.nextEvent(now, prefs), null);
 const serviceCore = require('./build/service/core');
+const checkReminders = require('./test-reminders.cjs');
+checkReminders(A);
+checkReminders(serviceCore);
 const checkCalendar = require('./test-calendar.cjs');
 checkCalendar(A, data);
 checkCalendar(serviceCore, data);
@@ -246,4 +249,38 @@ const afterFailure = begin('syncAlerts'); activityReplies.shift()();
 assert.equal(afterFailure[0].returnValue, true, 'queue remains usable after failures');
 assert.equal(activityReplies.length, 0);
 deferActivities = false;
+for (const lateness of [-1, 0, 90000, 90001]) {
+  invoke('savePrefs', {prefs: {automatic: true, utcOffset: 120}});
+  const state = invoke('status').state, alarm = state.alarm;
+  const params = {id: alarm.id, generation: state.alarmGeneration};
+  const before = launches();
+  clockNow = alarm.time + lateness;
+  invoke('firePrayer', params);
+  const delivered = lateness >= 0 && lateness <= 90000;
+  assert.equal(launches(), before + Number(delivered), 'production delivery boundary: ' + lateness);
+  assert.equal((invoke('status').state.handled || []).includes(alarm.id), lateness >= 0,
+    'early remains pending; due/expired events are claimed before delivery');
+  invoke('firePrayer', params);
+  assert.equal(launches(), before + Number(delivered), 'stale generation/duplicate does not replay');
+  if (delivered) {
+    const pending = invoke('status').state.pendingAlert;
+    clockNow = pending.createdAt - 1;
+    assert.equal(invoke('takeAlert', {id: pending.id}).returnValue, false, 'clock rollback cannot display a future alert');
+    clockNow = pending.createdAt + 90000;
+    assert.equal(invoke('takeAlert', {id: pending.id}).returnValue, true, 'pending alert allows exactly 90 seconds');
+    assert.equal(invoke('takeAlert', {id: pending.id}).returnValue, false, 'display claim survives a repeated request');
+  }
+}
+invoke('testAlert', {mode: 'banner', prayer: 0});
+test = invoke('status').state.test;
+clockNow = test.time + 90000; count = launches();
+invoke('fireTest', {id: test.id});
+assert.equal(launches(), count + 1, 'manual test allows exactly 90 seconds');
+const latePending = invoke('status').state.pendingAlert;
+clockNow = latePending.createdAt + 90001;
+assert.equal(invoke('takeAlert', {id: latePending.id}).returnValue, false, 'pending display expires after 90 seconds');
+invoke('testAlert', {mode: 'banner', prayer: 0});
+test = invoke('status').state.test; clockNow = test.time + 90001; count = launches();
+invoke('fireTest', {id: test.id});
+assert.equal(launches(), count, 'expired manual test stays silent');
 console.log('PASS: legacy calculations, preferences, atomic state, startup, exact prayer scheduling, asynchronous overlap/failure recovery, expired/duplicate/cancelled alerts and media diagnostics.');
