@@ -85,18 +85,18 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.3, preference-preserving upgrade evidence on the already isolated Android
-emulator while physical LG is unreachable. Q09.2 native runtime checks passed.
-Prepare a fresh ignored baseline-source build at the migration starting commit;
-preserve earlier evidence fixtures. Install it only on the owned emulator, seed
-representative valid preferences, then replace it with the current APK using the
-same certificate. Verify stored values and their interpretation without clearing
-data or making vendor/launcher/accessibility changes. Keep all helpers/results
-ignored. Before every ADB mutation verify the exact private AVD/serial identity.
-Use the existing SDK/image only; no downloads or OS/firmware changes. Close only
-the owned headless/no-audio/no-snapshot emulator afterward and verify the user's
-existing AVD configuration remains untouched. This API 37 phone image cannot
-close Android 11 TV, physical remote, HDMI, speaker or power acceptance.
+Next: Q09.4, physical device acceptance when availability changes. Q09.2 native
+ART/ICU and Q09.3 preference-preserving emulator upgrades passed. The owned temporary
+emulator is closed, ADB serial offline and its launcher process exited; the user's
+existing AVD descriptor/config hashes remain unchanged. No independent required
+software work remains in this approved queue. Do not create speculative tasks or
+repeat passing suites to fill the hardware wait.
+
+Resume with reachable old LG and a watcher for picture/sound/remote/power tests,
+or the actual Android TV around 2026-11-25. Capture existing preferences/input/
+startup before an in-place update; preserve installed IDs, certificate and data.
+Never uninstall/clear data to make an upgrade pass. The API 37 phone emulator
+cannot close Android 11 TV, older ICU, physical remote, HDMI, speaker or power gates.
 
 The current reviewed LG IPK is ready with exact payload equality; its one supported
 read-only device query timed out. No install, backup read, service/DOM or TV mutation
@@ -1097,3 +1097,36 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   session, native-runtime-result.log and native-runtime-info.json; private helpers
   retain identity guards. This is actual ART/ICU evidence on the stated emulator,
   not a TV, older ICU or remote/lifecycle acceptance. Physical Q09 gates stay open.
+
+### Q09.3 preference-preserving emulated upgrades (2026-11-11)
+
+- Prepared a new ignored baseline fixture at starting commit 74a4287: all 110
+  original tracked Android/build inputs retain exact bytes; copied the same 26
+  hash-checked personal media clips. Built its original Gradle 8.9 / AGP 8.5.2 /
+  compile SDK 34 sources offline using cached tools. Earlier baseline/evidence
+  fixtures remain untouched. Both baseline/current debug APK signatures verify
+  with the same certificate; this does not prove a physical installation's key.
+- PASS: two baseline-to-current `install -r` replacements on the identity-checked
+  isolated API 37 emulator, for ar and en configurations. Each seeds 53 valid typed
+  preferences through debug run-as with the process stopped, then verifies exact
+  stored XML bytes, all string/int/boolean/long values and unchanged package UID.
+  Covers location/method/madhab, all prayer offsets/bells, Hijri correction, voice/
+  reminders, theme/layout/appearance deadline, radio, favourites and remote table.
+  The existing info/theme/keys provider queries return identical interpreted
+  results before/after replacement; subsequent reads do not modify preferences.
+  Other getters remain covered by existing tests, not asserted as provider fields.
+- PASS: external selected Home, enabled accessibility services and screensaver
+  selection stay unchanged. No data clearing/uninstall, UI, service enablement,
+  vendor setup, media playback or physical-device command. This validates package
+  replacement/storage and the stated provider contract, not real-TV startup,
+  input routing, UI focus, sound, remote interception or power behavior.
+- Closed only the owned emulator after the checks. Verified ADB offline, owned
+  launcher process exited and original user's AVD descriptor/config hashes still
+  exact. Session status is closed. Helpers/build/results remain ignored under
+  q09-upgrade-baseline*, q09-upgrade-check.log and q09-emulator/upgrade-result.json;
+  private source/APK manifests retain hashes for reproduction.
+- Current acceptance gate: old LG's last supported query timed out; watcher reply
+  is still pending and Android hardware returns around 2026-11-25. Do not repeat
+  unchanged unavailable-device queries. No remaining independent approved software
+  item; first availability-wait checkpoint after completing emulator work. Goal
+  remains incomplete. No release, merge, publication or repository detachment.
