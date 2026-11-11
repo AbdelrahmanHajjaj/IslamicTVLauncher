@@ -916,3 +916,26 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   supported remediation and full verification continue in Q08.2; no audit gate was
   suppressed. `npm explain glob` correctly reports none in LG (its warning was from
   the already-used preview tool installation); preview has multiple glob branches.
+
+### Q08.1b source notice and controlled lint review (2026-11-11)
+
+- Restored the truncated opening SUPERCOP attribution line in the new SPAKE2 native
+  notice and removed its extra EOF blank. Rebuilt installer; packaged notice/source
+  byte equality passes. All 13 complete upstream license blobs remain untouched.
+  Their pinned BoringSSL LICENSE intentionally retains seven upstream trailing-
+  whitespace lines; exclude only that immutable vendored text when checking the
+  final diff's whitespace, and keep verifying its source Git hash instead.
+- PASS: original installer at branch base with original AGP 8.5.2/Gradle 8.9 yields
+  14 warnings; the same untouched original source with current approved AGP 8.10.1/
+  Gradle 8.11.1 yields the exact same 15 diagnostics as this branch. Only the newer
+  compileSdk 34-to-35 suggestion differs. No source warning regression or lint
+  suppression; SDK targeting is unchanged. Evidence: ignored `installer-lint-*`,
+  `installer-lint-base-q08`, `check-installer-lint.py`, `notices-header-fix.log`.
+- Q08.2 compatibility finding: Mocha 12 changes Base reporter to a class, while
+  both pinned and latest Kotlin helper reporters call Base as a function. Avoid
+  an unsupported test-runner upgrade/reporter rewrite. Kotlin 2.2.10's official
+  BaseNpmExtension exposes supported npm overrides; inspect current advisory ranges
+  and use narrow test-tool leaf patches with real runner/negative-case checks.
+  Core compiler/runtime and product dependencies remain pinned. Deepmerge has no
+  upstream patched version; assess the existing trusted-token build-only use and
+  document the bounded finding rather than fabricating an audit pass.
