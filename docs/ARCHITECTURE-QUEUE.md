@@ -125,13 +125,6 @@ cache was removed, and Q07 added four retained MIT notice copies. All retained
 runtime bytes match. Android retains all 95 former APK entry bytes plus four new
 notices (99 entries). Do not add new UIs, transports or future shells.
 
-Q08 still requires final automated review and measured optimization; Q09 still
-requires real TV upgrade/picture/sound/remote/lifecycle acceptance. Android hardware
-returns around 2026-11-25. LG was unreachable during Q04.2; do not label current
-integration physically validated. Any temporary old-LG browser probe must use
-`tv.afnon:core` and restore polyfilled Math.imul. Private helpers/logs/device details
-remain under ignored `state/`. No merge, release, remote detach or firmware action.
-
 ## Evidence and decisions
 
 - 2026-11-11: owner approved the architecture plan, durable queue, sequential full
@@ -1130,3 +1123,17 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   unchanged unavailable-device queries. No remaining independent approved software
   item; first availability-wait checkpoint after completing emulator work. Goal
   remains incomplete. No release, merge, publication or repository detachment.
+
+### Q09.4 availability audit, checkpoint 2 (2026-11-11 07:22 UTC)
+
+- Previous goal turn made progress: committed real ART/ICU checks, verified two
+  data-preserving emulator upgrades and closed the owned emulator. This turn
+  confirms the committed cursor and clean feature branch; no watcher reply or
+  changed device availability was supplied, and Android hardware's expected return
+  remains in the future. No live process/job is awaiting observation. This is a
+  hardware availability blocker, not a verified process wait.
+- Removed one stale current-cursor paragraph that incorrectly said Q08 review was
+  outstanding; Q08.3 already records its completed evidence. No runtime change or
+  reason to rerun passing checks. Physical acceptance remains the only actionable
+  scope once devices/watcher are available. Unchanged unreachable LG was not probed
+  again. Goal stays active at this second availability-blocker checkpoint.
