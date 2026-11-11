@@ -111,8 +111,11 @@ bindings/labels and preserved settings. Obtain human confirmation of visible UI,
 Arabic values, picture/sound and remote behavior. The verified 0.2.8 candidate is
 packaged under ignored state/platform-core/ui-contract-candidate, not installed.
 The fresh backup is q095-lg-before-service; the TV remains on accepted 0.2.7 in
-Browser. A watcher-availability question is pending; leave the TV unchanged until
-the owner is ready. Refresh/recheck the baseline if it changes during that wait.
+Browser. Owner answered "Later; keep the TV unchanged" on 2026-11-11. Defer the
+update and watched checks until the owner reports readiness; do not repeat the
+availability question or infer readiness from elapsed time. Refresh/recheck the
+baseline when resuming. No further independent software item is queued before
+this hardware gate; physical Android also remains unavailable until around 2026-11-25.
 No duplicate audible/power test is justified by
 these metadata/focus changes; those require a watcher if a new reason emerges.
 
@@ -1761,3 +1764,18 @@ unrelated renderer redesign, transport or future shell.
   ui-contract-candidate/manifest.json and IPK, q095-preflight.json and the private
   q095-lg-before-service snapshot. Actual installed payload, Node/WebKit 66-check
   runtime proof, native TV UI and human acceptance remain open; Android unchanged.
+
+### Q09.5d owner deferral (2026-11-11)
+
+- Owner answered the readiness question: "Later; keep the TV unchanged". This
+  defers the TV update and watched acceptance, not the overall migration scope.
+  Leave installed 0.2.7, existing settings/input/startup and the user's current
+  foreground app untouched. No further TV operation occurred after this answer.
+- Verified 0.2.8 candidate and private baseline are retained; no source change or
+  repeated build is needed. On readiness, recheck the current baseline and exact
+  package before the already-authorized in-place workflow. Keep final LG and
+  physical Android acceptance open. Do not replace either gate with mock evidence
+  or add unrelated software work merely to avoid waiting.
+- Blocked audit: first goal turn with the explicit owner-unavailable condition.
+  No new runtime test, emulator or inspector was started; the previous owned
+  emulator's verified closure remains recorded. Goal is not complete or paused.
