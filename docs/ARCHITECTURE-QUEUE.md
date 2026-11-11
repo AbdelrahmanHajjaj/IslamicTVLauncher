@@ -85,15 +85,13 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.5b, remaining shared formatter text and sacred UI constants. Finish the
-Q03.5a commit if resuming between operations, then inspect `Text.java.template`'s
-remaining literal copy, corresponding preview helpers and LG renderer. Capture
-edge-case output before extraction (plural forms, nulls, signs, headings/directions,
-digits and punctuation). Inspect sacred constants in `MainActivity`, `Screen` and
+Next: Q03.5c, sacred UI constants. Finish the Q03.5b commit if resuming between
+operations, then inspect sacred constants in `MainActivity`, `Screen` and
 `NowActivity` with their preview/LG equivalents; retain exact text and intentional
 line breaks. Keep platform formatting/selection code in adapters and platform-only
-copy with its shell. Do not add a generic runtime translation framework. Existing
-plain-text frozen hashes cover 174 methods only. Remaining design/assets follow text.
+copy with its shell. Do not add a generic runtime translation framework. Plain and
+formatter output now have separate native/preview regression baselines. Remaining
+design/assets follow text.
 Do not move platform directories yet (Q06). Production apps retain their existing
 domain implementations until Q04. Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
@@ -283,3 +281,23 @@ domain implementations until Q04. Private logs/helpers are under ignored
   LG ES5/service and bilingual browser suite. Logs: ignored `strings-*.log`.
   Unaffected installer/shared-core suites were not repeated. No TV deployment,
   sound/picture check or performance-improvement claim.
+
+### Q03.5b canonical formatter copy (2026-11-11)
+
+- `shared/data/format-text.json` owns 102 locale-specific literals: significant
+  prefix/suffix spaces, labels, directions and grammatical forms. Language-only
+  forms (such as Arabic ordinals) retain their actual scope. Compile-time markers
+  generate native constants directly; formatting/selection logic stays native.
+  Preview helpers and matching LG copy read the same catalog. Different LG copy
+  remains in its shell; no UI wording or supported controls were changed.
+- Captured unchanged-source native/preview edge-case hashes before extraction.
+  PASS: both native text baselines, preview formatter hashes, and 2,128 preview
+  settings row sets versus the original adapter. Coverage includes plural minute
+  thresholds, null/empty values, extreme signed numbers, radio states, method
+  angles, both languages/digit styles and compass-sector boundaries.
+- PASS: 38 Python/Java tests, catalog validation/complete native marker coverage,
+  preview tests/build/data/tokens, Android size/build/lint and LG ES5/service/
+  bilingual browser checks. Evidence: ignored `format-*.log`, `Text-format-before.java`
+  and `format-*-before.*` / `format-*-baseline.ts`. Frozen public hashes live in
+  `tests/fixtures/{text-format,site-text-format}-hashes.json`.
+- No TV deployment or media test; unaffected installer/core suites were not repeated.

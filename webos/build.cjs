@@ -18,6 +18,7 @@ const data = {
   cities: json('shared/data/cities.json'), methods: methods.map(method => method.id),
   presets: Object.fromEntries(methods.filter(method => method.preset).map(method => [method.id, {...method.preset, ...(method.methodAdjustments ? {methodAdjustments: method.methodAdjustments} : {})}])),
   strings,
+  formatText: json('shared/data/format-text.json'),
   stations: json('shared/data/stations.json'), apps: json('webos/tv-apps.json'),
   voices: json('shared/data/voices.json').map(({id, ar, en}) => ({id, ar, en})), themes: [], hijri: []
 };

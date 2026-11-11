@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { validateCatalog, validateMethods, validateStations, validateVoices } from './catalogs.mjs';
-import { renderText, validateStrings } from './strings.mjs';
+import { renderText, validateStrings, renderLiterals, validateFormatText } from './strings.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
 const regions = JSON.parse(readFileSync(new URL('../shared/data/regions.json', import.meta.url)));
@@ -122,3 +122,17 @@ assert.throws(() => renderText(example, marker + '\n' + marker), /duplicate/);
 assert.throws(() => renderText(example, marker.replace('greet}}', 'missing}}')), /Missing/);
 assert.throws(() => renderText(example, marker + '{{STRINGS:bad-key}}'), /differ/);
 console.log('PASS: bilingual text values, list sizes, parameters, digit flags and adapter markers');
+
+const format = JSON.parse(readFileSync(new URL('../shared/data/format-text.json', import.meta.url)));
+validateFormatText(format);
+for (const invalid of [null, {}, {ar: {}, en: {}}, {ar: {key: ''}, en: {key: 'Text'}},
+  {ar: {key: []}, en: {key: 'Text'}}, {ar: {key: [null]}, en: {key: 'Text'}},
+  {ar: {key: 4}, en: {key: 'Text'}}, {ar: {'bad-key': 'Text'}, en: {key: 'Text'}},
+  {ar: {key: 'bad\0text'}, en: {key: 'Text'}},
+]) assert.throws(() => validateFormatText(invalid));
+const literal = {ar: {key: 'نص'}, en: {key: ['A', 'B']}};
+assert.equal(renderLiterals(literal, '{{TEXT:ar:key}} + {{TEXT:en:key}}'), '"نص" + new String[] {"A", "B"}');
+assert.throws(() => renderLiterals(literal, '{{TEXT:ar:missing}}'), /Missing/);
+assert.throws(() => renderLiterals(literal, '{{TEXT:ar:key}}'), /differ/);
+assert.throws(() => renderLiterals(literal, '{{TEXT:ar:key}} {{TEXT:en:key}} {{TEXT:bad:key}}'), /differ/);
+console.log('PASS: locale-specific formatter literals and complete native marker coverage');

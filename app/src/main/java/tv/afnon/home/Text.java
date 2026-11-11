@@ -1,4 +1,4 @@
-// Generated from shared/data/strings.json and Text.java.template by tools/catalogs.mjs. Do not edit.
+// Generated from shared/data/{strings,format-text}.json and Text.java.template by tools/catalogs.mjs. Do not edit.
 package tv.afnon.home;
 
 import com.batoulapps.adhan.CalculationParameters;
@@ -50,7 +50,7 @@ final class Text {
     String hideSystemAppsHelp() { return ar ? "تبقى الوسائط والألعاب ومتجر Play ظاهرة" : "Media apps, games and Play Store stay visible"; }
     String recentApps() { return ar ? "التطبيقات الأخيرة" : "RECENT APPS"; }
     /** Home's tile: the label over the count. */
-    String all(int n) { return d((ar ? "كل التطبيقات" : "All apps") + "\n" + n); }
+    String all(int n) { return d(allTitle() + "\n" + n); }
     String ampm(boolean am) { return ar ? (am ? "ص" : "م") : (am ? "AM" : "PM"); }
     String adhanAt() { return ar ? "الأذان" : "Adhan at"; }
     String nowTag() { return ar ? "الآن" : "NOW"; }
@@ -144,7 +144,7 @@ final class Text {
     /** "Asr in", followed by the countdown. */
     String chip(String prayer) { return ar ? "" + prayer + " بعد" : "" + prayer + " in"; }
     String favNote(int position) {
-        String[] ord = {"الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع"};
+        String[] ord = new String[] {"الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع"};
         return ar ? "في المفضلة · " + ord[position - 1] : d("In favourites · position " + position);
     }
     String notFav() { return ar ? "اضغط مطولًا على OK لوضعه في المفضلة" : "Hold OK to put it in favourites"; }
@@ -222,7 +222,7 @@ final class Text {
     String adhanHelp() { return ar ? "يُشغَّل عند دخول الوقت · يمكن إيقافه لكل صلاة" : "Plays when the time begins · can be muted per prayer"; }
     String language() { return ar ? "اللغة" : "Language"; }
     String languageHelp() { return ar ? "«التلفاز» يتبع لغة التلفاز" : "“TV” follows the TV's language"; }
-    String[] languages() { return new String[] {ar ? "التلفاز" : "TV", "العربية", "English"}; }
+    String[] languages() { return ar ? new String[] {"التلفاز", "العربية", "English"} : new String[] {"TV", "العربية", "English"}; }
     String digits() { return ar ? "الأرقام" : "Digits"; }
     String clockRow() { return ar ? "الساعة" : "Clock"; }
     String clockHelp() { return ar ? "«التلفاز» يتبع إعداد الوقت في التلفاز" : "“TV” follows the TV's time setting"; }
@@ -260,8 +260,7 @@ final class Text {
     String qiblaRelative(double clockwise) {
         String[] where = ar
             ? new String[] {"أمامك", "أمامك إلى اليمين", "على يمينك", "خلفك إلى اليمين", "خلفك", "خلفك إلى اليسار", "على يسارك", "أمامك إلى اليسار"}
-            : new String[] {"ahead of you", "ahead, to your right", "to your right", "behind, to your right", "behind you",
-                            "behind, to your left", "to your left", "ahead, to your left"};
+            : new String[] {"ahead of you", "ahead, to your right", "to your right", "behind, to your right", "behind you", "behind, to your left", "to your left", "ahead, to your left"};
         return (ar ? "القبلة " : "Qibla is ") + where[sector(clockwise)];
     }
 

@@ -10,3 +10,10 @@ methods before extraction. It covers Arabic/English × Western/Eastern digits,
 parameter text containing digits/punctuation and null parameters. The JVM check
 also verifies fresh label arrays. Preserve the exact baseline during the migration;
 update it only for an intentional, reviewed text change, alongside its catalog.
+
+`text-format-hashes.json` and `site-text-format-hashes.json` freeze the remaining
+native/preview formatter behavior separately. They cover both languages/digit
+modes, null/empty values, minute thresholds/plural forms, signed/extreme offsets,
+radio states, method angles and compass-sector boundaries. Platform differences
+are retained. The fixtures were captured from unchanged source before literal
+extraction; update them only for an intentional, reviewed formatting change.

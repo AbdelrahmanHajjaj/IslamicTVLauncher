@@ -9,13 +9,13 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def text_hashes():
+def text_hashes(driver="TextCatalogCheck"):
     with tempfile.TemporaryDirectory() as output:
         out = Path(output)
         stubs = {
             "CalculationParameters.java": "package com.batoulapps.adhan; public class CalculationParameters { public double fajrAngle, ishaAngle; public int ishaInterval; }",
             "Madhab.java": "package com.batoulapps.adhan; public enum Madhab { HANAFI, SHAFI }",
-            "PrayerMethod.java": "package tv.afnon.home; class PrayerMethod { String ar, en; com.batoulapps.adhan.CalculationParameters getParameters() { return null; } }",
+            "PrayerMethod.java": "package tv.afnon.home; class PrayerMethod { String ar, en; com.batoulapps.adhan.CalculationParameters parameters = new com.batoulapps.adhan.CalculationParameters(); com.batoulapps.adhan.CalculationParameters getParameters() { return parameters; } }",
             "Radio.java": "package tv.afnon.home; class Radio { static final int PLAYING=2, CONNECTING=1, RETRYING=3, PAUSED=4; static class Station { String ar, en, whereAr, whereEn; boolean reciter; } }",
         }
         for name, source in stubs.items():
@@ -23,9 +23,9 @@ def text_hashes():
         subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
             *(str(out / name) for name in stubs),
             str(ROOT / "app/src/main/java/tv/afnon/home/Text.java"),
-            str(ROOT / "tests/TextCatalogCheck.java")], check=True, capture_output=True)
+            str(ROOT / ("tests/" + driver + ".java"))], check=True, capture_output=True)
         keys = sorted(json.loads((ROOT / "shared/data/strings.json").read_text(encoding="utf-8")))
-        result = subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.TextCatalogCheck", *keys],
+        result = subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home." + driver, *keys],
             check=True, capture_output=True, text=True)
         return dict(line.split(":") for line in result.stdout.splitlines())
 
@@ -34,3 +34,7 @@ class TextChecks(unittest.TestCase):
     def test_catalog_preserves_both_languages_digits_and_array_independence(self):
         expected = json.loads((ROOT / "tests/fixtures/text-output-hashes.json").read_text())
         self.assertEqual(text_hashes(), expected)
+
+    def test_formatter_edge_cases_preserve_existing_output(self):
+        expected = json.loads((ROOT / "tests/fixtures/text-format-hashes.json").read_text())
+        self.assertEqual(text_hashes("TextFormatCheck"), expected)

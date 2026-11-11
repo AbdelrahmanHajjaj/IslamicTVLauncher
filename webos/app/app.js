@@ -22,6 +22,7 @@
   }[id]; }
   function t(ar, en) { return prefs.lang === 'ar' ? ar : en; }
   function s(key) { return D.strings[key][prefs.lang]; }
+  function f(key) { return D.formatText[prefs.lang][key]; }
   function escape(value) { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
   function digits(value) { return prefs.digits === 'eastern' || prefs.digits === 'auto' && prefs.lang === 'ar' ? String(value).replace(/[0-9]/g, function (n) { return '٠١٢٣٤٥٦٧٨٩'.charAt(Number(n)); }) : String(value); }
   function button(action, label, value, className, accessibleLabel) {
@@ -45,7 +46,7 @@
       ['radio', 'radio', t('إذاعة القرآن', 'Quran radio')],
       ['tv-settings', 'wifi', t('إعدادات تلفاز LG والشبكة', 'LG TV & network settings')],
       ['settings', 'gear', t('الإعدادات', 'Settings')]
-    ].map(function (item) { return button(item[0], icon(item[1]) + '<span class="quick-caption">' + (prefs.quickLabels && item[0] === 'tv-settings' ? t('الشبكة', 'Network') : item[2]) + '</span>', '', 'quick-button', item[2]); }).join('') + '</nav>';
+    ].map(function (item) { return button(item[0], icon(item[1]) + '<span class="quick-caption">' + (prefs.quickLabels && item[0] === 'tv-settings' ? f('networkLabel') : item[2]) + '</span>', '', 'quick-button', item[2]); }).join('') + '</nav>';
   }
   function appTile(item) {
     return button('native-app', icon(item.icon) + '<span>' + escape(item[prefs.lang]) + '</span>', item.id, 'app-tile');
@@ -166,14 +167,14 @@
         row('prayer-day', t('مواقيت اليوم والقبلة', 'Today & Qibla'), '');
     } else if (section === 'reminders') {
       result = row('automatic', t('التنبيهات المجدولة', 'Scheduled alerts'), onOff(prefs.automatic)) +
-        row('remind', t('التذكير قبل الصلاة', 'Reminder before prayer'), prefs.remind ? digits(prefs.remind) + t(' دقيقة', ' min') : onOff(false)) +
+        row('remind', t('التذكير قبل الصلاة', 'Reminder before prayer'), prefs.remind ? digits(prefs.remind) + f('minuteUnit') : onOff(false)) +
         row('remindVoice', t('تذكير صوتي قبل الصلاة', 'Spoken reminder'), onOff(prefs.remindVoice)) +
         row('adhan', t('تشغيل الأذان', 'Play adhan'), onOff(prefs.adhan)) +
         row('announce', t('إعلان الوقت عند إيقاف الأذان', 'Announce when adhan is off'), onOff(prefs.announce)) +
         row('voice', t('صوت الأذان', 'Adhan voice'), A.voice(prefs.voice)[prefs.lang]) +
         row('fajrVoice', t('صوت أذان الفجر', 'Fajr voice'), A.voice(prefs.fajrVoice)[prefs.lang]) +
         row('volume', t('مستوى صوت التطبيق', 'App audio level'), digits(prefs.volume) + '%') +
-        row('callClose', t('إغلاق شاشة الأذان', 'Close adhan screen'), prefs.callClose ? digits(prefs.callClose) + t(' دقيقة', ' min') : t('عند نهاية الصوت', 'When audio ends')) +
+        row('callClose', t('إغلاق شاشة الأذان', 'Close adhan screen'), prefs.callClose ? digits(prefs.callClose) + f('minuteUnit') : t('عند نهاية الصوت', 'When audio ends')) +
         row('prayer-day', t('أذان كل صلاة', 'Per-prayer adhan switches'), '') + row('tests', t('اختبار الآن', 'Test now'), '');
     } else if (section === 'radio') {
       result = row('station', t('المحطة أو القارئ', 'Station or reciter'), A.station(prefs.station)[prefs.lang]) +
@@ -214,7 +215,7 @@
         row('test-background', t('اختبار خدمة الخلفية بعد ٣٠ ثانية', 'Test background service in 30 seconds'), '') +
         row('cancel-test', t('إلغاء الاختبار المؤجل', 'Cancel scheduled test'), '');
     } else if (section === 'offsets') {
-      for (var i = 0; i < 6; i++) { result += row('offset-' + i, s('prayerNames')[i], digits(prefs.offsets[i]) + t(' دقيقة', ' min')); }
+      for (var i = 0; i < 6; i++) { result += row('offset-' + i, s('prayerNames')[i], digits(prefs.offsets[i]) + f('minuteUnit')); }
       result += row('reset-offsets', t('إعادة الدقائق إلى الصفر', 'Reset adjustments'), '');
     }
     return result;

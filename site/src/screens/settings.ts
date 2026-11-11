@@ -4,6 +4,7 @@ import { homeChoice } from '../lib/home-layout';
 import { CYCLE_MINUTES, cycleMinutes } from '../lib/appearance-cycle';
 import { THEMES, BACKGROUNDS } from '../scripts/appearance';
 import voicesJson from '../../../shared/data/voices.json';
+import F from '../../../shared/data/format-text.json';
 import { makeCtx, type Ctx } from '../lib/ctx';
 import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
 import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET } from '../lib/prayer';
@@ -30,27 +31,28 @@ const trim = (v: number) => String(+v.toFixed(2));
 // ---------------------------------------------------------------- Text.java methods with logic, ported
 
 export const sectionName = (t: Text, i: number) =>
-  [t.s('sectionPrayer'), t.s('sectionReminders'), t.s('sectionRadio'), t.s('sectionDisplay'), t.s('sectionAppearance'), t.ar ? 'الشبكة' : 'Network', t.s('sectionDevice')][i];
+  [t.s('sectionPrayer'), t.s('sectionReminders'), t.s('sectionRadio'), t.s('sectionDisplay'), t.s('sectionAppearance'), F[t.lang].networkLabel, t.s('sectionDevice')][i];
 
 function locationHelp(t: Text, lat: number, lng: number) {
-  const ns = lat >= 0 ? (t.ar ? 'ش' : 'N') : t.ar ? 'ج' : 'S';
-  const ew = lng >= 0 ? (t.ar ? 'ق' : 'E') : t.ar ? 'غ' : 'W';
-  return t.d(`${Math.abs(lat).toFixed(2)}° ${ns} · ${Math.abs(lng).toFixed(2)}° ${ew}` + (t.ar ? ' · يُختار من القائمة' : ' · chosen from the list'));
+  const copy = F[t.lang];
+  const ns = lat >= 0 ? copy.latitudeNorth : copy.latitudeSouth;
+  const ew = lng >= 0 ? copy.longitudeEast : copy.longitudeWest;
+  return t.d(`${Math.abs(lat).toFixed(2)}° ${ns} · ${Math.abs(lng).toFixed(2)}° ${ew}` + copy.locationSuffix);
 }
 
 function methodAngles(t: Text, m: string) {
   const p = methodParams(m);
-  const fajr = (t.ar ? 'زاوية الفجر ' : 'Fajr angle ') + trim(p.fajrAngle) + '°';
+  const copy = F[t.lang];
+  const fajr = copy.fajrAnglePrefix + trim(p.fajrAngle) + '°';
   const isha = p.ishaInterval > 0
-    ? t.ar ? `العشاء بعد المغرب بـ ${p.ishaInterval} دقيقة` : `Isha ${p.ishaInterval} min after Maghrib`
-    : (t.ar ? 'العشاء ' : 'Isha ') + trim(p.ishaAngle) + '°';
+    ? copy.ishaIntervalPrefix + p.ishaInterval + copy.ishaIntervalSuffix
+    : copy.ishaAnglePrefix + trim(p.ishaAngle) + '°';
   return t.d(fajr + ' · ' + isha);
 }
 
 export const stationChoice = (t: Text, s: Station) => (s.reciter ? t.station(s) : t.station(s) + t.sep() + t.stationWhere(s));
-const radioRowHelp = (t: Text, s: Station) => t.stationWhere(s) + (t.ar ? ' · تحتاج إلى الإنترنت' : ' · needs the internet');
-const radioDarkHelp = (t: Text) =>
-  t.d(t.ar ? 'توفير الكهرباء: تنطفئ الشاشة وتستمر الإذاعة · أي زر يعيدها' : 'Saves power: the screen goes dark, the radio keeps playing · any key brings it back');
+const radioRowHelp = (t: Text, s: Station) => t.stationWhere(s) + F[t.lang].radioHelpSuffix;
+const radioDarkHelp = (t: Text) => t.d(F[t.lang].radioDarkHelp);
 export const voiceName = (t: Text, id: string | undefined, fallback: string) => {
   const v = VOICES.find((x) => x.id === (id ?? fallback)) ?? VOICES[0];
   return t.ar ? v.ar : v.en;

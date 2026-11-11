@@ -128,7 +128,7 @@ function generate() {
     ['app/src/main/java/tv/afnon/home/RadioCatalog.java', nativeStations],
     ['app/src/main/java/tv/afnon/home/VoiceCatalog.java', nativeVoices],
     ['tools/adhan-sources.tsv', voiceSources],
-    ['app/src/main/java/tv/afnon/home/Text.java', renderText(JSON.parse(read('shared/data/strings.json')), read('app/src/main/templates/Text.java.template'))],
+    ['app/src/main/java/tv/afnon/home/Text.java', renderText(JSON.parse(read('shared/data/strings.json')), read('app/src/main/templates/Text.java.template'), JSON.parse(read('shared/data/format-text.json')))],
   ]) {
     if (args[0] === '--check') {
       if (read(destination) !== output) throw new Error(destination + ' is stale; run node tools/catalogs.mjs');

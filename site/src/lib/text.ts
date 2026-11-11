@@ -1,5 +1,6 @@
 // Canonical interface strings; formatting helpers still mirror the native adapter.
 import S from '../../../shared/data/strings.json';
+import F from '../../../shared/data/format-text.json';
 import { METHOD_DEFINITIONS, type Station } from './data';
 
 export type Lang = 'ar' | 'en';
@@ -14,6 +15,7 @@ export type Text = ReturnType<typeof makeText>;
 /** Text.java for one language; `eastern` is the Eastern Arabic digits setting (on by default in Arabic). */
 export function makeText(lang: Lang, eastern = lang === 'ar') {
   const ar = lang === 'ar';
+  const copy = F[lang];
   const d = (s: string | number) => {
     s = String(s);
     if (!eastern) return s;
@@ -32,16 +34,13 @@ export function makeText(lang: Lang, eastern = lang === 'ar') {
   const list = (key: string): string[] => STRINGS[key][lang] as string[];
 
   const sector = (deg: number) => Math.round((((deg % 360) + 360) % 360) / 45) % 8;
-  const octant = (bearing: number) =>
-    (ar
-      ? ['شمال', 'شمال شرق', 'شرق', 'جنوب شرق', 'جنوب', 'جنوب غرب', 'غرب', 'شمال غرب']
-      : ['North', 'North-east', 'East', 'South-east', 'South', 'South-west', 'West', 'North-west'])[sector(bearing)];
+  const octant = (bearing: number) => copy.octants[sector(bearing)];
   const inMinutes = (minutes: number, hoursAndMinutes: string) => {
-    if (minutes >= 60) return d(ar ? 'بعد ' + hoursAndMinutes : 'in ' + hoursAndMinutes);
-    if (!ar) return d(`in ${minutes} min`);
-    if (minutes <= 1) return 'بعد دقيقة واحدة';
-    if (minutes === 2) return 'بعد دقيقتين';
-    return d('بعد ' + minutes + (minutes <= 10 ? ' دقائق' : ' دقيقة'));
+    if (minutes >= 60) return d(copy.relativePrefix + hoursAndMinutes);
+    if (!ar) return d(F.en.relativePrefix + minutes + F.en.minuteUnit);
+    if (minutes <= 1) return F.ar.minutesOne;
+    if (minutes === 2) return F.ar.minutesTwo;
+    return d(F.ar.relativePrefix + minutes + (minutes <= 10 ? F.ar.minutesUnit : F.ar.minuteUnit));
   };
   const station = (st: Station) => d(ar ? st.ar : st.en);
   const stationWhere = (st: Station) => d(ar ? st.whereAr : st.whereEn);
@@ -50,52 +49,45 @@ export function makeText(lang: Lang, eastern = lang === 'ar') {
     lang, ar, eastern, d, s, list,
     dir: ar ? 'rtl' : 'ltr',
     sep: () => d(' · '),
-    ampm: (am: boolean) => (ar ? (am ? 'ص' : 'م') : am ? 'AM' : 'PM'),
-    all: (n: number) => d((ar ? 'كل التطبيقات' : 'All apps') + '\n' + n),
+    ampm: (am: boolean) => am ? copy.am : copy.pm,
+    all: (n: number) => d(s('allTitle') + '\n' + n),
     hintOk: (what: string) => 'OK  ' + what,
     inMinutes,
-    in: (duration: string) => d(ar ? 'بعد ' + duration : 'in ' + duration),
+    in: (duration: string) => d(copy.relativePrefix + duration),
     apTitle: (prayer: string, minutes: number, hoursAndMinutes: string) =>
       !ar && minutes < 60
-        ? d(`${prayer} in ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`)
+        ? d(prayer + F.en.prayerInSeparator + minutes + (minutes === 1 ? F.en.minuteSingular : F.en.minutesUnit))
         : prayer + ' ' + inMinutes(minutes, hoursAndMinutes),
-    apSub: (time: string) => d((ar ? 'الأذان ' : 'Adhan at ') + time),
+    apSub: (time: string) => d(copy.callTimePrefix + time),
     bannerSub: (time: string, seconds: number) =>
       d((ar ? 'الأذان ' : 'Adhan ') + time + (ar ? ` · يختفي خلال ${seconds} ث` : ` · hides in ${seconds} s`)),
     station, stationWhere,
-    radioStatus: (playing: boolean) => (playing ? (ar ? 'على الهواء' : 'On air') : ar ? 'متوقفة' : 'Off'),
+    radioStatus: (playing: boolean) => playing ? copy.radioOn : copy.radioOff,
     radioNote: () =>
       d(ar ? 'تستمر في الرئيسية وشاشة التوقف · تتوقف إذا شغّل تطبيق آخر صوتًا'
            : 'Keeps playing on Home and the screensaver · stops when another app plays sound'),
     screenOffNote: () =>
       d(ar ? 'الشاشة مطفأة والإذاعة تعمل · اضغط أي زر للعودة' : 'Screen off, radio playing · press any key to come back'),
     nowHint: () => d(ar ? 'رجوع للإغلاق · يُغلق تلقائيًا بعد 10 دقائق' : 'Back to dismiss · closes by itself after 10 min'),
-    chip: (prayer: string) => (ar ? prayer + ' بعد' : prayer + ' in'),
-    school: (hanafi: boolean) =>
-      hanafi ? (ar ? 'العصر: الحنفي' : 'Asr: Hanafi') : ar ? 'العصر: الجمهور (شافعي)' : 'Asr: standard (Shafi‘i)',
+    chip: (prayer: string) => s('chip', {prayer: String(prayer)}),
+    school: (hanafi: boolean) => hanafi ? copy.asrHanafi : copy.asrStandard,
     methodName: (m: string) => {
       const method = METHOD_DEFINITIONS.find(value => value.id === m) ?? METHOD_DEFINITIONS[0];
       return ar ? method.ar : method.en;
     },
-    place: (city: string, country: string) => city + (ar ? '، ' : ', ') + country,
-    offsetMinutes: (n: number) => d(`${n > 0 ? '+' : ''}${n}${ar ? ' د' : ' min'}`),
-    offsetCount: (n: number) => d(n === 0 ? (ar ? 'الكل 0 د' : 'All 0 min') : `${n}${ar ? ' معدّلة' : ' adjusted'}`),
+    place: (city: string, country: string) => city + copy.placeSeparator + country,
+    offsetMinutes: (n: number) => d(`${n > 0 ? '+' : ''}${n}` + copy.offsetMinuteSuffix),
+    offsetCount: (n: number) => d(n === 0 ? copy.offsetAllZero : n + copy.offsetChangedSuffix),
     days: (n: number) => {
       const sign = n > 0 ? '+' : '';
-      if (!ar) return d(`${sign}${n} ${Math.abs(n) === 1 ? 'day' : 'days'}`);
-      return d(`${sign}${n} ${Math.abs(n) === 2 ? 'يومان' : 'يوم'}`);
+      if (!ar) return d(sign + n + (Math.abs(n) === 1 ? F.en.dayUnit : F.en.daysUnit));
+      return d(sign + n + (Math.abs(n) === 2 ? F.ar.dayDual : F.ar.dayUnit));
     },
-    bell: (on: boolean) => (ar ? (on ? 'الأذان مفعّل' : 'الأذان متوقف') : on ? 'Adhan on' : 'Adhan off'),
-    passed: (sunrise: boolean) => (ar ? (sunrise ? 'مضى' : 'مضت') : 'passed'),
+    bell: (on: boolean) => on ? copy.bellOn : copy.bellOff,
+    passed: (sunrise: boolean) => ar ? (sunrise ? F.ar.passedSunrise : F.ar.passedPrayer) : F.en.passed,
     octant,
-    qiblaRelative: (clockwise: number) =>
-      (ar ? 'القبلة ' : 'Qibla is ') +
-      (ar
-        ? ['أمامك', 'أمامك إلى اليمين', 'على يمينك', 'خلفك إلى اليمين', 'خلفك', 'خلفك إلى اليسار', 'على يسارك', 'أمامك إلى اليسار']
-        : ['ahead of you', 'ahead, to your right', 'to your right', 'behind, to your right', 'behind you',
-           'behind, to your left', 'to your left', 'ahead, to your left'])[sector(clockwise)],
+    qiblaRelative: (clockwise: number) => copy.qiblaPrefix + copy.relativeDirections[sector(clockwise)],
     bearingLabel: (deg: number) => d(octant(deg) + ' · ' + deg + '°'),
-    roomButton: (set: boolean) =>
-      ar ? (set ? 'تغيير اتجاه الغرفة' : 'حدّد اتجاه الغرفة') : set ? 'Change room direction' : 'Set room direction',
+    roomButton: (set: boolean) => set ? copy.roomChange : copy.roomSet,
   };
 }

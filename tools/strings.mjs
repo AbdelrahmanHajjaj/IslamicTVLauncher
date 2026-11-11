@@ -25,8 +25,37 @@ function expression(value) {
     .map(part => /^\{\w+\}$/.test(part) ? part.slice(1, -1) : JSON.stringify(part)).join(' + ');
 }
 
-export function renderText(strings, template) {
+export function validateFormatText(format) {
+  if (!format || Object.keys(format).sort().join(',') !== 'ar,en') throw new Error('Missing formatter locales');
+  for (const entries of Object.values(format)) {
+    if (!entries || typeof entries !== 'object' || Array.isArray(entries) || !Object.keys(entries).length) throw new Error('Missing formatter entries');
+    for (const [key, value] of Object.entries(entries)) {
+      const values = Array.isArray(value) ? value : [value];
+      if (!/^[a-z][a-zA-Z0-9]*$/.test(key) || !values.length || values.some(text => typeof text !== 'string' || !text.length || /[\u0000-\u0008\u000b-\u001f]/.test(text))) {
+        throw new Error('Invalid formatter literal: ' + key);
+      }
+    }
+  }
+}
+
+export function renderLiterals(format, template) {
+  validateFormatText(format);
+  const seen = new Set();
+  const output = template.replace(/\{\{TEXT:(ar|en):(\w+)\}\}/g, (_, lang, key) => {
+    const value = format[lang][key];
+    if (value === undefined) throw new Error('Missing formatter literal: ' + lang + ':' + key);
+    seen.add(lang + ':' + key);
+    return Array.isArray(value) ? 'new String[] {' + value.map(text => JSON.stringify(text)).join(', ') + '}' : JSON.stringify(value);
+  });
+  if (seen.size !== Object.values(format).reduce((count, entries) => count + Object.keys(entries).length, 0) || output.includes('{{TEXT:')) {
+    throw new Error('Formatter catalog and adapter markers differ');
+  }
+  return output;
+}
+
+export function renderText(strings, template, format) {
   validateStrings(strings);
+  if (format) template = renderLiterals(format, template);
   const seen = new Set();
   const output = template.replace(/\{\{STRINGS:(\w+)\}\}/g, (_, key, at) => {
     if (!strings[key] || seen.has(key)) throw new Error('Missing or duplicate text marker: ' + key);
@@ -39,5 +68,5 @@ export function renderText(strings, template) {
     return 'return ar ? ' + part(entry.ar) + ' : ' + part(entry.en) + ';';
   });
   if (seen.size !== Object.keys(strings).length || output.includes('{{STRINGS:')) throw new Error('Text catalog and adapter markers differ');
-  return '// Generated from shared/data/strings.json and Text.java.template by tools/catalogs.mjs. Do not edit.\n' + output;
+  return '// Generated from shared/data/{strings,format-text}.json and Text.java.template by tools/catalogs.mjs. Do not edit.\n' + output;
 }

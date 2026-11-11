@@ -59,7 +59,8 @@ Kotlin, no Compose. It has to stay smooth on a TV with under 2 GB of RAM, so:
 - **Design tokens.** Colours, sizes and timings live in `afnon-mihrab/tokens.json`. `Tokens.java`,
   `colors.xml` and the preview site's CSS are generated from it: edit the JSON, then run `npm run tokens`
   in `site/` (Node 24). Never edit the generated files; CI checks they match. Plain bilingual text
-  comes from `shared/data/strings.json`; formatting logic lives in `app/src/main/templates/Text.java.template`.
+  comes from `shared/data/strings.json`, with formatter literals in `shared/data/format-text.json`.
+  Formatting logic lives in `app/src/main/templates/Text.java.template`.
 - **Arabic and English together.** Every string has both. Check the layout in RTL and in LTR.
   Arabic gets no letter-spacing. Quranic text uses Amiri.
 - **D-pad focus is explicit.** Each screen has a focus map, with Left and Right swapped in RTL. Test

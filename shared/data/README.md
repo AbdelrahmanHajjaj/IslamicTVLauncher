@@ -37,7 +37,13 @@ do not commit the MP3s.
 from Java. `{name}` parameters and the optional `d` digit-substitution flag retain
 their existing meanings. Both languages must have the same parameters/list sizes.
 Edit native formatting code in `app/src/main/templates/Text.java.template`, then
-regenerate; the remaining logical text and sacred UI constants are the next queue
-slice. Web adapters preserve the old extractor's compact literal spacing; Android
+regenerate. Web adapters preserve the old extractor's compact literal spacing; Android
 preserves native spacing (notably `saved` and `roomKeys`). Compiled baseline hashes
 cover both languages/digit modes and fresh label arrays.
+
+`format-text.json` owns the remaining formatter literals by locale. These include
+prefixes/suffixes with significant spaces, labels, directions and grammatical
+forms used only in one language. `{{TEXT:ar:key}}` / `{{TEXT:en:key}}` markers insert
+Java literals at build time; selection, plural rules and digit formatting stay in
+the adapters. Preview/LG read the same data for matching copy. Native and preview
+have separate frozen edge-case baselines. Sacred UI constants are the next slice.

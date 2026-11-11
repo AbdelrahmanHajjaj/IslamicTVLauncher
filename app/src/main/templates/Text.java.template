@@ -41,7 +41,7 @@ final class Text {
     String addFavourite() { {{STRINGS:addFavourite}} }
     String removeFavourite() { {{STRINGS:removeFavourite}} }
     String replaceFavourite() { {{STRINGS:replaceFavourite}} }
-    String replaceWith(String name) { return (ar ? "استبدال بـ " : "REPLACE WITH ") + name; }
+    String replaceWith(String name) { return (ar ? {{TEXT:ar:replaceWithPrefix}} : {{TEXT:en:replaceWithPrefix}}) + name; }
     String uninstall() { {{STRINGS:uninstall}} }
     String focusLighting() { {{STRINGS:focusLighting}} }
     String focusLightingHelp() { {{STRINGS:focusLightingHelp}} }
@@ -49,8 +49,8 @@ final class Text {
     String hideSystemAppsHelp() { {{STRINGS:hideSystemAppsHelp}} }
     String recentApps() { {{STRINGS:recentApps}} }
     /** Home's tile: the label over the count. */
-    String all(int n) { return d((ar ? "كل التطبيقات" : "All apps") + "\n" + n); }
-    String ampm(boolean am) { return ar ? (am ? "ص" : "م") : (am ? "AM" : "PM"); }
+    String all(int n) { return d(allTitle() + "\n" + n); }
+    String ampm(boolean am) { return ar ? (am ? {{TEXT:ar:am}} : {{TEXT:ar:pm}}) : (am ? {{TEXT:en:am}} : {{TEXT:en:pm}}); }
     String adhanAt() { {{STRINGS:adhanAt}} }
     String nowTag() { {{STRINGS:nowTag}} }
     String nextTag() { {{STRINGS:nextTag}} }
@@ -61,7 +61,7 @@ final class Text {
     String iftar() { {{STRINGS:iftar}} }
     String iftarTag() { {{STRINGS:iftarTag}} }
     String suhoorTag() { {{STRINGS:suhoorTag}} }
-    String suhoorEnds(String time) { return d(ar ? "السحور حتى " + time : "Suhoor ends " + time); }
+    String suhoorEnds(String time) { return d(ar ? {{TEXT:ar:suhoorEndsPrefix}} + time : {{TEXT:en:suhoorEndsPrefix}} + time); }
     String comingSoon() { {{STRINGS:comingSoon}} }
 
     String open(String app) { {{STRINGS:open}} }
@@ -74,20 +74,20 @@ final class Text {
      */
     String inMinutes(long minutes, String hoursAndMinutes) {
         if (minutes >= 60) return in(hoursAndMinutes);
-        if (!ar) return d("in " + minutes + " min");
-        if (minutes <= 1) return "بعد دقيقة واحدة";
-        if (minutes == 2) return "بعد دقيقتين";
-        return d("بعد " + minutes + (minutes <= 10 ? " دقائق" : " دقيقة"));
+        if (!ar) return d({{TEXT:en:relativePrefix}} + minutes + {{TEXT:en:minuteUnit}});
+        if (minutes <= 1) return {{TEXT:ar:minutesOne}};
+        if (minutes == 2) return {{TEXT:ar:minutesTwo}};
+        return d({{TEXT:ar:relativePrefix}} + minutes + (minutes <= 10 ? {{TEXT:ar:minutesUnit}} : {{TEXT:ar:minuteUnit}}));
     }
 
     // Reminder and call to prayer (design/Home.dc.html approach/now, design/ApproachVideo.dc.html)
     String apLabel() { {{STRINGS:apLabel}} }
     /** "Asr in 13 minutes". */
     String apTitle(String prayer, long minutes, String hoursAndMinutes) {
-        if (!ar && minutes < 60) return d(prayer + " in " + minutes + (minutes == 1 ? " minute" : " minutes"));
+        if (!ar && minutes < 60) return d(prayer + {{TEXT:en:prayerInSeparator}} + minutes + (minutes == 1 ? {{TEXT:en:minuteSingular}} : {{TEXT:en:minutesUnit}}));
         return prayer + " " + inMinutes(minutes, hoursAndMinutes);
     }
-    String apSub(CharSequence time) { return d((ar ? "الأذان " : "Adhan at ") + time); }
+    String apSub(CharSequence time) { return d((ar ? {{TEXT:ar:callTimePrefix}} : {{TEXT:en:callTimePrefix}}) + time); }
     String apOk() { {{STRINGS:apOk}} }
     String nowLabel() { {{STRINGS:nowLabel}} }
     String play() { {{STRINGS:play}} }
@@ -103,25 +103,25 @@ final class Text {
     String[] stationGroups() { {{STRINGS:stationGroups}} }
     String radioStatus(int s) {
         switch (s) {
-            case Radio.PLAYING: return ar ? "على الهواء" : "On air";
-            case Radio.CONNECTING: return ar ? "جارٍ الاتصال…" : "Connecting…";
-            case Radio.RETRYING: return ar ? "انقطع البث · نعيد المحاولة" : "Signal lost · retrying";
-            case Radio.PAUSED: return ar ? "متوقفة للأذان" : "Paused for the adhan";
-            default: return ar ? "متوقفة" : "Off";
+            case Radio.PLAYING: return ar ? {{TEXT:ar:radioOn}} : {{TEXT:en:radioOn}};
+            case Radio.CONNECTING: return ar ? {{TEXT:ar:radioConnecting}} : {{TEXT:en:radioConnecting}};
+            case Radio.RETRYING: return ar ? {{TEXT:ar:radioRetrying}} : {{TEXT:en:radioRetrying}};
+            case Radio.PAUSED: return ar ? {{TEXT:ar:radioPaused}} : {{TEXT:en:radioPaused}};
+            default: return ar ? {{TEXT:ar:radioOff}} : {{TEXT:en:radioOff}};
         }
     }
     String radioPlay() { {{STRINGS:radioPlay}} }
     String radioStop() { {{STRINGS:radioStop}} }
     String screenOff() { {{STRINGS:screenOff}} }
     String sectionRadio() { {{STRINGS:sectionRadio}} }
-    String radioRowHelp(Radio.Station s) { return stationWhere(s) + (ar ? " · تحتاج إلى الإنترنت" : " · needs the internet"); }
+    String radioRowHelp(Radio.Station s) { return stationWhere(s) + (ar ? {{TEXT:ar:radioHelpSuffix}} : {{TEXT:en:radioHelpSuffix}}); }
     String afterAdhanRow() { {{STRINGS:afterAdhanRow}} }
     String afterAdhanHelp() { {{STRINGS:afterAdhanHelp}} }
     String[] afterAdhanChoices() { {{STRINGS:afterAdhanChoices}} }
     String radioDarkRow() { {{STRINGS:radioDarkRow}} }
     String radioDarkHelp() {
-        return d(ar ? "توفير الكهرباء: تنطفئ الشاشة وتستمر الإذاعة · أي زر يعيدها"
-                    : "Saves power: the screen goes dark, the radio keeps playing · any key brings it back");
+        return d(ar ? {{TEXT:ar:radioDarkHelp}}
+                    : {{TEXT:en:radioDarkHelp}});
     }
     String[] radioDarkChoices() { {{STRINGS:radioDarkChoices}} }
 
@@ -143,8 +143,8 @@ final class Text {
     /** "Asr in", followed by the countdown. */
     String chip(String prayer) { {{STRINGS:chip}} }
     String favNote(int position) {
-        String[] ord = {"الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع"};
-        return ar ? "في المفضلة · " + ord[position - 1] : d("In favourites · position " + position);
+        String[] ord = {{TEXT:ar:favouriteOrdinals}};
+        return ar ? {{TEXT:ar:favouritePrefix}} + ord[position - 1] : d({{TEXT:en:favouritePrefix}} + position);
     }
     String notFav() { {{STRINGS:notFav}} }
     String moveEarlier() { {{STRINGS:moveEarlier}} }
@@ -157,8 +157,8 @@ final class Text {
     String dayTitle() { {{STRINGS:dayTitle}} }
     String home() { {{STRINGS:home}} }
     String school(Madhab m) {
-        if (m == Madhab.HANAFI) return ar ? "العصر: الحنفي" : "Asr: Hanafi";
-        return ar ? "العصر: الجمهور (شافعي)" : "Asr: standard (Shafi‘i)";
+        if (m == Madhab.HANAFI) return ar ? {{TEXT:ar:asrHanafi}} : {{TEXT:en:asrHanafi}};
+        return ar ? {{TEXT:ar:asrStandard}} : {{TEXT:en:asrStandard}};
     }
 
     String methodName(PrayerMethod m) { return ar ? m.ar : m.en; }
@@ -166,10 +166,10 @@ final class Text {
     /** "Fajr angle 19.5° · Isha 17.5°", or Isha as minutes after Maghrib where the method fixes it that way. */
     String methodAngles(PrayerMethod m) {
         CalculationParameters p = m.getParameters();
-        String fajr = (ar ? "زاوية الفجر " : "Fajr angle ") + trim(p.fajrAngle) + "°";
+        String fajr = (ar ? {{TEXT:ar:fajrAnglePrefix}} : {{TEXT:en:fajrAnglePrefix}}) + trim(p.fajrAngle) + "°";
         String isha = p.ishaInterval > 0
-            ? (ar ? "العشاء بعد المغرب بـ " + p.ishaInterval + " دقيقة" : "Isha " + p.ishaInterval + " min after Maghrib")
-            : (ar ? "العشاء " : "Isha ") + trim(p.ishaAngle) + "°";
+            ? (ar ? {{TEXT:ar:ishaIntervalPrefix}} + p.ishaInterval + {{TEXT:ar:ishaIntervalSuffix}} : {{TEXT:en:ishaIntervalPrefix}} + p.ishaInterval + {{TEXT:en:ishaIntervalSuffix}})
+            : (ar ? {{TEXT:ar:ishaAnglePrefix}} : {{TEXT:en:ishaAnglePrefix}}) + trim(p.ishaAngle) + "°";
         return d(fajr + " · " + isha);
     }
 
@@ -181,7 +181,7 @@ final class Text {
     String sectionPrayer() { {{STRINGS:sectionPrayer}} }
     String sectionReminders() { {{STRINGS:sectionReminders}} }
     String sectionDisplay() { {{STRINGS:sectionDisplay}} }
-    String sectionNetwork(String ssid) { return ssid == null ? (ar ? "الشبكة" : "Network") : (ar ? "الشبكة · " : "Network · ") + ssid; }
+    String sectionNetwork(String ssid) { return ssid == null ? (ar ? {{TEXT:ar:networkLabel}} : {{TEXT:en:networkLabel}}) : (ar ? {{TEXT:ar:networkPrefix}} : {{TEXT:en:networkPrefix}}) + ssid; }
     String sectionDevice() { {{STRINGS:sectionDevice}} }
     String preview() { {{STRINGS:preview}} }
     String location() { {{STRINGS:location}} }
@@ -190,22 +190,22 @@ final class Text {
     /** Location's first step, in the order of Prefs.REGIONS. */
     String[] regions() { {{STRINGS:regions}} }
     String locationHelp(double lat, double lng) {
-        String ns = lat >= 0 ? (ar ? "ش" : "N") : (ar ? "ج" : "S");
-        String ew = lng >= 0 ? (ar ? "ق" : "E") : (ar ? "غ" : "W");
+        String ns = lat >= 0 ? (ar ? {{TEXT:ar:latitudeNorth}} : {{TEXT:en:latitudeNorth}}) : (ar ? {{TEXT:ar:latitudeSouth}} : {{TEXT:en:latitudeSouth}});
+        String ew = lng >= 0 ? (ar ? {{TEXT:ar:longitudeEast}} : {{TEXT:en:longitudeEast}}) : (ar ? {{TEXT:ar:longitudeWest}} : {{TEXT:en:longitudeWest}});
         return d(String.format(java.util.Locale.US, "%.2f° %s · %.2f° %s", Math.abs(lat), ns, Math.abs(lng), ew)
-            + (ar ? " · يُختار من القائمة" : " · chosen from the list"));
+            + (ar ? {{TEXT:ar:locationSuffix}} : {{TEXT:en:locationSuffix}}));
     }
-    String place(String city, String country) { return city + (ar ? "، " : ", ") + country; }
+    String place(String city, String country) { return city + (ar ? {{TEXT:ar:placeSeparator}} : {{TEXT:en:placeSeparator}}) + country; }
     String method() { {{STRINGS:method}} }
     String asrSchool() { {{STRINGS:asrSchool}} }
     String asrSchoolHelp() { {{STRINGS:asrSchoolHelp}} }
     String[] asrSchools() { {{STRINGS:asrSchools}} }
     String hijriAdjust() { {{STRINGS:hijriAdjust}} }
-    String hijriToday(String date) { return (ar ? "اليوم: " : "Today: ") + date; }
+    String hijriToday(String date) { return (ar ? {{TEXT:ar:todayPrefix}} : {{TEXT:en:todayPrefix}}) + date; }
     String days(int n) {
         String sign = n > 0 ? "+" : "";
-        if (!ar) return d(sign + n + (Math.abs(n) == 1 ? " day" : " days"));
-        return d(sign + n + (Math.abs(n) == 2 ? " يومان" : " يوم"));
+        if (!ar) return d(sign + n + (Math.abs(n) == 1 ? {{TEXT:en:dayUnit}} : {{TEXT:en:daysUnit}}));
+        return d(sign + n + (Math.abs(n) == 2 ? {{TEXT:ar:dayDual}} : {{TEXT:ar:dayUnit}}));
     }
     String roomRow() { return roomTitle(); }
     String roomHelp() { {{STRINGS:roomHelp}} }
@@ -221,7 +221,7 @@ final class Text {
     String adhanHelp() { {{STRINGS:adhanHelp}} }
     String language() { {{STRINGS:language}} }
     String languageHelp() { {{STRINGS:languageHelp}} }
-    String[] languages() { return new String[] {ar ? "التلفاز" : "TV", "العربية", "English"}; }
+    String[] languages() { return ar ? {{TEXT:ar:languages}} : {{TEXT:en:languages}}; }
     String digits() { {{STRINGS:digits}} }
     String clockRow() { {{STRINGS:clockRow}} }
     String clockHelp() { {{STRINGS:clockHelp}} }
@@ -235,20 +235,20 @@ final class Text {
     String north() { {{STRINGS:north}} }
     String qiblaHint() { {{STRINGS:qiblaHint}} }
     String bellToggle() { {{STRINGS:bellToggle}} }
-    String bell(boolean on) { return ar ? (on ? "الأذان مفعّل" : "الأذان متوقف") : (on ? "Adhan on" : "Adhan off"); }
+    String bell(boolean on) { return ar ? (on ? {{TEXT:ar:bellOn}} : {{TEXT:ar:bellOff}}) : (on ? {{TEXT:en:bellOn}} : {{TEXT:en:bellOff}}); }
     String rowNow() { {{STRINGS:rowNow}} }
     /** Sunrise is masculine in Arabic (الشروق مضى); the prayers are feminine (الصلاة مضت). */
-    String passed(boolean sunrise) { return ar ? (sunrise ? "مضى" : "مضت") : "passed"; }
-    String in(String duration) { return d(ar ? "بعد " + duration : "in " + duration); }
+    String passed(boolean sunrise) { return ar ? (sunrise ? {{TEXT:ar:passedSunrise}} : {{TEXT:ar:passedPrayer}}) : {{TEXT:en:passed}}; }
+    String in(String duration) { return d(ar ? {{TEXT:ar:relativePrefix}} + duration : {{TEXT:en:relativePrefix}} + duration); }
 
     /** "South-east · from Cairo" for a bearing in degrees from true north. */
     String qiblaDirection(double bearing) {
-        return octant(bearing) + (ar ? " · من " : " · from ") + city();
+        return octant(bearing) + (ar ? {{TEXT:ar:qiblaFromPrefix}} : {{TEXT:en:qiblaFromPrefix}}) + city();
     }
 
     String octant(double bearing) {
-        String[] names = ar ? new String[] {"شمال", "شمال شرق", "شرق", "جنوب شرق", "جنوب", "جنوب غرب", "غرب", "شمال غرب"}
-                            : new String[] {"North", "North-east", "East", "South-east", "South", "South-west", "West", "North-west"};
+        String[] names = ar ? {{TEXT:ar:octants}}
+                            : {{TEXT:en:octants}};
         return names[sector(bearing)];
     }
 
@@ -258,18 +258,17 @@ final class Text {
      */
     String qiblaRelative(double clockwise) {
         String[] where = ar
-            ? new String[] {"أمامك", "أمامك إلى اليمين", "على يمينك", "خلفك إلى اليمين", "خلفك", "خلفك إلى اليسار", "على يسارك", "أمامك إلى اليسار"}
-            : new String[] {"ahead of you", "ahead, to your right", "to your right", "behind, to your right", "behind you",
-                            "behind, to your left", "to your left", "ahead, to your left"};
-        return (ar ? "القبلة " : "Qibla is ") + where[sector(clockwise)];
+            ? {{TEXT:ar:relativeDirections}}
+            : {{TEXT:en:relativeDirections}};
+        return (ar ? {{TEXT:ar:qiblaPrefix}} : {{TEXT:en:qiblaPrefix}}) + where[sector(clockwise)];
     }
 
     /** "North-west · 320°". */
     String bearingLabel(int degrees) { return d(octant(degrees) + " · " + degrees + "°"); }
 
-    String facingLine(int facing) { return (ar ? "تجلس مواجهًا: " : "You face: ") + bearingLabel(facing); }
+    String facingLine(int facing) { return (ar ? {{TEXT:ar:facingPrefix}} : {{TEXT:en:facingPrefix}}) + bearingLabel(facing); }
     String tvMarker() { {{STRINGS:tvMarker}} }
-    String roomButton(boolean set) { return ar ? (set ? "تغيير اتجاه الغرفة" : "حدّد اتجاه الغرفة") : (set ? "Change room direction" : "Set room direction"); }
+    String roomButton(boolean set) { return ar ? (set ? {{TEXT:ar:roomChange}} : {{TEXT:ar:roomSet}}) : (set ? {{TEXT:en:roomChange}} : {{TEXT:en:roomSet}}); }
     String roomTitle() { {{STRINGS:roomTitle}} }
     String roomTip() { {{STRINGS:roomTip}} }
     String roomKeys() { {{STRINGS:roomKeys}} }
@@ -309,8 +308,8 @@ final class Text {
     String inputsSystem() { {{STRINGS:inputsSystem}} }
     String prayerOffsets() { {{STRINGS:prayerOffsets}} }
     String prayerOffsetsHelp() { {{STRINGS:prayerOffsetsHelp}} }
-    String offsetMinutes(int n) { return d((n > 0 ? "+" : "") + n + (ar ? " د" : " min")); }
-    String offsetCount(int n) { return d(n == 0 ? (ar ? "الكل 0 د" : "All 0 min") : n + (ar ? " معدّلة" : " adjusted")); }
+    String offsetMinutes(int n) { return d((n > 0 ? "+" : "") + n + (ar ? {{TEXT:ar:offsetMinuteSuffix}} : {{TEXT:en:offsetMinuteSuffix}})); }
+    String offsetCount(int n) { return d(n == 0 ? (ar ? {{TEXT:ar:offsetAllZero}} : {{TEXT:en:offsetAllZero}}) : n + (ar ? {{TEXT:ar:offsetChangedSuffix}} : {{TEXT:en:offsetChangedSuffix}})); }
     String remoteButtons() { {{STRINGS:remoteButtons}} }
     String pressButton() { {{STRINGS:pressButton}} }
     String pressButtonHelp() { {{STRINGS:pressButtonHelp}} }
@@ -318,7 +317,7 @@ final class Text {
     String enableButtons() { {{STRINGS:enableButtons}} }
     String buttonsFailed() { {{STRINGS:buttonsFailed}} }
     String buttonAppMissing() { {{STRINGS:buttonAppMissing}} }
-    String buttonNumber(int code) { return (ar ? "زر " : "Button ") + d(String.valueOf(code)); }
+    String buttonNumber(int code) { return (ar ? {{TEXT:ar:buttonPrefix}} : {{TEXT:en:buttonPrefix}}) + d(String.valueOf(code)); }
     String[] buttonNames() { {{STRINGS:buttonNames}} }
     String restoreButtons() { {{STRINGS:restoreButtons}} }
     String serviceHealth() { {{STRINGS:serviceHealth}} }
