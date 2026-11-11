@@ -3,7 +3,6 @@ package tv.afnon.home;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -13,6 +12,8 @@ import java.util.Set;
 import tv.afnon.core.PrayerRules;
 import tv.afnon.core.UiContract;
 import tv.afnon.core.UiControl;
+import static tv.afnon.home.UiContractDeviceCheck.field;
+import static tv.afnon.home.UiContractDeviceCheck.waitFocus;
 
 /** Exercises the actual prayer screen without scheduling or playing alerts. */
 final class PrayerUiDeviceCheck {
@@ -121,26 +122,12 @@ final class PrayerUiDeviceCheck {
         }
     }
 
-    private static void waitFocus(android.app.Activity activity) {
-        long until = SystemClock.uptimeMillis() + 5000;
-        while (!activity.hasWindowFocus() && SystemClock.uptimeMillis() < until) SystemClock.sleep(25);
-        check(activity.hasWindowFocus(), "Activity has window focus");
-    }
-
     private static void facing(Instrumentation test, PrayerDayActivity day, int expected) {
         UiContractDeviceCheck.onMain(test, () -> {
             check(field(day, "picker") != null, "Room editor owns keys");
             check((Integer) field(day, "pickerFacing") == expected, "Bearing input including wrap and RTL");
             check(((TextView) field(day, "pickerValue")).getText().toString().equals(day.t.bearingLabel(expected)), "Rendered bearing value");
         });
-    }
-
-    static Object field(Object target, String name) {
-        try {
-            java.lang.reflect.Field field = target.getClass().getDeclaredField(name);
-            field.setAccessible(true);
-            return field.get(target);
-        } catch (ReflectiveOperationException error) { throw new AssertionError(error); }
     }
 
     private static void check(boolean value, String message) {

@@ -92,6 +92,17 @@ return to the originating control. Clockwise remains physical Right in either
 language. The unset saved bearing stays unset until confirmed. LG's absent room
 editor remains an explicit gap. Other linked actions require their own conformance.
 
+Favourite menu actions use shared Add/Remove/Move earlier/Move later/Replace/Cancel
+IDs and canonical labels; the native Uninstall entry has a separate app action ID.
+Native bindings preserve existing package validation and four-to-nine-slot policy.
+Conformance opens real long-press menus, checks the opening release cannot select
+an action, and exercises mutations, visible favourite markers, cancellation and
+return focus in both languages. Replacement confines focus to available slots;
+save retains the chosen slot and Back retains the original order. The Uninstall
+entry is checked without activating the OS operation. A test-APK fixture supplies
+a removable app; preferences are restored exactly. LG's fixed shortcuts expose
+none of these editing/uninstall actions, with explicit unimplemented gaps.
+
 The implementation must provide one portable definition, shared focus rules and
 per-shell bindings. Conformance checks must:
 

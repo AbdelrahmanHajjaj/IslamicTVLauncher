@@ -92,6 +92,7 @@ final class UiContractDeviceCheck {
                 }
                 key(test, active[0], KeyEvent.KEYCODE_BACK);
                 bound.addAll(PrayerUiDeviceCheck.run(test, active[0]));
+                bound.addAll(FavouriteUiDeviceCheck.run(test));
                 UiContract.INSTANCE.validateCoverage(bound.toArray(new String[0]), gaps);
                 for (Map.Entry<String, Set<String>> entry : offered.entrySet()) {
                     UiContract.INSTANCE.validateChoiceCoverage(entry.getKey(), entry.getValue().toArray(new String[0]),
@@ -100,7 +101,7 @@ final class UiContractDeviceCheck {
                 test.runOnMainSync(() -> active[0].finish());
                 test.waitForIdleSync(); active[0] = null;
             }
-            result.putString("stream", "Native UI contract passed: Arabic/English settings, six offsets, five prayer switches, room direction save/cancel/return, semantic kinds, canonical labels and full binding/gap coverage.\n");
+            result.putString("stream", "Native UI contract passed: Arabic/English settings, six offsets, five prayer switches, room direction, favourite menus and replacement save/cancel/return, canonical labels and full binding/gap coverage.\n");
             code = Activity.RESULT_OK;
         } catch (Throwable error) {
             result.putString("stream", trace + android.util.Log.getStackTraceString(error));
@@ -131,6 +132,20 @@ final class UiContractDeviceCheck {
         Throwable[] failure = new Throwable[1];
         test.runOnMainSync(() -> { try { action.run(); } catch (Throwable error) { failure[0] = error; } });
         if (failure[0] != null) throw new AssertionError("Native UI interaction", failure[0]);
+    }
+
+    static void waitFocus(Activity activity) {
+        long until = SystemClock.uptimeMillis() + 5000;
+        while (!activity.hasWindowFocus() && SystemClock.uptimeMillis() < until) SystemClock.sleep(25);
+        check(activity.hasWindowFocus(), "Activity has window focus");
+    }
+
+    static Object field(Object target, String name) {
+        try {
+            java.lang.reflect.Field field = target.getClass().getDeclaredField(name);
+            field.setAccessible(true);
+            return field.get(target);
+        } catch (ReflectiveOperationException error) { throw new AssertionError(error); }
     }
 
     private static void collect(Instrumentation test, SettingsActivity settings, Set<String> all, String section, Map<String, Set<String>> offered) {

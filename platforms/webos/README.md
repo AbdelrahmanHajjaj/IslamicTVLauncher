@@ -58,6 +58,10 @@ The 0.2.8 source binds those five prayer switches to the same semantic controls
 as Android; sunrise stays informational. Bilingual browser checks exercise every
 switch's saved value and Back to its originating setting. These checks mock the LG
 boundary; the installed TV is still 0.2.7 pending the final 0.2.8 hardware check.
+Shared favourite editing and native Uninstall action definitions are retained in
+the catalog, with explicit unimplemented gaps: this shell keeps its fixed shortcuts
+and hides those actions. This is an implementation gap, without a claim that every
+LG model forbids editing.
 
 Home & appearance has a schematic layout preview and palette swatches, matching
 Android's draft/apply workflow. Theme, background, countdown, placement and prayer

@@ -15,6 +15,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   Five per-prayer adhan switches and the 0–359° room-direction editor also bind
   through the contract. Android and its preview now keep sunrise informational,
   removing a switch that could never produce an alert; saved preferences remain intact.
+  Favourite editing actions share IDs and canonical labels too; LG's fixed app
+  shortcuts keep editing hidden with declared gaps. Android retains focus on the
+  chosen slot after replacing a favourite.
 
 - Android and LG share deterministic Home focus rules. LG starts on its app
   content, moves Up to the top controls and Down beyond the final app row to All

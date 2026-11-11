@@ -96,37 +96,32 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.5c2 favourite operations, with actual bindings and relevant activation,
-return and save/cancel checks. Five per-prayer switches and native room direction
-are now verified. Settings choice values and numeric bounds are verified in both renderers. Keep the rest
-bounded to actual favourite controls/actions;
-no generic widget engine, new features or forced LG cosmetic ports. Unimplemented
-LG features may remain hidden, with explicit definitions/gaps as the owner approved.
-The catalog now has 81 controls, actual Android/LG bindings, canonical labels
-and complete binding/gap coverage in both languages. Settings option models and
-conditional variants now have full declared coverage; linked-editor workflow
-conformance is next. LG source is still 0.2.8; it is not packaged or
-installed. The TV remains on accepted 0.2.7 in Browser. Do not install intermediate
-builds until the remaining bounded contract work is ready for one hardware check.
-The watched cold boot passed: automatic launcher and HDMI picture/sound, new boot,
+Next: Q09.5d final 0.2.8 old-LG package and actual-host/UI acceptance. The bounded
+UI contract work is software-verified: 88 semantic controls, actual native/LG
+bindings, canonical labels, choice values/bounds, five per-prayer switches, room
+direction and favourite action flows. Native has 24 whole-control gaps and LG 22;
+partial-option gaps remain separately declared. LG editing/cosmetic features may
+stay hidden with honest unimplemented reasons, as the owner approved. Do not add a
+generic UI engine, speculative features or forced cosmetic ports.
+
+Build/review the final candidate, save fresh current LG preferences/input/startup,
+then use the already authorized in-place upgrade workflow. Verify installed files
+and core's 66-assertion proof on actual Node 0.10.25/WebKit 538.2, real control
+bindings/labels and preserved settings. Obtain human confirmation of visible UI,
+Arabic values, picture/sound and remote behavior. Source is still 0.2.8 and has not
+been packaged/installed; the TV remains on accepted 0.2.7 in Browser. Do not assume
+the owner is currently watching. No duplicate audible/power test is justified by
+these metadata/focus changes; those require a watcher if a new reason emerges.
+
+HomeNavigation is shared and physically accepted on installed LG 0.2.7. Its Up
+route uses Android's column-dependent top controls; Down beyond apps selects All
+apps. Watched cold boot/startup passed: automatic launcher and HDMI picture/sound,
 exactly one launch (3 to 4), all 30 preferences/input preserved, no pending test.
-The owner also confirmed Browser stayed visible after 90 seconds without reopening;
-a same-boot read confirms the launch counter stayed 4. Power/startup slice accepted.
-Shared HomeNavigation is implemented, consumed by Android/LG and physically accepted
-on installed LG 0.2.7. Define the full product contract with semantic IDs, control
-patterns/canonical label references and explicit shell implementation profiles.
-Owner permits unimplemented features to be hidden/locked; use hidden initially.
-Supported features need real bindings; unimplemented and OS-unsupported stay distinct
-in the report, with no silent omission. Do not force unsupported OS operations or
-add meaningless dead controls. Existing control coverage is enforced; broader
-choice/value/editor coverage remains the next slice.
-Q09.5a's spec is
-docs/UI-CONTRACT.md. Android is the reference, with explicit owner
-choice: Up from the first app row enters the top controls row according to column,
-not always the Settings gear; Down beyond the last app row selects All apps.
-Replace LG Home's geometric-nearest guessing with shared deterministic behavior.
-Enforce settings/action coverage so common omissions cannot be silently accepted
-as platform limitations. Preserve native rendering, stored keys and platform APIs.
+Browser then stayed visible for 90 seconds without a repeat launch; the same-boot
+counter remained 4. Preserve the current Arabic preference, not an older English
+snapshot. See docs/UI-CONTRACT.md for the implemented semantic/input specification;
+the remaining gate is actual final-package verification, followed by unavailable
+physical Android acceptance around 2026-11-25.
 
 Q09.4.4 background service test passed its live checks and cleanup. Owner heard
 adhan and reports Browser now, but did not observe whether Browser was visible
@@ -1683,3 +1678,59 @@ unrelated renderer redesign, transport or future shell.
   private ui-contract-emulator/prayer-{red,green}-result.log. The red regression
   failed on the original production screen before the fix. Next: favourite actions,
   then the final 0.2.8 old-LG host/UI check. Physical Android remains open.
+
+### Q09.5c2 favourite actions: implementation in progress
+
+- Bind the existing native arrange menu's Add/Remove/Move earlier/Move later/
+  Replace/Cancel and system Uninstall entry to canonical action IDs/labels. Keep
+  native minimum/maximum, ordering, package validation and storage unchanged.
+  LG editing/uninstall controls remain hidden with explicit unimplemented gaps.
+- Exercise real native menus and replacement mode in both languages, including
+  long-press release suppression, boundaries, mutations, Back/Cancel and focus.
+  A test-APK-only launchable fixture supplies a removable non-favourite without
+  touching user apps; never activate Uninstall or launch another app. Restore all
+  test preferences and close only the owned emulator after verification.
+- Real native regression passed menu mutation/cancellation and exposed a return-
+  focus defect: replacing slot two saved correctly but Home focused slot one.
+  Before the fix, ui-favourite-red.log fails specifically on the chosen-slot
+  return assertion. Keep the existing slot fallback when the previous package is
+  replaced; still follow the package if it remains elsewhere, and use initial
+  focus when the old slot disappears. No preference or app-launch change.
+
+### Q09.5c2 favourite actions: verified (2026-11-11)
+
+- Catalog now defines 88 controls, including six favourite editing actions and a
+  separate native Uninstall action. Real native menu items bind kinds/IDs and
+  canonical labels; their small action model keeps labels and callbacks together.
+  Existing package checks, menu order, four-to-nine policy, saved keys and action
+  handlers remain intact. Home replacement targets carry the same semantic action.
+- LG's fixed catalog keeps all seven actions hidden with explicit unimplemented
+  gaps, without claiming an OS restriction. Generated report now has 24 native/
+  22 LG whole-control gaps; partial-choice gaps are unchanged. Both actual shell
+  conformance runs account for every catalog ID; no independent support manifest.
+- Actual API 37 Arabic/English tests exercise real long-press menus, opening-release
+  suppression, canonical action labels, minimum/first/last boundaries, Add/Remove,
+  both reorder directions, saved order, visible stars and originating app focus.
+  Replacement checks slot-only focus/Up containment, RTL/LTR end movement, Back
+  cancellation, OK saving and the chosen-slot return. A test-only launcher entry
+  supplies a removable non-favourite; Uninstall is bound/checked but never invoked.
+  All original preferences are restored; no app is launched or removed.
+- Regression failed before the focus fix on replacing slot two: the saved order
+  was correct but focus jumped to slot one. Deleting the line which discarded the
+  existing slot fallback fixes it. The same real regression, plus cancellation/
+  modal/visible-marker assertions, passes in both languages. No UI redesign.
+- PASS: 21 JVM/20 JS common tests; 66 stripped ES5/browser/CommonJS assertions,
+  combined production runtime 78,337 bytes; catalog/generation/isolation/freshness
+  checks, full preview/shared suite; full LG ES5/build/service/async and bilingual
+  browser workflows; all 39 native Python/Java regressions. Native build/lint/test
+  APK and actual-view conformance pass: APK 21,125,157 bytes, 0 errors/55 existing
+  lint warnings. Physical long-press delivery/TV timing is not emulator proof.
+- Preserved fifth prior closed-session snapshot, resumed only the owned emulator,
+  then verified shutdown/offline serial/exited process and unchanged original AVD
+  hashes. All tool sessions completed; no emulator/inspector/TV test is pending.
+  No TV update occurred. Next is final 0.2.8 package/old-LG acceptance; physical
+  Android remains open. No companion or future-platform work is added.
+- Evidence: ignored ui-favourite-{red-build,red-target-build,red,green,core-check,
+  final-native-build,final-native-ui,native-regressions,lg-test,lg-browser,
+  preview-test,catalog-final,legacy-final,emulator-closure}.log and private
+  ui-contract-emulator/favourite-{red,green}-result.log.

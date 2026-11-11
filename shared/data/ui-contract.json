@@ -671,5 +671,54 @@
     "kind": "toggle",
     "label": "prayerNames:5",
     "save": "immediate"
+  },
+  {
+    "id": "favourites.add",
+    "section": "favourites",
+    "kind": "action",
+    "label": "addFavourite",
+    "save": "action"
+  },
+  {
+    "id": "favourites.remove",
+    "section": "favourites",
+    "kind": "action",
+    "label": "removeFavourite",
+    "save": "action"
+  },
+  {
+    "id": "favourites.move-earlier",
+    "section": "favourites",
+    "kind": "action",
+    "label": "moveEarlier",
+    "save": "action"
+  },
+  {
+    "id": "favourites.move-later",
+    "section": "favourites",
+    "kind": "action",
+    "label": "moveLater",
+    "save": "action"
+  },
+  {
+    "id": "favourites.replace",
+    "section": "favourites",
+    "kind": "action",
+    "label": "replaceFavourite",
+    "save": "action"
+  },
+  {
+    "id": "favourites.cancel",
+    "section": "favourites",
+    "kind": "action",
+    "label": "cancel",
+    "save": "action"
+  },
+  {
+    "id": "apps.uninstall",
+    "section": "apps",
+    "kind": "action",
+    "label": "uninstall",
+    "save": "action"
   }
 ]

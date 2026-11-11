@@ -84,5 +84,12 @@ internal object UiCatalog {
         UiControl("prayer.adhan-asr", "prayer-day", "toggle", "prayerNames:3", "immediate", "", emptyArray()),
         UiControl("prayer.adhan-maghrib", "prayer-day", "toggle", "prayerNames:4", "immediate", "", emptyArray()),
         UiControl("prayer.adhan-isha", "prayer-day", "toggle", "prayerNames:5", "immediate", "", emptyArray()),
+        UiControl("favourites.add", "favourites", "action", "addFavourite", "action", "", emptyArray()),
+        UiControl("favourites.remove", "favourites", "action", "removeFavourite", "action", "", emptyArray()),
+        UiControl("favourites.move-earlier", "favourites", "action", "moveEarlier", "action", "", emptyArray()),
+        UiControl("favourites.move-later", "favourites", "action", "moveLater", "action", "", emptyArray()),
+        UiControl("favourites.replace", "favourites", "action", "replaceFavourite", "action", "", emptyArray()),
+        UiControl("favourites.cancel", "favourites", "action", "cancel", "action", "", emptyArray()),
+        UiControl("apps.uninstall", "apps", "action", "uninstall", "action", "", emptyArray()),
     )
 }

@@ -73,5 +73,40 @@
     "id": "device.repair",
     "state": "os-unsupported",
     "reason": "Android accessibility recovery has no equivalent webOS service permission."
+  },
+  {
+    "id": "favourites.add",
+    "state": "unimplemented",
+    "reason": "App shortcuts use a fixed catalog; favourite editing is not implemented."
+  },
+  {
+    "id": "favourites.remove",
+    "state": "unimplemented",
+    "reason": "App shortcuts use a fixed catalog; favourite editing is not implemented."
+  },
+  {
+    "id": "favourites.move-earlier",
+    "state": "unimplemented",
+    "reason": "App shortcuts use a fixed catalog; favourite editing is not implemented."
+  },
+  {
+    "id": "favourites.move-later",
+    "state": "unimplemented",
+    "reason": "App shortcuts use a fixed catalog; favourite editing is not implemented."
+  },
+  {
+    "id": "favourites.replace",
+    "state": "unimplemented",
+    "reason": "App shortcuts use a fixed catalog; favourite editing is not implemented."
+  },
+  {
+    "id": "favourites.cancel",
+    "state": "unimplemented",
+    "reason": "App shortcuts use a fixed catalog; favourite editing is not implemented."
+  },
+  {
+    "id": "apps.uninstall",
+    "state": "unimplemented",
+    "reason": "No native app-uninstall action is implemented in this shell."
   }
 ]

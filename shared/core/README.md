@@ -30,7 +30,7 @@ complete, nonduplicated coverage. Source definitions and label references live i
 only the portable catalog using shared sources; `node tools/catalogs.mjs` also
 updates native projections and the gap report. The checked-in generated Kotlin
 keeps core builds standalone. JS consumer builds check freshness before compiling.
-Actual native rows and LG rows/carousels carry these IDs. Their conformance checks
+Actual native rows, favourite-menu actions/replacement targets and LG rows/carousels carry these IDs. Their conformance checks
 enumerate real views/DOM controls in both languages, rather than a support manifest.
 Shell gap declarations generate the [gap report](../../docs/UI-GAPS.md).
 Numeric controls reference named ranges; `minimum`/`maximum` reuse `PrayerRules`

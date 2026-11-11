@@ -32,7 +32,7 @@ ignored. Automated checks do not replace physical TV, sound and remote acceptanc
 
 ## Native runtime check
 
-Build `./gradlew :app:assembleDebugAndroidTest`. From the repository root, on an
+Build `./gradlew :app:assembleDebug :app:assembleDebugAndroidTest`. From the repository root, on an
 explicitly selected test device:
 
 ```sh
@@ -50,12 +50,17 @@ The runner restores process timezone defaults and does not write preferences, op
 UI, schedule alerts or play sound. Omitting `-e check prayer` retains the existing
 appearance-cycle UI test. Emulator results describe that image/API, not a physical TV or its older ICU.
 
-Use `-e check ui` for Settings contract conformance. It opens real settings rows in
+Use `-e check ui` for UI contract conformance. It opens real settings rows in
 Arabic/English, visits every section and the six-offset editor, and checks semantic
 IDs, sections, kinds, canonical labels and complete binding/choice/gap coverage.
 It visits countdown variants and temporarily seeds a valid custom-theme prerequisite.
-It restores locale/theme prerequisites and verifies preferences are unchanged. It does not play test audio
-or change TV integrations. The test dispatches logical keys through the real
+It exercises five prayer switches, the room-direction editor and actual favourite
+menus/replacement, including save/cancel, visible state and return focus. Favourite
+tests need four launchable apps plus the test APK's fixture entry; that entry is
+checked as removable but never launched or uninstalled. The runner temporarily
+sets bounded UI prerequisites, then restores the complete original preference
+object. It does not play test audio or change TV integrations. D-pad injection
+establishes remote focus mode, with further key codes dispatched through the real
 Activity handler; physical remote/firmware delivery remains a separate hardware check.
 App CI runs this mode on an API 34 emulator. Shell omissions are declared in
 `src/androidTest/assets/ui-{gaps,choice-gaps}.json`; see the generated [gap report](../../docs/UI-GAPS.md).

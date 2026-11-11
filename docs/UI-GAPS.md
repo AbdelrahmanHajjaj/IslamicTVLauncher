@@ -61,6 +61,13 @@ Migration acceptance and evidence live only in ARCHITECTURE-QUEUE.md.
 | `device.screensaver` | os-unsupported | No supported app-controlled system screensaver selection on the tested old LG. |
 | `device.remote` | os-unsupported | No supported global remote-key interception while this app is closed. |
 | `device.repair` | os-unsupported | Android accessibility recovery has no equivalent webOS service permission. |
+| `favourites.add` | unimplemented | App shortcuts use a fixed catalog; favourite editing is not implemented. |
+| `favourites.remove` | unimplemented | App shortcuts use a fixed catalog; favourite editing is not implemented. |
+| `favourites.move-earlier` | unimplemented | App shortcuts use a fixed catalog; favourite editing is not implemented. |
+| `favourites.move-later` | unimplemented | App shortcuts use a fixed catalog; favourite editing is not implemented. |
+| `favourites.replace` | unimplemented | App shortcuts use a fixed catalog; favourite editing is not implemented. |
+| `favourites.cancel` | unimplemented | App shortcuts use a fixed catalog; favourite editing is not implemented. |
+| `apps.uninstall` | unimplemented | No native app-uninstall action is implemented in this shell. |
 
 ### Choice values
 

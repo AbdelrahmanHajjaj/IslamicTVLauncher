@@ -47,6 +47,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import tv.afnon.core.UiContract;
 
 /** Afnon Home: independently arranged countdown, prayer information and app rows. */
 public class MainActivity extends Screen {
@@ -321,6 +322,7 @@ public class MainActivity extends Screen {
             for (int i = 0; i < NODES; i++) {
                 if (nodes[i] == null) continue;
                 boolean candidate = i >= F0 && i < M0;
+                if (candidate) nodes[i].setTag(UiContract.INSTANCE.bind("favourites.replace", "action"));
                 nodes[i].setFocusable(candidate);
                 nodes[i].setEnabled(candidate);
                 if (!candidate) nodes[i].setAlpha(.4f);
@@ -332,7 +334,6 @@ public class MainActivity extends Screen {
         render(true);
         View restore = previousNode >= 0 ? nodes[previousNode] : null;
         if (previousPackage != null) {
-            restore = null;
             for (int i = 0; i < NODES; i++) if (previousPackage.equals(nodePackage[i])) { restore = nodes[i]; break; }
         }
         if (restore == null || !restore.isFocusable()) restore = firstApp();

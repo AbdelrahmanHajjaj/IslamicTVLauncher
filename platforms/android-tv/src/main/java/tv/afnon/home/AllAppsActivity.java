@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import tv.afnon.core.UiContract;
+import tv.afnon.core.UiControl;
 
 /**
  * All apps (design/AllApps.dc.html): five columns, four rows in view, paging a row at a time.
@@ -53,11 +55,23 @@ public class AllAppsActivity extends Screen {
     private boolean okDown, okLong;
     private FrameLayout menu;
     private final List<FocusTile> menuItems = new ArrayList<>();
-    private final List<Runnable> menuActions = new ArrayList<>();
+    private final List<MenuAction> menuActions = new ArrayList<>();
     /** The OK release that ends the long press which opened the menu must not pick its first item. */
     private boolean swallowOkUp;
     /** The tile the menu was opened from, focused again when it closes without a change. */
     private int menuFrom;
+
+    private static final class MenuAction {
+        final UiControl control;
+        final String label;
+        final Runnable action;
+
+        MenuAction(String id, String label, Runnable action) {
+            this.control = UiContract.INSTANCE.bind(id, "action");
+            this.label = label;
+            this.action = action;
+        }
+    }
 
     @Override protected void onResume() {
         if (resumed) Apps.invalidate();
@@ -371,35 +385,31 @@ public class AllAppsActivity extends Screen {
         menuFrom = apps.indexOf(pkg);
         menuItems.clear();
         menuActions.clear();
-        List<String> labels = new ArrayList<>();
         int at = favs.indexOf(pkg);
         if (at >= 0) {
             if (favs.size() > 4) {
-                labels.add(t.removeFavourite());
-                menuActions.add(() -> { List<String> f = new ArrayList<>(favs); f.remove(pkg); Apps.saveFavourites(this, f); focusPkg = pkg; build(); });
+                menuActions.add(new MenuAction("favourites.remove", t.removeFavourite(),
+                    () -> { List<String> f = new ArrayList<>(favs); f.remove(pkg); Apps.saveFavourites(this, f); focusPkg = pkg; build(); }));
             }
-            if (at > 0) { labels.add(t.moveEarlier()); menuActions.add(() -> swapFav(at, at - 1, pkg)); }
-            if (at < favs.size() - 1) { labels.add(t.moveLater()); menuActions.add(() -> swapFav(at, at + 1, pkg)); }
+            if (at > 0) menuActions.add(new MenuAction("favourites.move-earlier", t.moveEarlier(), () -> swapFav(at, at - 1, pkg)));
+            if (at < favs.size() - 1) menuActions.add(new MenuAction("favourites.move-later", t.moveLater(), () -> swapFav(at, at + 1, pkg)));
         } else {
             if (favs.size() < Apps.FAVOURITE_SLOTS) {
-                labels.add(t.addFavourite());
-                menuActions.add(() -> { List<String> f = new ArrayList<>(favs); f.add(pkg); Apps.saveFavourites(this, f); focusPkg = pkg; build(); });
+                menuActions.add(new MenuAction("favourites.add", t.addFavourite(),
+                    () -> { List<String> f = new ArrayList<>(favs); f.add(pkg); Apps.saveFavourites(this, f); focusPkg = pkg; build(); }));
             }
-            labels.add(t.replaceFavourite());
-            menuActions.add(() -> {
+            menuActions.add(new MenuAction("favourites.replace", t.replaceFavourite(), () -> {
                 startActivity(new Intent(this, MainActivity.class).putExtra("replace_favourite", pkg));
                 finish();
-            });
+            }));
         }
         if (Apps.canUninstall(this, pkg)) {
-            labels.add(t.uninstall());
-            menuActions.add(() -> {
+            menuActions.add(new MenuAction("apps.uninstall", t.uninstall(), () -> {
                 if (Apps.canUninstall(this, pkg)) startSafely(new Intent(Intent.ACTION_UNINSTALL_PACKAGE,
                     android.net.Uri.fromParts("package", pkg, null)));
-            });
+            }));
         }
-        labels.add(t.cancel());
-        menuActions.add(null);
+        menuActions.add(new MenuAction("favourites.cancel", t.cancel(), null));
 
         menu = new FrameLayout(this);
         menu.setBackgroundColor(Palette.SCRIM_MENU);
@@ -427,13 +437,14 @@ public class AllAppsActivity extends Screen {
         LinearLayout choices = new LinearLayout(this);
         choices.setOrientation(LinearLayout.VERTICAL);
         scroll.addView(choices);
-        card.addView(scroll, new LinearLayout.LayoutParams(-1, Ui.ipx(Math.min(labels.size(), 6) * 90 + 36)));
-        for (int i = 0; i < labels.size(); i++) {
+        card.addView(scroll, new LinearLayout.LayoutParams(-1, Ui.ipx(Math.min(menuActions.size(), 6) * 90 + 36)));
+        for (int i = 0; i < menuActions.size(); i++) {
             FocusTile item = new FocusTile(this, 36);
+            item.setTag(menuActions.get(i).control);
             item.setFocusScale(1.04f);
             item.setRest(Palette.LAPIS_700, 0, 0);
             TextView l = text(ui400, 26, Palette.PLASTER_100);
-            l.setText(labels.get(i));
+            l.setText(menuActions.get(i).label);
             l.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
             l.setPadding(Ui.ipx(32), 0, Ui.ipx(32), 0);
             item.addView(l, new FrameLayout.LayoutParams(-1, -1));
@@ -475,7 +486,7 @@ public class AllAppsActivity extends Screen {
     private void closeMenu(int choice) {
         root.removeView(menu);
         menu = null;
-        if (choice >= 0 && choice < menuActions.size() - 1) menuActions.get(choice).run();
+        if (choice >= 0 && choice < menuActions.size() - 1) menuActions.get(choice).action.run();
         else focusTile(menuFrom);
     }
 
