@@ -1,9 +1,10 @@
+// Generated from shared/data/strings.json and Text.java.template by tools/catalogs.mjs. Do not edit.
 package tv.afnon.home;
 
 import com.batoulapps.adhan.CalculationParameters;
 import com.batoulapps.adhan.Madhab;
 
-/** Interface strings for both locales, taken from the `t` tables in design/Home.dc.html. */
+/** Native formatter; plain bilingual entries come from shared/data/strings.json. */
 final class Text {
     final boolean ar;
     /** Eastern Arabic digits (٠١٢٣). Its own setting; defaults to on in Arabic. */
@@ -100,9 +101,7 @@ final class Text {
     /** A station in a list: its name and place, since several are called إذاعة القرآن الكريم. */
     String stationChoice(Radio.Station s) { return s.reciter ? station(s) : station(s) + sep() + stationWhere(s); }
     String stationRow() { return ar ? "المحطة" : "Station"; }
-    String[] stationGroups() {
-        return ar ? new String[] {"إذاعات القرآن الكريم", "القرّاء"} : new String[] {"Quran radio stations", "Reciters"};
-    }
+    String[] stationGroups() { return ar ? new String[] {"إذاعات القرآن الكريم", "القرّاء"} : new String[] {"Quran radio stations", "Reciters"}; }
     String radioStatus(int s) {
         switch (s) {
             case Radio.PLAYING: return ar ? "على الهواء" : "On air";
@@ -125,9 +124,7 @@ final class Text {
         return d(ar ? "توفير الكهرباء: تنطفئ الشاشة وتستمر الإذاعة · أي زر يعيدها"
                     : "Saves power: the screen goes dark, the radio keeps playing · any key brings it back");
     }
-    String[] radioDarkChoices() {
-        return ar ? new String[] {"مع شاشة التوقف", "بعدها بـ 15 د", "أبدًا"} : new String[] {"With screensaver", "15 min later", "Never"};
-    }
+    String[] radioDarkChoices() { return ar ? new String[] {"مع شاشة التوقف", "بعدها بـ 15 د", "أبدًا"} : new String[] {"With screensaver", "15 min later", "Never"}; }
 
     String testPrayerAlerts() { return ar ? "تجربة التذكير والأذان" : "Test reminders & adhan"; }
     String testPrayerHelp() { return ar ? "معاينة الشريط أو شاشة الأذان بإعداداتك الحالية" : "Preview the banner or adhan screen with your current settings"; }
@@ -135,9 +132,7 @@ final class Text {
     String callCloseRow() { return ar ? "إغلاق شاشة الأذان" : "Close the call screen"; }
     String callCloseHelp() { return ar ? "ثم تعود إلى ما كنت تشاهده" : "Then back to what you were watching"; }
     /** In the order of the row's minutes: 0 (after the adhan), 1, 5, 10. */
-    String[] callCloseChoices() {
-        return ar ? new String[] {"بعد الأذان", "1 د", "5 د", "10 د"} : new String[] {"After adhan", "1 min", "5 min", "10 min"};
-    }
+    String[] callCloseChoices() { return ar ? new String[] {"بعد الأذان", "1 د", "5 د", "10 د"} : new String[] {"After adhan", "1 min", "5 min", "10 min"}; }
     String voiceRow() { return ar ? "صوت الأذان" : "Adhan voice"; }
     String voiceHelp() { return ar ? "لكل الصلوات عدا الفجر · يُسمع عند التنقل في القائمة" : "Every prayer but Fajr · plays as you move through the list"; }
     String fajrVoiceRow() { return ar ? "أذان الفجر" : "Fajr adhan"; }
@@ -147,7 +142,7 @@ final class Text {
     String allTitle() { return ar ? "كل التطبيقات" : "All apps"; }
     String back() { return ar ? "رجوع" : "Back"; }
     /** "Asr in", followed by the countdown. */
-    String chip(String prayer) { return ar ? prayer + " بعد" : prayer + " in"; }
+    String chip(String prayer) { return ar ? "" + prayer + " بعد" : "" + prayer + " in"; }
     String favNote(int position) {
         String[] ord = {"الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع"};
         return ar ? "في المفضلة · " + ord[position - 1] : d("In favourites · position " + position);
@@ -194,10 +189,7 @@ final class Text {
     String country() { return ar ? "الدولة" : "Country"; }
     String region() { return ar ? "المنطقة" : "Region"; }
     /** Location's first step, in the order of Prefs.REGIONS. */
-    String[] regions() {
-        return ar ? new String[] {"الدول العربية", "آسيا", "أوروبا", "الأمريكتان", "أفريقيا", "أوقيانوسيا"}
-            : new String[] {"Arab world", "Asia", "Europe", "Americas", "Africa", "Oceania"};
-    }
+    String[] regions() { return ar ? new String[] {"الدول العربية", "آسيا", "أوروبا", "الأمريكتان", "أفريقيا", "أوقيانوسيا"} : new String[] {"Arab world", "Asia", "Europe", "Americas", "Africa", "Oceania"}; }
     String locationHelp(double lat, double lng) {
         String ns = lat >= 0 ? (ar ? "ش" : "N") : (ar ? "ج" : "S");
         String ew = lng >= 0 ? (ar ? "ق" : "E") : (ar ? "غ" : "W");
@@ -221,16 +213,11 @@ final class Text {
     String notSet() { return ar ? "لم يُحدَّد" : "Not set"; }
     String remind() { return ar ? "التنبيه قبل الصلاة" : "Remind me before prayer"; }
     String remindHelp() { return ar ? "على الرئيسية وفوق الفيديو" : "On Home and over video"; }
-    String[] remindChoices() {
-        return ar ? new String[] {"5 د", "10 د", "15 د", "20 د", "30 د", "إيقاف"}
-                  : new String[] {"5 min", "10 min", "15 min", "20 min", "30 min", "Off"};
-    }
+    String[] remindChoices() { return ar ? new String[] {"5 د", "10 د", "15 د", "20 د", "30 د", "إيقاف"} : new String[] {"5 min", "10 min", "15 min", "20 min", "30 min", "Off"}; }
     String remindVoiceRow() { return ar ? "تذكير صوتي" : "Spoken reminder"; }
     String remindVoiceHelp() { return ar ? "«اقترب موعد صلاة …» مع التذكير" : "Says «اقترب موعد صلاة …» with the reminder"; }
     String announceRow() { return ar ? "إعلان دخول الوقت" : "Announce the time"; }
-    String announceHelp() {
-        return ar ? "«حان الآن موعد صلاة …» للصلاة التي أذانها متوقف" : "Says «حان الآن موعد صلاة …» when a prayer's adhan is off";
-    }
+    String announceHelp() { return ar ? "«حان الآن موعد صلاة …» للصلاة التي أذانها متوقف" : "Says «حان الآن موعد صلاة …» when a prayer's adhan is off"; }
     String adhanRow() { return ar ? "الأذان" : "Adhan"; }
     String adhanHelp() { return ar ? "يُشغَّل عند دخول الوقت · يمكن إيقافه لكل صلاة" : "Plays when the time begins · can be muted per prayer"; }
     String language() { return ar ? "اللغة" : "Language"; }
@@ -285,10 +272,7 @@ final class Text {
     String tvMarker() { return ar ? "التلفاز ▲" : "▲ TV"; }
     String roomButton(boolean set) { return ar ? (set ? "تغيير اتجاه الغرفة" : "حدّد اتجاه الغرفة") : (set ? "Change room direction" : "Set room direction"); }
     String roomTitle() { return ar ? "اتجاه الغرفة" : "Room direction"; }
-    String roomTip() {
-        return ar ? "قف مواجهًا للتلفاز، وافتح تطبيق البوصلة في هاتفك وأمسكه مستويًا أمامك، ثم اضبط الرقم هنا على ما تقرؤه. يكفي ذلك مرة واحدة ما دام التلفاز في مكانه."
-                  : "Stand facing the TV, open the compass app on your phone and hold it flat in front of you, then set the number here to what it reads. Once is enough while the TV stays where it is.";
-    }
+    String roomTip() { return ar ? "قف مواجهًا للتلفاز، وافتح تطبيق البوصلة في هاتفك وأمسكه مستويًا أمامك، ثم اضبط الرقم هنا على ما تقرؤه. يكفي ذلك مرة واحدة ما دام التلفاز في مكانه." : "Stand facing the TV, open the compass app on your phone and hold it flat in front of you, then set the number here to what it reads. Once is enough while the TV stays where it is."; }
     String roomKeys() { return ar ? "◀ ▶  ٥°     ▲ ▼  ٤٥°     OK  حفظ     رجوع  إلغاء" : "◀ ▶  5°     ▲ ▼  45°     OK  Save     Back  Cancel"; }
 
     private static int sector(double degrees) {
@@ -296,18 +280,9 @@ final class Text {
     }
 
     /** Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha. */
-    String[] prayerNames() {
-        return ar ? new String[] {"الفجر", "الشروق", "الظهر", "العصر", "المغرب", "العشاء"}
-                  : new String[] {"Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"};
-    }
+    String[] prayerNames() { return ar ? new String[] {"الفجر", "الشروق", "الظهر", "العصر", "المغرب", "العشاء"} : new String[] {"Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"}; }
 
-    String[] hijriMonths() {
-        return ar ? new String[] {"محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة",
-                                  "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"}
-                  : new String[] {"Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani", "Jumada al-Ula",
-                                  "Jumada al-Akhirah", "Rajab", "Sha'ban", "Ramadan", "Shawwal", "Dhu al-Qadah",
-                                  "Dhu al-Hijjah"};
-    }
+    String[] hijriMonths() { return ar ? new String[] {"محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"} : new String[] {"Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani", "Jumada al-Ula", "Jumada al-Akhirah", "Rajab", "Sha'ban", "Ramadan", "Shawwal", "Dhu al-Qadah", "Dhu al-Hijjah"}; }
 
     String hijriSuffix() { return ar ? " هـ" : " AH"; }
     String themeRow() { return ar ? "السمة" : "Theme"; }

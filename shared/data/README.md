@@ -1,12 +1,13 @@
 # Shared catalogs
 
-`cities.json`, `regions.json`, `methods.json`, `stations.json` and `voices.json` are canonical inputs for Android,
+`cities.json`, `regions.json`, `methods.json`, `stations.json`, `voices.json` and
+`strings.json` are canonical inputs for Android,
 LG and the browser preview. Keep existing city/method IDs and ordering so upgrades retain selected locations;
 Cairo is the fallback. The migration's remaining catalogs and decisions are tracked
 only in [`docs/ARCHITECTURE-QUEUE.md`](../../docs/ARCHITECTURE-QUEUE.md).
 
 Run `node tools/catalogs.mjs` from the repository root to regenerate Android's
-`CityCatalog.java`, `PrayerMethod.java`, `RadioCatalog.java`, `VoiceCatalog.java` and
+`CityCatalog.java`, `PrayerMethod.java`, `RadioCatalog.java`, `VoiceCatalog.java`, `Text.java` and
 `tools/adhan-sources.tsv`, or `npm --prefix site run gen` for all current generators.
 `node tools/catalogs.mjs --check` checks without writing. `npm --prefix site test`
 checks catalog validation, Java data fidelity and all method parameters against
@@ -31,3 +32,12 @@ The generated TSV lets `tools/fetch-adhans.sh` keep working with Bash/curl alone
 Local assets remain `adhan/<id>.mp3`; regular/Fajr defaults remain `alafasy` and
 `chebae_fajr`. The recordings' rights status is unchanged (see `THIRD_PARTY.md`);
 do not commit the MP3s.
+
+`strings.json` owns the 174 plain bilingual strings/lists previously extracted
+from Java. `{name}` parameters and the optional `d` digit-substitution flag retain
+their existing meanings. Both languages must have the same parameters/list sizes.
+Edit native formatting code in `app/src/main/templates/Text.java.template`, then
+regenerate; the remaining logical text and sacred UI constants are the next queue
+slice. Web adapters preserve the old extractor's compact literal spacing; Android
+preserves native spacing (notably `saved` and `roomKeys`). Compiled baseline hashes
+cover both languages/digit modes and fresh label arrays.

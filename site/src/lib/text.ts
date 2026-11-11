@@ -1,11 +1,12 @@
-// Interface strings. Plain ones come from the app's Text.java via scripts/extract.mjs (src/data/strings.json);
-// method labels come from shared data; other logical helpers still mirror Text.java.
-import S from '../data/strings.json';
+// Canonical interface strings; formatting helpers still mirror the native adapter.
+import S from '../../../shared/data/strings.json';
 import { METHOD_DEFINITIONS, type Station } from './data';
 
 export type Lang = 'ar' | 'en';
 type Entry = { ar: string | string[]; en: string | string[]; d?: boolean };
-const STRINGS = S as Record<string, Entry>;
+// Preserve the old web extractor's compact literal spacing before filling parameters.
+const compact = (value: string | string[]) => Array.isArray(value) ? value.map(text => text.replace(/\s+/g, ' ')) : value.replace(/\s+/g, ' ');
+const STRINGS = Object.fromEntries(Object.entries(S).map(([key, entry]) => [key, {...entry, ar: compact(entry.ar), en: compact(entry.en)}])) as Record<string, Entry>;
 const EASTERN = '٠١٢٣٤٥٦٧٨٩';
 
 export type Text = ReturnType<typeof makeText>;
@@ -19,15 +20,15 @@ export function makeText(lang: Lang, eastern = lang === 'ar') {
     // "·" beside Eastern digits reads as a zero (٠); Arabic punctuation takes its own comma instead.
     return s.replaceAll(' · ', '، ').replace(/[0-9]/g, (c) => EASTERN[+c]);
   };
-  /** A string from Text.java by method name, with {params} filled in. */
+  /** A canonical string by key, with {params} filled in. */
   const s = (key: string, params: Record<string, string | number> = {}): string => {
     const e = STRINGS[key];
-    if (!e) throw new Error(`no string "${key}" in Text.java`);
+    if (!e) throw new Error(`no string "${key}" in shared/data/strings.json`);
     const v = e[lang] as string;
     const out = v.replace(/\{(\w+)\}/g, (_, n) => String(params[n] ?? ''));
     return e.d ? d(out) : out;
   };
-  /** A String[] from Text.java. */
+  /** A canonical list. */
   const list = (key: string): string[] => STRINGS[key][lang] as string[];
 
   const sector = (deg: number) => Math.round((((deg % 360) + 360) % 360) / 45) % 8;

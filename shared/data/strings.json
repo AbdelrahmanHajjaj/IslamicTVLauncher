@@ -1,0 +1,995 @@
+{
+  "ref": {
+    "ar": "النساء 103",
+    "en": "An-Nisa 4:103",
+    "d": true
+  },
+  "nextPrayer": {
+    "ar": "الصلاة القادمة",
+    "en": "NEXT PRAYER"
+  },
+  "today": {
+    "ar": "مواقيت اليوم والقبلة",
+    "en": "Today & Qibla"
+  },
+  "settings": {
+    "ar": "الإعدادات",
+    "en": "Settings"
+  },
+  "fav": {
+    "ar": "المفضلة",
+    "en": "FAVOURITES"
+  },
+  "addFavourite": {
+    "ar": "إضافة إلى المفضلة",
+    "en": "Add to favourites"
+  },
+  "removeFavourite": {
+    "ar": "إزالة من المفضلة",
+    "en": "Remove from favourites"
+  },
+  "replaceFavourite": {
+    "ar": "استبدال تطبيق في المفضلة",
+    "en": "Replace a favourite"
+  },
+  "uninstall": {
+    "ar": "إلغاء التثبيت",
+    "en": "Uninstall"
+  },
+  "focusLighting": {
+    "ar": "إضاءة حسب التطبيق",
+    "en": "App focus lighting"
+  },
+  "focusLightingHelp": {
+    "ar": "تتغير إضاءة الخلفية قليلًا حسب التطبيق المحدد",
+    "en": "Gently tint the background using the selected app's colours"
+  },
+  "hideSystemApps": {
+    "ar": "إخفاء تطبيقات النظام من كل التطبيقات",
+    "en": "Hide system apps in All apps"
+  },
+  "hideSystemAppsHelp": {
+    "ar": "تبقى الوسائط والألعاب ومتجر Play ظاهرة",
+    "en": "Media apps, games and Play Store stay visible"
+  },
+  "recentApps": {
+    "ar": "التطبيقات الأخيرة",
+    "en": "RECENT APPS"
+  },
+  "adhanAt": {
+    "ar": "الأذان",
+    "en": "Adhan at"
+  },
+  "nowTag": {
+    "ar": "الآن",
+    "en": "NOW"
+  },
+  "nextTag": {
+    "ar": "التالية",
+    "en": "NEXT"
+  },
+  "jumuahLabel": {
+    "ar": "صلاة الجمعة",
+    "en": "JUMU'AH"
+  },
+  "jumuah": {
+    "ar": "الجمعة",
+    "en": "Jumu'ah"
+  },
+  "kahf": {
+    "ar": "سورة الكهف اليوم",
+    "en": "Surat Al-Kahf today"
+  },
+  "iftarIn": {
+    "ar": "الإفطار بعد",
+    "en": "IFTAR IN"
+  },
+  "iftar": {
+    "ar": "الإفطار",
+    "en": "Iftar"
+  },
+  "iftarTag": {
+    "ar": "الإفطار",
+    "en": "IFTAR"
+  },
+  "suhoorTag": {
+    "ar": "الإمساك",
+    "en": "SUHOOR"
+  },
+  "comingSoon": {
+    "ar": "هذه الشاشة قادمة في التحديث التالي",
+    "en": "This screen comes in the next update"
+  },
+  "open": {
+    "ar": "فتح {app}",
+    "en": "Open {app}"
+  },
+  "network": {
+    "ar": "إعدادات الشبكة",
+    "en": "Network settings"
+  },
+  "apLabel": {
+    "ar": "اقتربت الصلاة",
+    "en": "PRAYER APPROACHING"
+  },
+  "apOk": {
+    "ar": "حسنًا",
+    "en": "Got it"
+  },
+  "nowLabel": {
+    "ar": "حان الآن وقت صلاة",
+    "en": "IT'S TIME FOR"
+  },
+  "play": {
+    "ar": "تشغيل الأذان",
+    "en": "Play adhan"
+  },
+  "stop": {
+    "ar": "إيقاف الأذان",
+    "en": "Stop adhan"
+  },
+  "dismiss": {
+    "ar": "إغلاق",
+    "en": "Dismiss"
+  },
+  "radio": {
+    "ar": "الإذاعة",
+    "en": "Radio"
+  },
+  "stationRow": {
+    "ar": "المحطة",
+    "en": "Station"
+  },
+  "stationGroups": {
+    "ar": [
+      "إذاعات القرآن الكريم",
+      "القرّاء"
+    ],
+    "en": [
+      "Quran radio stations",
+      "Reciters"
+    ]
+  },
+  "radioPlay": {
+    "ar": "تشغيل",
+    "en": "Play"
+  },
+  "radioStop": {
+    "ar": "إيقاف",
+    "en": "Stop"
+  },
+  "screenOff": {
+    "ar": "إطفاء الشاشة",
+    "en": "Screen off"
+  },
+  "sectionRadio": {
+    "ar": "الإذاعة",
+    "en": "Radio"
+  },
+  "afterAdhanRow": {
+    "ar": "بعد الأذان",
+    "en": "After the adhan"
+  },
+  "afterAdhanHelp": {
+    "ar": "تتوقف الإذاعة أثناء الأذان ثم…",
+    "en": "The radio pauses for the adhan, then…"
+  },
+  "afterAdhanChoices": {
+    "ar": [
+      "تُستأنف",
+      "تبقى متوقفة"
+    ],
+    "en": [
+      "Resumes",
+      "Stays off"
+    ]
+  },
+  "radioDarkRow": {
+    "ar": "إطفاء الشاشة أثناء الاستماع",
+    "en": "Screen off while listening"
+  },
+  "radioDarkChoices": {
+    "ar": [
+      "مع شاشة التوقف",
+      "بعدها بـ 15 د",
+      "أبدًا"
+    ],
+    "en": [
+      "With screensaver",
+      "15 min later",
+      "Never"
+    ]
+  },
+  "testPrayerAlerts": {
+    "ar": "تجربة التذكير والأذان",
+    "en": "Test reminders & adhan"
+  },
+  "testPrayerHelp": {
+    "ar": "معاينة الشريط أو شاشة الأذان بإعداداتك الحالية",
+    "en": "Preview the banner or adhan screen with your current settings"
+  },
+  "testPrayerChoices": {
+    "ar": [
+      "شريط التذكير",
+      "شاشة الأذان"
+    ],
+    "en": [
+      "Reminder banner",
+      "Adhan popup"
+    ]
+  },
+  "callCloseRow": {
+    "ar": "إغلاق شاشة الأذان",
+    "en": "Close the call screen"
+  },
+  "callCloseHelp": {
+    "ar": "ثم تعود إلى ما كنت تشاهده",
+    "en": "Then back to what you were watching"
+  },
+  "callCloseChoices": {
+    "ar": [
+      "بعد الأذان",
+      "1 د",
+      "5 د",
+      "10 د"
+    ],
+    "en": [
+      "After adhan",
+      "1 min",
+      "5 min",
+      "10 min"
+    ]
+  },
+  "voiceRow": {
+    "ar": "صوت الأذان",
+    "en": "Adhan voice"
+  },
+  "voiceHelp": {
+    "ar": "لكل الصلوات عدا الفجر · يُسمع عند التنقل في القائمة",
+    "en": "Every prayer but Fajr · plays as you move through the list"
+  },
+  "fajrVoiceRow": {
+    "ar": "أذان الفجر",
+    "en": "Fajr adhan"
+  },
+  "fajrVoiceHelp": {
+    "ar": "يُفضَّل أذان فيه «الصلاة خير من النوم»",
+    "en": "Best with “prayer is better than sleep”"
+  },
+  "allTitle": {
+    "ar": "كل التطبيقات",
+    "en": "All apps"
+  },
+  "back": {
+    "ar": "رجوع",
+    "en": "Back"
+  },
+  "chip": {
+    "ar": "{prayer} بعد",
+    "en": "{prayer} in"
+  },
+  "notFav": {
+    "ar": "اضغط مطولًا على OK لوضعه في المفضلة",
+    "en": "Hold OK to put it in favourites"
+  },
+  "moveEarlier": {
+    "ar": "تقديمه في المفضلة",
+    "en": "Move earlier in favourites"
+  },
+  "moveLater": {
+    "ar": "تأخيره في المفضلة",
+    "en": "Move later in favourites"
+  },
+  "putInPlaceOf": {
+    "ar": "ضعه في المفضلة مكان {app}",
+    "en": "Put in favourites instead of {app}"
+  },
+  "cancel": {
+    "ar": "إلغاء",
+    "en": "Cancel"
+  },
+  "favourite": {
+    "ar": "مفضل",
+    "en": "Favourite"
+  },
+  "dayTitle": {
+    "ar": "مواقيت اليوم",
+    "en": "Today's prayers"
+  },
+  "home": {
+    "ar": "الرئيسية",
+    "en": "Home"
+  },
+  "sectionPrayer": {
+    "ar": "مواقيت الصلاة",
+    "en": "Prayer times"
+  },
+  "sectionReminders": {
+    "ar": "التنبيهات والأذان",
+    "en": "Reminders & adhan"
+  },
+  "sectionDisplay": {
+    "ar": "العرض واللغة",
+    "en": "Display & language"
+  },
+  "sectionDevice": {
+    "ar": "إعدادات الجهاز",
+    "en": "Device settings"
+  },
+  "preview": {
+    "ar": "العصر اليوم بهذه الإعدادات",
+    "en": "Asr today with these settings"
+  },
+  "location": {
+    "ar": "الموقع",
+    "en": "Location"
+  },
+  "country": {
+    "ar": "الدولة",
+    "en": "Country"
+  },
+  "region": {
+    "ar": "المنطقة",
+    "en": "Region"
+  },
+  "regions": {
+    "ar": [
+      "الدول العربية",
+      "آسيا",
+      "أوروبا",
+      "الأمريكتان",
+      "أفريقيا",
+      "أوقيانوسيا"
+    ],
+    "en": [
+      "Arab world",
+      "Asia",
+      "Europe",
+      "Americas",
+      "Africa",
+      "Oceania"
+    ]
+  },
+  "method": {
+    "ar": "طريقة الحساب",
+    "en": "Calculation method"
+  },
+  "asrSchool": {
+    "ar": "مذهب العصر",
+    "en": "Asr school"
+  },
+  "asrSchoolHelp": {
+    "ar": "يغيّر وقت العصر فقط",
+    "en": "Only changes the Asr time"
+  },
+  "asrSchools": {
+    "ar": [
+      "الجمهور",
+      "الحنفي"
+    ],
+    "en": [
+      "Standard",
+      "Hanafi"
+    ]
+  },
+  "hijriAdjust": {
+    "ar": "تعديل التاريخ الهجري",
+    "en": "Hijri date adjustment"
+  },
+  "roomHelp": {
+    "ar": "لمعرفة القبلة بالنسبة لمكان جلوسك",
+    "en": "So the Qibla is shown from where you sit"
+  },
+  "notSet": {
+    "ar": "لم يُحدَّد",
+    "en": "Not set"
+  },
+  "remind": {
+    "ar": "التنبيه قبل الصلاة",
+    "en": "Remind me before prayer"
+  },
+  "remindHelp": {
+    "ar": "على الرئيسية وفوق الفيديو",
+    "en": "On Home and over video"
+  },
+  "remindChoices": {
+    "ar": [
+      "5 د",
+      "10 د",
+      "15 د",
+      "20 د",
+      "30 د",
+      "إيقاف"
+    ],
+    "en": [
+      "5 min",
+      "10 min",
+      "15 min",
+      "20 min",
+      "30 min",
+      "Off"
+    ]
+  },
+  "remindVoiceRow": {
+    "ar": "تذكير صوتي",
+    "en": "Spoken reminder"
+  },
+  "remindVoiceHelp": {
+    "ar": "«اقترب موعد صلاة …» مع التذكير",
+    "en": "Says «اقترب موعد صلاة …» with the reminder"
+  },
+  "announceRow": {
+    "ar": "إعلان دخول الوقت",
+    "en": "Announce the time"
+  },
+  "announceHelp": {
+    "ar": "«حان الآن موعد صلاة …» للصلاة التي أذانها متوقف",
+    "en": "Says «حان الآن موعد صلاة …» when a prayer's adhan is off"
+  },
+  "adhanRow": {
+    "ar": "الأذان",
+    "en": "Adhan"
+  },
+  "adhanHelp": {
+    "ar": "يُشغَّل عند دخول الوقت · يمكن إيقافه لكل صلاة",
+    "en": "Plays when the time begins · can be muted per prayer"
+  },
+  "language": {
+    "ar": "اللغة",
+    "en": "Language"
+  },
+  "languageHelp": {
+    "ar": "«التلفاز» يتبع لغة التلفاز",
+    "en": "“TV” follows the TV's language"
+  },
+  "digits": {
+    "ar": "الأرقام",
+    "en": "Digits"
+  },
+  "clockRow": {
+    "ar": "الساعة",
+    "en": "Clock"
+  },
+  "clockHelp": {
+    "ar": "«التلفاز» يتبع إعداد الوقت في التلفاز",
+    "en": "“TV” follows the TV's time setting"
+  },
+  "clocks": {
+    "ar": [
+      "التلفاز",
+      "12 س",
+      "24 س"
+    ],
+    "en": [
+      "TV",
+      "12 h",
+      "24 h"
+    ]
+  },
+  "networkRow": {
+    "ar": "إعدادات الشبكة في التلفاز",
+    "en": "TV network settings"
+  },
+  "networkHelp": {
+    "ar": "واي فاي وإيثرنت",
+    "en": "Wi-Fi and Ethernet"
+  },
+  "deviceRow": {
+    "ar": "إعدادات التلفاز",
+    "en": "TV settings"
+  },
+  "deviceHelp": {
+    "ar": "الصورة والصوت والتطبيقات والنظام",
+    "en": "Picture, sound, apps and system"
+  },
+  "saved": {
+    "ar": "✓  تم الحفظ",
+    "en": "✓  Saved"
+  },
+  "qibla": {
+    "ar": "القبلة",
+    "en": "QIBLA"
+  },
+  "north": {
+    "ar": "الشمال ▲",
+    "en": "▲ North"
+  },
+  "qiblaHint": {
+    "ar": "وجّه الشمال على البوصلة نحو الشمال الحقيقي",
+    "en": "Line up the compass north with true north"
+  },
+  "bellToggle": {
+    "ar": "تشغيل/إيقاف الأذان لهذه الصلاة",
+    "en": "Adhan on/off for this prayer"
+  },
+  "rowNow": {
+    "ar": "الآن",
+    "en": "now"
+  },
+  "tvMarker": {
+    "ar": "التلفاز ▲",
+    "en": "▲ TV"
+  },
+  "roomTitle": {
+    "ar": "اتجاه الغرفة",
+    "en": "Room direction"
+  },
+  "roomTip": {
+    "ar": "قف مواجهًا للتلفاز، وافتح تطبيق البوصلة في هاتفك وأمسكه مستويًا أمامك، ثم اضبط الرقم هنا على ما تقرؤه. يكفي ذلك مرة واحدة ما دام التلفاز في مكانه.",
+    "en": "Stand facing the TV, open the compass app on your phone and hold it flat in front of you, then set the number here to what it reads. Once is enough while the TV stays where it is."
+  },
+  "roomKeys": {
+    "ar": "◀ ▶  ٥°     ▲ ▼  ٤٥°     OK  حفظ     رجوع  إلغاء",
+    "en": "◀ ▶  5°     ▲ ▼  45°     OK  Save     Back  Cancel"
+  },
+  "prayerNames": {
+    "ar": [
+      "الفجر",
+      "الشروق",
+      "الظهر",
+      "العصر",
+      "المغرب",
+      "العشاء"
+    ],
+    "en": [
+      "Fajr",
+      "Sunrise",
+      "Dhuhr",
+      "Asr",
+      "Maghrib",
+      "Isha"
+    ]
+  },
+  "hijriMonths": {
+    "ar": [
+      "محرم",
+      "صفر",
+      "ربيع الأول",
+      "ربيع الآخر",
+      "جمادى الأولى",
+      "جمادى الآخرة",
+      "رجب",
+      "شعبان",
+      "رمضان",
+      "شوال",
+      "ذو القعدة",
+      "ذو الحجة"
+    ],
+    "en": [
+      "Muharram",
+      "Safar",
+      "Rabi' al-Awwal",
+      "Rabi' al-Thani",
+      "Jumada al-Ula",
+      "Jumada al-Akhirah",
+      "Rajab",
+      "Sha'ban",
+      "Ramadan",
+      "Shawwal",
+      "Dhu al-Qadah",
+      "Dhu al-Hijjah"
+    ]
+  },
+  "hijriSuffix": {
+    "ar": " هـ",
+    "en": " AH"
+  },
+  "themeRow": {
+    "ar": "السمة",
+    "en": "Theme"
+  },
+  "backgroundRow": {
+    "ar": "الخلفية",
+    "en": "Background"
+  },
+  "lightingRow": {
+    "ar": "الإضاءة المحيطية",
+    "en": "Ambient light"
+  },
+  "appearanceCycle": {
+    "ar": "تغيير المظهر عشوائيًا",
+    "en": "Random appearance"
+  },
+  "appearanceCycleHelp": {
+    "ar": "سمة وخلفية عشوائيتان أثناء عرض الرئيسية",
+    "en": "Random theme and background while Home is visible"
+  },
+  "appearanceCycleChoices": {
+    "ar": [
+      "إيقاف",
+      "كل ١٥ دقيقة",
+      "كل ٣٠ دقيقة"
+    ],
+    "en": [
+      "Off",
+      "Every 15 minutes",
+      "Every 30 minutes"
+    ]
+  },
+  "reduceMotion": {
+    "ar": "تقليل الحركة",
+    "en": "Reduce motion"
+  },
+  "screensaver": {
+    "ar": "شاشة التوقف",
+    "en": "Screensaver"
+  },
+  "saverSystem": {
+    "ar": "إعدادات شاشة التوقف والصور",
+    "en": "Screensaver and photo settings"
+  },
+  "homeSettings": {
+    "ar": "الشاشة الرئيسية الافتراضية",
+    "en": "Default Home"
+  },
+  "prayerDock": {
+    "ar": "شريط الصلاة",
+    "en": "Prayer bar"
+  },
+  "openDock": {
+    "ar": "فتح شريط الصلاة",
+    "en": "Open prayer bar"
+  },
+  "quickLabels": {
+    "ar": "أسماء أزرار الوصول السريع",
+    "en": "Quick control labels"
+  },
+  "dockPosition": {
+    "ar": "موضع شريط الصلاة",
+    "en": "Prayer bar position"
+  },
+  "dockPositions": {
+    "ar": [
+      "أعلى",
+      "أسفل"
+    ],
+    "en": [
+      "Top",
+      "Bottom"
+    ]
+  },
+  "collapseDock": {
+    "ar": "طي",
+    "en": "Collapse"
+  },
+  "dockDisabled": {
+    "ar": "شريط الصلاة مغلق في الإعدادات",
+    "en": "Prayer bar is off in Settings"
+  },
+  "dockModes": {
+    "ar": [
+      "مخفي حتى فتحه",
+      "تبويب صغير",
+      "مغلق"
+    ],
+    "en": [
+      "Hidden until opened",
+      "Small prayer tab",
+      "Off"
+    ]
+  },
+  "colourButtons": {
+    "ar": [
+      "الأحمر",
+      "الأخضر",
+      "الأصفر",
+      "الأزرق"
+    ],
+    "en": [
+      "Red",
+      "Green",
+      "Yellow",
+      "Blue"
+    ]
+  },
+  "liveTv": {
+    "ar": "التلفزيون المباشر",
+    "en": "Live TV"
+  },
+  "inputsTitle": {
+    "ar": "المداخل",
+    "en": "Inputs"
+  },
+  "advancedInputs": {
+    "ar": "المداخل المتقدمة",
+    "en": "Advanced inputs"
+  },
+  "inputsSystem": {
+    "ar": "قائمة مداخل التلفزيون",
+    "en": "TV input menu"
+  },
+  "prayerOffsets": {
+    "ar": "تعديل مواقيت الصلاة بالدقائق",
+    "en": "Prayer time offsets"
+  },
+  "prayerOffsetsHelp": {
+    "ar": "لكل صلاة: السالب أبكر والموجب لاحقًا · يشمل التذكير والأذان",
+    "en": "Per prayer: minus is earlier, plus is later · includes reminders and adhan"
+  },
+  "remoteButtons": {
+    "ar": "تخصيص أزرار التحكم",
+    "en": "Remote buttons"
+  },
+  "pressButton": {
+    "ar": "اضغط زرًا لتخصيصه",
+    "en": "Press a button to assign"
+  },
+  "pressButtonHelp": {
+    "ar": "اضغط زر اختصار في جهاز التحكم ثم اختر التطبيق. أزرار التنقل والصوت والطاقة تبقى كما هي. إذا فتح الزر تطبيقًا آخر، ارجع واختر الزر من القائمة.",
+    "en": "Press a shortcut button on your remote, then choose an app. Navigation, volume and power keep their usual function. If the button opens another app, return and select it from the list."
+  },
+  "buttonPreviewHelp": {
+    "ar": "على التلفزيون، اضغط زر جهاز التحكم هنا. هذه المعاينة تعرض أزرارًا وتطبيقات تجريبية فقط.",
+    "en": "On your TV, press the remote button here. This preview shows example buttons and apps only."
+  },
+  "enableButtons": {
+    "ar": "تفعيل خدمة أزرار التحكم",
+    "en": "Enable the remote button service"
+  },
+  "buttonsFailed": {
+    "ar": "تعذّر حفظ الأزرار أو استعادتها. حاول مرة أخرى.",
+    "en": "Could not save or restore the buttons. Please try again."
+  },
+  "buttonAppMissing": {
+    "ar": "هذا التطبيق لم يعد متاحًا. اختر تطبيقًا آخر.",
+    "en": "This app is no longer available. Choose another app."
+  },
+  "buttonNames": {
+    "ar": [
+      "اختصار الإعدادات",
+      "الإعدادات",
+      "التلفزيون",
+      "المعلومات",
+      "الويب"
+    ],
+    "en": [
+      "Settings shortcut",
+      "Settings",
+      "TV",
+      "Info",
+      "Web"
+    ]
+  },
+  "restoreButtons": {
+    "ar": "استعادة أزرار التلفزيون الأصلية",
+    "en": "Restore original TV buttons"
+  },
+  "serviceHealth": {
+    "ar": "خدمة الأذان والتذكير",
+    "en": "Prayer and reminder service"
+  },
+  "serviceHelp": {
+    "ar": "إيقاف الخدمة يوقف تنبيهات الصلاة",
+    "en": "Prayer alerts need this service enabled"
+  },
+  "serviceRunning": {
+    "ar": "تعمل",
+    "en": "Running"
+  },
+  "serviceStopped": {
+    "ar": "متوقفة — فتح الإعدادات",
+    "en": "Stopped — open settings"
+  },
+  "repairService": {
+    "ar": "استعادة خدمة الصلاة تلقائيًا",
+    "en": "Recover prayer service"
+  },
+  "repairHelp": {
+    "ar": "عند العودة للرئيسية بعد إيقاف التطبيق",
+    "en": "When Home opens after the app was stopped"
+  },
+  "systemUnavailable": {
+    "ar": "هذه الصفحة غير متاحة على التلفزيون",
+    "en": "This settings page is unavailable on this TV"
+  },
+  "applyAppearance": {
+    "ar": "تطبيق التغييرات",
+    "en": "Apply changes"
+  },
+  "appearancePreview": {
+    "ar": "معاينة الرئيسية",
+    "en": "Home preview"
+  },
+  "sectionAppearance": {
+    "ar": "الرئيسية والمظهر",
+    "en": "Home & appearance"
+  },
+  "themeNames": {
+    "ar": [
+      "محراب",
+      "شفق",
+      "جمر",
+      "غابة",
+      "منتصف الليل",
+      "وردي",
+      "رمال",
+      "أردوازي",
+      "زجاج",
+      "صقيع",
+      "سينما",
+      "كربون",
+      "نيون",
+      "مخطط",
+      "إشارة",
+      "أركيد",
+      "غسق",
+      "واحة",
+      "نحاس أصفر",
+      "فسيفساء",
+      "مخصصة"
+    ],
+    "en": [
+      "Mihrab",
+      "Aurora",
+      "Ember",
+      "Forest",
+      "Midnight",
+      "Rose",
+      "Sand",
+      "Slate",
+      "Glass",
+      "Frost",
+      "Cinema",
+      "Carbon",
+      "Neon",
+      "Blueprint",
+      "Signal",
+      "Arcade",
+      "Dusk",
+      "Oasis",
+      "Brass",
+      "Mosaic",
+      "Custom"
+    ]
+  },
+  "homeLayout": {
+    "ar": "تخطيط الرئيسية",
+    "en": "Home layout"
+  },
+  "homeCountdown": {
+    "ar": "العد التنازلي للصلاة",
+    "en": "Prayer countdown"
+  },
+  "homeCountdowns": {
+    "ar": [
+      "محراب",
+      "شريط مدمج",
+      "مخفي"
+    ],
+    "en": [
+      "Mihrab",
+      "Compact bar",
+      "Hidden"
+    ]
+  },
+  "homePosition": {
+    "ar": "موضع العد التنازلي",
+    "en": "Countdown position"
+  },
+  "homeSides": {
+    "ar": [
+      "حسب اللغة",
+      "يسار",
+      "يمين"
+    ],
+    "en": [
+      "Follow language",
+      "Left",
+      "Right"
+    ]
+  },
+  "homeBars": {
+    "ar": [
+      "أعلى",
+      "أسفل"
+    ],
+    "en": [
+      "Top",
+      "Bottom"
+    ]
+  },
+  "homePrayers": {
+    "ar": "معلومات الصلاة",
+    "en": "Prayer information"
+  },
+  "homePrayerModes": {
+    "ar": [
+      "جميع المواقيت",
+      "الحالية فقط",
+      "القادمة فقط",
+      "الحالية والقادمة",
+      "مخفية"
+    ],
+    "en": [
+      "All times",
+      "Current only",
+      "Next only",
+      "Current and next",
+      "Hidden"
+    ]
+  },
+  "homeReset": {
+    "ar": "استعادة التخطيط الافتراضي",
+    "en": "Reset layout to default"
+  },
+  "homeHelp": {
+    "ar": "عاين التخطيط ثم طبّق. الرجوع يلغي التغييرات. لا تتغير إعدادات الأذان والتذكير.",
+    "en": "Preview, then apply. Back cancels changes. Adhan and reminders stay as set."
+  },
+  "homeFavourites": {
+    "ar": "صفوف المفضلة",
+    "en": "Favourite rows"
+  },
+  "noCurrentPrayer": {
+    "ar": "لا توجد صلاة حالية",
+    "en": "No current prayer"
+  },
+  "homeLayouts": {
+    "ar": [
+      "صفّان للمفضلة",
+      "كلاسيكي — صف واحد"
+    ],
+    "en": [
+      "Two favourite rows",
+      "Classic — one row"
+    ]
+  },
+  "backgroundNames": {
+    "ar": [
+      "حسب السمة",
+      "زخرفة",
+      "سادة",
+      "بانوراما",
+      "ضوء النهار",
+      "جبال",
+      "كثبان",
+      "هالة",
+      "سماء الليل",
+      "أقواس",
+      "نجوم ثمانية",
+      "مشربية",
+      "أرابيسك",
+      "بلاط النجوم",
+      "وريدات",
+      "شبكة مثمنة",
+      "زخارف الأركان"
+    ],
+    "en": [
+      "Theme",
+      "Lattice",
+      "Solid",
+      "Panorama",
+      "Daylight",
+      "Mountains",
+      "Dunes",
+      "Halo",
+      "Night sky",
+      "Arches",
+      "Eight-point stars",
+      "Mashrabiya",
+      "Arabesque",
+      "Star tiles",
+      "Rosettes",
+      "Octagon lattice",
+      "Corner medallions"
+    ]
+  },
+  "buttonActions": {
+    "ar": [
+      "الأصلي",
+      "الرئيسية",
+      "التطبيقات",
+      "المداخل",
+      "الإعدادات",
+      "شريط الصلاة"
+    ],
+    "en": [
+      "Original",
+      "Home",
+      "All apps",
+      "Inputs",
+      "Settings",
+      "Prayer bar"
+    ]
+  }
+}

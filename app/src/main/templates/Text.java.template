@@ -1,0 +1,350 @@
+package tv.afnon.home;
+
+import com.batoulapps.adhan.CalculationParameters;
+import com.batoulapps.adhan.Madhab;
+
+/** Native formatter; plain bilingual entries come from shared/data/strings.json. */
+final class Text {
+    final boolean ar;
+    /** Eastern Arabic digits (٠١٢٣). Its own setting; defaults to on in Arabic. */
+    final boolean eastern;
+
+    Text(boolean ar, boolean eastern) {
+        this.ar = ar;
+        this.eastern = eastern;
+    }
+
+    String d(String s) {
+        if (!eastern) return s;
+        // "·" beside Eastern digits reads as a zero (٠); Arabic punctuation takes its own comma instead.
+        s = s.replace(" · ", "، ");
+        StringBuilder b = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            b.append(c >= '0' && c <= '9' ? (char) ('٠' + (c - '0')) : c);
+        }
+        return b.toString();
+    }
+
+    /** The " · " between parts of a line; a comma where "·" would sit beside Eastern digits. */
+    String sep() { return d(" · "); }
+
+    /** The arch verse's reference (An-Nisa 4:103), in the screen's digits like every other number. */
+    String ref() { {{STRINGS:ref}} }
+    String nextPrayer() { {{STRINGS:nextPrayer}} }
+    String today() { {{STRINGS:today}} }
+    String settings() { {{STRINGS:settings}} }
+    /** The saved city in this language; set by {@link Screen#loadText}. */
+    String cityName = "";
+    String city() { return cityName; }
+    String fav() { {{STRINGS:fav}} }
+    String addFavourite() { {{STRINGS:addFavourite}} }
+    String removeFavourite() { {{STRINGS:removeFavourite}} }
+    String replaceFavourite() { {{STRINGS:replaceFavourite}} }
+    String replaceWith(String name) { return (ar ? "استبدال بـ " : "REPLACE WITH ") + name; }
+    String uninstall() { {{STRINGS:uninstall}} }
+    String focusLighting() { {{STRINGS:focusLighting}} }
+    String focusLightingHelp() { {{STRINGS:focusLightingHelp}} }
+    String hideSystemApps() { {{STRINGS:hideSystemApps}} }
+    String hideSystemAppsHelp() { {{STRINGS:hideSystemAppsHelp}} }
+    String recentApps() { {{STRINGS:recentApps}} }
+    /** Home's tile: the label over the count. */
+    String all(int n) { return d((ar ? "كل التطبيقات" : "All apps") + "\n" + n); }
+    String ampm(boolean am) { return ar ? (am ? "ص" : "م") : (am ? "AM" : "PM"); }
+    String adhanAt() { {{STRINGS:adhanAt}} }
+    String nowTag() { {{STRINGS:nowTag}} }
+    String nextTag() { {{STRINGS:nextTag}} }
+    String jumuahLabel() { {{STRINGS:jumuahLabel}} }
+    String jumuah() { {{STRINGS:jumuah}} }
+    String kahf() { {{STRINGS:kahf}} }
+    String iftarIn() { {{STRINGS:iftarIn}} }
+    String iftar() { {{STRINGS:iftar}} }
+    String iftarTag() { {{STRINGS:iftarTag}} }
+    String suhoorTag() { {{STRINGS:suhoorTag}} }
+    String suhoorEnds(String time) { return d(ar ? "السحور حتى " + time : "Suhoor ends " + time); }
+    String comingSoon() { {{STRINGS:comingSoon}} }
+
+    String open(String app) { {{STRINGS:open}} }
+    String network() { {{STRINGS:network}} }
+
+    // Screensaver (design/Screensaver.dc.html)
+    /**
+     * "in 27 min". Arabic counts take their proper forms: دقيقة واحدة، دقيقتين، ٣–١٠ دقائق، ١١+ دقيقة. An hour
+     * or more reads as h:mm, as on Prayer day.
+     */
+    String inMinutes(long minutes, String hoursAndMinutes) {
+        if (minutes >= 60) return in(hoursAndMinutes);
+        if (!ar) return d("in " + minutes + " min");
+        if (minutes <= 1) return "بعد دقيقة واحدة";
+        if (minutes == 2) return "بعد دقيقتين";
+        return d("بعد " + minutes + (minutes <= 10 ? " دقائق" : " دقيقة"));
+    }
+
+    // Reminder and call to prayer (design/Home.dc.html approach/now, design/ApproachVideo.dc.html)
+    String apLabel() { {{STRINGS:apLabel}} }
+    /** "Asr in 13 minutes". */
+    String apTitle(String prayer, long minutes, String hoursAndMinutes) {
+        if (!ar && minutes < 60) return d(prayer + " in " + minutes + (minutes == 1 ? " minute" : " minutes"));
+        return prayer + " " + inMinutes(minutes, hoursAndMinutes);
+    }
+    String apSub(CharSequence time) { return d((ar ? "الأذان " : "Adhan at ") + time); }
+    String apOk() { {{STRINGS:apOk}} }
+    String nowLabel() { {{STRINGS:nowLabel}} }
+    String play() { {{STRINGS:play}} }
+    String stop() { {{STRINGS:stop}} }
+    String dismiss() { {{STRINGS:dismiss}} }
+    // Radio: Home's pill and card, the screen-off view, the screensaver line and the Settings section.
+    String radio() { {{STRINGS:radio}} }
+    String station(Radio.Station s) { return d(ar ? s.ar : s.en); }
+    String stationWhere(Radio.Station s) { return d(ar ? s.whereAr : s.whereEn); }
+    /** A station in a list: its name and place, since several are called إذاعة القرآن الكريم. */
+    String stationChoice(Radio.Station s) { return s.reciter ? station(s) : station(s) + sep() + stationWhere(s); }
+    String stationRow() { {{STRINGS:stationRow}} }
+    String[] stationGroups() { {{STRINGS:stationGroups}} }
+    String radioStatus(int s) {
+        switch (s) {
+            case Radio.PLAYING: return ar ? "على الهواء" : "On air";
+            case Radio.CONNECTING: return ar ? "جارٍ الاتصال…" : "Connecting…";
+            case Radio.RETRYING: return ar ? "انقطع البث · نعيد المحاولة" : "Signal lost · retrying";
+            case Radio.PAUSED: return ar ? "متوقفة للأذان" : "Paused for the adhan";
+            default: return ar ? "متوقفة" : "Off";
+        }
+    }
+    String radioPlay() { {{STRINGS:radioPlay}} }
+    String radioStop() { {{STRINGS:radioStop}} }
+    String screenOff() { {{STRINGS:screenOff}} }
+    String sectionRadio() { {{STRINGS:sectionRadio}} }
+    String radioRowHelp(Radio.Station s) { return stationWhere(s) + (ar ? " · تحتاج إلى الإنترنت" : " · needs the internet"); }
+    String afterAdhanRow() { {{STRINGS:afterAdhanRow}} }
+    String afterAdhanHelp() { {{STRINGS:afterAdhanHelp}} }
+    String[] afterAdhanChoices() { {{STRINGS:afterAdhanChoices}} }
+    String radioDarkRow() { {{STRINGS:radioDarkRow}} }
+    String radioDarkHelp() {
+        return d(ar ? "توفير الكهرباء: تنطفئ الشاشة وتستمر الإذاعة · أي زر يعيدها"
+                    : "Saves power: the screen goes dark, the radio keeps playing · any key brings it back");
+    }
+    String[] radioDarkChoices() { {{STRINGS:radioDarkChoices}} }
+
+    String testPrayerAlerts() { {{STRINGS:testPrayerAlerts}} }
+    String testPrayerHelp() { {{STRINGS:testPrayerHelp}} }
+    String[] testPrayerChoices() { {{STRINGS:testPrayerChoices}} }
+    String callCloseRow() { {{STRINGS:callCloseRow}} }
+    String callCloseHelp() { {{STRINGS:callCloseHelp}} }
+    /** In the order of the row's minutes: 0 (after the adhan), 1, 5, 10. */
+    String[] callCloseChoices() { {{STRINGS:callCloseChoices}} }
+    String voiceRow() { {{STRINGS:voiceRow}} }
+    String voiceHelp() { {{STRINGS:voiceHelp}} }
+    String fajrVoiceRow() { {{STRINGS:fajrVoiceRow}} }
+    String fajrVoiceHelp() { {{STRINGS:fajrVoiceHelp}} }
+
+    // All apps (design/AllApps.dc.html)
+    String allTitle() { {{STRINGS:allTitle}} }
+    String back() { {{STRINGS:back}} }
+    /** "Asr in", followed by the countdown. */
+    String chip(String prayer) { {{STRINGS:chip}} }
+    String favNote(int position) {
+        String[] ord = {"الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع"};
+        return ar ? "في المفضلة · " + ord[position - 1] : d("In favourites · position " + position);
+    }
+    String notFav() { {{STRINGS:notFav}} }
+    String moveEarlier() { {{STRINGS:moveEarlier}} }
+    String moveLater() { {{STRINGS:moveLater}} }
+    String putInPlaceOf(String app) { {{STRINGS:putInPlaceOf}} }
+    String cancel() { {{STRINGS:cancel}} }
+    String favourite() { {{STRINGS:favourite}} }
+
+    // Prayer day (design/PrayerDay.dc.html)
+    String dayTitle() { {{STRINGS:dayTitle}} }
+    String home() { {{STRINGS:home}} }
+    String school(Madhab m) {
+        if (m == Madhab.HANAFI) return ar ? "العصر: الحنفي" : "Asr: Hanafi";
+        return ar ? "العصر: الجمهور (شافعي)" : "Asr: standard (Shafi‘i)";
+    }
+
+    String methodName(PrayerMethod m) { return ar ? m.ar : m.en; }
+
+    /** "Fajr angle 19.5° · Isha 17.5°", or Isha as minutes after Maghrib where the method fixes it that way. */
+    String methodAngles(PrayerMethod m) {
+        CalculationParameters p = m.getParameters();
+        String fajr = (ar ? "زاوية الفجر " : "Fajr angle ") + trim(p.fajrAngle) + "°";
+        String isha = p.ishaInterval > 0
+            ? (ar ? "العشاء بعد المغرب بـ " + p.ishaInterval + " دقيقة" : "Isha " + p.ishaInterval + " min after Maghrib")
+            : (ar ? "العشاء " : "Isha ") + trim(p.ishaAngle) + "°";
+        return d(fajr + " · " + isha);
+    }
+
+    private static String trim(double v) {
+        return v == Math.rint(v) ? String.valueOf((int) v) : String.valueOf(v);
+    }
+
+    // Settings (design/Settings.dc.html)
+    String sectionPrayer() { {{STRINGS:sectionPrayer}} }
+    String sectionReminders() { {{STRINGS:sectionReminders}} }
+    String sectionDisplay() { {{STRINGS:sectionDisplay}} }
+    String sectionNetwork(String ssid) { return ssid == null ? (ar ? "الشبكة" : "Network") : (ar ? "الشبكة · " : "Network · ") + ssid; }
+    String sectionDevice() { {{STRINGS:sectionDevice}} }
+    String preview() { {{STRINGS:preview}} }
+    String location() { {{STRINGS:location}} }
+    String country() { {{STRINGS:country}} }
+    String region() { {{STRINGS:region}} }
+    /** Location's first step, in the order of Prefs.REGIONS. */
+    String[] regions() { {{STRINGS:regions}} }
+    String locationHelp(double lat, double lng) {
+        String ns = lat >= 0 ? (ar ? "ش" : "N") : (ar ? "ج" : "S");
+        String ew = lng >= 0 ? (ar ? "ق" : "E") : (ar ? "غ" : "W");
+        return d(String.format(java.util.Locale.US, "%.2f° %s · %.2f° %s", Math.abs(lat), ns, Math.abs(lng), ew)
+            + (ar ? " · يُختار من القائمة" : " · chosen from the list"));
+    }
+    String place(String city, String country) { return city + (ar ? "، " : ", ") + country; }
+    String method() { {{STRINGS:method}} }
+    String asrSchool() { {{STRINGS:asrSchool}} }
+    String asrSchoolHelp() { {{STRINGS:asrSchoolHelp}} }
+    String[] asrSchools() { {{STRINGS:asrSchools}} }
+    String hijriAdjust() { {{STRINGS:hijriAdjust}} }
+    String hijriToday(String date) { return (ar ? "اليوم: " : "Today: ") + date; }
+    String days(int n) {
+        String sign = n > 0 ? "+" : "";
+        if (!ar) return d(sign + n + (Math.abs(n) == 1 ? " day" : " days"));
+        return d(sign + n + (Math.abs(n) == 2 ? " يومان" : " يوم"));
+    }
+    String roomRow() { return roomTitle(); }
+    String roomHelp() { {{STRINGS:roomHelp}} }
+    String notSet() { {{STRINGS:notSet}} }
+    String remind() { {{STRINGS:remind}} }
+    String remindHelp() { {{STRINGS:remindHelp}} }
+    String[] remindChoices() { {{STRINGS:remindChoices}} }
+    String remindVoiceRow() { {{STRINGS:remindVoiceRow}} }
+    String remindVoiceHelp() { {{STRINGS:remindVoiceHelp}} }
+    String announceRow() { {{STRINGS:announceRow}} }
+    String announceHelp() { {{STRINGS:announceHelp}} }
+    String adhanRow() { {{STRINGS:adhanRow}} }
+    String adhanHelp() { {{STRINGS:adhanHelp}} }
+    String language() { {{STRINGS:language}} }
+    String languageHelp() { {{STRINGS:languageHelp}} }
+    String[] languages() { return new String[] {ar ? "التلفاز" : "TV", "العربية", "English"}; }
+    String digits() { {{STRINGS:digits}} }
+    String clockRow() { {{STRINGS:clockRow}} }
+    String clockHelp() { {{STRINGS:clockHelp}} }
+    String[] clocks() { {{STRINGS:clocks}} }
+    String networkRow() { {{STRINGS:networkRow}} }
+    String networkHelp() { {{STRINGS:networkHelp}} }
+    String deviceRow() { {{STRINGS:deviceRow}} }
+    String deviceHelp() { {{STRINGS:deviceHelp}} }
+    String saved() { {{STRINGS:saved}} }
+    String qibla() { {{STRINGS:qibla}} }
+    String north() { {{STRINGS:north}} }
+    String qiblaHint() { {{STRINGS:qiblaHint}} }
+    String bellToggle() { {{STRINGS:bellToggle}} }
+    String bell(boolean on) { return ar ? (on ? "الأذان مفعّل" : "الأذان متوقف") : (on ? "Adhan on" : "Adhan off"); }
+    String rowNow() { {{STRINGS:rowNow}} }
+    /** Sunrise is masculine in Arabic (الشروق مضى); the prayers are feminine (الصلاة مضت). */
+    String passed(boolean sunrise) { return ar ? (sunrise ? "مضى" : "مضت") : "passed"; }
+    String in(String duration) { return d(ar ? "بعد " + duration : "in " + duration); }
+
+    /** "South-east · from Cairo" for a bearing in degrees from true north. */
+    String qiblaDirection(double bearing) {
+        return octant(bearing) + (ar ? " · من " : " · from ") + city();
+    }
+
+    String octant(double bearing) {
+        String[] names = ar ? new String[] {"شمال", "شمال شرق", "شرق", "جنوب شرق", "جنوب", "جنوب غرب", "غرب", "شمال غرب"}
+                            : new String[] {"North", "North-east", "East", "South-east", "South", "South-west", "West", "North-west"};
+        return names[sector(bearing)];
+    }
+
+    /**
+     * Where the Qibla is for someone facing the TV, from its angle clockwise from straight ahead. Right and left
+     * are the viewer's own, so they never mirror with the layout.
+     */
+    String qiblaRelative(double clockwise) {
+        String[] where = ar
+            ? new String[] {"أمامك", "أمامك إلى اليمين", "على يمينك", "خلفك إلى اليمين", "خلفك", "خلفك إلى اليسار", "على يسارك", "أمامك إلى اليسار"}
+            : new String[] {"ahead of you", "ahead, to your right", "to your right", "behind, to your right", "behind you",
+                            "behind, to your left", "to your left", "ahead, to your left"};
+        return (ar ? "القبلة " : "Qibla is ") + where[sector(clockwise)];
+    }
+
+    /** "North-west · 320°". */
+    String bearingLabel(int degrees) { return d(octant(degrees) + " · " + degrees + "°"); }
+
+    String facingLine(int facing) { return (ar ? "تجلس مواجهًا: " : "You face: ") + bearingLabel(facing); }
+    String tvMarker() { {{STRINGS:tvMarker}} }
+    String roomButton(boolean set) { return ar ? (set ? "تغيير اتجاه الغرفة" : "حدّد اتجاه الغرفة") : (set ? "Change room direction" : "Set room direction"); }
+    String roomTitle() { {{STRINGS:roomTitle}} }
+    String roomTip() { {{STRINGS:roomTip}} }
+    String roomKeys() { {{STRINGS:roomKeys}} }
+
+    private static int sector(double degrees) {
+        return (int) Math.round(((degrees % 360) + 360) % 360 / 45) % 8;
+    }
+
+    /** Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha. */
+    String[] prayerNames() { {{STRINGS:prayerNames}} }
+
+    String[] hijriMonths() { {{STRINGS:hijriMonths}} }
+
+    String hijriSuffix() { {{STRINGS:hijriSuffix}} }
+    String themeRow() { {{STRINGS:themeRow}} }
+    String backgroundRow() { {{STRINGS:backgroundRow}} }
+    String lightingRow() { {{STRINGS:lightingRow}} }
+    String appearanceCycle() { {{STRINGS:appearanceCycle}} }
+    String appearanceCycleHelp() { {{STRINGS:appearanceCycleHelp}} }
+    String[] appearanceCycleChoices() { {{STRINGS:appearanceCycleChoices}} }
+    String reduceMotion() { {{STRINGS:reduceMotion}} }
+    String screensaver() { {{STRINGS:screensaver}} }
+    String saverSystem() { {{STRINGS:saverSystem}} }
+    String homeSettings() { {{STRINGS:homeSettings}} }
+    String prayerDock() { {{STRINGS:prayerDock}} }
+    String openDock() { {{STRINGS:openDock}} }
+    String quickLabels() { {{STRINGS:quickLabels}} }
+    String dockPosition() { {{STRINGS:dockPosition}} }
+    String[] dockPositions() { {{STRINGS:dockPositions}} }
+    String collapseDock() { {{STRINGS:collapseDock}} }
+    String dockDisabled() { {{STRINGS:dockDisabled}} }
+    String[] dockModes() { {{STRINGS:dockModes}} }
+    String[] colourButtons() { {{STRINGS:colourButtons}} }
+    String liveTv() { {{STRINGS:liveTv}} }
+    String inputsTitle() { {{STRINGS:inputsTitle}} }
+    String advancedInputs() { {{STRINGS:advancedInputs}} }
+    String inputsSystem() { {{STRINGS:inputsSystem}} }
+    String prayerOffsets() { {{STRINGS:prayerOffsets}} }
+    String prayerOffsetsHelp() { {{STRINGS:prayerOffsetsHelp}} }
+    String offsetMinutes(int n) { return d((n > 0 ? "+" : "") + n + (ar ? " د" : " min")); }
+    String offsetCount(int n) { return d(n == 0 ? (ar ? "الكل 0 د" : "All 0 min") : n + (ar ? " معدّلة" : " adjusted")); }
+    String remoteButtons() { {{STRINGS:remoteButtons}} }
+    String pressButton() { {{STRINGS:pressButton}} }
+    String pressButtonHelp() { {{STRINGS:pressButtonHelp}} }
+    String buttonPreviewHelp() { {{STRINGS:buttonPreviewHelp}} }
+    String enableButtons() { {{STRINGS:enableButtons}} }
+    String buttonsFailed() { {{STRINGS:buttonsFailed}} }
+    String buttonAppMissing() { {{STRINGS:buttonAppMissing}} }
+    String buttonNumber(int code) { return (ar ? "زر " : "Button ") + d(String.valueOf(code)); }
+    String[] buttonNames() { {{STRINGS:buttonNames}} }
+    String restoreButtons() { {{STRINGS:restoreButtons}} }
+    String serviceHealth() { {{STRINGS:serviceHealth}} }
+    String serviceHelp() { {{STRINGS:serviceHelp}} }
+    String serviceRunning() { {{STRINGS:serviceRunning}} }
+    String serviceStopped() { {{STRINGS:serviceStopped}} }
+    String repairService() { {{STRINGS:repairService}} }
+    String repairHelp() { {{STRINGS:repairHelp}} }
+    String systemUnavailable() { {{STRINGS:systemUnavailable}} }
+    String applyAppearance() { {{STRINGS:applyAppearance}} }
+    String appearancePreview() { {{STRINGS:appearancePreview}} }
+    String sectionAppearance() { {{STRINGS:sectionAppearance}} }
+    String[] themeNames() { {{STRINGS:themeNames}} }
+    String homeLayout() { {{STRINGS:homeLayout}} }
+    String homeCountdown() { {{STRINGS:homeCountdown}} }
+    String[] homeCountdowns() { {{STRINGS:homeCountdowns}} }
+    String homePosition() { {{STRINGS:homePosition}} }
+    String[] homeSides() { {{STRINGS:homeSides}} }
+    String[] homeBars() { {{STRINGS:homeBars}} }
+    String homePrayers() { {{STRINGS:homePrayers}} }
+    String[] homePrayerModes() { {{STRINGS:homePrayerModes}} }
+    String homeReset() { {{STRINGS:homeReset}} }
+    String homeHelp() { {{STRINGS:homeHelp}} }
+    String homeFavourites() { {{STRINGS:homeFavourites}} }
+    String noCurrentPrayer() { {{STRINGS:noCurrentPrayer}} }
+    String[] homeLayouts() { {{STRINGS:homeLayouts}} }
+    String[] backgroundNames() { {{STRINGS:backgroundNames}} }
+    String[] buttonActions() { {{STRINGS:buttonActions}} }
+}

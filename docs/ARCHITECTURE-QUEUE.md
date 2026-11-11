@@ -85,12 +85,15 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.5, canonical bilingual text. Finish the Q03.4 commit if resuming between
-operations, then inspect `Text.java`, preview extraction/templates and LG string
-consumers. Migrate plain templates first if necessary; preserve exact Arabic,
-Quranic content, punctuation, parameters, digit substitution and intentional native
-formatting. Keep platform formatting code in adapters. Compare old/new text outputs
-and generated data before deleting extraction. Remaining design/assets follow text.
+Next: Q03.5b, remaining shared formatter text and sacred UI constants. Finish the
+Q03.5a commit if resuming between operations, then inspect `Text.java.template`'s
+remaining literal copy, corresponding preview helpers and LG renderer. Capture
+edge-case output before extraction (plural forms, nulls, signs, headings/directions,
+digits and punctuation). Inspect sacred constants in `MainActivity`, `Screen` and
+`NowActivity` with their preview/LG equivalents; retain exact text and intentional
+line breaks. Keep platform formatting/selection code in adapters and platform-only
+copy with its shell. Do not add a generic runtime translation framework. Existing
+plain-text frozen hashes cover 174 methods only. Remaining design/assets follow text.
 Do not move platform directories yet (Q06). Production apps retain their existing
 domain implementations until Q04. Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
@@ -258,3 +261,25 @@ domain implementations until Q04. Private logs/helpers are under ignored
   `voices-before.json`, `fetch-adhans-before.sh` and `voice-fetch-check/`. No TV
   deployment, audible check or recording download. Unaffected installer/core suites
   were not repeated in this increment.
+
+### Q03.5a canonical plain bilingual text (2026-11-11)
+
+- `shared/data/strings.json` owns 174 plain string/list templates. Android's
+  `Text.java` is generated from `Text.java.template`; remaining formatting logic
+  stays in the template. Preview/LG read canonical JSON directly; Java scraping
+  and the obsolete ignored preview JSON were removed. Validation covers language
+  types, list lengths, parameters, digit flags and adapter markers.
+- Existing difference preserved explicitly: the web extractor compacted repeated
+  whitespace in `saved` and `roomKeys`; Android kept it. Canonical text preserves
+  native spacing and each web adapter compacts literals before filling parameters.
+  No visible labels, religious content, preference keys or UI layouts were changed.
+- PASS: frozen pre-extraction JVM hashes, covering 1,392 outputs across 174 methods,
+  Arabic/English, both digit modes, sample/null parameters and independent arrays.
+  PASS: 1,392 preview outputs and all packaged LG entries against the old snapshot.
+  Frozen public hashes live in `tests/fixtures/text-output-hashes.json`; private
+  `Text-before.java`, `strings-before.json` and extraction proof remain ignored.
+- PASS: all 37 Python/Java regressions, catalog input rejection/generated checks,
+  preview tests/18-page build/tokens, Android size/build/lint (APK 20,248,190 bytes),
+  LG ES5/service and bilingual browser suite. Logs: ignored `strings-*.log`.
+  Unaffected installer/shared-core suites were not repeated. No TV deployment,
+  sound/picture check or performance-improvement claim.

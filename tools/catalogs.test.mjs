@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { validateCatalog, validateMethods, validateStations, validateVoices } from './catalogs.mjs';
+import { renderText, validateStrings } from './strings.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
 const regions = JSON.parse(readFileSync(new URL('../shared/data/regions.json', import.meta.url)));
@@ -102,3 +103,22 @@ assert.deepEqual([...voiceJava.matchAll(voiceRows)].map(m => ({id: JSON.parse(m[
 const downloads = readFileSync(new URL('./adhan-sources.tsv', import.meta.url), 'utf8').trimEnd().split('\n').slice(1);
 assert.deepEqual(downloads.map(row => row.split('\t')), voices.map(voice => [voice.id, voice.sourceFile]));
 console.log('PASS: canonical catalog validation and complete Java city/region/radio/voice fidelity');
+
+const strings = JSON.parse(readFileSync(new URL('../shared/data/strings.json', import.meta.url)));
+validateStrings(strings);
+for (const invalid of [null, [], {}, {bad: null}, {bad: {ar: '', en: 'English'}},
+  {bad: {ar: 'Arabic', en: 2}}, {bad: {ar: 'Arabic', en: 'English', d: 1}},
+  {bad: {ar: 'Arabic', en: 'English', unknown: true}}, {bad: {ar: ['Arabic'], en: []}},
+  {bad: {ar: ['Arabic'], en: 'English'}}, {bad: {ar: ['Arabic'], en: ['English'], d: true}},
+  {bad: {ar: 'Bad\0text', en: 'English'}}, {bad: {ar: '{name}', en: 'English'}},
+  {bad: {ar: '{bad-name}', en: '{bad-name}'}}, {bad: {ar: ['{name}'], en: ['{name}']}},
+]) assert.throws(() => validateStrings(invalid));
+const example = {greet: {ar: 'أهلًا {name}', en: 'Hello {name}', d: true}};
+const marker = '    String greet(String name) { {{STRINGS:greet}} }';
+assert.match(renderText(example, marker), /d\("Hello " \+ name\)/);
+assert.throws(() => renderText(example, marker.replace('String name', 'String other')), /Undeclared/);
+assert.throws(() => renderText(example, ''), /differ/);
+assert.throws(() => renderText(example, marker + '\n' + marker), /duplicate/);
+assert.throws(() => renderText(example, marker.replace('greet}}', 'missing}}')), /Missing/);
+assert.throws(() => renderText(example, marker + '{{STRINGS:bad-key}}'), /differ/);
+console.log('PASS: bilingual text values, list sizes, parameters, digit flags and adapter markers');

@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { renderText } from './strings.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
@@ -127,6 +128,7 @@ function generate() {
     ['app/src/main/java/tv/afnon/home/RadioCatalog.java', nativeStations],
     ['app/src/main/java/tv/afnon/home/VoiceCatalog.java', nativeVoices],
     ['tools/adhan-sources.tsv', voiceSources],
+    ['app/src/main/java/tv/afnon/home/Text.java', renderText(JSON.parse(read('shared/data/strings.json')), read('app/src/main/templates/Text.java.template'))],
   ]) {
     if (args[0] === '--check') {
       if (read(destination) !== output) throw new Error(destination + ' is stale; run node tools/catalogs.mjs');

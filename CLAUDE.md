@@ -28,7 +28,7 @@ real TV over ADB, never just in the build.
   Privacy section). No analytics, ads or feeds.
 - Colours/sizes/timings from `afnon-mihrab/tokens.json` (generated into `Tokens.java`, `colors.xml` and the site's
   `tokens.css` by `cd site && npm run tokens`; never edit those by hand); every string in Arabic and English in
-  `Text.java`. Arabic (RTL) is the
+  `shared/data/strings.json` and `app/src/main/templates/Text.java.template`; regenerate `Text.java`. Arabic (RTL) is the
   default; check RTL and LTR. No letter-spacing on Arabic. Quranic text uses Amiri and must be exact (surah:ayah).
 - D-pad focus is explicit per screen, with Left/Right swapped in RTL.
 - Never commit `state/`, `local.properties`, APKs or the adhan MP3s (no licence; `tools/fetch-adhans.sh` downloads
@@ -101,9 +101,9 @@ hard-wires to an app. Tested on one Super General (Android 9) only; any change h
 ## Web preview (`site/`)
 
 Astro site on GitHub Pages (`.github/workflows/site.yml`), one page per screen and mode in Arabic (root) and English
-(`/en/`). Cities/regions/methods/stations come directly from `shared/data/`; `scripts/extract.mjs` reads
-`Text.java`, the fonts and `docs/screenshots` into
-gitignored files; strings with logic are ported by hand in `src/lib/text.ts`. Each screen is `src/screens/<X>.astro`
+(`/en/`). Catalogs and plain strings come directly from `shared/data/`; `scripts/extract.mjs` reads
+fonts/artwork and `docs/screenshots` into gitignored files. Formatting helpers still mirror
+`Text.java.template` in `src/lib/text.ts`. Each screen is `src/screens/<X>.astro`
 plus a model (`(ctx) => {html, attr}`) that renders at build time and every second in the browser. When a screen's
 layout changes in the app, update its component. `npm run dev` / `npm run build` in `site/`.
 

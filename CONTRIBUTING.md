@@ -58,8 +58,8 @@ Kotlin, no Compose. It has to stay smooth on a TV with under 2 GB of RAM, so:
   feeds, no "recommended" rows.
 - **Design tokens.** Colours, sizes and timings live in `afnon-mihrab/tokens.json`. `Tokens.java`,
   `colors.xml` and the preview site's CSS are generated from it: edit the JSON, then run `npm run tokens`
-  in `site/` (Node 24). Never edit the generated files; CI checks they match. Text comes from `Text.java`,
-  in both languages.
+  in `site/` (Node 24). Never edit the generated files; CI checks they match. Plain bilingual text
+  comes from `shared/data/strings.json`; formatting logic lives in `app/src/main/templates/Text.java.template`.
 - **Arabic and English together.** Every string has both. Check the layout in RTL and in LTR.
   Arabic gets no letter-spacing. Quranic text uses Amiri.
 - **D-pad focus is explicit.** Each screen has a focus map, with Left and Right swapped in RTL. Test
@@ -68,7 +68,7 @@ Kotlin, no Compose. It has to stay smooth on a TV with under 2 GB of RAM, so:
   `tools/shot.sh`. Put screenshots in the PR, one in Arabic and one in English if layout changed.
 
 **The web preview** (`site/`) is an Astro site that copies each screen for the browser. It reads
-`shared/data/` catalogs directly; `Text.java` and fonts are still
+`shared/data/` catalogs/text directly; fonts and artwork are still
 extracted at build time (`site/scripts/extract.mjs`). If you change a screen's layout, change its component in
 `site/src/screens/` too: `cd site && npm install && npm run dev`.
 
