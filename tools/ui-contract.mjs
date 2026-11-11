@@ -5,17 +5,18 @@ export function validateUiContract(controls, strings) {
   if (!Array.isArray(controls) || !controls.length) throw new Error('Missing UI contract');
   const ids = new Set();
   for (const control of controls) {
-    const {id, section, kind, label, save} = control || {};
+    const {id, section, kind, label, save, range} = control || {};
     const [key, index] = typeof label === 'string' ? label.split(':') : [];
     const text = strings[key];
     if (typeof id !== 'string' || !/^[a-z]+(?:\.[a-z][a-z0-9-]*)+$/.test(id) || ids.has(id) ||
         !sections.includes(section) || !kinds.includes(kind) ||
         !['immediate', 'appearance', 'action'].includes(save) || (kind === 'action') !== (save === 'action') ||
+        (kind === 'number' ? !['prayer-offset', 'hijri-offset', 'percent'].includes(range) : range !== undefined) ||
         typeof label !== 'string' || !/^[a-z][a-zA-Z0-9]*(?::[0-5])?$/.test(label) ||
         !text || !['ar', 'en'].every(lang => index === undefined
           ? typeof text[lang] === 'string' && !/[{}]/.test(text[lang])
           : /^[0-5]$/.test(index) && Array.isArray(text[lang]) && typeof text[lang][Number(index)] === 'string') ||
-        Object.keys(control).sort().join(',') !== 'id,kind,label,save,section') {
+        Object.keys(control).sort().join(',') !== (kind === 'number' ? 'id,kind,label,range,save,section' : 'id,kind,label,save,section')) {
       throw new Error('Invalid UI control: ' + id);
     }
     ids.add(id);
@@ -37,7 +38,7 @@ export function validateUiGaps(gaps, controls) {
 export function renderUiCatalog(controls) {
   return '// Generated from shared/data/ui-contract.json by tools/catalogs.mjs. Do not edit.\n' +
     'package tv.afnon.core\n\ninternal object UiCatalog {\n    val controls = arrayOf(\n' +
-    controls.map(c => '        UiControl(' + [c.id, c.section, c.kind, c.label, c.save].map(value => JSON.stringify(value)).join(', ') + '),').join('\n') +
+    controls.map(c => '        UiControl(' + [c.id, c.section, c.kind, c.label, c.save, c.range || ''].map(value => JSON.stringify(value)).join(', ') + '),').join('\n') +
     '\n    )\n}\n';
 }
 

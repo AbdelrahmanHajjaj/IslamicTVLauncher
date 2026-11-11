@@ -716,6 +716,10 @@ public class SettingsActivity extends Screen {
     // ---------------------------------------------------------------- rows
 
     private void addRow(Row r, int i) {
+        if (r.kind == STEP && (r.lowest() != UiContract.INSTANCE.minimum(r.contract.getId())
+                || r.highest() != UiContract.INSTANCE.maximum(r.contract.getId()))) {
+            throw new IllegalArgumentException("Wrong UI number bounds: " + r.contract.getId());
+        }
         r.tile = new FocusTile(this, 16);
         r.tile.setTag(r.contract);
         r.tile.setFocusScale(Tokens.FOCUS_SCALE_SETTINGS_ROW);

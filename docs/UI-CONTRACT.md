@@ -77,7 +77,10 @@ rows/carousels expose `data-ui` and use the catalog's canonical label references
 The native `check=ui` instrumentation and LG browser suite enumerate those controls
 in Arabic and English, then require every definition to be bound or declared in a
 shell's gap file. See [declared gaps](UI-GAPS.md). These checks enforce control
-coverage; they do not yet exhaustively compare every option/value or linked editor.
+coverage. Numeric range references reuse the core prayer/Hijri limits and shared
+percentage bounds; native steppers validate their ranges and LG's editor consumes
+them through its actual binding. They do not yet exhaustively compare every choice
+value or linked editor.
 
 The implementation must provide one portable definition, shared focus rules and
 per-shell bindings. Conformance checks must:

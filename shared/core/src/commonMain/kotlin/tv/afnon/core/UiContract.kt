@@ -12,6 +12,7 @@ class UiControl(
     val kind: String,
     val labelKey: String,
     val save: String,
+    val range: String,
 )
 
 @JsExport
@@ -25,6 +26,15 @@ object UiContract {
         val control = control(id)
         require(control.kind == kind) { "Wrong UI control kind: $id" }
         return control
+    }
+
+    fun minimum(id: String): Int = if (bind(id, "number").range == "percent") 0 else -maximum(id)
+
+    fun maximum(id: String): Int = when (bind(id, "number").range) {
+        "prayer-offset" -> PrayerRules.MAX_OFFSET_MINUTES
+        "hijri-offset" -> PrayerRules.MAX_HIJRI_OFFSET_DAYS
+        "percent" -> 100
+        else -> throw IllegalArgumentException("Unknown UI number range: $id")
     }
 
     /** Bindings come from real controls; omitted controls require explicit shell gap declarations. */

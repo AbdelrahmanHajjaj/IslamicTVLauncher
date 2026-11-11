@@ -30,6 +30,9 @@ compiling after changes. The checked-in generated Kotlin keeps core builds stand
 Actual native rows and LG rows/carousels carry these IDs. Their conformance checks
 enumerate real views/DOM controls in both languages, rather than a support manifest.
 Shell gap declarations generate the [gap report](../../docs/UI-GAPS.md).
+Numeric controls reference named ranges; `minimum`/`maximum` reuse `PrayerRules`
+for prayer/Hijri limits and define 0–100 percentages. Native steppers validate
+their bounds; LG's actual numeric editor reads them from its bound control ID.
 
 Java callers use `tv.afnon.core.PrayerRules.INSTANCE`; the returned
 `PrayerSelection` exposes standard getters. JavaScript exposes the same namespace

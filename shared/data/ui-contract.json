@@ -39,7 +39,8 @@
     "section": "prayer",
     "kind": "number",
     "label": "hijriAdjust",
-    "save": "immediate"
+    "save": "immediate",
+    "range": "hijri-offset"
   },
   {
     "id": "prayer.facing",
@@ -109,7 +110,8 @@
     "section": "reminders",
     "kind": "number",
     "label": "appVolume",
-    "save": "immediate"
+    "save": "immediate",
+    "range": "percent"
   },
   {
     "id": "reminders.close",
@@ -291,7 +293,8 @@
     "section": "appearance",
     "kind": "number",
     "label": "lightingRow",
-    "save": "appearance"
+    "save": "appearance",
+    "range": "percent"
   },
   {
     "id": "appearance.cycle",
@@ -487,42 +490,48 @@
     "section": "offsets",
     "kind": "number",
     "label": "prayerNames:0",
-    "save": "immediate"
+    "save": "immediate",
+    "range": "prayer-offset"
   },
   {
     "id": "offsets.sunrise",
     "section": "offsets",
     "kind": "number",
     "label": "prayerNames:1",
-    "save": "immediate"
+    "save": "immediate",
+    "range": "prayer-offset"
   },
   {
     "id": "offsets.dhuhr",
     "section": "offsets",
     "kind": "number",
     "label": "prayerNames:2",
-    "save": "immediate"
+    "save": "immediate",
+    "range": "prayer-offset"
   },
   {
     "id": "offsets.asr",
     "section": "offsets",
     "kind": "number",
     "label": "prayerNames:3",
-    "save": "immediate"
+    "save": "immediate",
+    "range": "prayer-offset"
   },
   {
     "id": "offsets.maghrib",
     "section": "offsets",
     "kind": "number",
     "label": "prayerNames:4",
-    "save": "immediate"
+    "save": "immediate",
+    "range": "prayer-offset"
   },
   {
     "id": "offsets.isha",
     "section": "offsets",
     "kind": "number",
     "label": "prayerNames:5",
-    "save": "immediate"
+    "save": "immediate",
+    "range": "prayer-offset"
   },
   {
     "id": "offsets.reset",

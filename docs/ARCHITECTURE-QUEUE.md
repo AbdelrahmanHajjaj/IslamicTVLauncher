@@ -96,14 +96,14 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.5c2, extend the verified settings identity/type/coverage foundation with
-existing choice/value/bounds mappings and linked editor/action coverage. Keep this
+Next: Q09.5c2, choice/value mappings followed by linked editor/action coverage.
+Numeric bounds are now implemented and verified in both renderers. Keep the rest
 bounded to actual controls, including per-prayer switches and favourite operations;
 no generic widget engine, new features or forced LG cosmetic ports. Unimplemented
 LG features may remain hidden, with explicit definitions/gaps as the owner approved.
 Q09.5c1 is software-verified: 76 controls, actual Android/LG rows, canonical labels
 and complete binding/gap coverage in both languages. Full option/value/editor
-conformance is not implemented yet. LG source is now 0.2.8; it is not packaged or
+conformance is not implemented yet. LG source is still 0.2.8; it is not packaged or
 installed. The TV remains on accepted 0.2.7 in Browser. Do not install intermediate
 builds until the remaining bounded contract work is ready for one hardware check.
 The watched cold boot passed: automatic launcher and HDMI picture/sound, new boot,
@@ -1543,3 +1543,31 @@ unrelated renderer redesign, transport or future shell.
   emulator-closure}.log, ui-contract-emulator/ with original closed-session evidence,
   and committed source/tests. Android TV hardware and actual old-LG 0.2.8 host/UI
   acceptance remain open. Choice/bounds and linked-editor coverage is Q09.5c2 next.
+
+### Q09.5c2 numeric bounds: verified (2026-11-11)
+
+- Numeric controls reference prayer-offset, hijri-offset or percentage ranges in
+  the canonical catalog. Generation rejects missing/unknown ranges and ranges on
+  other control kinds. Core minimum/maximum reuse PrayerRules constants rather
+  than duplicate prayer/Hijri limits; percentages remain 0–100.
+- Android validates the actual STEP row's lowest/highest against its shared
+  control. LG captures the numeric ID from the real row that opened the editor,
+  validates its kind, and reads minimum/maximum from the core. No duplicate
+  action-to-setting map or stored-key migration. Existing volume step size stays 5;
+  integer prayer/Hijri stepping and saved/default values are unchanged.
+- LG browser exercised both limits, saving, Back cancellation, reopen and original
+  restoration for all six offsets, Hijri adjustment and app volume through actual
+  editor key handlers. Final preference object equals the original. Full bilingual
+  browser workflows and LG build/ES5/service/async suite pass.
+- PASS: core 18 JVM/17 JS tests and 58 stripped ES5 assertions; combined production
+  JS 57,674 bytes. Canonical generation and full preview/shared checks pass. Native build/lint/test APK
+  pass, APK 21,122,164 bytes and lint 0 errors/55 existing warnings. Actual API 37
+  bilingual native conformance passed with all STEP range guards exercised.
+- Reopened only the same private owned emulator with a second closed-session
+  snapshot preserved. Final shutdown, offline serial, exited process and original
+  user AVD hashes verified. No emulator/TV inspector/test activity remains active.
+  Evidence: ignored ui-number-{core-check,lg-test,lg-browser,native-build,
+  native-views,emulator-closure}.log and ui-contract-emulator/number-runtime-*.
+- Choice value mapping and per-prayer/favourite linked controls are next. This is
+  still the uninstalled 0.2.8 source; accepted TV remains 0.2.7 in Browser. No
+  reason to repeat audio/power checks or install an intermediate package now.

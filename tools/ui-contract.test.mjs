@@ -17,12 +17,18 @@ for (const change of [
   c => { c.label = 'prayerNames'; },
   c => { c.save = 'action'; },
   c => { c.storageKey = 'home_layout'; },
+  c => { c.range = 'percent'; },
 ]) {
   const modified = structuredClone(controls); change(modified[0]);
   assert.throws(() => validateUiContract(modified, strings), /Invalid UI control/);
 }
 assert.throws(() => validateUiContract([...controls, controls[0]], strings), /Invalid UI control/);
 assert.throws(() => validateUiContract([], strings), /Missing UI contract/);
+for (const value of [undefined, 'unknown', ['prayer-offset']]) {
+  const modified = structuredClone(controls);
+  modified.find(c => c.kind === 'number').range = value;
+  assert.throws(() => validateUiContract(modified, strings), /Invalid UI control/);
+}
 const profiles = [
   ['Android TV', json('platforms/android-tv/src/androidTest/assets/ui-gaps.json')],
   ['LG webOS', json('platforms/webos/ui-gaps.json')],

@@ -83,5 +83,8 @@ function verifyIslamicTVCore(core) {
   rejected = false;
   try { ui.bind('appearance.countdown', 'toggle'); } catch (kind) { rejected = true; }
   check(rejected, 'wrong UI control kind rejected');
+  check(ui.minimum('offsets.fajr') === -rules.MAX_OFFSET_MINUTES && ui.maximum('offsets.isha') === rules.MAX_OFFSET_MINUTES, 'UI prayer-offset bounds');
+  check(ui.minimum('prayer.hijri') === -rules.MAX_HIJRI_OFFSET_DAYS && ui.maximum('prayer.hijri') === rules.MAX_HIJRI_OFFSET_DAYS, 'UI Hijri bounds');
+  check(ui.minimum('reminders.volume') === 0 && ui.maximum('appearance.lighting') === 100, 'UI percent bounds');
   return {checks: checks};
 }

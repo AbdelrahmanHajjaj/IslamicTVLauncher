@@ -311,6 +311,38 @@ const server = http.createServer((req, res) => {
     await page.keyboard.press('ArrowRight');
     await page.keyboard.press('Escape');
     assert.match(await page.locator('[data-action=offset-0]').innerText(), /2 min/, 'Back cancels an unsaved stepper draft');
+    const numericBefore = await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')).prefs);
+    const numberCases = [
+      ['prayer', 'hijriOffset', -2, 2, 1, numericBefore.hijriOffset],
+      ['reminders', 'volume', 0, 100, 5, numericBefore.volume],
+      ...numericBefore.offsets.map((value, i) => ['offsets', 'offset-' + i, -30, 30, 1, value])
+    ];
+    async function numberArrows(code, times) {
+      await page.evaluate(({code, times}) => {
+        for (let i = 0; i < times; i++) document.dispatchEvent(new KeyboardEvent('keydown', {keyCode: code, bubbles: true}));
+      }, {code, times});
+    }
+    for (const [section, action, low, high, step, original] of numberCases) {
+      await page.locator('[data-action=section][data-value=' + (section === 'offsets' ? 'prayer' : section) + ']').click();
+      if (section === 'offsets') await page.locator('[data-action=offsets]').click();
+      const row = page.locator('[data-action=' + action + ']');
+      for (const [code, expected] of [[37, low], [39, high]]) {
+        await row.click();
+        await numberArrows(code, 100);
+        assert.equal(await page.locator('.stepper strong').innerText(), expected + (action === 'volume' ? '%' : ''), 'real editor clamps ' + action);
+        await page.keyboard.press('Enter');
+        await row.waitFor();
+      }
+      await row.click(); await numberArrows(37, 100); await page.keyboard.press('Escape');
+      await row.click();
+      assert.equal(await page.locator('.stepper strong').innerText(), high + (action === 'volume' ? '%' : ''), 'Back preserves saved amount');
+      assert.ok(Number.isInteger((high - original) / step));
+      await numberArrows(37, (high - original) / step);
+      await page.keyboard.press('Enter'); await row.waitFor();
+    }
+    assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')).prefs), numericBefore, 'all numeric save/cancel round trips restore original preferences');
+    await page.locator('[data-action=section][data-value=prayer]').click();
+    await page.locator('[data-action=offsets]').click();
     await page.keyboard.press('Escape');
     await page.locator('[data-action=prayer-day]').click();
     assert.equal(await page.locator('[data-action=bell]').count(), 5, 'no sunrise bell');

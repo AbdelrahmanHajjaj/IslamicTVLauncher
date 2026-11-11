@@ -14,6 +14,7 @@
   var returnContext = null, voicePreview = null, coldAlert = false;
   var appearanceDraft = null, settingsParent = 'home', dayParent = 'home';
   var homeNodes = [], homeAppCount = 0, lastHomeApp = homeNavigation.FIRST_APP;
+  var numberControl = null;
   var appearanceKeys = ['theme', 'background', 'homeLayout', 'archSide', 'homeBar', 'prayerMode'];
   var overlay = document.getElementById('overlay');
   var sections = ['prayer', 'reminders', 'radio', 'display', 'appearance', 'device', 'tests'];
@@ -451,7 +452,12 @@
   function openPicker(key) {
     picker = key; page = 0;
     var selected = key === 'country' ? A.city(prefs.city).countryEn : key === 'zone' ? prefs.utcOffset : key === 'testPrayer' ? testPrayer : (appearanceDraft || prefs)[key];
-    if (stepper()) { editValue = /^offset-/.test(key) ? prefs.offsets[Number(key.slice(7))] : prefs[key]; }
+    if (stepper()) {
+      var source = screen.querySelector('.settings-rows [data-action="' + key + '"][data-ui]');
+      if (!source) { throw new Error('Missing numeric UI binding: ' + key); }
+      numberControl = uiContract.bind(source.getAttribute('data-ui'), 'number').id;
+      editValue = /^offset-/.test(key) ? prefs.offsets[Number(key.slice(7))] : prefs[key];
+    }
     else {
       var list = choices();
       for (var i = 0; i < list.length; i++) { if (String(list[i].value) === String(selected === null ? '' : selected)) { page = Math.floor(i / 6); } }
@@ -459,8 +465,7 @@
     show('picker');
   }
   function changeStep(delta) {
-    var min = picker === 'volume' ? 0 : picker === 'hijriOffset' ? -A.maxHijriOffset : -A.maxPrayerOffset;
-    var max = picker === 'volume' ? 100 : picker === 'hijriOffset' ? A.maxHijriOffset : A.maxPrayerOffset;
+    var min = uiContract.minimum(numberControl), max = uiContract.maximum(numberControl);
     editValue = Math.max(min, Math.min(max, editValue + delta * (picker === 'volume' ? 5 : 1))); render('save-step');
   }
   function savePrefs(next, focusAction, returnView) {

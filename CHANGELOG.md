@@ -9,6 +9,7 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 - Settings controls now have shared semantic IDs, canonical bilingual labels and
   explicit platform gaps. Native Android rows and LG rows/carousels are checked
   against the portable contract so omitted controls cannot silently pass as parity.
+  Numeric editors also share validated prayer/Hijri and percentage limits.
 
 - Android and LG share deterministic Home focus rules. LG starts on its app
   content, moves Up to the top controls and Down beyond the final app row to All
