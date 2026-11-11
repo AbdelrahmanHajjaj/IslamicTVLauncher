@@ -17,3 +17,8 @@ modes, null/empty values, minute thresholds/plural forms, signed/extreme offsets
 radio states, method angles and compass-sector boundaries. Platform differences
 are retained. The fixtures were captured from unchanged source before literal
 extraction; update them only for an intentional, reviewed formatting change.
+
+`sacred-text-hashes.json` freezes the exact UTF-8 code points of the existing
+An-Nisa 4:103 verse (including its three-line layout) and adhan call. All three
+renderers were compared before extraction. Any change requires an intentional
+religious-text review; a visually similar character is not sufficient.

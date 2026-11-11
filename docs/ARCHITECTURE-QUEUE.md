@@ -85,13 +85,14 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.5c, sacred UI constants. Finish the Q03.5b commit if resuming between
-operations, then inspect sacred constants in `MainActivity`, `Screen` and
-`NowActivity` with their preview/LG equivalents; retain exact text and intentional
-line breaks. Keep platform formatting/selection code in adapters and platform-only
-copy with its shell. Do not add a generic runtime translation framework. Plain and
-formatter output now have separate native/preview regression baselines. Remaining
-design/assets follow text.
+Next: Q03.6, shared design/distributable assets. Finish the Q03.5c commit if resuming
+between operations, then inventory fonts, theme definitions/preset order and shared
+icon sources still owned by Android or site extraction. Preserve exact asset bytes,
+IDs/order, tokens/patterns and native resource references; migrate source ownership,
+build inputs/generators, consumer paths, checks and notices together. Restricted
+media stays ignored and is not made distributable by this migration. Keep existing
+shared token/pattern sources; do not redesign the UI. Separate the asset work into
+verified slices, then audit Q03's remaining dependencies before starting Q04.
 Do not move platform directories yet (Q06). Production apps retain their existing
 domain implementations until Q04. Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
@@ -301,3 +302,24 @@ domain implementations until Q04. Private logs/helpers are under ignored
   and `format-*-before.*` / `format-*-baseline.ts`. Frozen public hashes live in
   `tests/fixtures/{text-format,site-text-format}-hashes.json`.
 - No TV deployment or media test; unaffected installer/core suites were not repeated.
+
+### Q03.5c canonical sacred UI text (2026-11-11)
+
+- `shared/data/sacred-text.json` owns the exact existing An-Nisa 4:103 three-line
+  verse and adhan call. Generated `SacredText` constants feed all three native
+  callers. Preview/LG insert escaped text; the footer joins the same verse with
+  spaces. Text, diacritics, line layout, Arabic direction and font styles remain
+  unchanged in either UI language. No recording or religious-content addition.
+- PASS: every pre-migration renderer matched before extraction; frozen UTF-8 hashes,
+  generated native constant round-trip and malformed-text rejection. PASS: all 18
+  built preview pages, including 10 arches/two call screens and every footer,
+  preserve exact text/direction. The private HTML check handles Astro's scoped
+  attributes; its initial bare-`br` matcher was corrected, not the renderer.
+- PASS: preview tests/build/data/tokens, Android size/build/lint, LG ES5/service
+  and bilingual browser suite (including exact three-line verse DOM checks).
+  Logs/helpers: ignored `sacred-*.log`, `sacred-before.json` and
+  `check-sacred-built.cjs`. Public baseline: `tests/fixtures/sacred-text-hashes.json`.
+- Astro's official Context7 documentation confirmed escaped expressions and
+  `Fragment` mapping (docs.astro.build/en/reference/astro-syntax/). No new runtime
+  dependency. No TV deployment or human picture/sound check; unaffected native
+  Python/installer/core suites were not repeated for this constant-only slice.

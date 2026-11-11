@@ -4,6 +4,7 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require('playwright');
 const base = path.join(__dirname, 'build/app');
+const sacred = JSON.parse(fs.readFileSync(path.join(__dirname, '../shared/data/sacred-text.json')));
 const shots = path.resolve(__dirname, '../state/webos-port');
 fs.mkdirSync(shots, { recursive: true });
 const server = http.createServer((req, res) => {
@@ -76,6 +77,7 @@ const server = http.createServer((req, res) => {
     assert.match(await page.locator('.prayer-name').evaluate(el => getComputedStyle(el).fontFamily), /Alexandria/);
     assert.doesNotMatch(await page.locator('body').innerText(), /Afnon|أفنون/);
     async function homeControls() {
+      assert.equal(await page.locator('.verse').innerText(), sacred.prayerVerse.join('\n'), 'verse keeps its exact three-line Arabic text in both languages');
       assert.deepEqual(await page.locator('.home-quick button').evaluateAll(items => items.map(el => el.dataset.action)), ['prayer-day', 'inputs', 'radio', 'tv-settings', 'settings']);
       assert.equal(await page.locator('.home-apps [data-action=native-app]').count(), 3, 'large Home tiles belong to TV apps');
       const clock = await page.locator('.home-clock .clock').boundingBox();

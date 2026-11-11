@@ -63,7 +63,7 @@ public class NowActivity extends Screen {
         col.setClipChildren(false);
 
         TextView verse = text(sacred, 54, Palette.GOLD_400);
-        verse.setText("حَيَّ عَلَى الصَّلَاةِ");
+        verse.setText(SacredText.ADHAN_CALL);
         verse.setTextDirection(View.TEXT_DIRECTION_RTL);
         TextView label = caps(text(ui400, 22, Palette.MIST_400));
         label.setText(t.nowLabel());

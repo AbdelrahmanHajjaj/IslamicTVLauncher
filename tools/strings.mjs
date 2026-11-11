@@ -1,6 +1,13 @@
 const token = /\{([a-zA-Z][a-zA-Z0-9]*)\}/g;
 const params = value => [...value.matchAll(token)].map(match => match[1]);
 
+export function validateSacredText(text) {
+  if (!text || Object.keys(text).sort().join(',') !== 'adhanCall,prayerVerse' || !Array.isArray(text.prayerVerse) || text.prayerVerse.length !== 3 ||
+      [...text.prayerVerse, text.adhanCall].some(value => typeof value !== 'string' || !value.trim() || !/^[\u0600-\u06ff ]+$/.test(value))) {
+    throw new Error('Invalid sacred text or verse line breaks');
+  }
+}
+
 export function validateStrings(strings) {
   if (!strings || typeof strings !== 'object' || Array.isArray(strings) || !Object.keys(strings).length) throw new Error('Missing text catalog');
   for (const [key, entry] of Object.entries(strings)) {

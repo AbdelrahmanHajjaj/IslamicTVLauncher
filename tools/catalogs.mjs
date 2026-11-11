@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { renderText } from './strings.mjs';
+import { renderText, validateSacredText } from './strings.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
@@ -94,9 +94,11 @@ function generate() {
   const regions = JSON.parse(read('shared/data/regions.json'));
   const stations = JSON.parse(read('shared/data/stations.json'));
   const voices = JSON.parse(read('shared/data/voices.json'));
+  const sacred = JSON.parse(read('shared/data/sacred-text.json'));
   validateCatalog(cities, regions);
   validateStations(stations);
   validateVoices(voices);
+  validateSacredText(sacred);
   const rows = cities.map(c => '        new Prefs.City(' + [c.id, c.ar, c.en, c.countryAr, c.countryEn].map(value => JSON.stringify(value)).concat(c.lat, c.lng, 'PrayerMethod.' + c.method, 'Madhab.' + (c.hanafi ? 'HANAFI' : 'SHAFI')).join(', ') + '),');
   const groups = regions.map(region => '        {' + region.map(value => JSON.stringify(value)).join(', ') + '},');
   const source = '// Generated from shared/data/{cities,regions}.json by tools/catalogs.mjs. Do not edit.\n' +
@@ -122,12 +124,17 @@ function generate() {
     '    static final String[][] VOICES = {\n' + voiceRows.join('\n') + '\n    };\n}\n';
   const voiceSources = '# Generated from shared/data/voices.json by tools/catalogs.mjs. Do not edit.\n' +
     voices.map(voice => voice.id + '\t' + voice.sourceFile).join('\n') + '\n';
+  const nativeSacred = '// Generated from shared/data/sacred-text.json by tools/catalogs.mjs. Do not edit.\n' +
+    'package tv.afnon.home;\n\nfinal class SacredText {\n    private SacredText() {}\n\n' +
+    '    static final String PRAYER_VERSE = ' + JSON.stringify(sacred.prayerVerse.join('\n')) + ';\n' +
+    '    static final String ADHAN_CALL = ' + JSON.stringify(sacred.adhanCall) + ';\n}\n';
   for (const [destination, output] of [
     ['app/src/main/java/tv/afnon/home/CityCatalog.java', source],
     ['app/src/main/java/tv/afnon/home/PrayerMethod.java', nativeMethods],
     ['app/src/main/java/tv/afnon/home/RadioCatalog.java', nativeStations],
     ['app/src/main/java/tv/afnon/home/VoiceCatalog.java', nativeVoices],
     ['tools/adhan-sources.tsv', voiceSources],
+    ['app/src/main/java/tv/afnon/home/SacredText.java', nativeSacred],
     ['app/src/main/java/tv/afnon/home/Text.java', renderText(JSON.parse(read('shared/data/strings.json')), read('app/src/main/templates/Text.java.template'), JSON.parse(read('shared/data/format-text.json')))],
   ]) {
     if (args[0] === '--check') {

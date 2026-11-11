@@ -6,7 +6,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateCatalog, validateStations, validateVoices } from '../../tools/catalogs.mjs';
-import { validateStrings, validateFormatText } from '../../tools/strings.mjs';
+import { validateStrings, validateFormatText, validateSacredText } from '../../tools/strings.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const out = resolve(root, 'site/src/data');
@@ -27,6 +27,7 @@ validateStations(JSON.parse(readFileSync(resolve(root, 'shared/data/stations.jso
 validateVoices(JSON.parse(readFileSync(resolve(root, 'shared/data/voices.json'), 'utf8')));
 validateStrings(JSON.parse(readFileSync(resolve(root, 'shared/data/strings.json'), 'utf8')));
 validateFormatText(JSON.parse(readFileSync(resolve(root, 'shared/data/format-text.json'), 'utf8')));
+validateSacredText(JSON.parse(readFileSync(resolve(root, 'shared/data/sacred-text.json'), 'utf8')));
 
 // ---------------------------------------------------------------- fonts (the app's own files)
 

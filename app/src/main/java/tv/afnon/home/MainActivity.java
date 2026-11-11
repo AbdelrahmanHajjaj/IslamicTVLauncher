@@ -350,7 +350,7 @@ public class MainActivity extends Screen {
             arch = new ArchView(this);
             place(arch, home.panelX, home.panelY, Tokens.LAYOUT_HOME_MIHRAB_WIDTH, Tokens.LAYOUT_HOME_MIHRAB_HEIGHT);
             TextView verse = text(sacred, Tokens.FONT_SIZE_SACRED, Palette.GOLD_400);
-            verse.setText("إِنَّ الصَّلَاةَ كَانَتْ\nعَلَى الْمُؤْمِنِينَ\nكِتَابًا مَّوْقُوتًا");
+            verse.setText(SacredText.PRAYER_VERSE);
             verse.setTextDirection(View.TEXT_DIRECTION_RTL);
             verse.setGravity(Gravity.CENTER);
             lineHeightPixels(verse, Ui.ipx(Tokens.FONT_SIZE_SACRED * 1.55f));

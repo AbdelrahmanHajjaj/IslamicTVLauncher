@@ -271,7 +271,7 @@
         html = '<section class="page home"><div class="arch"><svg class="arch-shape" viewBox="0 0 600 900" aria-hidden="true">' +
           '<path d="M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z"/>' +
           '<path class="inner" d="M18 900 L18 334 C18 184 150 92 300 22 C450 92 582 184 582 334 L582 900"/></svg>' +
-          '<div class="verse" lang="ar" dir="rtl">إِنَّ الصَّلَاةَ كَانَتْ<br>عَلَى الْمُؤْمِنِينَ<br>كِتَابًا مَّوْقُوتًا</div>' +
+          '<div class="verse" lang="ar" dir="rtl">' + D.sacred.prayerVerse.map(escape).join('<br>') + '</div>' +
           '<div class="verse-ref">' + digits(s('ref')) + '</div><div class="arch-info"><p class="eyebrow">' + s('nextPrayer') +
           '</p><div class="prayer-name" dir="' + (prefs.lang === 'ar' ? 'rtl' : 'ltr') + '" data-next-label></div>' +
           '<p class="prayer-time" data-next-time></p><div class="countdown" data-countdown></div><p class="city-name">' + escape(city[prefs.lang]) + '</p></div></div>' +
@@ -598,7 +598,7 @@
     if (alert.mode === 'adhan') {
       overlay.innerHTML = '<svg class="call-frame" width="720" height="1080" viewBox="0 0 600 900" aria-hidden="true"><path class="outer" d="M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z"/>' +
         '<path class="inner" d="M18 900 L18 334 C18 184 150 92 300 22 C450 92 582 184 582 334 L582 900"/></svg><section class="call-column">' +
-        '<div class="call-verse" lang="ar" dir="rtl">حَيَّ عَلَى الصَّلَاةِ</div><p class="call-label">' + (alert.test ? t('اختبار الأذان', 'Adhan test') : t('حان وقت الصلاة', 'Time for prayer')) +
+        '<div class="call-verse" lang="ar" dir="rtl">' + escape(D.sacred.adhanCall) + '</div><p class="call-label">' + (alert.test ? t('اختبار الأذان', 'Adhan test') : t('حان وقت الصلاة', 'Time for prayer')) +
         '</p><div class="call-name">' + escape(label) + '</div><div class="call-time">' + digits(A.clock(alert.prayerTime || new Date(), prefs)) + '</div>' +
         button('toggle-adhan', t('إيقاف', 'Stop'), '', 'call-play') + button('dismiss-alert', t('إغلاق', 'Dismiss'), '', 'call-dismiss') +
         '<p class="call-status" data-audio-status>' + t('جارٍ تحميل الصوت…', 'Loading audio…') + '</p></section>';

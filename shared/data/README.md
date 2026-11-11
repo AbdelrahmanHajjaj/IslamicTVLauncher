@@ -46,4 +46,10 @@ prefixes/suffixes with significant spaces, labels, directions and grammatical
 forms used only in one language. `{{TEXT:ar:key}}` / `{{TEXT:en:key}}` markers insert
 Java literals at build time; selection, plural rules and digit formatting stay in
 the adapters. Preview/LG read the same data for matching copy. Native and preview
-have separate frozen edge-case baselines. Sacred UI constants are the next slice.
+have separate frozen edge-case baselines.
+
+`sacred-text.json` preserves the existing An-Nisa 4:103 verse as three exact Arabic
+lines and the adhan call as exact Arabic text, in both UI languages. Android uses
+generated `SacredText` constants; web renderers insert escaped text with explicit
+line breaks. The site footer joins the same lines with spaces. Keep code points,
+diacritics and breaks unchanged; frozen hashes check the pre-extraction baseline.

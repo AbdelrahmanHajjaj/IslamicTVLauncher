@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { validateCatalog, validateMethods, validateStations, validateVoices } from './catalogs.mjs';
-import { renderText, validateStrings, renderLiterals, validateFormatText } from './strings.mjs';
+import { renderText, validateStrings, renderLiterals, validateFormatText, validateSacredText } from './strings.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
 const regions = JSON.parse(readFileSync(new URL('../shared/data/regions.json', import.meta.url)));
@@ -136,3 +137,27 @@ assert.throws(() => renderLiterals(literal, '{{TEXT:ar:missing}}'), /Missing/);
 assert.throws(() => renderLiterals(literal, '{{TEXT:ar:key}}'), /differ/);
 assert.throws(() => renderLiterals(literal, '{{TEXT:ar:key}} {{TEXT:en:key}} {{TEXT:bad:key}}'), /differ/);
 console.log('PASS: locale-specific formatter literals and complete native marker coverage');
+
+const sacred = JSON.parse(readFileSync(new URL('../shared/data/sacred-text.json', import.meta.url)));
+validateSacredText(sacred);
+for (const change of [
+  text => { text.prayerVerse.pop(); },
+  text => { text.prayerVerse[0] = ''; },
+  text => { text.prayerVerse[0] += '\n'; },
+  text => { text.adhanCall = '<b>Text</b>'; },
+  text => { text.adhanCall = null; },
+  text => { text.extra = 'Text'; },
+]) {
+  const modified = structuredClone(sacred); change(modified);
+  assert.throws(() => validateSacredText(modified), /Invalid sacred/);
+}
+const hashes = JSON.parse(readFileSync(new URL('../tests/fixtures/sacred-text-hashes.json', import.meta.url)));
+const sacredJava = readFileSync(new URL('../app/src/main/java/tv/afnon/home/SacredText.java', import.meta.url), 'utf8');
+for (const [key, field, text] of [
+  ['prayerVerse', 'PRAYER_VERSE', sacred.prayerVerse.join('\n')], ['adhanCall', 'ADHAN_CALL', sacred.adhanCall],
+]) {
+  assert.equal(createHash('sha256').update(text).digest('hex'), hashes[key], 'Sacred text must match exact pre-extraction code points');
+  const declaration = new RegExp('static final String ' + field + ' = ' + quoted + ';').exec(sacredJava);
+  assert.equal(JSON.parse(declaration[1]), text, 'Native sacred constant must preserve exact text and breaks');
+}
+console.log('PASS: exact sacred text baseline, three verse lines and generated native constants');

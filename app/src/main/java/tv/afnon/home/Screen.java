@@ -207,7 +207,7 @@ abstract class Screen extends Activity {
         place(arch, Tokens.ARCH_X, Tokens.ARCH_Y, Tokens.ARCH_W, Tokens.ARCH_H);
 
         TextView verse = text(sacred, 32, Palette.GOLD_400);
-        verse.setText("إِنَّ الصَّلَاةَ كَانَتْ\nعَلَى الْمُؤْمِنِينَ\nكِتَابًا مَّوْقُوتًا");
+        verse.setText(SacredText.PRAYER_VERSE);
         verse.setGravity(Gravity.CENTER_HORIZONTAL);
         verse.setTextDirection(View.TEXT_DIRECTION_RTL);
         lineHeightPixels(verse, Ui.ipx(32 * 1.55f));

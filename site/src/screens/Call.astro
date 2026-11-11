@@ -4,6 +4,7 @@
 import type { Ctx } from '../lib/ctx';
 import { href } from '../lib/site';
 import { AUTO_DISMISS_MS, callModel } from './call';
+import sacred from '../../../shared/data/sacred-text.json';
 
 interface Props { ctx: Ctx }
 const { ctx } = Astro.props;
@@ -21,7 +22,7 @@ const note = t.ar ? 'المعاينة على الويب لا تشغّل صوت �
 </svg>
 
 <div class="col" data-auto-dismiss={AUTO_DISMISS_MS} data-labels={JSON.stringify(labels)} data-home-href={home}>
-  <p class="verse sacred" lang="ar" dir="rtl">حَيَّ عَلَى الصَّلَاةِ</p>
+  <p class="verse sacred" lang="ar" dir="rtl">{sacred.adhanCall}</p>
   <div class="label caps">{t.s('nowLabel')}</div>
   <div class="name display-bold" data-k="name" set:html={m.html.name} />
   <div class="time display num" data-k="time" set:html={m.html.time} />
