@@ -3,7 +3,7 @@
 # Enable prayer/remote buttons separately with tools/device.py configure after checking Home.
 set -euo pipefail
 . "$(dirname "$0")/env.sh"
-if ! compgen -G "$ROOT/app/src/main/assets/adhan/*.mp3" >/dev/null; then
+if ! compgen -G "$ROOT/state/media/adhan/*.mp3" >/dev/null; then
   echo 'Adhan recordings are missing. Run tools/fetch-adhans.sh before building for audible calls.' >&2
 fi
 (cd "$ROOT" && ./gradlew :app:assembleDebug --console=plain)

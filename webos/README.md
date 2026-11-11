@@ -194,7 +194,7 @@ ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 The `ares-*` commands come from LG's webOS CLI. Pair the TV using its Developer Mode
 app first. This checkout used CLI 3.2.6. Enable startup in Islamic TV Launcher Settings after install.
 
-The build requires the existing Android adhan and announcement assets (see
+The build requires the local `state/media/{adhan,announce}/` recordings (see
 `tools/fetch-adhans.sh` and `tools/fetch-announce.sh` if absent). It reuses
 `site/scripts/extract.mjs`, emits literal token values into CSS,
 and parses every shipped JavaScript file as ES5. Build outputs and packages are

@@ -85,23 +85,18 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q06.2, separate restricted local media inputs from Android source paths.
-Finish Q06.1's commit if resuming between operations. Inspect fetch scripts,
-Android asset source sets/players, LG build and media references before editing.
-Move the existing 14 adhan + 12 announcement clips into ignored
-`state/media/{adhan,announce}` with verified absolute workspace paths and pre/post
-hashes; preserve any existing destination work (never overwrite different bytes).
-Both builders/fetchers must use that local media root while packaging the same
-`adhan/` / `announce/` Android assets and LG output paths. Include only the media
-input directory, never arbitrary state/backups/credentials. Preserve rights and
-source exclusion; do not fetch new media or publish binaries. Update relevant
-instructions/tests/ignore rules and verify actual APK/LG media bytes and normal
-checks before the platform source moves.
-Q06.3 then moves actual Android/LG sources to `platforms/{android-tv,webos}` and
-updates every consumer/generated path/CI/instruction. Provide independently
-buildable shells as well as working aggregate/installer/site/tool commands; inspect
-the smallest per-platform Gradle settings before changing paths. No empty future
-projects, UI redesign or changes to installed IDs, preferences or native behavior.
+Next: Q06.3a, move the LG shell to `platforms/webos`. Finish Q06.2's commit if
+resuming between operations. Inspect every production/build/test/doc/CI path
+consumer before moving; verify absolute source/destination remain in the workspace,
+preserve unrelated/ignored work and keep package/service IDs and aligned versions.
+Update root-relative build reads, dependency/test/fixture paths, npm commands and
+agent/contributor links together. LG now consumes shared core/data/design, site
+tooling and ignored `state/media/`; it must not regain an Android source/SDK tie.
+Run the affected build/ES5/service/browser and consumer checks before committing.
+Do not move Android simultaneously: Q06.3b will place it in `platforms/android-tv`
+with its own build entry plus working aggregate `:app`/installer/tools/generators/
+tests/CI. Inspect the smallest standalone Android settings before making that
+slice. No empty future projects, UI changes, installed-ID changes or new media.
 Q04/Q05 software extraction is complete; clocks, calendar/astronomical engines,
 persistence, OS scheduling and playback remain adapters with existing keys/IDs.
 LG was unreachable during Q04.2; actual-host integration and native ICU accuracy,
@@ -689,3 +684,32 @@ them. Q02 commit: `83b0c72`. No release, remote detach, merge or TV firmware act
   Context7 and validated with the pinned 8.11.1 / Kotlin 2.2.10 tools. Linux CI and
   physical TVs were not run locally. Platform source/media paths have not moved
   yet; Q06.2/3 remain required. No source publishing, remote/release or device action.
+
+### Q06.2 local media input ownership (2026-11-11)
+
+- The existing 14 adhan and 12 announcement MP3s moved from ignored Android assets
+  to ignored `state/media/{adhan,announce}`. Preflight verified all absolute paths
+  inside the workspace, source hashes and absent destinations; native PowerShell
+  moved each file and rechecked its hash. No download, recording or overwrite.
+- Android adds only `state/media` as an asset source; LG copies its same allowlisted
+  filenames from that input. Playback code, packed `adhan/` / `announce/` paths,
+  catalog IDs, audio focus/decoder handling and religious/audio bytes are unchanged.
+  Fetchers, install warnings, active build/contribution/agent/release instructions
+  use the new input root. Empty Android `.gitkeep` was removed; old media locations
+  remain ignored for safety, and the new inputs remain covered by `state/`.
+- PASS: all 26 original source/APK/LG hashes before the move and new source/fresh
+  APK/LG hashes afterward, with exact filename sets and ZIP_STORED Android entries
+  for AssetFileDescriptor. Evidence: ignored `media-{before,after}.json` and
+  `check-media-inputs.py`. No restricted recording is tracked/staged; the unrelated
+  historical probe's already-tracked test tone was not changed.
+- PASS: both actual fetchers skip existing clips with download/recording commands
+  blocked; no network or speech call occurred. PASS: Bash and PowerShell syntax.
+  Initial non-elevated Git Bash syntax check hit Windows signal-pipe access denial;
+  the approved process-permission rerun passed. Source/runtime behavior was not at
+  fault. Logs/helper: ignored `media-fetcher-check.log`, `check-media-fetchers.sh`.
+- PASS: clean Android build/size/lint, actual core/event/runtime DEX and seven
+  notices; APK 20,934,629 bytes, 0 errors / 54 warnings. PASS: LG rebuilt ES5/service/
+  calendar/reminder regressions. Logs: ignored `media-{android,webos}.log`.
+  Existing core/native logic, preview/installer and LG renderer were unchanged;
+  their broader suites were not repeated after Q06.1. No hardware sound/picture
+  check, performance-improvement claim, release or source/media publication.

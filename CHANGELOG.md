@@ -17,6 +17,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   core, preserving their separate windows, persisted claims and native playback.
 - The core builds independently of Android; LG/preview invoke that standalone
   build and Android links it as a local composite dependency.
+- Android and LG read local recordings from ignored `state/media/` inputs,
+  preserving the existing packaged audio names and bytes.
 
 ### LG webOS development port
 

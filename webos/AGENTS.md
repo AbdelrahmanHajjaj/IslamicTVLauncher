@@ -16,7 +16,7 @@ earlier experiments; later versioned validation in this README takes precedence.
   time/date helpers and input/app allowlists.
 - `service/service.js`: private atomic state, Activity Manager startup/prayer callbacks
   and allowlisted LG integration. Avoid duplicate or expired audible alerts.
-- `build.cjs`: reads shared catalogs/icons/fonts/themes, plus Android audio and `site/` pattern tooling;
+- `build.cjs`: reads shared catalogs/icons/fonts/themes, local `state/media/` audio and `site/` pattern tooling;
   transpiles adhan-js and emits literal CSS tokens. Never edit `build/` as source.
 - Keep `package.json`, lockfile package version, `app/appinfo.json` and
   `service/package.json` versions aligned. Keep `tv.afnon.webos` and its service ID.
@@ -55,8 +55,8 @@ npm --prefix webos run test:browser
 node tools/webos-background-probe/test.cjs  # when touching the historical probe
 ```
 
-The build needs JDK 17 for the shared core, plus the 14 adhan MP3s and 12 spoken recordings in Android's ignored
-asset directories. Do not add them or built IPKs to Git. Browser checks use an
+The build needs JDK 17 for the shared core, plus the 14 adhan MP3s and 12 spoken
+recordings under ignored `state/media/{adhan,announce}/`. Do not add them or built IPKs to Git. Browser checks use an
 installed Microsoft Edge with a temporary profile; screenshots go under ignored
 `state/webos-port/`. Luna and audio/video are mocked there. New scheduling changes
 must cover asynchronous callbacks, overlap, expiry, duplication and cancellation.

@@ -8,6 +8,7 @@ local.properties
 *.ipk
 .idea/
 *.iml
+# Legacy media locations stay ignored; current inputs live under ignored state/media/.
 # Downloaded by tools/fetch-adhans.sh (no licence to redistribute)
 app/src/main/assets/adhan/*.mp3
 # Recorded locally by tools/fetch-announce.sh with a Microsoft neural voice (not ours to redistribute)

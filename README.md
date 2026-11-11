@@ -179,6 +179,8 @@ same signing key for later builds. The phone installer still needs a complete re
 
 Run `bash tools/fetch-adhans.sh` before building to download the 14 recordings for personal use.
 They are Git-ignored because the source collection does not provide a redistribution licence.
+Local inputs live in `state/media/adhan/` and `state/media/announce/`; Android and LG
+package them under their existing asset names.
 Optional spoken announcements use `tools/fetch-announce.sh` and `edge-tts`; generated clips also stay
 out of Git. Without them, spoken announcements are silent. Do not commit or redistribute unlicensed audio.
 

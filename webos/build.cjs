@@ -25,12 +25,12 @@ const data = {
   voices: json('shared/data/voices.json').map(({id, ar, en}) => ({id, ar, en})), themes: [], hijri: []
 };
 for (const voice of data.voices) {
-  write(path.join(out, 'app/audio/adhan', voice.id + '.mp3'), fs.readFileSync(path.join(root, 'app/src/main/assets/adhan', voice.id + '.mp3')));
+  write(path.join(out, 'app/audio/adhan', voice.id + '.mp3'), fs.readFileSync(path.join(root, 'state/media/adhan', voice.id + '.mp3')));
 }
 for (const prayer of ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumuah']) {
   for (const kind of ['before', 'now']) {
     const name = kind + '_' + prayer + '.mp3';
-    write(path.join(out, 'app/audio/announce', name), fs.readFileSync(path.join(root, 'app/src/main/assets/announce', name)));
+    write(path.join(out, 'app/audio/announce', name), fs.readFileSync(path.join(root, 'state/media/announce', name)));
   }
 }
 data.themes = json('shared/design/themes.json').filter(id => id !== 'custom');

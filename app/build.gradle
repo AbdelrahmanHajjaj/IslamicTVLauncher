@@ -24,6 +24,7 @@ android {
         res.srcDir rootProject.file('shared/design/resources')
         assets.srcDir rootProject.file('shared/design/assets')
         assets.srcDir rootProject.file('shared/core/assets')
+        assets.srcDir rootProject.file('state/media')
     }
 }
 
