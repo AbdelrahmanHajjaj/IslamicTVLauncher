@@ -85,8 +85,8 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.6, shared design/distributable assets. Finish the Q03.5c commit if resuming
-between operations, then inventory fonts, theme definitions/preset order and shared
+Next: Q03.6, shared design/distributable assets. Finish the Q03.5c correction commit
+if resuming between operations, then inventory fonts, theme definitions/preset order and shared
 icon sources still owned by Android or site extraction. Preserve exact asset bytes,
 IDs/order, tokens/patterns and native resource references; migrate source ownership,
 build inputs/generators, consumer paths, checks and notices together. Restricted
@@ -315,8 +315,11 @@ domain implementations until Q04. Private logs/helpers are under ignored
   built preview pages, including 10 arches/two call screens and every footer,
   preserve exact text/direction. The private HTML check handles Astro's scoped
   attributes; its initial bare-`br` matcher was corrected, not the renderer.
-- PASS: preview tests/build/data/tokens, Android size/build/lint, LG ES5/service
-  and bilingual browser suite (including exact three-line verse DOM checks).
+- PASS: preview tests/build/data/tokens, Android size/build/lint, LG ES5/service.
+  The extraction commit `6f84c1c` prematurely recorded a browser pass: its new
+  `innerText` assertion failed when an existing layout hid the verse. Corrective
+  exact-DOM checks now pass independently of visibility, and the full bilingual
+  browser suite passed on rerun before the correction commit. APK: 20,248,232 bytes.
   Logs/helpers: ignored `sacred-*.log`, `sacred-before.json` and
   `check-sacred-built.cjs`. Public baseline: `tests/fixtures/sacred-text-hashes.json`.
 - Astro's official Context7 documentation confirmed escaped expressions and

@@ -77,7 +77,7 @@ const server = http.createServer((req, res) => {
     assert.match(await page.locator('.prayer-name').evaluate(el => getComputedStyle(el).fontFamily), /Alexandria/);
     assert.doesNotMatch(await page.locator('body').innerText(), /Afnon|أفنون/);
     async function homeControls() {
-      assert.equal(await page.locator('.verse').innerText(), sacred.prayerVerse.join('\n'), 'verse keeps its exact three-line Arabic text in both languages');
+      assert.equal(await page.locator('.verse').innerHTML(), sacred.prayerVerse.join('<br>'), 'verse DOM keeps exact Arabic text and line breaks even when the layout hides it');
       assert.deepEqual(await page.locator('.home-quick button').evaluateAll(items => items.map(el => el.dataset.action)), ['prayer-day', 'inputs', 'radio', 'tv-settings', 'settings']);
       assert.equal(await page.locator('.home-apps [data-action=native-app]').count(), 3, 'large Home tiles belong to TV apps');
       const clock = await page.locator('.home-clock .clock').boundingBox();
