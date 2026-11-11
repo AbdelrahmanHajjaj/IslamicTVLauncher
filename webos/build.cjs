@@ -40,10 +40,7 @@ for (let at = Date.UTC(1999, 0, 1); at < Date.UTC(2102, 0, 1); at += 86400000) {
   if (+parts.day === 1) data.hijri.push([at / 86400000, +parts.year, +parts.month]);
 }
 data.methodNames = Object.fromEntries(methods.map(method => [method.id, {ar: method.ar, en: method.en}]));
-data.icons = {};
-for (const match of read('site/src/components/Icon.astro').matchAll(/^  (\w+): '([^']+)'/gm)) {
-  data.icons[match[1]] = match[2];
-}
+data.icons = json('shared/design/icons.json');
 const appIds = new Set();
 for (const app of data.apps) {
   if (!/^[a-z0-9][a-z0-9._-]{0,127}$/.test(app.id) || appIds.has(app.id) || !app.ar || !app.en || !data.icons[app.icon]) throw new Error('Invalid TV app shortcut');

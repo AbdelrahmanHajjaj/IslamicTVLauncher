@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from shared/design/prayer-icons.json by tools/catalogs.mjs. Do not edit. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
     <path android:pathData="M12,9a4,4 0,1 1,-8 0a4,4 0,1 1,8 0 M8,2V3 M2,9H1 M3,4l1,1 M3,14l1,-1 M13,11l6,6 M15,17H19V13 M3,21H21" android:fillColor="#00000000"

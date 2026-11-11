@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { validateCatalog, validateMethods, validateStations, validateVoices, validateThemes } from './catalogs.mjs';
 import { renderText, validateStrings, renderLiterals, validateFormatText, validateSacredText } from './strings.mjs';
+import { validateIcons, validatePrayerIcons } from './design.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
 const regions = JSON.parse(readFileSync(new URL('../shared/data/regions.json', import.meta.url)));
@@ -170,3 +171,25 @@ for (const invalid of [null, [], ['custom', 'mihrab'], ['mihrab', 'custom', 'oth
 const themeJava = readFileSync(new URL('../app/src/main/java/tv/afnon/home/ThemeCatalog.java', import.meta.url), 'utf8');
 assert.deepEqual(JSON.parse('[' + /PRESETS = \{([^}]+)\}/.exec(themeJava)[1] + ']'), themes);
 console.log('PASS: ordered theme IDs, default/custom slots and generated native registry');
+
+const icons = JSON.parse(readFileSync(new URL('../shared/design/icons.json', import.meta.url)));
+validateIcons(icons);
+for (const geometry of [
+  '<script/>', '<image href="https://example.com/icon.svg"/>', '<path d="M0 0" onclick="alert(1)"/>',
+  '<path d="M0 0" fill="url(https://example.com)"/>', '<path d="M0 0" style="fill:red"/>',
+  '<circle r="NaN"/>', '<path d="M0 0" d="M1 1"/>', '<path/>', '<path d="M0 0"/><text/>',
+]) assert.throws(() => validateIcons({bad: geometry}));
+for (const invalid of [null, {}, [], {'bad-id': '<path d="M0 0"/>'}, {bad: 1}]) assert.throws(() => validateIcons(invalid));
+const prayerIcons = JSON.parse(readFileSync(new URL('../shared/design/prayer-icons.json', import.meta.url)));
+validatePrayerIcons(prayerIcons);
+for (const change of [
+  data => { data.size = 0; }, data => { data.size = NaN; }, data => { data.strokeWidth = '1.7'; },
+  data => { data.strokeWidth = 0; }, data => { data.strokeWidth = data.size + 1; },
+  data => { data.prayers.reverse(); }, data => { data.prayers[0].id = '../fajr'; },
+  data => { data.prayers[0].path = '"/><script/>'; }, data => { data.prayers[0].path = ''; },
+  data => { data.prayers.pop(); }, data => { data.extra = true; },
+]) {
+  const modified = structuredClone(prayerIcons); change(modified);
+  assert.throws(() => validatePrayerIcons(modified));
+}
+console.log('PASS: local SVG geometry allowlist and ordered prayer vector dimensions/paths');

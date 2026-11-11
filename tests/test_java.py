@@ -32,19 +32,27 @@ class JavaChecks(unittest.TestCase):
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.HomeLayoutCheck"], check=True, capture_output=True)
 
     def test_prayer_vectors_cover_each_prayer_in_order(self):
+        import json
         import re
         import xml.etree.ElementTree as ET
         ns = "{http://schemas.android.com/apk/res/android}"
         names = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"]
+        canonical = json.loads((ROOT / "shared/design/prayer-icons.json").read_text())
+        self.assertEqual([icon["id"] for icon in canonical["prayers"]], names)
         source = (ROOT / "app/src/main/java/tv/afnon/home/PrayerIcon.java").read_text()
         self.assertEqual(re.findall(r"R.drawable.ic_prayer_(\w+)", source), names)
         paths = []
-        for name in names:
+        for i, name in enumerate(names):
             icon = ET.parse(ROOT / f"app/src/main/res/drawable/ic_prayer_{name}.xml").getroot()
-            self.assertEqual((icon.get(ns + "viewportWidth"), icon.get(ns + "viewportHeight")), ("24", "24"))
+            self.assertEqual((icon.get(ns + "viewportWidth"), icon.get(ns + "viewportHeight")), (str(canonical["size"]),) * 2)
             path = icon.find("path")
             self.assertEqual(path.get(ns + "fillColor"), "#00000000")
             self.assertGreater(float(path.get(ns + "strokeWidth")), 0)
+            self.assertEqual(float(path.get(ns + "strokeWidth")), canonical["strokeWidth"])
+            self.assertEqual(path.get(ns + "strokeColor"), "#FFFFFFFF")
+            self.assertEqual(path.get(ns + "strokeLineCap"), "round")
+            self.assertEqual(path.get(ns + "strokeLineJoin"), "round")
+            self.assertEqual(path.get(ns + "pathData"), canonical["prayers"][i]["path"])
             paths.append(path.get(ns + "pathData"))
         self.assertTrue(all(paths))
         self.assertEqual(len(set(paths)), 6, "Each prayer needs a distinct glyph")

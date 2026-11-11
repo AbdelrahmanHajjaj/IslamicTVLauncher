@@ -85,12 +85,13 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.6c, shared icon sources. Finish the Q03.6b commit if resuming between
-operations, then inspect the six prayer vectors, native `Icon`, preview `Icon.astro`
-and LG extraction. Move reusable geometry into shared design sources; preserve
-dimensions, paths, strokes, joins, tinting and native rendering behavior. Keep
-platform rendering in adapters and migrate consumers/generators/checks together.
-Then audit remaining design-ID lists and Q03 dependencies before starting Q04.
+Next: Q03.6d, audit remaining design-ID lists and Q03 dependencies. Finish the
+Q03.6c commit if resuming between operations. Inspect `ThemeSpec` background/surface/
+color ID lists, their preview counterparts and LG's supported subset. Extract
+duplicated common metadata if needed while retaining native validation/rendering
+and intentional capability differences. Verify tokens/pattern inputs, generated
+outputs and remaining source dependencies before declaring Q03 complete. Do not
+force platform-only canvas code or UI copy into a universal renderer.
 Restricted media stays ignored; keep existing shared token/pattern sources and
 do not redesign the UI.
 Do not move platform directories yet (Q06). Production apps retain their existing
@@ -368,3 +369,25 @@ domain implementations until Q04. Private logs/helpers are under ignored
   LG ES5/service regressions. LG browser checks were not repeated: client code,
   ID list and every packaged stylesheet are identical; Q03.6a's browser run passed.
   Unaffected installer/core suites and physical-TV checks were not repeated.
+
+### Q03.6c shared icon geometry (2026-11-11)
+
+- `shared/design/icons.json` owns the 26 existing preview/LG SVG fragments;
+  `prayer-icons.json` owns six ordered prayer paths, 24-unit dimensions and the
+  1.7-unit stroke. Android's six existing vector resources are generated from it;
+  preview labels read the same geometry. Java/`.astro` geometry scraping and the
+  obsolete ignored preview JSON were removed. Native resource changes are only
+  generated-file comments; every path/presentation attribute is unchanged.
+- Native `Icon` canvas code remains in its adapter: its arcs, fill, RTL handling
+  and some geometry differ intentionally from the web SVGs. No device-side SVG
+  parser or universal drawing framework was introduced. Native `PrayerIcon` sizing,
+  tint/baseline/focus and accessibility code is unchanged.
+- PASS: curated SVG shape/attribute allowlist, rejection of active/external markup,
+  prayer order/dimension/path validation, complete native XML attribute parity,
+  and exact original six-vector/26-fragment/packaged-LG data comparison. Evidence:
+  ignored `icons-before.json` and `icons-*.log`.
+- PASS: 38 Python/Java regressions, generated-output checks, preview tests/18-page
+  build/data/tokens, Android size/build/lint (20,073,928 bytes), LG ES5/service checks.
+  LG browser tests were not repeated: its client code and complete icon payload
+  are unchanged. No physical-TV check or performance-improvement claim; unaffected
+  installer/core suites were not repeated.

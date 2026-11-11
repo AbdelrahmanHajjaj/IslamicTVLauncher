@@ -8,6 +8,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateCatalog, validateStations, validateVoices, validateThemes } from '../../tools/catalogs.mjs';
 import { validateStrings, validateFormatText, validateSacredText } from '../../tools/strings.mjs';
+import { validateIcons, validatePrayerIcons } from '../../tools/design.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const out = resolve(root, 'site/src/data');
@@ -30,6 +31,8 @@ validateStrings(JSON.parse(readFileSync(resolve(root, 'shared/data/strings.json'
 validateFormatText(JSON.parse(readFileSync(resolve(root, 'shared/data/format-text.json'), 'utf8')));
 validateSacredText(JSON.parse(readFileSync(resolve(root, 'shared/data/sacred-text.json'), 'utf8')));
 validateThemes(JSON.parse(readFileSync(resolve(root, 'shared/design/themes.json'), 'utf8')));
+validateIcons(JSON.parse(readFileSync(resolve(root, 'shared/design/icons.json'), 'utf8')));
+validatePrayerIcons(JSON.parse(readFileSync(resolve(root, 'shared/design/prayer-icons.json'), 'utf8')));
 
 // ---------------------------------------------------------------- shared fonts and notices
 
@@ -51,14 +54,6 @@ const shotsOut = resolve(root, 'site/public/screenshots');
 mkdirSync(shotsOut, { recursive: true });
 for (const f of readdirSync(shotsIn)) copyFileSync(resolve(shotsIn, f), resolve(shotsOut, f));
 console.log('copied docs/screenshots to site/public/screenshots');
-
-const prayerIcons = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(name => {
-  const xml = readFileSync(resolve(root, `app/src/main/res/drawable/ic_prayer_${name}.xml`), 'utf8');
-  const path = /android:pathData="([^"]+)"/.exec(xml)?.[1];
-  if (!path) throw new Error(`Missing prayer icon: ${name}`);
-  return path;
-});
-write('prayer-icons.json', prayerIcons);
 
 const backgroundPatterns = Object.fromEntries(['arches', 'eight_point_stars', 'mashrabiya', 'arabesque', 'star_tiles', 'rosettes', 'octagon_lattice', 'corner_medallions'].map(name => {
   const xml = readFileSync(resolve(root, `afnon-mihrab/patterns/${name}.svg`), 'utf8');

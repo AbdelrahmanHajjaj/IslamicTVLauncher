@@ -15,7 +15,7 @@ earlier experiments; later versioned validation in this README takes precedence.
   preferences, prayer calculation, time/date helpers and input/app allowlists.
 - `service/service.js`: private atomic state, Activity Manager startup/prayer callbacks
   and allowlisted LG integration. Avoid duplicate or expired audible alerts.
-- `build.cjs`: reads shared catalogs/fonts/themes, plus Android audio and `site/` artwork tooling;
+- `build.cjs`: reads shared catalogs/icons/fonts/themes, plus Android audio and `site/` pattern tooling;
   transpiles adhan-js and emits literal CSS tokens. Never edit `build/` as source.
 - Keep `package.json`, lockfile package version, `app/appinfo.json` and
   `service/package.json` versions aligned. Keep `tv.afnon.webos` and its service ID.

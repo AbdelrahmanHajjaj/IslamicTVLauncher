@@ -281,9 +281,9 @@ observed on one board is not proof for every TV from that brand.
 | Path | Contents |
 |---|---|
 | `app/src/main/java/tv/afnon/home/` | Home, apps, settings, prayer calculation, radio, overlays and screensaver |
-| `app/src/main/res/drawable/` | Native prayer icons and generated background patterns |
+| `app/src/main/res/drawable/` | Native drawable resources; prayer vectors and background patterns are generated |
 | `afnon-mihrab/tokens.json` | Shared design source; generated Java/XML/CSS must not be edited directly |
-| `shared/design/` | Canonical theme presets/order, font files and existing notices, consumed by all platform builds |
+| `shared/design/` | Canonical icon geometry, theme presets/order, fonts and notices, consumed by platform builds |
 | `installer/` | Android phone installer and its private recovery/export flow |
 | `tools/device.py`, `tools/setup-steps.txt` | Guarded PC setup and bundled phone setup policy |
 | `tools/` | Installation, backup/restore, reversible disable/enable and optional audio downloads |

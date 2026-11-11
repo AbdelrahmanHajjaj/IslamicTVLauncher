@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderText, validateSacredText } from './strings.mjs';
+import { validateIcons, validatePrayerIcons } from './design.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
@@ -107,11 +108,14 @@ function generate() {
   const voices = JSON.parse(read('shared/data/voices.json'));
   const sacred = JSON.parse(read('shared/data/sacred-text.json'));
   const themes = JSON.parse(read('shared/design/themes.json'));
+  const prayerIcons = JSON.parse(read('shared/design/prayer-icons.json'));
   validateCatalog(cities, regions);
   validateStations(stations);
   validateVoices(voices);
   validateSacredText(sacred);
   validateThemes(themes);
+  validateIcons(JSON.parse(read('shared/design/icons.json')));
+  validatePrayerIcons(prayerIcons);
   const rows = cities.map(c => '        new Prefs.City(' + [c.id, c.ar, c.en, c.countryAr, c.countryEn].map(value => JSON.stringify(value)).concat(c.lat, c.lng, 'PrayerMethod.' + c.method, 'Madhab.' + (c.hanafi ? 'HANAFI' : 'SHAFI')).join(', ') + '),');
   const groups = regions.map(region => '        {' + region.map(value => JSON.stringify(value)).join(', ') + '},');
   const source = '// Generated from shared/data/{cities,regions}.json by tools/catalogs.mjs. Do not edit.\n' +
@@ -144,6 +148,13 @@ function generate() {
   const nativeThemes = '// Generated from shared/design/themes.json by tools/catalogs.mjs. Do not edit.\n' +
     'package tv.afnon.home;\n\nfinal class ThemeCatalog {\n    private ThemeCatalog() {}\n\n' +
     '    static final String[] PRESETS = {' + themes.map(id => JSON.stringify(id)).join(', ') + '};\n}\n';
+  const vectors = prayerIcons.prayers.map(({id, path}) => ['app/src/main/res/drawable/ic_prayer_' + id + '.xml',
+    '<?xml version="1.0" encoding="utf-8"?>\n<!-- Generated from shared/design/prayer-icons.json by tools/catalogs.mjs. Do not edit. -->\n' +
+    '<vector xmlns:android="http://schemas.android.com/apk/res/android"\n' +
+    '    android:width="' + prayerIcons.size + 'dp" android:height="' + prayerIcons.size + 'dp" android:viewportWidth="' + prayerIcons.size + '" android:viewportHeight="' + prayerIcons.size + '">\n' +
+    '    <path android:pathData="' + path + '" android:fillColor="#00000000"\n' +
+    '        android:strokeColor="#FFFFFFFF" android:strokeWidth="' + prayerIcons.strokeWidth + '"\n' +
+    '        android:strokeLineCap="round" android:strokeLineJoin="round" />\n</vector>\n']);
   for (const [destination, output] of [
     ['app/src/main/java/tv/afnon/home/CityCatalog.java', source],
     ['app/src/main/java/tv/afnon/home/PrayerMethod.java', nativeMethods],
@@ -152,6 +163,7 @@ function generate() {
     ['tools/adhan-sources.tsv', voiceSources],
     ['app/src/main/java/tv/afnon/home/SacredText.java', nativeSacred],
     ['app/src/main/java/tv/afnon/home/ThemeCatalog.java', nativeThemes],
+    ...vectors,
     ['app/src/main/java/tv/afnon/home/Text.java', renderText(JSON.parse(read('shared/data/strings.json')), read('app/src/main/templates/Text.java.template'), JSON.parse(read('shared/data/format-text.json')))],
   ]) {
     if (args[0] === '--check') {
