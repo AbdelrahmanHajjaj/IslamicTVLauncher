@@ -91,6 +91,8 @@ entire startup state preserved. Owner confirms picture/sound match with no error
 Await physical remote/focus response before changing the UI; then run bounded
 tests sequentially and cancel any pending one-shot if stopping. Restore any
 temporary language/settings changes against the private before snapshot.
+At this human-response checkpoint the TV app remains running on its original
+input, no one-shot test is armed, and the owned inspector forwarder is closed.
 Q09.2 native
 ART/ICU and Q09.3 preference-preserving emulator upgrades passed. The owned temporary
 emulator is closed, ADB serial offline and its launcher process exited; the user's
@@ -1212,10 +1214,14 @@ notices (99 entries). Do not add new UIs, transports or future shells.
 - Inspector uses this TV's legacy pagelist.json and /devtools/page socket, as
   confirmed by the installed CLI and TV's own inspector source. Initial modern
   /json inventory was unsupported; corrected the private checker. Closed one
-  completed checker whose old socket close handshake stalled; the owned inspector
-  forwarding session remains for the remaining tests.
+  completed checker whose old socket close handshake stalled. At the subsequent
+  human-response checkpoint, closed only the owned inspector forwarder after
+  checking its listening port and exact process identity; TV app stays running.
 - Human evidence: owner explicitly confirms picture/sound match before upgrade,
   with no visible error. Asked for physical OK/Home/arrows/Settings/Back sequence;
   answer pending. Alert/media, Arabic/RTL and actual power acceptance remain open.
   No one-shot test armed yet. Private q094-* contains backups, exact parity, host,
   installed payload, DOM and operation evidence; do not publish raw device state.
+- Read-only DOM observation while waiting for the remote answer still showed the
+  input view, English/LTR, no overlay and no notice. This is not physical remote
+  confirmation. No temporary preference changes or audio/power test occurred.
