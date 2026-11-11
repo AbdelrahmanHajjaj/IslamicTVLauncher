@@ -7,12 +7,14 @@ const root = path.resolve(__dirname, '..');
 const out = path.join(__dirname, 'build');
 const read = p => fs.readFileSync(path.join(root, p), 'utf8');
 const json = p => JSON.parse(read(p));
+const methods = json('shared/data/methods.json');
 const write = (p, text) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, text); };
 execFileSync(process.execPath, [path.join(root, 'site/scripts/extract.mjs')], { stdio: 'ignore' });
 for (const part of ['app', 'service']) fs.cpSync(path.join(__dirname, part), path.join(out, part), { recursive: true });
 const data = {
-  cities: json('shared/data/cities.json'), methods: json('site/src/data/methods.json'),
-  presets: json('site/src/data/method-presets.json'), strings: json('site/src/data/strings.json'),
+  cities: json('shared/data/cities.json'), methods: methods.map(method => method.id),
+  presets: Object.fromEntries(methods.filter(method => method.preset).map(method => [method.id, {...method.preset, ...(method.methodAdjustments ? {methodAdjustments: method.methodAdjustments} : {})}])),
+  strings: json('site/src/data/strings.json'),
   stations: json('site/src/data/stations.json'), apps: json('webos/tv-apps.json'), voices: [], themes: [], hijri: []
 };
 for (const match of read('app/src/main/java/tv/afnon/home/Adhans.java').matchAll(/\{"(\w+)", "([^"]+)", "([^"]+)"\}/g)) {
@@ -33,12 +35,7 @@ for (let at = Date.UTC(1999, 0, 1); at < Date.UTC(2102, 0, 1); at += 86400000) {
   const parts = Object.fromEntries(calendar.formatToParts(new Date(at)).map(p => [p.type, p.value]));
   if (+parts.day === 1) data.hijri.push([at / 86400000, +parts.year, +parts.month]);
 }
-const methodSource = read('app/src/main/java/tv/afnon/home/Text.java').split('String methodName(')[1].split('/**')[0];
-data.methodNames = {};
-for (const match of methodSource.matchAll(/(?:case (\w+)|default): return ar \? ("[^"]*") : ("[^"]*");/g)) {
-  data.methodNames[match[1] || 'EGYPTIAN'] = { ar: JSON.parse(match[2]), en: JSON.parse(match[3]) };
-}
-if (data.methods.some(key => !data.methodNames[key])) throw new Error('Missing prayer method translation');
+data.methodNames = Object.fromEntries(methods.map(method => [method.id, {ar: method.ar, en: method.en}]));
 data.icons = {};
 for (const match of read('site/src/components/Icon.astro').matchAll(/^  (\w+): '([^']+)'/gm)) {
   data.icons[match[1]] = match[2];

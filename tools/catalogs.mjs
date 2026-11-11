@@ -4,8 +4,33 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
-// shortcut: validate against the native enum until Q03 extracts the shared method catalog.
-const methods = new Set([...read('app/src/main/java/tv/afnon/home/PrayerMethod.java').matchAll(/^ {4}([A-Z_]+)\(/gm)].map(m => m[1]));
+const methodDefinitions = JSON.parse(read('shared/data/methods.json'));
+
+export function validateMethods(definitions) {
+  if (!Array.isArray(definitions) || definitions[0]?.id !== 'EGYPTIAN') throw new Error('Method catalog must retain the Egyptian fallback');
+  const ids = new Set();
+  for (const method of definitions) {
+    if (!method || typeof method.id !== 'string' || !/^[A-Z][A-Z_]*$/.test(method.id) || ids.has(method.id) ||
+        !['ar', 'en'].every(key => typeof method[key] === 'string' && method[key].trim() && !/[\u0000-\u001f]/.test(method[key]))) {
+      throw new Error('Invalid method identity or labels');
+    }
+    const p = method.preset;
+    if (p !== undefined && (!p || typeof p !== 'object' || Array.isArray(p) || !Number.isFinite(p.fajr) || p.fajr < 0 || p.fajr > 90 ||
+        !Number.isFinite(p.isha) || p.isha < 0 || p.isha > 90 ||
+        !Number.isInteger(p.interval) || p.interval < 0 || p.interval > 1440 || !p.isha && !p.interval)) {
+      throw new Error('Invalid method preset: ' + method.id);
+    }
+    const adjustments = method.methodAdjustments;
+    if (adjustments !== undefined && (!p || !Array.isArray(adjustments) || adjustments.length !== 6 ||
+        adjustments.some(value => !Number.isInteger(value) || Math.abs(value) > 1440))) {
+      throw new Error('Invalid method adjustments: ' + method.id);
+    }
+    ids.add(method.id);
+  }
+}
+
+validateMethods(methodDefinitions);
+const methods = new Set(methodDefinitions.map(method => method.id));
 
 export function validateCatalog(cities, regions) {
   if (!Array.isArray(cities) || !cities.length || cities[0]?.id !== 'cairo') throw new Error('City catalog must retain Cairo as its fallback');
@@ -42,14 +67,25 @@ function generate() {
     'package tv.afnon.home;\n\nimport com.batoulapps.adhan.Madhab;\n\nfinal class CityCatalog {\n    private CityCatalog() {}\n\n' +
     '    static final Prefs.City[] CITIES = {\n' + rows.join('\n') + '\n    };\n\n' +
     '    static final String[][] REGIONS = {\n' + groups.join('\n') + '\n    };\n}\n';
-  const destination = 'app/src/main/java/tv/afnon/home/CityCatalog.java';
-  if (args[0] === '--check') {
-    if (read(destination) !== source) throw new Error('CityCatalog.java is stale; run node tools/catalogs.mjs');
-    console.log('City catalog matches canonical data');
-  } else {
-    writeFileSync(resolve(root, destination), source);
-    console.log('Generated CityCatalog.java from canonical cities and regions');
+  const entries = methodDefinitions.map((method, i) => {
+    const p = method.preset;
+    const parameters = p
+      ? [p.fajr, p.isha, p.interval, method.methodAdjustments ? 'new int[] {' + method.methodAdjustments.join(', ') + '}' : 'null'].join(', ')
+      : 'CalculationMethod.' + method.id;
+    return '    ' + method.id + '(' + JSON.stringify(method.ar) + ', ' + JSON.stringify(method.en) + ', ' + parameters + ')' + (i === methodDefinitions.length - 1 ? ';' : ',');
+  });
+  const nativeMethods = read('app/src/main/templates/PrayerMethod.java.template').replace('{{METHODS}}', entries.join('\n'));
+  for (const [destination, output] of [
+    ['app/src/main/java/tv/afnon/home/CityCatalog.java', source],
+    ['app/src/main/java/tv/afnon/home/PrayerMethod.java', nativeMethods],
+  ]) {
+    if (args[0] === '--check') {
+      if (read(destination) !== output) throw new Error(destination + ' is stale; run node tools/catalogs.mjs');
+    } else {
+      writeFileSync(resolve(root, destination), output);
+    }
   }
+  console.log(args[0] === '--check' ? 'Catalogs match canonical data' : 'Generated Android city and method catalogs');
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) generate();

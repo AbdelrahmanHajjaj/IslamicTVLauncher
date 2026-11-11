@@ -69,9 +69,13 @@
   function day(now, p) {
     var c = city(p.city), name = p.method || c.method;
     var params = methods[name] ? adhan.CalculationMethod[methods[name]]() : adhan.CalculationMethod.Other();
-    if (!methods[name]) {
-      var extra = data.presets[name];
+    var extra = data.presets[name];
+    if (extra) {
       params.fajrAngle = extra.fajr; params.ishaAngle = extra.isha; params.ishaInterval = extra.interval;
+      if (extra.methodAdjustments) {
+        var a = extra.methodAdjustments;
+        params.methodAdjustments = {fajr: a[0], sunrise: a[1], dhuhr: a[2], asr: a[3], maghrib: a[4], isha: a[5]};
+      }
     }
     params.madhab = p.hanafi ? adhan.Madhab.Hanafi : adhan.Madhab.Shafi;
     params.adjustments = {fajr: p.offsets[0], sunrise: p.offsets[1], dhuhr: p.offsets[2], asr: p.offsets[3], maghrib: p.offsets[4], isha: p.offsets[5]};

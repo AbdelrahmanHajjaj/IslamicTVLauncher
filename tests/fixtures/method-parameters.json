@@ -1,0 +1,287 @@
+[
+  {
+    "id": "EGYPTIAN",
+    "method": "Egyptian",
+    "fajr": 19.5,
+    "isha": 17.5,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "UMM_AL_QURA",
+    "method": "UmmAlQura",
+    "fajr": 18.5,
+    "isha": 0,
+    "interval": 90,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "MUSLIM_WORLD_LEAGUE",
+    "method": "MuslimWorldLeague",
+    "fajr": 18,
+    "isha": 17,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "KARACHI",
+    "method": "Karachi",
+    "fajr": 18,
+    "isha": 18,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "DUBAI",
+    "method": "Dubai",
+    "fajr": 18.2,
+    "isha": 18.2,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      -3,
+      3,
+      3,
+      3,
+      0
+    ]
+  },
+  {
+    "id": "KUWAIT",
+    "method": "Kuwait",
+    "fajr": 18,
+    "isha": 17.5,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "QATAR",
+    "method": "Qatar",
+    "fajr": 18,
+    "isha": 0,
+    "interval": 90,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "NORTH_AMERICA",
+    "method": "NorthAmerica",
+    "fajr": 15,
+    "isha": 15,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "MOON_SIGHTING_COMMITTEE",
+    "method": "MoonsightingCommittee",
+    "fajr": 18,
+    "isha": 18,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      5,
+      0,
+      3,
+      0
+    ]
+  },
+  {
+    "id": "SINGAPORE",
+    "method": "Singapore",
+    "fajr": 20,
+    "isha": 18,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "FRANCE",
+    "method": "Other",
+    "fajr": 12,
+    "isha": 12,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "TURKEY",
+    "method": "Turkey",
+    "fajr": 18,
+    "isha": 17,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      -7,
+      5,
+      4,
+      7,
+      0
+    ]
+  },
+  {
+    "id": "RUSSIA",
+    "method": "Other",
+    "fajr": 16,
+    "isha": 15,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "JAKIM",
+    "method": "Other",
+    "fajr": 20,
+    "isha": 18,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "KEMENAG",
+    "method": "Other",
+    "fajr": 20,
+    "isha": 18,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "TUNISIA",
+    "method": "Other",
+    "fajr": 18,
+    "isha": 18,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "ALGERIA",
+    "method": "Other",
+    "fajr": 18,
+    "isha": 17,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "MOROCCO",
+    "method": "Other",
+    "fajr": 19,
+    "isha": 17,
+    "interval": 0,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "id": "GULF",
+    "method": "Other",
+    "fajr": 19.5,
+    "isha": 0,
+    "interval": 90,
+    "methodAdjustments": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+]

@@ -1,0 +1,150 @@
+[
+  {
+    "id": "EGYPTIAN",
+    "ar": "الهيئة المصرية العامة للمساحة",
+    "en": "Egyptian General Authority of Survey"
+  },
+  {
+    "id": "UMM_AL_QURA",
+    "ar": "أم القرى، مكة المكرمة",
+    "en": "Umm al-Qura, Makkah"
+  },
+  {
+    "id": "MUSLIM_WORLD_LEAGUE",
+    "ar": "رابطة العالم الإسلامي",
+    "en": "Muslim World League"
+  },
+  {
+    "id": "KARACHI",
+    "ar": "جامعة العلوم الإسلامية، كراتشي",
+    "en": "University of Islamic Sciences, Karachi"
+  },
+  {
+    "id": "DUBAI",
+    "ar": "دبي",
+    "en": "Dubai"
+  },
+  {
+    "id": "KUWAIT",
+    "ar": "الكويت",
+    "en": "Kuwait"
+  },
+  {
+    "id": "QATAR",
+    "ar": "قطر",
+    "en": "Qatar"
+  },
+  {
+    "id": "NORTH_AMERICA",
+    "ar": "الجمعية الإسلامية لأمريكا الشمالية",
+    "en": "ISNA, North America"
+  },
+  {
+    "id": "MOON_SIGHTING_COMMITTEE",
+    "ar": "لجنة رؤية الهلال",
+    "en": "Moonsighting Committee"
+  },
+  {
+    "id": "SINGAPORE",
+    "ar": "سنغافورة",
+    "en": "Singapore"
+  },
+  {
+    "id": "FRANCE",
+    "ar": "اتحاد المنظمات الإسلامية في فرنسا",
+    "en": "France (UOIF)",
+    "preset": {
+      "fajr": 12,
+      "isha": 12,
+      "interval": 0
+    }
+  },
+  {
+    "id": "TURKEY",
+    "ar": "تركيا — ديانت (حساب تقريبي)",
+    "en": "Turkey / Diyanet (approximate)",
+    "preset": {
+      "fajr": 18,
+      "isha": 17,
+      "interval": 0
+    },
+    "methodAdjustments": [
+      0,
+      -7,
+      5,
+      4,
+      7,
+      0
+    ]
+  },
+  {
+    "id": "RUSSIA",
+    "ar": "الإدارة الدينية لمسلمي روسيا",
+    "en": "Spiritual Administration of Muslims of Russia",
+    "preset": {
+      "fajr": 16,
+      "isha": 15,
+      "interval": 0
+    }
+  },
+  {
+    "id": "JAKIM",
+    "ar": "ماليزيا — جاكيم",
+    "en": "Malaysia (JAKIM)",
+    "preset": {
+      "fajr": 20,
+      "isha": 18,
+      "interval": 0
+    }
+  },
+  {
+    "id": "KEMENAG",
+    "ar": "وزارة الشؤون الدينية الإندونيسية",
+    "en": "Indonesia (KEMENAG)",
+    "preset": {
+      "fajr": 20,
+      "isha": 18,
+      "interval": 0
+    }
+  },
+  {
+    "id": "TUNISIA",
+    "ar": "تونس",
+    "en": "Tunisia",
+    "preset": {
+      "fajr": 18,
+      "isha": 18,
+      "interval": 0
+    }
+  },
+  {
+    "id": "ALGERIA",
+    "ar": "الجزائر",
+    "en": "Algeria",
+    "preset": {
+      "fajr": 18,
+      "isha": 17,
+      "interval": 0
+    }
+  },
+  {
+    "id": "MOROCCO",
+    "ar": "المغرب",
+    "en": "Morocco",
+    "preset": {
+      "fajr": 19,
+      "isha": 17,
+      "interval": 0
+    }
+  },
+  {
+    "id": "GULF",
+    "ar": "منطقة الخليج",
+    "en": "Gulf region",
+    "preset": {
+      "fajr": 19.5,
+      "isha": 0,
+      "interval": 90
+    }
+  }
+]

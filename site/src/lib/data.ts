@@ -1,6 +1,6 @@
 // Canonical catalogs are shared directly; remaining native data is extracted at build time.
 import citiesJson from '../../../shared/data/cities.json';
-import methodsJson from '../data/methods.json';
+import methodsJson from '../../../shared/data/methods.json';
 import regionsJson from '../../../shared/data/regions.json';
 import stationsJson from '../data/stations.json';
 
@@ -8,7 +8,8 @@ export type City = (typeof citiesJson)[number];
 export type Station = (typeof stationsJson)[number];
 
 export const CITIES: City[] = citiesJson;
-export const METHODS: string[] = methodsJson;
+export const METHOD_DEFINITIONS = methodsJson;
+export const METHODS: string[] = methodsJson.map(method => method.id);
 /** Each region's countries (English names), in the order of the regions string list. */
 export const REGIONS: string[][] = regionsJson;
 export const STATIONS: Station[] = stationsJson;

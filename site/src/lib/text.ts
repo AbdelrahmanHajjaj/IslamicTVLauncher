@@ -1,7 +1,7 @@
 // Interface strings. Plain ones come from the app's Text.java via scripts/extract.mjs (src/data/strings.json);
-// the ones with logic are ported here from Text.java, method for method. Keep both in step with the app.
+// method labels come from shared data; other logical helpers still mirror Text.java.
 import S from '../data/strings.json';
-import type { Station } from './data';
+import { METHOD_DEFINITIONS, type Station } from './data';
 
 export type Lang = 'ar' | 'en';
 type Entry = { ar: string | string[]; en: string | string[]; d?: boolean };
@@ -72,27 +72,10 @@ export function makeText(lang: Lang, eastern = lang === 'ar') {
     chip: (prayer: string) => (ar ? prayer + ' بعد' : prayer + ' in'),
     school: (hanafi: boolean) =>
       hanafi ? (ar ? 'العصر: الحنفي' : 'Asr: Hanafi') : ar ? 'العصر: الجمهور (شافعي)' : 'Asr: standard (Shafi‘i)',
-    methodName: (m: string) =>
-      ({
-        UMM_AL_QURA: ar ? 'أم القرى، مكة المكرمة' : 'Umm al-Qura, Makkah',
-        MUSLIM_WORLD_LEAGUE: ar ? 'رابطة العالم الإسلامي' : 'Muslim World League',
-        KARACHI: ar ? 'جامعة العلوم الإسلامية، كراتشي' : 'University of Islamic Sciences, Karachi',
-        DUBAI: ar ? 'دبي' : 'Dubai',
-        KUWAIT: ar ? 'الكويت' : 'Kuwait',
-        QATAR: ar ? 'قطر' : 'Qatar',
-        NORTH_AMERICA: ar ? 'الجمعية الإسلامية لأمريكا الشمالية' : 'ISNA, North America',
-        MOON_SIGHTING_COMMITTEE: ar ? 'لجنة رؤية الهلال' : 'Moonsighting Committee',
-        SINGAPORE: ar ? 'سنغافورة' : 'Singapore',
-        FRANCE: ar ? 'اتحاد المنظمات الإسلامية في فرنسا' : 'France (UOIF)',
-        TURKEY: ar ? 'تركيا — ديانت (حساب تقريبي)' : 'Turkey / Diyanet (approximate)',
-        RUSSIA: ar ? 'الإدارة الدينية لمسلمي روسيا' : 'Spiritual Administration of Muslims of Russia',
-        JAKIM: ar ? 'ماليزيا — جاكيم' : 'Malaysia (JAKIM)',
-        KEMENAG: ar ? 'وزارة الشؤون الدينية الإندونيسية' : 'Indonesia (KEMENAG)',
-        TUNISIA: ar ? 'تونس' : 'Tunisia',
-        ALGERIA: ar ? 'الجزائر' : 'Algeria',
-        MOROCCO: ar ? 'المغرب' : 'Morocco',
-        GULF: ar ? 'منطقة الخليج' : 'Gulf region',
-      })[m] ?? (ar ? 'الهيئة المصرية العامة للمساحة' : 'Egyptian General Authority of Survey'),
+    methodName: (m: string) => {
+      const method = METHOD_DEFINITIONS.find(value => value.id === m) ?? METHOD_DEFINITIONS[0];
+      return ar ? method.ar : method.en;
+    },
     place: (city: string, country: string) => city + (ar ? '، ' : ', ') + country,
     offsetMinutes: (n: number) => d(`${n > 0 ? '+' : ''}${n}${ar ? ' د' : ' min'}`),
     offsetCount: (n: number) => d(n === 0 ? (ar ? 'الكل 0 د' : 'All 0 min') : `${n}${ar ? ' معدّلة' : ' adjusted'}`),

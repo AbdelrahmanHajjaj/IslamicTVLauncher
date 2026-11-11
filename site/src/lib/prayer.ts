@@ -1,8 +1,7 @@
 // PrayerDay.java and Screen.java's clock helpers, on adhan-js (the JavaScript port of the app's adhan-java).
 import { CalculationMethod, Coordinates, Madhab, PrayerTimes, Qibla } from 'adhan';
 import type { Text } from './text';
-import extraPresets from '../data/method-presets.json';
-import { cityOf, methodOf, type Prefs } from './data';
+import { cityOf, methodOf, METHOD_DEFINITIONS, type Prefs } from './data';
 
 export const MAX_PRAYER_OFFSET = 30;
 /** Old or malformed saved preferences must not break every preview screen. */
@@ -28,13 +27,17 @@ const METHOD: Record<string, () => ReturnType<typeof CalculationMethod.Egyptian>
   TURKEY: CalculationMethod.Turkey,
 };
 export const methodParams = (m: string) => {
-  if (METHOD[m]) return METHOD[m]();
-  const extra = (extraPresets as Record<string, { fajr: number; isha: number; interval: number }>)[m];
-  if (!extra) return METHOD.EGYPTIAN();
-  const params = CalculationMethod.Other();
-  params.fajrAngle = extra.fajr;
-  params.ishaAngle = extra.isha;
-  params.ishaInterval = extra.interval;
+  const method = METHOD_DEFINITIONS.find(value => value.id === m) ?? METHOD_DEFINITIONS[0];
+  const params = METHOD[method.id] ? METHOD[method.id]() : CalculationMethod.Other();
+  if (method.preset) {
+    params.fajrAngle = method.preset.fajr;
+    params.ishaAngle = method.preset.isha;
+    params.ishaInterval = method.preset.interval;
+  }
+  if (method.methodAdjustments) {
+    const a = method.methodAdjustments;
+    params.methodAdjustments = {fajr: a[0], sunrise: a[1], dhuhr: a[2], asr: a[3], maghrib: a[4], isha: a[5]};
+  }
   return params;
 };
 

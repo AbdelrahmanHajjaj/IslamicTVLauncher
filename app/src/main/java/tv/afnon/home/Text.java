@@ -167,29 +167,7 @@ final class Text {
         return ar ? "العصر: الجمهور (شافعي)" : "Asr: standard (Shafi‘i)";
     }
 
-    String methodName(PrayerMethod m) {
-        switch (m) {
-            case UMM_AL_QURA: return ar ? "أم القرى، مكة المكرمة" : "Umm al-Qura, Makkah";
-            case MUSLIM_WORLD_LEAGUE: return ar ? "رابطة العالم الإسلامي" : "Muslim World League";
-            case KARACHI: return ar ? "جامعة العلوم الإسلامية، كراتشي" : "University of Islamic Sciences, Karachi";
-            case DUBAI: return ar ? "دبي" : "Dubai";
-            case KUWAIT: return ar ? "الكويت" : "Kuwait";
-            case QATAR: return ar ? "قطر" : "Qatar";
-            case NORTH_AMERICA: return ar ? "الجمعية الإسلامية لأمريكا الشمالية" : "ISNA, North America";
-            case MOON_SIGHTING_COMMITTEE: return ar ? "لجنة رؤية الهلال" : "Moonsighting Committee";
-            case SINGAPORE: return ar ? "سنغافورة" : "Singapore";
-            case FRANCE: return ar ? "اتحاد المنظمات الإسلامية في فرنسا" : "France (UOIF)";
-            case TURKEY: return ar ? "تركيا — ديانت (حساب تقريبي)" : "Turkey / Diyanet (approximate)";
-            case RUSSIA: return ar ? "الإدارة الدينية لمسلمي روسيا" : "Spiritual Administration of Muslims of Russia";
-            case JAKIM: return ar ? "ماليزيا — جاكيم" : "Malaysia (JAKIM)";
-            case KEMENAG: return ar ? "وزارة الشؤون الدينية الإندونيسية" : "Indonesia (KEMENAG)";
-            case TUNISIA: return ar ? "تونس" : "Tunisia";
-            case ALGERIA: return ar ? "الجزائر" : "Algeria";
-            case MOROCCO: return ar ? "المغرب" : "Morocco";
-            case GULF: return ar ? "منطقة الخليج" : "Gulf region";
-            default: return ar ? "الهيئة المصرية العامة للمساحة" : "Egyptian General Authority of Survey";
-        }
-    }
+    String methodName(PrayerMethod m) { return ar ? m.ar : m.en; }
 
     /** "Fajr angle 19.5° · Isha 17.5°", or Isha as minutes after Maghrib where the method fixes it that way. */
     String methodAngles(PrayerMethod m) {

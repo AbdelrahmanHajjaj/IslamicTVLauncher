@@ -47,6 +47,9 @@ public final class PrayerDayCheck {
         PrayerDay turkey = new PrayerDay(winter, here, PrayerMethod.TURKEY, Madhab.SHAFI, 0, new int[6]);
         check(turkey.times[1].getTime() - mwl.times[1].getTime() == -7 * 60_000, "Turkey sunrise adjustment");
         check(turkey.times[4].getTime() - mwl.times[4].getTime() == 7 * 60_000, "Turkey Maghrib adjustment");
+        CalculationParameters modified = PrayerMethod.TURKEY.getParameters();
+        modified.methodAdjustments.sunrise = 99;
+        check(PrayerMethod.TURKEY.getParameters().methodAdjustments.sunrise == -7, "Method corrections are independent per calculation");
         int[] offsets = {3, -1, 2, 4, -2, 5};
         for (String date : new String[] {"2026-03-29", "2026-06-21", "2026-10-25", "2026-12-21"}) {
             Date midnight = Date.from(LocalDate.parse(date).atStartOfDay(ZoneId.systemDefault()).toInstant());

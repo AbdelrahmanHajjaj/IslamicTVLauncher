@@ -1,9 +1,27 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { validateCatalog } from './catalogs.mjs';
+import { validateCatalog, validateMethods } from './catalogs.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
 const regions = JSON.parse(readFileSync(new URL('../shared/data/regions.json', import.meta.url)));
+const methods = JSON.parse(readFileSync(new URL('../shared/data/methods.json', import.meta.url)));
+validateMethods(methods);
+for (const change of [
+  method => { method.id = '../METHOD'; },
+  method => { method.ar = ''; },
+  method => { method.preset = null; },
+  method => { method.preset = {fajr: NaN, isha: 12, interval: 0}; },
+  method => { method.preset = {fajr: 12, isha: 0, interval: 0}; },
+  method => { method.preset = {fajr: 12, isha: 12, interval: -1}; },
+  method => { method.methodAdjustments = [0, 1]; },
+  method => { method.preset = {fajr: 12, isha: 12, interval: 0}; method.methodAdjustments = [0, 0, 0, 0, 0, 0.5]; },
+]) {
+  const modified = structuredClone(methods);
+  change(modified[1]);
+  assert.throws(() => validateMethods(modified), /Invalid method/);
+}
+assert.throws(() => validateMethods([...methods, methods[1]]), /Invalid method/);
+assert.throws(() => validateMethods(methods.slice(1)), /fallback/);
 validateCatalog(cities, regions);
 const java = readFileSync(new URL('../app/src/main/java/tv/afnon/home/CityCatalog.java', import.meta.url), 'utf8');
 const quoted = String.raw`("(?:[^"\\]|\\.)*")`;
@@ -34,4 +52,4 @@ assert.throws(() => validateCatalog([...cities, cities[1]], regions), /Invalid c
 assert.throws(() => validateCatalog(cities.slice(1), regions), /fallback/);
 assert.throws(() => validateCatalog(cities, [...regions, [regions[0][0]]]), /duplicate/);
 assert.throws(() => validateCatalog(cities, [...regions, []]), /Empty region/);
-console.log('PASS: city defaults, unique IDs/countries, coordinates, methods, schools and bilingual labels');
+console.log('PASS: city/method defaults, unique IDs/countries, coordinates, presets, corrections, schools and bilingual labels');

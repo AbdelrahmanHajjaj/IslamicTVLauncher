@@ -2,6 +2,12 @@
 
 Choose **Settings → Prayer times → Calculation method**. All 19 presets calculate on the TV, without fetching prayer times. Home, Today's prayers, the screensaver, reminders and adhan share the selected method, Asr school and per-prayer offsets. The browser preview exposes the same method choices.
 
+Definitions and bilingual names live in [`shared/data/methods.json`](../shared/data/methods.json).
+`node tools/catalogs.mjs` generates Android's enum from that data and its native
+adapter template. The preview and LG consume the same definitions. Built-in
+library factories retain their own calculation behavior; custom corrections are
+separate from saved user offsets.
+
 ## Existing methods
 
 The original ten presets still use the same adhan-java parameters: Egyptian General Authority of Survey, Umm al-Qura, Muslim World League, Karachi, Dubai, Kuwait, Qatar, ISNA North America, Moonsighting Committee and Singapore. Saved method names and city defaults are unchanged; installing this update does not select a different method or reset offsets.

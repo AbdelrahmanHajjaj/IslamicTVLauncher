@@ -1,7 +1,7 @@
-// Reads the app's own data into JSON for the preview site, so the site never keeps a second copy:
+// Reads remaining native data/assets for the preview; shared catalogs are imported directly.
 //   Text.java       -> src/data/strings.json   (every `ar ? … : …` string, as {ar, en} templates)
 //   Cities/regions come directly from shared/data/; they are not extracted.
-//   PrayerMethod   -> src/data/methods.json and method-presets.json
+//   Method definitions also come directly from shared/data/.
 //   Radio.STATIONS  -> src/data/stations.json
 //   res/font/*.ttf  -> src/assets/fonts/
 //   docs/screenshots -> public/screenshots/   (social preview images)
@@ -88,17 +88,12 @@ for (const m of text.matchAll(methodRe)) {
 write('strings.json', strings);
 console.log(`  ${Object.keys(strings).length} strings; by hand in text.ts: ${skipped.join(', ')}`);
 
-// ---------------------------------------------------------------- Shared city catalogs and native methods
+// ---------------------------------------------------------------- Shared catalog validation
 
 validateCatalog(
   JSON.parse(readFileSync(resolve(root, 'shared/data/cities.json'), 'utf8')),
   JSON.parse(readFileSync(resolve(root, 'shared/data/regions.json'), 'utf8')),
 );
-
-const methods = src('PrayerMethod.java');
-write('methods.json', [...methods.matchAll(/^ {4}([A-Z_]+)\(/gm)].map(m => m[1]));
-write('method-presets.json', Object.fromEntries([...methods.matchAll(/^ {4}([A-Z_]+)\(([\d.]+), ([\d.]+), (\d+)\)/gm)]
-  .map(m => [m[1], { fajr: +m[2], isha: +m[3], interval: +m[4] }])));
 
 // ---------------------------------------------------------------- Radio.STATIONS
 

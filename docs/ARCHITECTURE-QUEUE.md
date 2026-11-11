@@ -85,12 +85,12 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.2, canonical method IDs/presets. Finish the Q03.1 commit if resuming
-between these operations, then inspect `PrayerMethod.java`, site prayer adapters,
-LG method handling and their tests. Preserve all 19 IDs/order, library presets,
-numeric parameters and Turkey corrections; keep library-specific API bindings in
-adapters. Remove the city validator's temporary native-enum scraping when shared
-method data exists. Continue one catalog at a time with exact old/new comparisons.
+Next: Q03.3, canonical radio catalog. Finish the Q03.2 commit if resuming between
+operations, then inspect `Radio.STATIONS`, its constructors/callers and existing
+site extraction. Preserve IDs/order, all URLs, bilingual names/locations and
+station/reciter distinctions. Seed from the existing generated data, compare exact
+old/new fields, and migrate all consumers plus generator validation/checks together.
+Do not play streams or claim codec/hardware validation from a data refactor.
 Do not move platform directories yet (Q06). Production apps retain their existing
 domain implementations until Q04. Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
@@ -130,9 +130,9 @@ domain implementations until Q04. Private logs/helpers are under ignored
 - No current physical-TV performance measurement was made. The configured LG CLI
   is not on this session's PATH; discover existing private device configuration
   before any hardware probe. No device was changed.
-- Proof candidate: Kotlin 2.2.10 is already in the local Gradle cache and its
-  documented compatibility includes Gradle 8.9 / AGP 8.5.2. Keep those existing build
-  tools unchanged. Source: https://kotlinlang.org/docs/multiplatform/multiplatform-compatibility-guide.html.
+- Initial candidate was cached Kotlin 2.2.10 on Gradle 8.9 / AGP 8.5.2. Q02's
+  integration evidence determined the final stable toolchain below. Source:
+  https://kotlinlang.org/docs/multiplatform/multiplatform-compatibility-guide.html.
 
 ### Q02 accepted foundation (2026-11-11)
 
@@ -203,19 +203,22 @@ domain implementations until Q04. Private logs/helpers are under ignored
 - Verified city slice committed as `761dace`; working tree is clean at this
   checkpoint except subsequent ledger notes. Continue Q03.2 without redoing Q01/Q02.
 
-### Q03.2 inspected context / next action
+### Q03.2 canonical methods (2026-11-11)
 
-- `PrayerMethod.java` has ten original adhan-java factories and nine custom
-  presets. Turkey is custom in Java with method corrections `[0,-7,5,4,7,0]`;
-  site/LG currently use adhan-js's Turkey factory. Preserve factory method tags and
-  built-in algorithm behavior while moving numerical source ownership; do not
-  flatten MoonsightingCommittee or other library behavior into angles alone.
-- Existing generated `site/src/data/{methods,method-presets}.json` and
-  `webos/build/service/data.json.methodNames` can seed exact canonical inputs.
-  They are not authoritative sources after migration. Inspect `Text.methodName`
-  and `methodAngles` before changing labels/adapters. Keep all 19 IDs and order.
-- Affected consumers: `Prefs.METHODS` and method persistence, native prayer/text
-  helpers, preview `data.ts`/`prayer.ts`, LG `core.js`/`build.cjs`, generator and
-  tests. `tests/PrayerDayCheck.java` already covers original-method equivalence,
-  France/Gulf/Turkey behavior, offsets and date transitions. Add exact old/new
-  parameter/output comparisons and small validation tests for the new registry.
+- `shared/data/methods.json` owns all 19 ordered IDs, bilingual names, nine custom
+  presets and Turkey's `[0,-7,5,4,7,0]` corrections. Android enum is generated from
+  its native adapter template; native/preview labels use metadata. Preview/LG read
+  canonical JSON; old generated method copies and Java scraping were removed.
+- Original built-in factories/tags stay in adapters. JS Turkey keeps its factory
+  and canonical overrides; Java custom parameters remain equivalent. No astronomy
+  rewrite or saved-method change. Corrections remain independent per calculation.
+- PASS: input validation, 19 frozen JS parameter sets (including factory identity),
+  ID order, bilingual labels/fallback, 76 native minute-rounded prayer-day outputs
+  before/after, and 76 exact LG daily outputs versus the pre-migration snapshot.
+  Public regression baseline: `tests/fixtures/method-parameters.json` (adhan-js
+  4.4.6). Private snapshot helpers/results are under `state/platform-core/`.
+- PASS: 36 native/Python regressions, Android/installer build/lint/size, preview
+  tests/build/data/token checks, LG ES5/service and bilingual browser suite. Raw
+  `methods-*.log` evidence is ignored. No TV deployment or audible test was needed.
+- Context7 lacked adhan-js coverage; installed 4.4.6 source and primary Batoul Apps
+  CalculationMethod/PrayerTimes sources were checked before changing adapters.
