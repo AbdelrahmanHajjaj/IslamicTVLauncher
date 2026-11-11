@@ -159,6 +159,10 @@ function generate() {
     '        android:strokeColor="#FFFFFFFF" android:strokeWidth="' + prayerIcons.strokeWidth + '"\n' +
     '        android:strokeLineCap="round" android:strokeLineJoin="round" />\n</vector>\n']);
   for (const [destination, output] of [
+    ...['shared/design/assets', 'installer/src/main/assets'].flatMap(base => [
+      [base + '/licenses/IslamicTVLauncher-MIT.txt', read('LICENSE')],
+      [base + '/licenses/CleanYourTV-MIT.txt', read('docs/CLEANYOURTV-LICENSE.txt')],
+    ]),
     ['platforms/android-tv/src/main/java/tv/afnon/home/CityCatalog.java', source],
     ['platforms/android-tv/src/main/java/tv/afnon/home/PrayerMethod.java', nativeMethods],
     ['platforms/android-tv/src/main/java/tv/afnon/home/RadioCatalog.java', nativeStations],

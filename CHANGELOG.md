@@ -6,6 +6,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- Distributions carry the original project/CleanYourTV MIT texts. Android TV and
+  installer APKs also retain full notices/source references for existing runtime dependencies.
+
 - Project release/support links and preview deployment metadata now target
   IslamicTVLauncher's repository. The preview links to build instructions while
   no stable TV APK is published; the installer's local APK workflow remains available.

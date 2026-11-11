@@ -79,27 +79,28 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q04 | Done | Core domain migration: extract settings and prayer-day rules in complete tested slices; cover date rollover, tomorrow Fajr, DST, offsets, Hijri range, unavailable calculations and deliberate platform differences. |
 | Q05 | Done | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
 | Q06 | Done | Separate platform projects/builds: migrate paths only after boundaries work; update Gradle, npm, installer, tools, generated outputs, tests and CI; add no empty future-platform projects. |
-| Q07 | Active | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
-| Q08 | Queued | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
+| Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
+| Q08 | Active | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
 
 ## Current cursor
 
-Next: Q07.2, distributable notice completeness. Finish Q07.1's commit if resuming
-between operations. The ownership audit found that Android TV currently packages
-font/Kotlin notices but omits the original project and CleanYourTV MIT texts.
-Preserve their canonical source bytes and use the existing generation/asset paths
-to carry full notices into the native/LG/preview distributions, without adding a
-runtime UI, network dependency or duplicate hand-maintained license source. Inspect
-actual dependency artifacts for other required existing runtime notices. Verify
-generated/source equality and packaged copies, update THIRD_PARTY/architecture
-guidance and commit the complete slice. No release or repository-setting change.
+Next: Q08.1, final automated/code/build review. Finish Q07.2's commit if resuming
+between operations. Inspect the final diff and existing lint/dependency diagnostics
+first. Resolve introduced defects without broad upgrades or unrelated UI changes.
+Review inherited installer CI's automatic prerelease/branch publication against
+the explicit-release workflow, existing glob tooling deprecation, and the installer
+warning increase from Q01's 14 to 15. Run current core, Android/installer build/lint/
+size, Python/Java, preview generated/tests/build/client and LG ES5/service/browser
+checks; repeat only affected checks after any fix. Measure before claiming speed
+or memory gains. Review stage/private-file safety and record exact remaining gaps.
 
 Q06 is complete: `shared/core`, `platforms/android-tv` and `platforms/webos` build
 independently with canonical shared inputs. Root `:app` and installer tasks remain
-supported. LG currently emits 96 files; the obsolete unused font in the former
-97-file cache was intentionally removed. Android emits the same APK entry bytes
-as before relocation. Do not add new UIs, transports or future shells.
+supported. LG currently emits 100 files: the unused font in the former 97-file
+cache was removed, and Q07 added four retained MIT notice copies. All retained
+runtime bytes match. Android retains all 95 former APK entry bytes plus four new
+notices (99 entries). Do not add new UIs, transports or future shells.
 
 Q08 still requires final automated review and measured optimization; Q09 still
 requires real TV upgrade/picture/sound/remote/lifecycle acceptance. Android hardware
@@ -852,3 +853,41 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   prerelease/branch publication against the explicit-release workflow. Neither
   inherited behavior was triggered. Physical phone/TV and published site routes
   were not tested. No release, PR, merge, remote setting or detachment operation.
+
+### Q07.2 retained distribution notices (2026-11-11)
+
+- Existing catalog generation now projects unchanged root `LICENSE` and
+  `docs/CLEANYOURTV-LICENSE.txt` bytes into shared and installer assets; existing
+  asset consumers carry them to native/LG/preview packages. LG service explicitly
+  receives both texts too. Generated fidelity checks cover all four source copies;
+  canonical original copyright/license files remain byte-identical to the base.
+- Artifact inspection confirmed adhan-java and installer AARs lacked bundled full
+  license texts. Added pinned upstream notices/source references to the appropriate
+  APK asset sources: adhan-java 1.2.1; libadb 3.1.1 COPYING/all LICENSES; SPAKE2 2.2.1
+  LGPL/native component notices; Conscrypt 2.5.3 LICENSE/NOTICE/Harmony/Netty; its
+  BoringSSL revision read from actual AAR `org/conscrypt/conscrypt.properties`.
+  Upstream tag and submodule refs were verified through GitHub reads; all 13 full
+  texts match their upstream Git blob hashes exactly. Native source headers retain
+  ISC/MIT/LGPL/public-domain attribution; installer SOURCES records exact source/
+  rebuild refs and libadb's Apache option. No library/version or product licence
+  changed; no additional runtime code, UI, protocol or network dependency.
+- PASS: both Android builds/lint/TV size budget, actual complete packaged notice
+  equality, native core/runtime DEX and seven Kotlin notices, all 26 unchanged
+  source/APK/LG clips and ZIP_STORED Android audio. Native APK 20,937,377 bytes:
+  all 95 former entry bytes are unchanged, with exactly four additional notice
+  files (99 total). Installer 13,223,311 bytes and 16 asset notice files plus its
+  existing AndroidX notice. Both APK signatures verify; native certificate equals
+  the frozen Q06 isolated pre-notice APK. The initial private proof expected v1
+  signature ZIP entries; corrected it after observing unchanged ZIP entries and
+  verified the actual signatures/certificate using apksigner separately.
+- PASS: LG ES5/service/cleanup regression suite; 100 current app/service files,
+  with only four new MIT copies and the updated THIRD_PARTY media notice differing
+  from the prior retained 96-file snapshot. All runtime/UI/media bytes match. PASS:
+  18-page preview build, generated catalog/source-notice equality and copies in
+  public/dist. Existing broader native/browser suites were not repeated for this
+  asset-only slice; Q08 runs the final integrated checks.
+- Evidence: ignored `notice-sources-q072.json`, `check-distributed-notices.py`,
+  `notice-artifacts-q072.json`, `notices-*`, and updated active LG artifact checker.
+  Full third-party license text adds source lines intentionally; implementation
+  changes are the existing generator's four lines, fidelity checks and three LG
+  copy lines. No dependency upgrade, release, device deployment or remote mutation.

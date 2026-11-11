@@ -1,0 +1,5 @@
+adhan-java 1.2.1, Copyright (c) 2016 Batoul Apps, MIT.
+Artifact: com.batoulapps.adhan:adhan:1.2.1
+Source tag v1.2.1: eefc4ed1b910ec144dff247f45b2b23a16c7d0c2
+https://github.com/batoulapps/adhan-java/tree/eefc4ed1b910ec144dff247f45b2b23a16c7d0c2
+The complete unmodified upstream LICENSE is adhan-java-LICENSE.txt beside this file.

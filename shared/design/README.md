@@ -4,6 +4,11 @@
 `assets/licenses/` owns their existing full OFL notices. Keep the filenames, bytes
 and notices together; see the root `THIRD_PARTY.md` for attribution.
 
+The same asset directory distributes generated `IslamicTVLauncher-MIT.txt` and
+`CleanYourTV-MIT.txt`. Their canonical sources remain root `LICENSE` and
+`docs/CLEANYOURTV-LICENSE.txt`; `tools/catalogs.mjs` generates/checks the exact copies
+here and in installer assets. Do not edit generated license copies by hand.
+
 Android adds these resource/asset directories to its main source set, retaining
 the existing `R.font` names with no generated font copies or Node prerequisite.
 The preview copies fonts and notices during generation; LG reads them directly.

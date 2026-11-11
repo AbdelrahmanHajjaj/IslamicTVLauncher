@@ -209,3 +209,10 @@ for (const [name, expected] of Object.entries({BACKGROUNDS: [...appearance.proce
   assert.deepEqual(JSON.parse('[' + new RegExp(name + ' = \\{([^}]+)\\}').exec(themeJava)[1] + ']'), expected);
 }
 console.log('PASS: appearance defaults, unique background groups, color slots and generated native ID lists');
+
+for (const base of ['shared/design/assets', 'installer/src/main/assets']) {
+  for (const [name, source] of [['IslamicTVLauncher-MIT.txt', 'LICENSE'], ['CleanYourTV-MIT.txt', 'docs/CLEANYOURTV-LICENSE.txt']]) {
+    assert.deepEqual(readFileSync(new URL('../' + base + '/licenses/' + name, import.meta.url)), readFileSync(new URL('../' + source, import.meta.url)));
+  }
+}
+console.log('PASS: complete project and CleanYourTV MIT notices match their canonical source bytes');

@@ -102,6 +102,13 @@ are separate owner operations. Preview build/support and optional installer down
 target this project. A stable TV release asset must exist before the online installer
 can download it; source/local APK installation remains available.
 
+Full project/CleanYourTV MIT texts are generated from their retained canonical
+sources into shared and installer assets. Both APKs, LG app/service and preview
+carry them. Android TV also bundles adhan-java's pinned MIT text; installer assets
+carry its existing ADB, SPAKE2, Conscrypt and native-component notices/source
+references. See `THIRD_PARTY.md` and the packaged `licenses/SOURCES.txt`. No runtime
+dependency or licence is changed by collecting these notices.
+
 Automated builds, JVM/Node/service checks and browser mocks are separate evidence
 from physical picture, sound, remote, power and upgrade tests. The queue records
 which current integration checks remain open. Modern LG/Samsung/other Sony support

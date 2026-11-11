@@ -102,6 +102,9 @@ for (const font of ['alexandria_regular', 'amiri_regular', 'marcellus_regular'])
 write(path.join(out, 'app/licenses/adhan.txt'), fs.readFileSync(path.join(adhanRoot, 'LICENSE'), 'utf8'));
 write(path.join(out, 'app/licenses/media.txt'), read('THIRD_PARTY.md'));
 fs.cpSync(path.join(root, 'shared/design/assets/licenses'), path.join(out, 'app/licenses'), { recursive: true });
+for (const name of ['IslamicTVLauncher-MIT.txt', 'CleanYourTV-MIT.txt']) {
+  fs.copyFileSync(path.join(root, 'shared/design/assets/licenses', name), path.join(out, 'service/licenses', name));
+}
 for (const part of ['app', 'service']) {
   for (const name of fs.readdirSync(path.join(out, part)).filter(n => n.endsWith('.js'))) {
     acorn.parse(fs.readFileSync(path.join(out, part, name), 'utf8'), { ecmaVersion: 5 });

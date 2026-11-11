@@ -1,0 +1,40 @@
+Existing Android installer runtime dependencies and bundled notices
+
+This application retains its original MIT and CleanYourTV MIT notices in this
+directory. No dependency version was changed while collecting these texts.
+The dependency sources below are publicly available at the exact build versions.
+Use the repository's installer Gradle build to rebuild the application with these
+dependencies; their own source repositories contain their library build scripts.
+No source modifications to these libraries are included in this project.
+
+libadb-android 3.1.1, Copyright 2021 Muntashir Al-Islam
+Artifact: com.github.MuntashirAkon:libadb-android:3.1.1
+Source: https://github.com/MuntashirAkon/libadb-android/tree/c849886ebc6d48e7b46d967e78a6bb65c90c3b74
+Used under its Apache-2.0 option. libadb/COPYING and libadb/LICENSES retain the
+complete upstream license files, including the alternative GPL and component
+BSD/MIT terms. The original source copyright/SPDX notices remain in that source.
+
+spake2-java / spake2-android 2.2.1, Copyright 2021 Muntashir Al-Islam
+Artifact: com.github.MuntashirAkon.spake2-java:spake2-android:2.2.1
+Source: https://github.com/MuntashirAkon/spake2-java/tree/7615ddd680b990e14513ebb66eac4cb0dbf82464
+LGPL-3.0 text: spake2-java/LICENSE.txt. Its GPL v3 terms are bundled at
+libadb/LICENSES/GPL-3.0-or-later. The source credits modified EdDSA-Java code under
+CC0: https://github.com/str4d/ed25519-java
+Native submodule: https://github.com/MuntashirAkon/spake2-c/tree/0d15933e5ba3e662cb01245a7ac0dc9fca3eac31
+Native LGPL text: spake2-c/LICENSE.txt. spake2-c/NOTICE.txt retains the copyright
+and permission headers from the native SPAKE2, SHA512, Fiat and Ed25519 sources,
+including ISC/MIT and LGPL-2.1-or-later notices and public-domain attribution.
+These LGPL dependencies remain replaceable by rebuilding from the linked source;
+the application's source and Gradle dependency configuration are in this repository.
+
+Conscrypt Android 2.5.3, Copyright 2016 The Android Open Source Project
+Artifact: org.conscrypt:conscrypt-android:2.5.3
+Source: https://github.com/google/conscrypt/tree/fd209de6167201e4f3bca5b99c6db9f08d1843c6
+Complete Apache-2.0 license, NOTICE and Harmony/Netty license files: conscrypt/.
+Its AAR's org/conscrypt/conscrypt.properties records this BoringSSL revision:
+49f0329110a1d93a5febc2bceceedc655d995420
+Source: https://github.com/google/boringssl/tree/49f0329110a1d93a5febc2bceceedc655d995420
+Complete BoringSSL/OpenSSL/ISC/component text: conscrypt/boringssl/LICENSE.
+
+AndroidX annotation's upstream license remains packaged by its dependency at
+META-INF/androidx/annotation/annotation/LICENSE.txt.
