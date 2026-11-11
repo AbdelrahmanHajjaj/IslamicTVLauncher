@@ -1,7 +1,7 @@
 # LG webOS port
 
 Inherit the root `AGENTS.md`. Read `README.md` here for current hardware evidence,
-settings, setup and limitations. `../docs/WEBOS-TIZEN-PORT-RESEARCH.md` preserves
+settings, setup and limitations. `../../docs/WEBOS-TIZEN-PORT-RESEARCH.md` preserves
 earlier experiments; later versioned validation in this README takes precedence.
 
 ## Architecture and compatibility
@@ -48,10 +48,10 @@ From the repository root:
 
 ```sh
 npm --prefix site ci
-npm --prefix webos ci
+npm --prefix platforms/webos ci
 # Obtain local media first if absent; see tools/fetch-adhans.sh and tools/fetch-announce.sh.
-npm --prefix webos test
-npm --prefix webos run test:browser
+npm --prefix platforms/webos test
+npm --prefix platforms/webos run test:browser
 node tools/webos-background-probe/test.cjs  # when touching the historical probe
 ```
 
@@ -77,5 +77,5 @@ Do not run historical probes on a user's TV as routine validation.
 ## Publishing
 
 Publish source, tests, lockfile and notices. Exclude `node_modules/`, `build/`, IPKs,
-device state and media recordings. Android APK release steps in `../gh.md` do not
+device state and media recordings. Android APK release steps in `../../gh.md` do not
 publish LG packages. A tested local development IPK is not an LG Store release.

@@ -1,8 +1,8 @@
 # LG webOS and Samsung Tizen port research
 
 This document preserves the initial research and probe history. The working LG
-port now lives in [`webos/`](../webos/README.md); use that README for current
-features and versioned validation, and [`webos/AGENTS.md`](../webos/AGENTS.md) for
+port now lives in [`platforms/webos/`](../platforms/webos/README.md); use that README for current
+features and versioned validation, and [`platforms/webos/AGENTS.md`](../platforms/webos/AGENTS.md) for
 maintenance. Later tests verified Magic Remote controls, local adhan, Cairo radio,
 app shortcuts and Browser interruption/return. Earlier "not yet tested" statements
 below describe their experiment date, not the current port. Tizen remains research.
@@ -637,7 +637,7 @@ Mode maintenance and Home integration. Android feature parity is not established
 
 ## First installable LG port — 10 November 2026
 
-The research has now produced [Afnon webOS 0.1.0](../webos/README.md), a separate
+The research has now produced [Afnon webOS 0.1.0](../platforms/webos/README.md), a separate
 `tv.afnon.webos` app and service. It reuses the existing cities, methods, prayer
 library, translations, fonts and design tokens. The build transpiles the installed
 adhan-js bundle and checks all shipped JavaScript against ES5 syntax.

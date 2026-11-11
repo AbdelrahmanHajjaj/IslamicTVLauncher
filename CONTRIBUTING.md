@@ -9,8 +9,8 @@ the bar is calm, correct and reliable. A wrong Fajr time matters more than a mis
 
 Issues and pull requests are welcome in Arabic or English.
 
-This fork also includes a separate LG webOS application in `webos/`. Read
-[`AGENTS.md`](AGENTS.md) for the platform map and [`webos/AGENTS.md`](webos/AGENTS.md)
+This fork also includes a separate LG webOS application in `platforms/webos/`. Read
+[`AGENTS.md`](AGENTS.md) for the platform map and [`platforms/webos/AGENTS.md`](platforms/webos/AGENTS.md)
 for LG maintenance rules. The Java, ADB, accessibility-service and APK instructions
 below apply to Android. The LG port uses ES5, a webOS JS service and IPK packages;
 its build shares catalogs, design and assets with Android; its UI and system integrations are separate.
@@ -101,8 +101,8 @@ native catalog and fetch list. Do not commit recordings without permission to di
 - One topic per PR. Small is fine.
 - Say which TV you tested on, and attach screenshots.
 - Android changes: `./gradlew :app:assembleDebug` must build with no new warnings.
-- LG changes: run `npm --prefix webos test` and `npm --prefix webos run test:browser`
-  with the prerequisites in [`webos/README.md`](webos/README.md#build-and-check).
+- LG changes: run `npm --prefix platforms/webos test` and `npm --prefix platforms/webos run test:browser`
+  with the prerequisites in [`platforms/webos/README.md`](platforms/webos/README.md#build-and-check).
   Separate mocked browser evidence from actual TV picture/sound and remote checks.
   A desktop preview is not a screenshot of the TV. Run probe tests only when changing
   `tools/webos-background-probe/`; do not install a historical probe as routine QA.

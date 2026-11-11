@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
-const original = require('../site/node_modules/adhan/lib/cjs/Adhan.js');
+const original = require('../../site/node_modules/adhan/lib/cjs/Adhan.js');
 const legacy = vm.createContext({});
 vm.runInContext('Symbol = undefined; Math.trunc = undefined; Math.sign = undefined; Number.isNaN = undefined; Intl = undefined;', legacy);
 for (const name of ['compat.js', 'adhan.js', 'data.js', 'kotlin-kotlin-stdlib.js', 'IslamicTVLauncher-core.js', 'core.js']) {

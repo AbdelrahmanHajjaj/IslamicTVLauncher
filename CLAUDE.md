@@ -1,7 +1,7 @@
 # Islamic TV Launcher: notes for Claude
 
 Read `AGENTS.md` first for repository-wide instructions and the platform map.
-LG work belongs in `webos/`; read `webos/AGENTS.md` and `webos/README.md` for its
+LG work belongs in `platforms/webos/`; read `platforms/webos/AGENTS.md` and `platforms/webos/README.md` for its
 ES5/Node 0.10 constraints, Activity Manager service and hardware validation workflow.
 The Android rules below do not prohibit the LG service or embedded HDMI video.
 
@@ -109,7 +109,7 @@ layout changes in the app, update its component. `npm run dev` / `npm run build`
 
 ## Releases
 
-LG has its own package version and IPK build; see `webos/AGENTS.md`. Do not apply
+LG has its own package version and IPK build; see `platforms/webos/AGENTS.md`. Do not apply
 these Android signing, ADB or APK release steps to the LG port.
 
 Debug-signed as in upstream, with `~/.android/debug.keystore` on the maintainer's machine:

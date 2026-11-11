@@ -16,10 +16,10 @@
 
 ## Checklist
 
-- [ ] Relevant checks pass: Android Gradle/regressions, LG `npm --prefix webos test`
-      and `npm --prefix webos run test:browser`, or shared-data/site tests. Mark N/A explicitly.
+- [ ] Relevant checks pass: Android Gradle/regressions, LG `npm --prefix platforms/webos test`
+      and `npm --prefix platforms/webos run test:browser`, or shared-data/site tests. Mark N/A explicitly.
 - [ ] Arabic and English are checked in RTL/LTR; Android strings use `Text.java`,
-      LG uses extracted strings and bilingual labels in `webos/app/app.js`.
+      LG uses shared strings and bilingual labels in `platforms/webos/app/app.js`.
 - [ ] Colours, sizes and timings come from `afnon-mihrab/tokens.json` (`npm run tokens` in `site/`).
 - [ ] D-pad focus works from every edge, and Back from every screen.
 - [ ] Dependencies, timers, services and network changes are documented. Android's

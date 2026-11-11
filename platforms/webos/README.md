@@ -183,11 +183,11 @@ Install the existing site's dependencies first if this is a fresh checkout.
 
 ```powershell
 npm --prefix site ci
-npm --prefix webos ci
-npm --prefix webos test
-npm --prefix webos run test:browser
-ares-package webos/build/app webos/build/service --outdir webos/build
-ares-install --device YOUR_LG_ALIAS webos/build/tv.afnon.webos_0.2.5_all.ipk
+npm --prefix platforms/webos ci
+npm --prefix platforms/webos test
+npm --prefix platforms/webos run test:browser
+ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.5_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -371,7 +371,7 @@ did not return a usable image, so physical confirmation is still used for render
 HDMI embedding and overlays are based on behavior verified on this television,
 not a promise of compatibility across LG models. Tuner, AV and component mappings
 are included but are not yet hardware-verified in this port. Samsung Tizen remains
-a separate target. See [research and earlier probes](../docs/WEBOS-TIZEN-PORT-RESEARCH.md).
+a separate target. See [research and earlier probes](../../docs/WEBOS-TIZEN-PORT-RESEARCH.md).
 
 Sources: [LG Back button](https://webostv.developer.lge.com/develop/guides/back-button),
 [app lifecycle](https://webostv.developer.lge.com/develop/guides/app-lifecycle-management),

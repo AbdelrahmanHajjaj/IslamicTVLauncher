@@ -4,8 +4,8 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require('playwright');
 const base = path.join(__dirname, 'build/app');
-const sacred = JSON.parse(fs.readFileSync(path.join(__dirname, '../shared/data/sacred-text.json')));
-const shots = path.resolve(__dirname, '../state/webos-port');
+const sacred = JSON.parse(fs.readFileSync(path.join(__dirname, '../../shared/data/sacred-text.json')));
+const shots = path.resolve(__dirname, '../../state/webos-port');
 fs.mkdirSync(shots, { recursive: true });
 const server = http.createServer((req, res) => {
   const file = path.resolve(base, '.' + (req.url === '/' ? '/index.html' : req.url));

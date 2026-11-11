@@ -85,15 +85,18 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q06.3a, move the LG shell to `platforms/webos`. Finish Q06.2's commit if
-resuming between operations. Inspect every production/build/test/doc/CI path
-consumer before moving; verify absolute source/destination remain in the workspace,
-preserve unrelated/ignored work and keep package/service IDs and aligned versions.
-Update root-relative build reads, dependency/test/fixture paths, npm commands and
-agent/contributor links together. LG now consumes shared core/data/design, site
-tooling and ignored `state/media/`; it must not regain an Android source/SDK tie.
-Run the affected build/ES5/service/browser and consumer checks before committing.
-Do not move Android simultaneously: Q06.3b will place it in `platforms/android-tv`
+Next: Q06.3a2, remove LG's remaining preview-build dependency. Finish Q06.3a's
+move commit if resuming between operations. Source inspection shows LG still runs
+`site/scripts/extract.mjs` for common validation and reads Adhan from
+`site/node_modules`; its moved shell is not fully independent yet. Reuse existing
+shared validators through a small common entry, give LG the same pinned Adhan
+version directly, and remove unused preview-generation side effects. Inspect
+imports before extracting; keep all validation, dependency integrity, ES5/runtime
+notice and payload behavior. Prove an isolated LG build without Android/installer/
+site sources or SDK configuration, using shared sources/tools and ignored media.
+Compare its actual payload to the 97-file pre-move snapshot and run meaningful
+LG/shared/preview checks. No new product feature, transport or dependency upgrade.
+Then Q06.3b will place Android in `platforms/android-tv`
 with its own build entry plus working aggregate `:app`/installer/tools/generators/
 tests/CI. Inspect the smallest standalone Android settings before making that
 slice. No empty future projects, UI changes, installed-ID changes or new media.
@@ -713,3 +716,26 @@ them. Q02 commit: `83b0c72`. No release, remote detach, merge or TV firmware act
   Existing core/native logic, preview/installer and LG renderer were unchanged;
   their broader suites were not repeated after Q06.1. No hardware sound/picture
   check, performance-improvement claim, release or source/media publication.
+
+### Q06.3a LG project directory (2026-11-11)
+
+- Moved the complete LG project to `platforms/webos` after verifying absolute
+  source/destination inside the workspace and no existing destination. Git rename
+  preserves tracked history and ignored dependencies/build output. Package/service
+  IDs, aligned 0.2.5 metadata, renderer/service/core and all UI/media code are unchanged.
+- Builder resolves shared roots at the new depth and reads its own TV-app snapshot,
+  compatibility source and CSS from its directory. Updated test/dependency/fixture
+  paths, private browser-capture root, npm/package commands, active agent/contributor/
+  release/PR-template links and current links in historical research. Historical
+  experiment commands/content remain historical; no new support claim.
+- PASS: moved LG build/ES5/service/calendar/reminder regressions and bilingual
+  browser suite. All 97 emitted app/service payload files are byte-identical to
+  pre-move hashes, including IDs, data, fonts, CSS, scripts, notices and recordings.
+  PASS: actual media/runtime/notices checks plus shared catalog/tokens checks.
+  Evidence: ignored `lg-tree-before-move.json`, `check-lg-tree.cjs`,
+  `lg-move-{tests,browser}.log`. Updated active private proof paths only; recordings,
+  captures, local dependencies/builds and diagnostic helpers remain ignored.
+- No native/core/preview behavior changed; their unrelated full suites were not
+  repeated. No physical deployment/picture/sound/remote test. LG still uses preview
+  extraction/Adhan dependency at this checkpoint; Q06.3a2 explicitly removes that
+  remaining build coupling before claiming independently buildable shells.

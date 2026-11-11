@@ -29,7 +29,7 @@ The TV app and its screensaver are named **IslamicTVLauncher (Afnon)**. The Andr
 `tv.afnon.home`: updates signed with the installed app's key preserve preferences and the Home
 assignment. It shares Afnon's installation identity and cannot be installed alongside it.
 
-A [LG webOS port](webos/README.md) lives in `webos/`: full-screen HDMI inside Islamic TV Launcher,
+A [LG webOS port](platforms/webos/README.md) lives in `platforms/webos/`: full-screen HDMI inside Islamic TV Launcher,
 prayer overlays, grouped settings, local adhan and voice previews, scheduled alerts, Today & Qibla,
 Quran radio, compact Home shortcuts and TV-app links, Home color/layout controls,
 and an optional once-per-boot startup service.

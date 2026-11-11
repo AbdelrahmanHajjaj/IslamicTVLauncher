@@ -14,8 +14,8 @@ separate Android and LG webOS applications, not interchangeable build targets.
 - `installer/`: Android phone installer and recovery workflow; Android targets only.
 - `site/`: Astro browser preview and shared-data/token extraction tools.
 - `afnon-mihrab/`: shared design tokens, patterns and design references.
-- `webos/`: LG application (`tv.afnon.webos`) and JS service
-  (`tv.afnon.webos.service`). Read `webos/AGENTS.md` before changing this port.
+- `platforms/webos/`: LG application (`tv.afnon.webos`) and JS service
+  (`tv.afnon.webos.service`). Read `platforms/webos/AGENTS.md` before changing this port.
 - `tools/webos-background-probe/`: historical, bounded hardware experiments;
   not the installed launcher or its production service.
 
@@ -51,9 +51,9 @@ only; do not claim a working Samsung port.
   tests under `tests/`; hardware-sensitive changes need the appropriate TV checks.
 - Preview/shared data: `npm --prefix site test`; `npm --prefix site run tokens:check`
   when tokens or generated Android resources are involved.
-- LG: follow `webos/AGENTS.md` for media prerequisites, ES5 checks and hardware limits.
+- LG: follow `platforms/webos/AGENTS.md` for media prerequisites, ES5 checks and hardware limits.
 - Document user-visible changes in `CHANGELOG.md`. Record confirmed LG behavior and
-  limitations in `webos/README.md`; historical research is not a current support matrix.
+  limitations in `platforms/webos/README.md`; historical research is not a current support matrix.
 
 ## Current documentation through Context7
 

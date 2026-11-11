@@ -3,7 +3,7 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const babel = require('@babel/core');
 const acorn = require('acorn');
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(__dirname, '../..');
 const out = path.join(__dirname, 'build');
 const read = p => fs.readFileSync(path.join(root, p), 'utf8');
 const json = p => JSON.parse(read(p));
@@ -21,7 +21,7 @@ const data = {
   strings,
   formatText: json('shared/data/format-text.json'),
   sacred: json('shared/data/sacred-text.json'),
-  stations: json('shared/data/stations.json'), apps: json('webos/tv-apps.json'),
+  stations: json('shared/data/stations.json'), apps: JSON.parse(fs.readFileSync(path.join(__dirname, 'tv-apps.json'), 'utf8')),
   voices: json('shared/data/voices.json').map(({id, ar, en}) => ({id, ar, en})), themes: [], hijri: []
 };
 for (const voice of data.voices) {
@@ -73,12 +73,12 @@ const compiled = babel.transformSync(source, {
 }).code;
 for (const part of ['app', 'service']) {
   write(path.join(out, part, 'adhan.js'), '/* adhan-js 4.4.6, MIT; see licenses/adhan.txt */\n' + compiled);
-  write(path.join(out, part, 'compat.js'), read('webos/app/compat.js'));
+  write(path.join(out, part, 'compat.js'), fs.readFileSync(path.join(__dirname, 'app/compat.js'), 'utf8'));
   write(path.join(out, part, 'licenses/adhan.txt'), read('site/node_modules/adhan/LICENSE'));
 }
 for (const theme of data.themes) {
   const colors = theme === 'mihrab' ? {} : json('shared/design/assets/themes/' + theme + '.json').colors;
-  const css = read('webos/app/style.css').replace(/\{\{([\w.-]+)\}\}/g, (_, key) => {
+  const css = fs.readFileSync(path.join(__dirname, 'app/style.css'), 'utf8').replace(/\{\{([\w.-]+)\}\}/g, (_, key) => {
     if (key.startsWith('color.') && colors[key.slice(6)]) return colors[key.slice(6)];
     let value = tokens;
     for (const part of key.split('.')) value = value[part];
@@ -101,4 +101,4 @@ for (const part of ['app', 'service']) {
     acorn.parse(fs.readFileSync(path.join(out, part, name), 'utf8'), { ecmaVersion: 5 });
   }
 }
-console.log('Built webos/build: ES5 app + service, shared Afnon data, tokens and fonts.');
+console.log('Built platforms/webos/build: ES5 app + service, shared Afnon data, tokens and fonts.');

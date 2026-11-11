@@ -25,6 +25,6 @@ function eventBaseline(A) {
   }
 }
 module.exports = function checkReminders(A) {
-  assert.deepEqual(eventBaseline(A), require('../tests/fixtures/reminder-events.json'));
+  assert.deepEqual(eventBaseline(A), require('../../tests/fixtures/reminder-events.json'));
 };
 module.exports.eventBaseline = eventBaseline;
