@@ -76,8 +76,8 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q01 | Done | Baseline: dependency/caller map, current behavior differences, executable checks/tool/media availability and performance evidence; record results without private device details. |
 | Q02 | Done | Portable-core proof: shared offset/next-prayer behavior on JVM and ES5 app/service hosts; meaningful common fixtures, native-Java integration, legacy API checks, size/startup/memory evidence and actual LG probe where available; select technology with recorded rationale. |
 | Q03 | Done | Canonical resource extraction: move source ownership out of Android; migrate all generators/consumers and fixtures together; verify catalog/text/token equivalence and deterministic regeneration. |
-| Q04 | Active | Core domain migration: extract settings and prayer-day rules in complete tested slices; cover date rollover, tomorrow Fajr, DST, offsets, Hijri range, unavailable calculations and deliberate platform differences. |
-| Q05 | Queued | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
+| Q04 | Done | Core domain migration: extract settings and prayer-day rules in complete tested slices; cover date rollover, tomorrow Fajr, DST, offsets, Hijri range, unavailable calculations and deliberate platform differences. |
+| Q05 | Active | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
 | Q06 | Queued | Separate platform projects/builds: migrate paths only after boundaries work; update Gradle, npm, installer, tools, generated outputs, tests and CI; add no empty future-platform projects. |
 | Q07 | Queued | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Queued | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
@@ -85,20 +85,17 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q04.3b, calendar/unavailable-calculation coverage. Finish the Q04.3a commit
-if resuming between operations. Inspect date adapters and existing tests; preserve
-different tolerant-read/strict-write policies, keys/defaults, native/preview Fajr
-replacement, LG's raw today row and finite Hijri table. Characterize rollover,
-tomorrow Fajr, DST, Hijri boundaries and unavailable calculations with meaningful
-tests. Do not replace platform ICU/Intl/astronomical engines or invent a universal
-settings/UI framework. Keep OS timers/scheduling/playback out of the core and
-defer reminder-policy work to Q05. LG was unreachable during Q04.2's silent probe;
-retry available-host integration when the device is accessible, with Q09 still open.
-Q04.3a is verified: existing `PrayerRules` owns tolerant offset normalization
-(finite integer Double -> clamp [-30,30], otherwise zero) and the two-day Hijri
-adjustment limit. Native/preview reads and native/LG/preview bounds consume it.
-No settings schema/storage migration or general UI model is needed. Calendar
-engines stay in adapters; do not claim the native ICU stub proves Hijri accuracy.
+Next: Q05.1, characterize reminder policy and select a small common contract.
+Finish the Q04.3b commit if resuming between operations. Inspect native prayer
+watch/callers, LG `nextEvent`/service activities and existing expiry/deduplication/
+overlap tests before editing. Preserve different enabled/default states and event
+windows; keep clocks, timers, persistence, OS scheduling and playback in shells.
+Do not create a universal scheduler, transport or new always-running service.
+Q04's core settings/selection contracts are adopted in all production consumers;
+date/ICU/Intl/astronomical engines deliberately remain adapters. No storage schema
+migration is needed. LG was unreachable during Q04.2's silent probe; retry actual
+host integration when accessible. Native ICU accuracy and all final TV upgrade/
+picture/sound/remote/lifecycle acceptance remain Q09 gates, not software passes.
 Do not move platform directories yet (Q06). Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
 
@@ -518,3 +515,27 @@ Do not move platform directories yet (Q06). Private logs/helpers are under ignor
   ignored under `state/platform-core/settings-*`; native baseline there is
   `Prefs-before-normalize.java`. No physical TV or installer tests repeated;
   native ICU accuracy and TV upgrade/lifecycle acceptance remain hardware gates.
+
+### Q04.3b calendar and unavailable-calculation coverage (2026-11-11)
+
+- Calendar/astronomical engines remain platform adapters, as approved: native
+  Calendar/ICU/adhan-java, preview Date/Intl/adhan-js and LG Date/adhan-js with its
+  generated Umm al-Qura month table. No new calculation engine or fallback dates.
+- PASS: app/browser-VM and CommonJS LG adapters check all 1,273 supported month
+  starts/ends, 29/30-day lengths, +/-2-day range boundaries and last-row sentinel.
+  Actual generated range is [1999-01-19, 2101-12-22); outside dates remain null.
+  Fixed UTC -12/+5:45/+14 cases check wall-date and year/tomorrow-Fajr rollover.
+- PASS: preview civil-day Hijri offsets versus independent UTC-noon Intl dates
+  across DST/year boundaries; native/preview tomorrow Fajr and Suhoor across UK
+  clock changes/year-end, plus native Cairo clock-change dates. Native ICU remains
+  stubbed in JVM tests, so these do not assert native Hijri conversion accuracy.
+- PASS: invalid dates and forced unavailable polar astronomy are rejected in JS;
+  native unavailable astronomy returns no usable PrayerDay (its existing null-date
+  failure is retained). Test-only latitude changes are restored in finally blocks;
+  no unsupported location is added. Core rejects every nonfinite value in each
+  prayer slot and tomorrow Fajr on JVM/JS rather than selecting a fabricated event.
+- PASS: full core checks, all 38 Python/Java regressions, LG service/calendar and
+  preview suites. Logs: ignored `calendar-{core,python,webos,site}.log`. Only tests
+  changed after Q04.3a, so unchanged app/LG/preview builds, lint, size and browser
+  checks were not repeated. No TV deployment or hardware accuracy claim. Q04's
+  software extraction/coverage is complete; hardware acceptance remains Q09.

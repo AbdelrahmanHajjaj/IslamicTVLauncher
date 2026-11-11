@@ -71,6 +71,9 @@ assert.notEqual(A.nextEvent(new Date(day.times[0] - 1), enabled, [event.id]).id,
 assert.equal(A.nextEvent(now, A.prefs({automatic: true, bells: [false, false, false, false, false, false]})), null);
 assert.equal(A.nextEvent(now, prefs), null);
 const serviceCore = require('./build/service/core');
+const checkCalendar = require('./test-calendar.cjs');
+checkCalendar(A, data);
+checkCalendar(serviceCore, data);
 assert.equal(serviceCore.day(now, serviceCore.prefs({utcOffset: 120})).times[0], day.times[0], 'Node service and TV UI use the same calculation');
 for (const core of [A, serviceCore]) {
   assert.equal(core.maxPrayerOffset, 30);

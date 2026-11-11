@@ -54,6 +54,11 @@ class PrayerRulesTest {
         assertFailsWith<IllegalArgumentException> { PrayerRules.select(DoubleArray(5), 12000.0, 0.0) }
         assertFailsWith<IllegalArgumentException> { PrayerRules.select(times, Double.NaN, 0.0) }
         assertFailsWith<IllegalArgumentException> { PrayerRules.select(times, 12000.0, Double.POSITIVE_INFINITY) }
-        assertFailsWith<IllegalArgumentException> { PrayerRules.select(times.copyOf().also { it[3] = Double.NaN }, 12000.0, 0.0) }
+        for (invalid in doubleArrayOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY)) {
+            assertFailsWith<IllegalArgumentException> { PrayerRules.select(times, invalid, 0.0) }
+            for (i in times.indices) {
+                assertFailsWith<IllegalArgumentException> { PrayerRules.select(times.copyOf().also { it[i] = invalid }, 12000.0, 0.0) }
+            }
+        }
     }
 }

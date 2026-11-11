@@ -95,5 +95,23 @@ public final class PrayerDayCheck {
         PrayerDay atFajr = day(morning.times[PrayerDay.FAJR], new int[6]);
         check(morning.suhoorEnd.equals(morning.times[0]), "Before dawn Suhoor ends at today's Fajr");
         check(atFajr.suhoorEnd.equals(afterIsha.nextTime), "At Fajr Suhoor rolls to tomorrow without changing today's row");
+        for (String zone : new String[] {"Europe/London", "Africa/Cairo"}) {
+            TimeZone.setDefault(TimeZone.getTimeZone(zone));
+            Coordinates location = zone.equals("Europe/London") ? here : new Coordinates(30.0444, 31.2357);
+            for (String date : new String[] {"2026-03-28", "2026-03-29", "2026-04-23", "2026-04-24", "2026-10-24", "2026-10-25", "2026-10-29", "2026-10-30", "2026-12-31"}) {
+                LocalDate civilDay = LocalDate.parse(date);
+                Date noon = Date.from(civilDay.atTime(12, 0).atZone(ZoneId.systemDefault()).toInstant());
+                PrayerDay today = new PrayerDay(noon, location, PrayerMethod.EGYPTIAN, Madhab.SHAFI, 0, offsets);
+                PrayerDay after = new PrayerDay(new Date(today.times[5].getTime() + 1), location, PrayerMethod.EGYPTIAN, Madhab.SHAFI, 0, offsets);
+                Date nextNoon = Date.from(civilDay.plusDays(1).atTime(12, 0).atZone(ZoneId.systemDefault()).toInstant());
+                PrayerDay tomorrow = new PrayerDay(nextNoon, location, PrayerMethod.EGYPTIAN, Madhab.SHAFI, 0, offsets);
+                check(after.nextIndex == PrayerDay.FAJR && after.nextTime.equals(tomorrow.times[0]), zone + date + " calendar-day rollover");
+                check(after.suhoorEnd.equals(tomorrow.times[0]), "Suhoor rolls with the calendar, including DST");
+            }
+        }
+        try {
+            new PrayerDay(winter, new Coordinates(90, 0), PrayerMethod.EGYPTIAN, Madhab.SHAFI, 0, new int[6]);
+            throw new AssertionError("Unavailable polar times returned a usable prayer day");
+        } catch (RuntimeException expected) { /* Existing native engine supplies nulls; no selectable day is returned. */ }
     }
 }

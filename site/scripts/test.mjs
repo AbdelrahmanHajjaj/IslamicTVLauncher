@@ -7,6 +7,7 @@ try {
   await server.ssrLoadModule('/tests/methods.ts');
   await server.ssrLoadModule('/tests/text-format.ts');
   await server.ssrLoadModule('/tests/offsets.ts');
+  await server.ssrLoadModule('/tests/calendar.ts');
   await server.ssrLoadModule('/tests/home.ts');
   await server.ssrLoadModule('/tests/appearance-cycle.ts');
 } finally {
