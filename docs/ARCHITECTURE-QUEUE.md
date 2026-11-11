@@ -104,9 +104,12 @@ cannot close Android 11 TV, older ICU, physical remote, HDMI, speaker or power g
 
 The current reviewed LG IPK is ready with exact payload equality; its one supported
 read-only device query timed out. No install, backup read, service/DOM or TV mutation
-occurred. Wait for changed availability before retrying; the watcher question is
-pending. Before any eventual in-place LG upgrade, capture prefs/input/startup and
-preserve IDs/data; do not uninstall as a workaround. Keep raw device details ignored.
+occurred. Owner replied on 2026-11-11: watcher later; keep checks read-only for now.
+Wait for changed reachability before retrying diagnostics. Do not install/relaunch,
+change settings/activities, play alerts or perform power tests until the owner is
+ready for watched acceptance. Before any eventual in-place LG upgrade, capture
+prefs/input/startup and preserve IDs/data; do not uninstall as a workaround. Keep
+raw device details ignored.
 
 Audible/power tests require a human watcher under LG's rules. Ask for watcher/TV
 availability before those dependent actions; preparation and read-only diagnostics
@@ -1157,3 +1160,14 @@ notices (99 entries). Do not add new UIs, transports or future shells.
   objective and Q09 physical gates. Resume only after changed availability; first
   capture existing preferences/input/startup, then perform the in-place upgrade
   and actual picture/sound/remote/lifecycle checks. No completion claim.
+
+### Owner steering: watcher deferred, read-only checks (2026-11-11)
+
+- Owner answered the watcher request: "Later; keep checks read-only for now."
+  Recorded the restriction in the current cursor. No installation, relaunch,
+  settings/activity write, audible or power test is authorized during this limit.
+  Read-only preparation/diagnostics remain permitted; no changed reachability was
+  reported, so the existing timeout is not repeatedly probed.
+- The physical acceptance gate and persistent goal remain blocked/incomplete.
+  This reply records a constraint, not readiness to resume watched device tests.
+  No runtime/source/artifact or TV state changed.
