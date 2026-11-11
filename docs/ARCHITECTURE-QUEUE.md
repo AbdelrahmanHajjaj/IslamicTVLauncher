@@ -21,7 +21,11 @@ functionality and intentional platform differences, stored preferences, installe
 identities, Arabic/English, RTL/LTR, accessibility and exact religious text.
 
 - Shared core: models, validation and prayer-day/reminder product rules. Explicit
-  inputs and results; no UI, filesystem, network, device APIs or background timers.
+  inputs and results; no rendering, filesystem, network, device APIs or background timers.
+- Owner's 2026-11-11 expansion: enforce a shared semantic UI/settings/action and
+  remote-input contract across native shells. Use Android as the parity reference;
+  inventory actual gaps, distinguish missing common features from intrinsic platform
+  limitations, and test bindings/behavior. Keep native renderers; no generic UI engine.
 - Shared data/design: cities, methods, bilingual text, station/voice catalogs,
   existing tokens/patterns and distributable assets. Platform outputs are generated.
 - Android: existing Java Views and native integrations; existing installer/recovery
@@ -82,26 +86,34 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
+| Q09.5 | Active priority | Owner-requested shared UI/settings/input contract: audit Android/LG coverage, define stable semantic IDs/capabilities and deterministic focus behavior, enforce shell bindings with tests; fix Home top-controls/All-apps navigation first. Continue this before remaining power/final hardware signoff. |
 
 ## Current cursor
 
-Next: Q09.4.4, watched LG closed-app background delivery/return and actual new-boot
-startup acceptance. Q09.4.3's cropped Arabic status text is fixed in installed
-0.2.6; owner confirms the installed values are readable. First restore original
-English through the settings control and verify all 30 original preference values.
-Then run one bounded 30-second Activity Manager test over native Browser, checking
-cold launch, real sound and return; cancel the one-shot on completion/abandonment.
-Power checks follow sequentially with the owner watching. Preserve selected input,
-startup choice, IDs and user data; never uninstall/clear data to make a test pass.
+Next: Q09.5b, extract Android's Home focus map into the portable core and bind both
+Android and LG Home to it. Q09.5a's behavioral contract is docs/UI-CONTRACT.md;
+actual first findings and gaps are below. Android is the reference, with explicit owner
+choice: Up from the first app row enters the top controls row according to column,
+not always the Settings gear; Down beyond the last app row selects All apps.
+Replace LG Home's geometric-nearest guessing with shared deterministic behavior.
+Enforce settings/action coverage so common omissions cannot be silently accepted
+as platform limitations. Preserve native rendering, stored keys and platform APIs.
+
+Q09.4.4 background service test passed its live checks and cleanup. Owner heard
+adhan and reports Browser now, but did not observe whether Browser was visible
+before the alert. Preserve that observation limit. Actual new-boot/power acceptance
+remains open; resume it after the UI/input contract work with a watcher. Original
+English and all 30 original preferences are restored. No test activity is pending.
 
 Real LG evidence so far: 0.2.4 to 0.2.5 to 0.2.6 in-place upgrades preserve all
 30 current preferences, HDMI 1 and startup state. Owner confirms picture/sound,
 physical OK/Home/arrows/Settings/Back focus, joined Arabic/RTL, short adhan and
 normal automatic audio/HDMI/settings restoration. Actual Node 0.10.25/core and
 WebKit 538.2 checks pass; all 100 installed 0.2.6 files match the reviewed package.
-Original English is temporarily Arabic from this test only; current backups are
-ignored q094-lg-*-service/. The second owned inspector is open. No background
-one-shot has been armed yet; record its pending/cleanup state before a handoff.
+Original English is restored; current backups are ignored q094-lg-*-service/.
+The second owned inspector is closed; native Browser was left untouched.
+Background controller state in ignored q094-background/operations.json confirms
+complete-awaiting-human and cleanupConfirmed=true; do not arm a duplicate test.
 
 Owner explicitly authorized watched in-place/audio/remote/power tests, lifting
 the earlier read-only limit. Keep tests sequential and distinguish human picture/
@@ -1266,3 +1278,62 @@ notices (99 entries). Do not add new UIs, transports or future shells.
 - Evidence: ignored q094-crop-*, q094-dom-crop-*, q094-lg-patch-{before,after}-service/
   and versioned installed-payload logs. Arabic remains temporary until next step;
   no background activity armed yet. No Android/shared runtime source changed.
+
+### Q09.4.4 cold-app background test and cleanup (2026-11-11)
+
+- Original English and all 30 baseline preferences/input/startup verified after
+  asynchronous UI save completion. An initial immediate status snapshot preceded
+  the completed save; retained it and verified a fresh snapshot after live DOM
+  showed English/Saved. This was a checker timing issue, not a settings reset.
+- Closed the launcher, successfully launched native LG Browser and verified our
+  app was absent from the actual inspector target inventory. Armed one 30-second
+  test through the production service, with cleanup in finally. Live service
+  evidence confirms Activity Manager callback, alert consumption, real audio
+  progress, bounded stop and launcher hidden afterward. Cancelled the test and
+  verified test=null, all original preferences/input/startup unchanged.
+- Owner heard adhan and reports Browser afterward; did not observe Browser before
+  playback. Do not claim a fully observed before/after foreground sequence from
+  that reply. CLI/closed-app/service evidence remains distinct. Private controller
+  operations/logs are under q094-background/. No one-shot remains pending.
+
+### Q09.5 owner expansion and first findings (2026-11-11)
+
+- Owner requests an enforceable cross-platform UI/settings contract and consistent
+  remote behavior; LG may omit settings and Home navigation currently takes too
+  many unintuitive steps. This is now approved iteration-one scope and priority
+  before remaining power/final hardware signoff; companion/future shells stay deferred.
+- Source confirms Android uses explicit FavouriteChoice.homeMove with logical
+  directions; LG uses nearest-button geometry for Home. Owner chose top-controls
+  behavior matching Android (Radio/Network/Settings according to first-row column),
+  not unconditional Settings-gear focus. Down past the final app row must select
+  All apps. Preserve RTL horizontal swapping, initial/return focus and modal input.
+- Initial concrete LG gaps: appearance lighting, focus lighting, reduced motion and
+  appearance cycling are absent from its preferences/settings; Home uses fixed app
+  shortcuts rather than Android favourite selection/layout. Finish full inventory,
+  distinguishing feasible common gaps from OS-owned Home/remote/screensaver limits.
+  Do not label missing implementations unsupported just to pass coverage.
+- Next deliverable is the source-grounded setting/action coverage and small contract
+  shape, then shared Home behavior and shell conformance. Keep UI framework/layout
+  and native operations in each shell; tests must cover actual consumers, not only
+  a duplicate manifest. User has set the persistent goal active.
+
+### Q09.5a contract and ordered implementation (2026-11-11)
+
+- Wrote docs/UI-CONTRACT.md as behavior/boundary specification, not another queue.
+  It covers semantic IDs, setting/editor coverage, capabilities, Home focus,
+  RTL/modal input and actual-consumer conformance. No runtime enforcement is
+  claimed yet. Keep shared definitions platform-free and native rendering intact.
+- Ordered slices: (b) share existing Android Home map and wire both shells with
+  JVM/ES5 plus actual adapter tests; (c) define the settings/action catalog and
+  actual binding coverage, completing the source inventory; (d) port confirmed
+  missing common behavior in thin tested slices rather than mislabeling it
+  unsupported; (e) rerun affected real-LG input/UI/upgrade and then power acceptance.
+  Android physical acceptance remains open throughout; it does not block these
+  independent software slices.
+- Additional inventory facts: Android has manual screen-facing/Qibla alignment,
+  configurable favourite rows and favourite editing. LG has a true-north Qibla
+  display and three fixed Home app shortcuts, with no corresponding settings.
+  Language/clock system-follow options and native/global controls differ and need
+  explicit capability/default mapping. LG currently has no CSS animation/transition,
+  so assess reduced-motion behavior separately from its absent toggle. Do not
+  inflate the gap list from labels alone or invent unsupported platform claims.
