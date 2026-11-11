@@ -73,8 +73,8 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | ID | State | Work and acceptance |
 | --- | --- | --- |
 | Q00 | Done | Create branch, persistent goal and this ledger; route future migration work here. |
-| Q01 | Ready | Baseline: dependency/caller map, current behavior differences, executable checks/tool/media availability and performance evidence; record results without private device details. |
-| Q02 | Queued | Portable-core proof: shared offset/next-prayer behavior on JVM and ES5 app/service hosts; meaningful common fixtures, native-Java integration, legacy API checks, size/startup/memory evidence and actual LG probe where available; select technology with recorded rationale. |
+| Q01 | Done | Baseline: dependency/caller map, current behavior differences, executable checks/tool/media availability and performance evidence; record results without private device details. |
+| Q02 | Active | Portable-core proof: shared offset/next-prayer behavior on JVM and ES5 app/service hosts; meaningful common fixtures, native-Java integration, legacy API checks, size/startup/memory evidence and actual LG probe where available; select technology with recorded rationale. |
 | Q03 | Queued | Canonical resource extraction: move source ownership out of Android; migrate all generators/consumers and fixtures together; verify catalog/text/token equivalence and deterministic regeneration. |
 | Q04 | Queued | Core domain migration: extract settings and prayer-day rules in complete tested slices; cover date rollover, tomorrow Fajr, DST, offsets, Hijri range, unavailable calculations and deliberate platform differences. |
 | Q05 | Queued | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
@@ -85,7 +85,8 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q01. Establish the executable baseline before changing production behavior.
+Next: Q02. Add an isolated, additive shared-core proof; production apps continue to
+use their existing behavior until the runtime decision is supported by evidence.
 Q02's runtime proof precedes production core adoption; a syntax-only ES5 pass does
 not establish old-TV compatibility. Record findings here and keep the queue moving
 only when each item's prerequisites are met.
@@ -98,3 +99,33 @@ only when each item's prerequisites are met.
 - Branch created from clean `main` at `74a4287`; no unrelated working-tree changes.
 - Persistent goal created for this ledger's iteration-one migration. No token or
   time budget was requested. Human/hardware acceptance is part of completion.
+
+### Q01 baseline (2026-11-11)
+
+- Node 24.13.1, JDK 17.0.10 and Python 3.14.6 available. SDK 34 is installed; this
+  session needs `ANDROID_HOME` pointing at the existing SDK. Existing Gradle cache
+  and Python temporary directories require sandbox-approved execution. Initial
+  permission/SDK failures were environmental; corrected runs below passed.
+- Launcher APK: 20,246,215 bytes. Lint baseline: launcher 0 errors / 54 warnings;
+  installer 0 errors / 14 warnings. This is the comparison baseline for this branch.
+- PASS: 36 Python/Java regression tests; Android launcher size/build/lint and
+  installer build/lint; preview tests, 18-page build and tokens check; LG ES5/core/
+  service regressions and Arabic/English browser suite. Raw logs are ignored under
+  `state/platform-core/baseline-*.log`. Browser Luna/decoder behavior is mocked.
+- All 14 adhan and 12 announcement clips and site/LG npm dependencies are locally
+  available; media remains ignored. No source changes resulted from generation.
+- Dependencies: Android `PrayerDay` combines astronomical adapters, Android ICU
+  calendar and domain selection. Its consumers include Home, All apps, Today,
+  screensaver, call screen, prayer dock/watch, reminders, settings and announcements.
+  LG `core.js` is consumed by app/service and tests; it also owns LG input/app rules.
+  Preview has separate prayer/layout rules. Android `Prefs`, `Text`, `PrayerMethod`,
+  `Radio`, `Adhans`, themes/fonts/icons feed site extraction and LG packaging.
+- Preserve the intentional day-model difference: Android/preview replace the
+  displayed Fajr slot after Isha, while LG keeps today's row and a separate
+  tomorrow-Fajr value. New domain selection must not mutate its input times.
+- No current physical-TV performance measurement was made. The configured LG CLI
+  is not on this session's PATH; discover existing private device configuration
+  before any hardware probe. No device was changed.
+- Proof candidate: Kotlin 2.2.10 is already in the local Gradle cache and its
+  documented compatibility includes Gradle 8.9 / AGP 8.5.2. Keep those existing build
+  tools unchanged. Source: https://kotlinlang.org/docs/multiplatform/multiplatform-compatibility-guide.html.
