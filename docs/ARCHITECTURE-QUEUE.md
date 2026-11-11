@@ -108,9 +108,12 @@ Build/review the final candidate, save fresh current LG preferences/input/startu
 then use the already authorized in-place upgrade workflow. Verify installed files
 and core's 66-assertion proof on actual Node 0.10.25/WebKit 538.2, real control
 bindings/labels and preserved settings. Obtain human confirmation of visible UI,
-Arabic values, picture/sound and remote behavior. Source is still 0.2.8 and has not
-been packaged/installed; the TV remains on accepted 0.2.7 in Browser. Do not assume
-the owner is currently watching. No duplicate audible/power test is justified by
+Arabic values, picture/sound and remote behavior. The verified 0.2.8 candidate is
+packaged under ignored state/platform-core/ui-contract-candidate, not installed.
+The fresh backup is q095-lg-before-service; the TV remains on accepted 0.2.7 in
+Browser. A watcher-availability question is pending; leave the TV unchanged until
+the owner is ready. Refresh/recheck the baseline if it changes during that wait.
+No duplicate audible/power test is justified by
 these metadata/focus changes; those require a watcher if a new reason emerges.
 
 HomeNavigation is shared and physically accepted on installed LG 0.2.7. Its Up
@@ -1734,3 +1737,27 @@ unrelated renderer redesign, transport or future shell.
   final-native-build,final-native-ui,native-regressions,lg-test,lg-browser,
   preview-test,catalog-final,legacy-final,emulator-closure}.log and private
   ui-contract-emulator/favourite-{red,green}-result.log.
+
+### Q09.5d final LG candidate: prepared (2026-11-11)
+
+- Packaged the verified 0.2.8 build from source commit 09f7d31 using the existing
+  local CLI with --no-minify. Candidate is 18,648,304 bytes; archive review proves
+  all 100 app/service files match the checked build byte-for-byte, with only the
+  expected packageinfo metadata. Package/app/service IDs and version agree; media,
+  notices and ES5 runtime bytes are preserved. Hash/source association is saved in
+  the ignored candidate manifest. CLI syntax checked via Context7's CLI sources.
+- Read-only device preflight succeeds. Fresh q095-lg-before-service backup confirms
+  installed 0.2.7, all 30 current preferences, Arabic, HDMI 1 and enabled startup;
+  UI is hidden after Browser use. No test is pending. The retained pendingAlert
+  record is already displayed, so it is not a new undelivered alert. Automatic
+  scheduling remains enabled and unchanged. SSH query sessions ended normally.
+- Asked whether the owner is beside LG for final picture/sound and remote checks;
+  answer pending. Do not infer readiness or repeat the old question as approval.
+  No close/install/launch, inspector, audible test or TV-state mutation occurred.
+  Prepare to run the existing in-place workflow only when the owner is ready,
+  with a current baseline and exact candidate hash guard. Do not rerun a mutation
+  following an observation timeout until actual installed/operation state is known.
+- Evidence: ignored ui-contract-{package,package-check,lg-before}.log,
+  ui-contract-candidate/manifest.json and IPK, q095-preflight.json and the private
+  q095-lg-before-service snapshot. Actual installed payload, Node/WebKit 66-check
+  runtime proof, native TV UI and human acceptance remain open; Android unchanged.
