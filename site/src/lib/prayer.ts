@@ -6,10 +6,11 @@ import { cityOf, methodOf, METHOD_DEFINITIONS, type Prefs } from './data';
 
 const rules = portable.tv.afnon.core.PrayerRules;
 export const MAX_PRAYER_OFFSET = rules.MAX_OFFSET_MINUTES;
+export const MAX_HIJRI_OFFSET = rules.MAX_HIJRI_OFFSET_DAYS;
 /** Old or malformed saved preferences must not break every preview screen. */
 export const prayerOffsets = (prefs: Prefs): number[] => Array.from({ length: 6 }, (_, i) => {
   const n = prefs.prayerOffsets?.[i];
-  return typeof n === 'number' && Number.isInteger(n) ? Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, n)) : 0;
+  return typeof n === 'number' ? rules.normalizeOffset(n) : 0;
 });
 
 export const FAJR = 0, SUNRISE = 1, DHUHR = 2, ASR = 3, MAGHRIB = 4, ISHA = 5;

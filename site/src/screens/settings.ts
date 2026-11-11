@@ -7,7 +7,7 @@ import voicesJson from '../../../shared/data/voices.json';
 import F from '../../../shared/data/format-text.json';
 import { makeCtx, type Ctx } from '../lib/ctx';
 import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
-import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET } from '../lib/prayer';
+import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET, MAX_HIJRI_OFFSET } from '../lib/prayer';
 import type { Text } from '../lib/text';
 import { prayerLabel } from '../lib/prayer-icon';
 import { loadFacing } from './prayer-day';
@@ -139,7 +139,7 @@ export const savedDraft = (c: Ctx, row: Row) => (row.kind === 'seg' ? row.select
 
 /** ◀▶ while editing (d = +1 toward the end), held to the row's range. */
 export const moveDraft = (row: Row, draft: number, d: number) =>
-  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : row.prayer !== undefined ? Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, draft + d)) : row.id === 'lighting' ? Math.max(0, Math.min(100, draft + d)) : Math.max(-2, Math.min(2, draft + d));
+  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : row.prayer !== undefined ? Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, draft + d)) : row.id === 'lighting' ? Math.max(0, Math.min(100, draft + d)) : Math.max(-MAX_HIJRI_OFFSET, Math.min(MAX_HIJRI_OFFSET, draft + d));
 
 /** OK while editing: the new prefs, or null when the draft is what is already saved. 'lang' is the page's. */
 export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {

@@ -11,6 +11,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 - Android, LG app/service and the preview use the portable core for prayer selection
   and calculation-offset validation, retaining their astronomical libraries and
   each platform's Fajr/Suhoor display behavior.
+- Prayer-offset normalization and prayer/Hijri adjustment limits come from the
+  core; saved keys and each platform's existing read/write policies are preserved.
 
 ### LG webOS development port
 

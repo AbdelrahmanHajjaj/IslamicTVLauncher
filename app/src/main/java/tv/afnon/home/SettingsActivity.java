@@ -379,8 +379,8 @@ public class SettingsActivity extends Screen {
                     String help() { return t.hijriToday(hijri(day)); }
                     int amount() { return Prefs.hijriOffset(c); }
                     void setAmount(int n) { Prefs.setHijriOffset(c, n); }
-                    int lowest() { return -2; }
-                    int highest() { return 2; }
+                    int lowest() { return -Prefs.MAX_HIJRI_OFFSET; }
+                    int highest() { return Prefs.MAX_HIJRI_OFFSET; }
                     String valueOf(int n) { return t.days(n); }
                 },
                 new Row(VALUE) {

@@ -6,6 +6,7 @@ import android.text.format.DateFormat;
 
 import com.batoulapps.adhan.Coordinates;
 import com.batoulapps.adhan.Madhab;
+import tv.afnon.core.PrayerRules;
 
 /**
  * Afnon's own settings (SharedPreferences "afnon"), read by every screen and the screensaver. Language and digits
@@ -81,10 +82,11 @@ final class Prefs {
         return new Coordinates(city.lat, city.lng);
     }
 
-    static final int MAX_PRAYER_OFFSET = 30;
+    static final int MAX_PRAYER_OFFSET = PrayerRules.MAX_OFFSET_MINUTES;
+    static final int MAX_HIJRI_OFFSET = PrayerRules.MAX_HIJRI_OFFSET_DAYS;
 
     static int prayerOffset(Context c, int prayer) {
-        return Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, of(c).getInt("prayer_offset_" + prayer, 0)));
+        return PrayerRules.INSTANCE.normalizeOffset(of(c).getInt("prayer_offset_" + prayer, 0));
     }
 
     static void setPrayerOffset(Context c, int prayer, int minutes) {
@@ -127,7 +129,7 @@ final class Prefs {
     }
 
     static void setHijriOffset(Context c, int days) {
-        of(c).edit().putInt("hijri_offset", Math.max(-2, Math.min(2, days))).apply();
+        of(c).edit().putInt("hijri_offset", Math.max(-MAX_HIJRI_OFFSET, Math.min(MAX_HIJRI_OFFSET, days))).apply();
     }
 
     // ---------------------------------------------------------------- reminders

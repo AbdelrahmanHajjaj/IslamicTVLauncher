@@ -30,6 +30,11 @@ for (let i = 0; i < 6; i++) {
 }
 assert.deepEqual(prayerOffsets(prefs), [0, 0, 0, 0, 0, 0]);
 assert.deepEqual(prayerOffsets({ ...prefs, prayerOffsets: [Infinity, NaN, 1.5, 99, -99] }), [0, 0, 0, 30, -30, 0]);
+assert.deepEqual(prayerOffsets({...prefs, prayerOffsets: [-2147483648, 2147483647, 4294967297, -4294967297, Number.MAX_VALUE, 1.5]}), [-30, 30, 30, -30, 30, 0]);
+for (const value of ['null', '[null,true,"2",{},[],false]', '"000000"']) {
+  assert.deepEqual(prayerOffsets({...prefs, prayerOffsets: JSON.parse(value)}), [0, 0, 0, 0, 0, 0]);
+}
+assert.deepEqual(prayerOffsets({...prefs, prayerOffsets: Array(6)}), [0, 0, 0, 0, 0, 0]);
 
 for (const lang of ['en', 'ar'] as const) for (const format of ['12', '24'] as const) {
   const ctx = makeCtx(lang, { ...prefs, clock: format }, new Date('2026-10-26T09:00:00'));
@@ -50,5 +55,8 @@ for (const lang of ['en', 'ar'] as const) for (const format of ['12', '24'] as c
     assert.equal(saved.prayerOffsets!.filter(n => n !== 0).length, 1);
     assert.equal(commit(ctx, row, 0), null);
   }
+  const hijri = rowsFor(ctx, PRAYER).find(row => row.id === 'hijri')!;
+  assert.equal(moveDraft(hijri, 2, 1), 2);
+  assert.equal(moveDraft(hijri, -2, -1), -2);
 }
 console.log('Preview offsets: six prayers, draft/save/cancel, limits, Arabic/English clocks and UK clock changes passed');

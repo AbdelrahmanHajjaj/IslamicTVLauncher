@@ -10,6 +10,13 @@ class PrayerSelection(val current: Int, val next: Int, val nextTime: Double)
 @JsExport
 object PrayerRules {
     const val MAX_OFFSET_MINUTES = 30
+    const val MAX_HIJRI_OFFSET_DAYS = 2
+
+    // Double keeps untrusted JS numbers intact until after validation and clamping.
+    fun normalizeOffset(minutes: Double): Int {
+        if (!minutes.isFinite() || minutes % 1.0 != 0.0) return 0
+        return minutes.coerceIn(-MAX_OFFSET_MINUTES.toDouble(), MAX_OFFSET_MINUTES.toDouble()).toInt()
+    }
 
     fun validateOffsets(offsets: IntArray) {
         require(offsets.size == 6) { "Expected six prayer offsets" }

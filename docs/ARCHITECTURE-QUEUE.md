@@ -85,9 +85,8 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q04.3, remaining settings/calendar/unavailable-calculation rules. Finish the
-Q04.2 commit if resuming between operations. Inspect current preference readers,
-writers and date adapters before choosing a small common contract; preserve
+Next: Q04.3b, calendar/unavailable-calculation coverage. Finish the Q04.3a commit
+if resuming between operations. Inspect date adapters and existing tests; preserve
 different tolerant-read/strict-write policies, keys/defaults, native/preview Fajr
 replacement, LG's raw today row and finite Hijri table. Characterize rollover,
 tomorrow Fajr, DST, Hijri boundaries and unavailable calculations with meaningful
@@ -95,6 +94,11 @@ tests. Do not replace platform ICU/Intl/astronomical engines or invent a univers
 settings/UI framework. Keep OS timers/scheduling/playback out of the core and
 defer reminder-policy work to Q05. LG was unreachable during Q04.2's silent probe;
 retry available-host integration when the device is accessible, with Q09 still open.
+Q04.3a is verified: existing `PrayerRules` owns tolerant offset normalization
+(finite integer Double -> clamp [-30,30], otherwise zero) and the two-day Hijri
+adjustment limit. Native/preview reads and native/LG/preview bounds consume it.
+No settings schema/storage migration or general UI model is needed. Calendar
+engines stay in adapters; do not claim the native ICU stub proves Hijri accuracy.
 Do not move platform directories yet (Q06). Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
 
@@ -487,3 +491,30 @@ Do not move platform directories yet (Q06). Private logs/helpers are under ignor
   helpers are `lg-adapter-core-*` / `run-lg-adapter-proof.cjs`. Q02's earlier host
   proof does not replace final production/upgrade acceptance. Android hardware,
   actual LG picture/sound/remote/lifecycle and upgrade checks remain Q09 gates.
+
+### Q04.3a shared settings rules (2026-11-11)
+
+- Existing `PrayerRules` now owns tolerant saved-offset normalization and both
+  adjustment limits. Double input preserves JS overflow/fraction information until
+  validation/clamping. Android/preview normalize; LG retains strict validation.
+  Native, LG and preview settings controls use the shared limits. Original saved
+  keys, defaults, error text, writes and native legacy Hijri read policy remain.
+- Tests characterized the old native behavior before changes, then ran with real
+  `Prefs`, city registry, astronomy and shared core. Only storage/platform APIs,
+  ICU and unrelated appearance calls are stubbed. Coverage: default offsets, all
+  six stored keys, extreme integer reads/writes, rejection without mutation, Hijri
+  clamping/legacy reads and preservation of unrelated settings. No disk migration.
+- PASS: new core test failed for missing API, then full JVM/JS/Java interop and
+  ES5/restricted-API suites passed; legacy proof now has 34 assertions. PASS: real
+  preview regression fails a fractional-truncation mutant. Browser/CommonJS LG
+  strict boundary tests and preview malformed/sparse/overflow/Hijri-bound tests pass.
+- PASS: 38 Python/Java regressions; Android build/size/lint (21,113,433-byte
+  incremental APK; 0 errors / 54 warnings); LG ES5/service/bilingual browser suite;
+  preview tests/18-page build/targeted TypeScript and actual built-client check.
+  Original/new 26,024 LG and 29,280 preview outputs still match; eight malformed
+  normalization sets also match. All runtime/notices copies still byte-identical.
+- Core JS grows from 16,794 to 18,290 bytes with numeric normalization helpers.
+  This is measured payload size, not a performance improvement. Logs/helpers are
+  ignored under `state/platform-core/settings-*`; native baseline there is
+  `Prefs-before-normalize.java`. No physical TV or installer tests repeated;
+  native ICU accuracy and TV upgrade/lifecycle acceptance remain hardware gates.

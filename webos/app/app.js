@@ -431,8 +431,8 @@
     show('picker');
   }
   function changeStep(delta) {
-    var min = picker === 'volume' ? 0 : picker === 'hijriOffset' ? -2 : -30;
-    var max = picker === 'volume' ? 100 : picker === 'hijriOffset' ? 2 : 30;
+    var min = picker === 'volume' ? 0 : picker === 'hijriOffset' ? -A.maxHijriOffset : -A.maxPrayerOffset;
+    var max = picker === 'volume' ? 100 : picker === 'hijriOffset' ? A.maxHijriOffset : A.maxPrayerOffset;
     editValue = Math.max(min, Math.min(max, editValue + delta * (picker === 'volume' ? 5 : 1))); render('save-step');
   }
   function savePrefs(next, focusAction, returnView) {

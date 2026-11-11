@@ -6,6 +6,9 @@ function verifyIslamicTVCore(core) {
     if (!condition) { throw new Error(message); }
     checks++;
   }
+  check(rules.normalizeOffset(4294967297) === 30 && rules.normalizeOffset(-4294967297) === -30, 'normalization overflow');
+  check(rules.normalizeOffset(NaN) === 0 && rules.normalizeOffset(Infinity) === 0 && rules.normalizeOffset(1.5) === 0, 'malformed saved offsets');
+  check(rules.MAX_HIJRI_OFFSET_DAYS === 2, 'Hijri adjustment limit');
   var times = new Float64Array([1000, 2000, 4000, 6000, 8000, 10000]);
   var moments = [999, 1000, 1999, 2000, 3999, 4000, 9999, 10000, 10001];
   var current = [-1, 0, 0, -1, -1, 2, 4, 5, 5];

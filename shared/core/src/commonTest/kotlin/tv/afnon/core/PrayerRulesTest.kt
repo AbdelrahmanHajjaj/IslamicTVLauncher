@@ -40,6 +40,16 @@ class PrayerRulesTest {
     }
 
     @Test
+    fun normalizesSavedOffsetsWithoutIntegerOverflowOrFractionTruncation() {
+        val inputs = doubleArrayOf(-31.0, -30.0, -1.0, 0.0, 30.0, 31.0,
+            Int.MIN_VALUE.toDouble(), Int.MAX_VALUE.toDouble(), 4294967297.0,
+            Double.MAX_VALUE, Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 1.5)
+        val expected = intArrayOf(-30, -30, -1, 0, 30, 30, -30, 30, 30, 30, 0, 0, 0, 0)
+        for (i in inputs.indices) assertEquals(expected[i], PrayerRules.normalizeOffset(inputs[i]))
+        assertEquals(2, PrayerRules.MAX_HIJRI_OFFSET_DAYS)
+    }
+
+    @Test
     fun rejectsUnavailableTimesBeforeSelectingAnAlert() {
         assertFailsWith<IllegalArgumentException> { PrayerRules.select(DoubleArray(5), 12000.0, 0.0) }
         assertFailsWith<IllegalArgumentException> { PrayerRules.select(times, Double.NaN, 0.0) }

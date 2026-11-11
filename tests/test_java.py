@@ -143,11 +143,13 @@ class JavaChecks(unittest.TestCase):
         runtime = os.pathsep.join(map(str, [jars[0], core, stdlib[0]]))
         with tempfile.TemporaryDirectory() as output:
             out = Path(output)
-            # Only context, settings access and Android ICU are stubbed; core and astronomy are real.
+            # Platform storage/clock/ICU and appearance are stubbed; Prefs, core and astronomy are real.
             sources = {
-                "Context.java": "package android.content; public class Context {}",
+                "Context.java": "package android.content; public class Context { public static final int MODE_PRIVATE = 0; public SharedPreferences getSharedPreferences(String name, int mode) { throw new UnsupportedOperationException(); } }",
+                "SharedPreferences.java": "package android.content; public interface SharedPreferences { int getInt(String k, int d); String getString(String k, String d); boolean getBoolean(String k, boolean d); Editor edit(); interface Editor { Editor putInt(String k, int v); Editor putString(String k, String v); Editor putBoolean(String k, boolean v); void apply(); } }",
+                "DateFormat.java": "package android.text.format; public class DateFormat { public static boolean is24HourFormat(android.content.Context c) { return true; } }",
                 "IslamicCalendar.java": "package android.icu.util; public class IslamicCalendar extends java.util.GregorianCalendar { public static final int RAMADAN = 8; public enum CalculationType { ISLAMIC_UMALQURA } public void setCalculationType(CalculationType t) {} }",
-                "Prefs.java": "package tv.afnon.home; import android.content.Context; import com.batoulapps.adhan.*; final class Prefs { static Coordinates where(Context c) { return null; } static PrayerMethod method(Context c) { return null; } static Madhab madhab(Context c) { return null; } static int hijriOffset(Context c) { return 0; } static int[] prayerOffsets(Context c) { return new int[6]; } }",
+                "Appearance.java": "package tv.afnon.home; final class Appearance { static String key(android.content.Context c) { return \"\"; } static boolean reduced(android.content.Context c) { return false; } static int cycleMinutes(android.content.Context c) { return 0; } }",
             }
             for name, source in sources.items():
                 (out / name).write_text(source, encoding="utf-8")
@@ -155,9 +157,13 @@ class JavaChecks(unittest.TestCase):
                 *(str(out / name) for name in sources),
                 str(ROOT / "app/src/main/java/tv/afnon/home/PrayerMethod.java"),
                 str(ROOT / "app/src/main/java/tv/afnon/home/PrayerDay.java"),
-                str(ROOT / "tests/PrayerDayCheck.java")], check=True, capture_output=True)
+                *(str(ROOT / "app/src/main/java/tv/afnon/home" / name) for name in
+                  ("Prefs.java", "CityCatalog.java", "Tokens.java", "HomeLayout.java", "FavouriteChoice.java")),
+                str(ROOT / "tests/PrayerDayCheck.java"), str(ROOT / "tests/PrefsCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,
                 "tv.afnon.home.PrayerDayCheck"], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,
+                "tv.afnon.home.PrefsCheck"], check=True, capture_output=True)
 
     def test_system_filter_keeps_media_games_and_store(self):
         import os

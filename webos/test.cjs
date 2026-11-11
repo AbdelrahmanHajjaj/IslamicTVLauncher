@@ -73,6 +73,10 @@ assert.equal(A.nextEvent(now, prefs), null);
 const serviceCore = require('./build/service/core');
 assert.equal(serviceCore.day(now, serviceCore.prefs({utcOffset: 120})).times[0], day.times[0], 'Node service and TV UI use the same calculation');
 for (const core of [A, serviceCore]) {
+  assert.equal(core.maxPrayerOffset, 30);
+  assert.equal(core.maxHijriOffset, 2);
+  for (const value of [-3, 3, 0.5, Infinity, '1']) assert.throws(() => core.prefs({hijriOffset: value}), /Invalid/);
+  for (const value of [-2, 0, 2]) assert.equal(core.prefs({hijriOffset: value}).hijriOffset, value);
   for (const value of [31, -31, 0.5, 4294967297, -4294967297, NaN, Infinity, null, true, '1', undefined]) {
     assert.throws(() => core.prefs({offsets: [0, 0, value, 0, 0, 0]}), /Invalid/, 'reject before integer conversion: ' + value);
   }

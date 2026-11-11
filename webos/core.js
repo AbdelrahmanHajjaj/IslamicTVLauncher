@@ -34,7 +34,7 @@
     function integer(n, min, max) { return typeof n === 'number' && isFinite(n) && n % 1 === 0 && n >= min && n <= max; }
     ['automatic', 'adhan', 'remindVoice', 'announce', 'radioResume', 'quickLabels'].forEach(function (k) { invalid(typeof result[k] !== 'boolean'); });
     invalid([0, 5, 10, 15, 20, 30].indexOf(result.remind) < 0 || [0, 1, 5, 10].indexOf(result.callClose) < 0);
-    invalid(!integer(result.volume, 0, 100) || !integer(result.hijriOffset, -2, 2));
+    invalid(!integer(result.volume, 0, 100) || !integer(result.hijriOffset, -rules.MAX_HIJRI_OFFSET_DAYS, rules.MAX_HIJRI_OFFSET_DAYS));
     invalid(!Array.isArray(result.bells) || result.bells.length !== 6 || result.bells.some(function (v) { return typeof v !== 'boolean'; }) || result.bells[1]);
     invalid(!Array.isArray(result.offsets) || result.offsets.length !== 6);
     for (var i = 0; i < 6; i++) { invalid(!integer(result.offsets[i], -2147483648, 2147483647)); }
@@ -128,6 +128,7 @@
     }
     return best;
   }
-  return {defaults: defaults, prefs: prefs, city: city, input: input, wall: wall, clock: clock, day: day, next: next, select: select,
+  return {defaults: defaults, maxPrayerOffset: rules.MAX_OFFSET_MINUTES, maxHijriOffset: rules.MAX_HIJRI_OFFSET_DAYS,
+    prefs: prefs, city: city, input: input, wall: wall, clock: clock, day: day, next: next, select: select,
     duration: duration, voice: voice, station: station, app: app, hijri: hijri, qibla: qibla, nextEvent: nextEvent};
 }));
