@@ -7,6 +7,17 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
 const methodDefinitions = JSON.parse(read('shared/data/methods.json'));
 
+export function validateThemes(themes) {
+  if (!Array.isArray(themes) || themes.length < 2 || themes[0] !== 'mihrab' || themes.at(-1) !== 'custom') {
+    throw new Error('Theme catalog must retain default and custom slots');
+  }
+  const ids = new Set();
+  for (const id of themes) {
+    if (typeof id !== 'string' || !/^[a-z][a-z0-9_]*$/.test(id) || ids.has(id)) throw new Error('Invalid or duplicate theme ID');
+    ids.add(id);
+  }
+}
+
 export function validateMethods(definitions) {
   if (!Array.isArray(definitions) || definitions[0]?.id !== 'EGYPTIAN') throw new Error('Method catalog must retain the Egyptian fallback');
   const ids = new Set();
@@ -95,10 +106,12 @@ function generate() {
   const stations = JSON.parse(read('shared/data/stations.json'));
   const voices = JSON.parse(read('shared/data/voices.json'));
   const sacred = JSON.parse(read('shared/data/sacred-text.json'));
+  const themes = JSON.parse(read('shared/design/themes.json'));
   validateCatalog(cities, regions);
   validateStations(stations);
   validateVoices(voices);
   validateSacredText(sacred);
+  validateThemes(themes);
   const rows = cities.map(c => '        new Prefs.City(' + [c.id, c.ar, c.en, c.countryAr, c.countryEn].map(value => JSON.stringify(value)).concat(c.lat, c.lng, 'PrayerMethod.' + c.method, 'Madhab.' + (c.hanafi ? 'HANAFI' : 'SHAFI')).join(', ') + '),');
   const groups = regions.map(region => '        {' + region.map(value => JSON.stringify(value)).join(', ') + '},');
   const source = '// Generated from shared/data/{cities,regions}.json by tools/catalogs.mjs. Do not edit.\n' +
@@ -128,6 +141,9 @@ function generate() {
     'package tv.afnon.home;\n\nfinal class SacredText {\n    private SacredText() {}\n\n' +
     '    static final String PRAYER_VERSE = ' + JSON.stringify(sacred.prayerVerse.join('\n')) + ';\n' +
     '    static final String ADHAN_CALL = ' + JSON.stringify(sacred.adhanCall) + ';\n}\n';
+  const nativeThemes = '// Generated from shared/design/themes.json by tools/catalogs.mjs. Do not edit.\n' +
+    'package tv.afnon.home;\n\nfinal class ThemeCatalog {\n    private ThemeCatalog() {}\n\n' +
+    '    static final String[] PRESETS = {' + themes.map(id => JSON.stringify(id)).join(', ') + '};\n}\n';
   for (const [destination, output] of [
     ['app/src/main/java/tv/afnon/home/CityCatalog.java', source],
     ['app/src/main/java/tv/afnon/home/PrayerMethod.java', nativeMethods],
@@ -135,6 +151,7 @@ function generate() {
     ['app/src/main/java/tv/afnon/home/VoiceCatalog.java', nativeVoices],
     ['tools/adhan-sources.tsv', voiceSources],
     ['app/src/main/java/tv/afnon/home/SacredText.java', nativeSacred],
+    ['app/src/main/java/tv/afnon/home/ThemeCatalog.java', nativeThemes],
     ['app/src/main/java/tv/afnon/home/Text.java', renderText(JSON.parse(read('shared/data/strings.json')), read('app/src/main/templates/Text.java.template'), JSON.parse(read('shared/data/format-text.json')))],
   ]) {
     if (args[0] === '--check') {

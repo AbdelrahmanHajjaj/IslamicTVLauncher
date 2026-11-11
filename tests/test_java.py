@@ -90,11 +90,12 @@ class JavaChecks(unittest.TestCase):
         import json
         import re
         source = ROOT / "app/src/main/java/tv/afnon/home"
-        native = re.findall(r'"([^"]+)"', re.search(r'PRESETS = \{([^}]+)', (source / "Appearance.java").read_text()).group(1))
+        native = re.findall(r'"([^"]+)"', re.search(r'PRESETS = \{([^}]+)', (source / "ThemeCatalog.java").read_text()).group(1))
+        self.assertEqual(native, json.loads((ROOT / "shared/design/themes.json").read_text()))
         browser = re.search(r'const presets:.*? = \{([^}]+)', (ROOT / "site/src/scripts/appearance.ts").read_text()).group(1)
         self.assertEqual(native, ["mihrab", *[name.strip() for name in browser.split(",")], "custom"])
         self.assertEqual(len(native) - 1, 20, "Twenty built-in themes; imported Custom is separate")
-        assets = ROOT / "app/src/main/assets/themes"
+        assets = ROOT / "shared/design/assets/themes"
         self.assertEqual(set(native[1:-1]), {path.stem for path in assets.glob("*.json")})
         labels = re.search(r'String\[\] themeNames\(\).*', (source / "Text.java").read_text(encoding="utf-8")).group(0)
         for language in re.findall(r'new String\[\] \{([^}]+)', labels):

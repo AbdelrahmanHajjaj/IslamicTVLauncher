@@ -6,7 +6,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateCatalog, validateStations, validateVoices } from '../../tools/catalogs.mjs';
+import { validateCatalog, validateStations, validateVoices, validateThemes } from '../../tools/catalogs.mjs';
 import { validateStrings, validateFormatText, validateSacredText } from '../../tools/strings.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -29,6 +29,7 @@ validateVoices(JSON.parse(readFileSync(resolve(root, 'shared/data/voices.json'),
 validateStrings(JSON.parse(readFileSync(resolve(root, 'shared/data/strings.json'), 'utf8')));
 validateFormatText(JSON.parse(readFileSync(resolve(root, 'shared/data/format-text.json'), 'utf8')));
 validateSacredText(JSON.parse(readFileSync(resolve(root, 'shared/data/sacred-text.json'), 'utf8')));
+validateThemes(JSON.parse(readFileSync(resolve(root, 'shared/design/themes.json'), 'utf8')));
 
 // ---------------------------------------------------------------- shared fonts and notices
 

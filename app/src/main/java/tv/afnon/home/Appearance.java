@@ -9,7 +9,7 @@ import java.util.*;
 
 /** Local themes; one bounded screen-resolution background shares the existing foreground clock tick. */
 final class Appearance {
-    static final String[] PRESETS = {"mihrab", "aurora", "ember", "forest", "midnight", "rose", "sand", "slate", "glass", "frost", "cinema", "carbon", "neon", "blueprint", "signal", "arcade", "dusk", "oasis", "brass", "mosaic", "custom"};
+    static final String[] PRESETS = ThemeCatalog.PRESETS;
     private static final int[] BASE = {Tokens.LAPIS_950, Tokens.LAPIS_900, Tokens.LAPIS_800, Tokens.LAPIS_700,
         Tokens.GOLD_400, Tokens.GOLD_200, Tokens.PLASTER_100, Tokens.MIST_400};
     private static String loaded = "";

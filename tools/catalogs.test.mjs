@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { validateCatalog, validateMethods, validateStations, validateVoices } from './catalogs.mjs';
+import { validateCatalog, validateMethods, validateStations, validateVoices, validateThemes } from './catalogs.mjs';
 import { renderText, validateStrings, renderLiterals, validateFormatText, validateSacredText } from './strings.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
@@ -161,3 +161,12 @@ for (const [key, field, text] of [
   assert.equal(JSON.parse(declaration[1]), text, 'Native sacred constant must preserve exact text and breaks');
 }
 console.log('PASS: exact sacred text baseline, three verse lines and generated native constants');
+
+const themes = JSON.parse(readFileSync(new URL('../shared/design/themes.json', import.meta.url)));
+validateThemes(themes);
+for (const invalid of [null, [], ['custom', 'mihrab'], ['mihrab', 'custom', 'other'], ['mihrab', '../theme', 'custom'],
+  ['mihrab', 3, 'custom'], ['mihrab', 'mihrab', 'custom'], ['mihrab', 'custom', 'custom'],
+]) assert.throws(() => validateThemes(invalid));
+const themeJava = readFileSync(new URL('../app/src/main/java/tv/afnon/home/ThemeCatalog.java', import.meta.url), 'utf8');
+assert.deepEqual(JSON.parse('[' + /PRESETS = \{([^}]+)\}/.exec(themeJava)[1] + ']'), themes);
+console.log('PASS: ordered theme IDs, default/custom slots and generated native registry');

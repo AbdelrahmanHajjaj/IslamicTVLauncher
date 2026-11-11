@@ -10,6 +10,13 @@ The preview copies fonts and notices during generation; LG reads them directly.
 Only the three existing regular fonts are bundled by LG, as before. Font choice,
 weights, Arabic shaping, CSS and native rendering remain in their adapters.
 
+`themes.json` owns the exact ordered IDs: 20 built-ins followed by Android's reserved
+`custom` import slot. `assets/themes/` owns the 19 unchanged preset files; Mihrab
+uses the existing design tokens. Android packages them as `assets/themes/<id>.json`
+and uses generated `ThemeCatalog.PRESETS` through the existing Appearance API.
+Preview/LG filter out `custom`, keeping their existing feature sets. Palette,
+surface, background and lighting behavior stays in each adapter.
+
 Tokens and SVG patterns still come from `afnon-mihrab/`; do not duplicate or
 hand-edit their generated Java/XML/CSS outputs. Remaining asset extraction and
 the migration queue are recorded only in `docs/ARCHITECTURE-QUEUE.md`.

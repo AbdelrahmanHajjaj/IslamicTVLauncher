@@ -32,7 +32,7 @@ for (const prayer of ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'jumuah']) {
     write(path.join(out, 'app/audio/announce', name), fs.readFileSync(path.join(root, 'app/src/main/assets/announce', name)));
   }
 }
-data.themes = JSON.parse('[' + /PRESETS = \{([^}]+)\}/.exec(read('app/src/main/java/tv/afnon/home/Appearance.java'))[1] + ']').filter(id => id !== 'custom');
+data.themes = json('shared/design/themes.json').filter(id => id !== 'custom');
 // ICU is available at build time; ship month boundaries for the TV's pre-Intl runtime.
 const calendar = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', {timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric'});
 for (let at = Date.UTC(1999, 0, 1); at < Date.UTC(2102, 0, 1); at += 86400000) {
@@ -52,7 +52,7 @@ for (const app of data.apps) {
 const tokens = json('afnon-mihrab/tokens.json');
 data.palettes = {};
 for (const theme of data.themes) {
-  const colors = theme === 'mihrab' ? {} : json('app/src/main/assets/themes/' + theme + '.json').colors;
+  const colors = theme === 'mihrab' ? {} : json('shared/design/assets/themes/' + theme + '.json').colors;
   data.palettes[theme] = {};
   for (const key of ['lapis-900', 'lapis-800', 'lapis-700', 'gold-400', 'plaster-100', 'mist-400']) {
     data.palettes[theme][key] = colors[key] || tokens.color[key].$value;
@@ -73,7 +73,7 @@ for (const part of ['app', 'service']) {
   write(path.join(out, part, 'licenses/adhan.txt'), read('site/node_modules/adhan/LICENSE'));
 }
 for (const theme of data.themes) {
-  const colors = theme === 'mihrab' ? {} : json('app/src/main/assets/themes/' + theme + '.json').colors;
+  const colors = theme === 'mihrab' ? {} : json('shared/design/assets/themes/' + theme + '.json').colors;
   const css = read('webos/app/style.css').replace(/\{\{([\w.-]+)\}\}/g, (_, key) => {
     if (key.startsWith('color.') && colors[key.slice(6)]) return colors[key.slice(6)];
     let value = tokens;

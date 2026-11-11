@@ -85,14 +85,14 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.6b, shared theme definitions/preset order. Finish the Q03.6a commit if
-resuming between operations, then inspect the 19 preset JSON files, 20 built-in
-IDs plus Android's final custom sentinel, and every native/preview/LG caller.
-Move source ownership and remove Java scraping while preserving IDs/order,
-palette bytes, background/lighting defaults and custom import behavior. Update
-build inputs/generators, consumer paths and checks together. Shared icons follow
-themes. Restricted media stays ignored; keep existing shared token/pattern sources
-and do not redesign the UI. Audit Q03 dependencies before starting Q04.
+Next: Q03.6c, shared icon sources. Finish the Q03.6b commit if resuming between
+operations, then inspect the six prayer vectors, native `Icon`, preview `Icon.astro`
+and LG extraction. Move reusable geometry into shared design sources; preserve
+dimensions, paths, strokes, joins, tinting and native rendering behavior. Keep
+platform rendering in adapters and migrate consumers/generators/checks together.
+Then audit remaining design-ID lists and Q03 dependencies before starting Q04.
+Restricted media stays ignored; keep existing shared token/pattern sources and
+do not redesign the UI.
 Do not move platform directories yet (Q06). Production apps retain their existing
 domain implementations until Q04. Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
@@ -347,3 +347,24 @@ domain implementations until Q04. Private logs/helpers are under ignored
   Unaffected Python/installer/core suites and physical-TV checks were not repeated.
 - Context7 official Gradle/Android source-set documentation checked before build
   changes. Direct resource directories avoided an unnecessary generated-copy task.
+
+### Q03.6b shared theme presets (2026-11-11)
+
+- `shared/design/themes.json` owns the exact 21 ordered IDs: 20 built-ins and
+  Android's final custom slot. Generated `ThemeCatalog` feeds the existing
+  `Appearance.PRESETS` API. Preview/LG filter `custom` as before; no new platform
+  feature or selection behavior. The 19 preset JSON files moved unchanged into
+  `shared/design/assets/themes/`; Android's shared asset source set retains the
+  exact `assets/themes/<id>.json` paths. Mihrab still uses design-token defaults.
+- LG no longer scrapes `Appearance.java`; preview imports canonical files/order.
+  Custom import validation/storage, colors, surfaces, lighting, backgrounds,
+  rotation logic and bilingual labels stay unchanged in the adapters.
+- PASS: catalog input rejection/generated-registry fidelity; exact 21 IDs/order,
+  every preset byte, all 19 actual clean-APK theme assets and 20 LG CSS outputs
+  versus pre-migration snapshots. Evidence: ignored `themes-before.json` and
+  `themes-*.log`. Clean APK: 20,073,462 bytes.
+- PASS: 38 native/Python tests (including every preset's existing contrast/bounds
+  checks), preview tests/18-page build/data/tokens, clean Android size/build/lint,
+  LG ES5/service regressions. LG browser checks were not repeated: client code,
+  ID list and every packaged stylesheet are identical; Q03.6a's browser run passed.
+  Unaffected installer/core suites and physical-TV checks were not repeated.
