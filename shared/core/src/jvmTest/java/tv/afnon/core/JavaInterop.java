@@ -4,6 +4,8 @@ final class JavaInterop {
     static void check() {
         if (PrayerRules.INSTANCE.normalizeOffset(Integer.MIN_VALUE) != -30
             || PrayerRules.MAX_HIJRI_OFFSET_DAYS != 2) throw new AssertionError("Java settings contract");
+        if (!ReminderRules.INSTANCE.dueReminder(300000, 0, 5) || ReminderRules.INSTANCE.minutesLeft(60001, 0) != 2)
+            throw new AssertionError("Java reminder contract");
         PrayerRules.INSTANCE.validateOffsets(new int[] {-30, 30, 0, 0, 0, 0});
         PrayerSelection selected = PrayerRules.INSTANCE.select(
             new double[] {1000, 2000, 4000, 6000, 8000, 10000}, 12000, 10000);

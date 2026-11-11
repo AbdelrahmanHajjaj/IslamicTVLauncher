@@ -39,5 +39,12 @@ function verifyIslamicTVCore(core) {
   shifted[3] = NaN;
   try { rules.select(shifted, epoch + 12000, epoch); } catch (error4) { rejected++; }
   check(rejected === 4, 'unavailable times accepted');
+  var reminders = core.tv.afnon.core.ReminderRules;
+  check(reminders.dueCall(times, 1000, true, 63, 120000) === 0 &&
+    reminders.dueCall(times, 121000, true, 1, 120000) === -1, 'exclusive reminder window');
+  check(reminders.dueAnnounce(times, 1000, true, true, 0, 120000) === 0 &&
+    reminders.dueAnnounce(times, 1000, true, true, 1, 120000) === -1, 'announcement bell fallback');
+  check(reminders.dueReminder(300000, 0, 5) && !reminders.dueReminder(300001, 0, 5), 'before-prayer boundary');
+  check(reminders.minutesLeft(60001, 0) === 2 && reminders.minutesLeft(0, 0) === 0, 'ceiling minutes');
   return {checks: checks};
 }

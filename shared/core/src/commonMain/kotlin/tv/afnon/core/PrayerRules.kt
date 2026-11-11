@@ -27,9 +27,8 @@ object PrayerRules {
 
     // Epoch milliseconds stay numeric on JVM and ES5 without a Long/BigInt bridge.
     fun select(times: DoubleArray, tomorrowFajr: Double, now: Double): PrayerSelection {
-        require(times.size == 6) { "Expected six prayer times" }
+        validateTimes(times)
         require(now.isFinite() && tomorrowFajr.isFinite()) { "Invalid prayer time" }
-        for (time in times) require(time.isFinite()) { "Invalid prayer time" }
 
         var current = -1
         var next = -1
@@ -42,5 +41,10 @@ object PrayerRules {
             if (next == -1) 0 else next,
             if (next == -1) tomorrowFajr else times[next],
         )
+    }
+
+    internal fun validateTimes(times: DoubleArray) {
+        require(times.size == 6) { "Expected six prayer times" }
+        for (time in times) require(time.isFinite()) { "Invalid prayer time" }
     }
 }

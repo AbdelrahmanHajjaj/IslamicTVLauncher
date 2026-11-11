@@ -85,15 +85,13 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q05.2, native reminder eligibility/window extraction. Finish Q05.1's test
-commit if resuming between operations. Add pure `ReminderRules` functions for due
-call, due announcement, reminder window and ceiling minutes; pass numeric epochs,
-native bell mask/flags and the existing window explicitly. Adapt `Reminders.java`
-without changing `PrayerWatch` keys/claim order/lifecycle or Home/screensaver/media.
-Verify the characterized truth table, common JVM/JS/ES5 behavior, native build/
-lint/size and actual Java caller before committing. Q05.3 will migrate LG's future
-event enumeration and inclusive delivery window; it must retain exact persisted
+Next: Q05.3, LG future-event enumeration and inclusive delivery-window extraction.
+Finish Q05.2's commit if resuming between operations. Inspect the native-free
+`ReminderRules` contract, LG `nextEvent` and service expiry/claim order; add only
+the pure event/window rules needed by those production callers. Retain exact persisted
 `kind:prayer:epoch` IDs, three adapter-calculated days, handled exclusion and ties.
+Existing native `ReminderRules` functions already consume numeric epochs, native
+bell mask/flags and explicit exclusive window; do not alter those policies.
 Preserve different enabled/default states and event windows; keep clocks, timers,
 persistence, OS scheduling and playback in shells.
 Do not create a universal scheduler, transport or new always-running service.
@@ -576,3 +574,31 @@ Do not move platform directories yet (Q06). Private logs/helpers are under ignor
   regressions. PASS: all 38 Python/Java regressions. Ignored evidence:
   `reminders-{native,webos,python}-before.log`. No new product behavior; unchanged
   build/browser suites and unavailable physical TVs were not retested.
+
+### Q05.2 native reminder policy in the core (2026-11-11)
+
+- `ReminderRules` owns due-call/announcement eligibility, before-prayer window and
+  ceiling-minute rules. Numeric epochs, bell bits, flags and the existing exclusive
+  call window are explicit inputs; no clock, timer, persistence, UI or playback.
+  `Reminders.java` converts native Dates/preferences and delegates. `PrayerWatch`,
+  deduplication keys, claim order, Home callbacks and sleep/screensaver/media paths
+  are unchanged. Finite six-time validation is shared internally with PrayerRules.
+- PASS: focused missing-API red test, then full common JVM/JS/Java-interop tests;
+  all 38 Python/Java regressions using real Prefs/Reminders/core. New common coverage
+  includes all bell/adhan/announcement combinations, exclusive endpoint, overlap
+  order, Sunrise exclusion, disabled reminders, fractional-second rounding, extreme
+  lead and rejection of unavailable slots/clocks/windows. No Screen stub remains
+  in the native reminder test: rounding is now tested on the real core.
+- PASS: ES5/restricted-API browser/CommonJS host proof now has 38 assertions;
+  changing the native endpoint to inclusive in memory fails that actual proof.
+  Runtime JS: 20,826 bytes. The public TypeScript output exposes only the supported
+  primitive/typed-array APIs, not the internal validation helper.
+- PASS: Android build/size/lint (21,113,583-byte incremental APK, 0 errors / 54
+  warnings); rebuilt LG ES5/service/policy fixtures and preview tests/18-page build;
+  actual built preview client in both languages. Runtime JS and 21 notice copies
+  match sources. Logs: ignored `reminders-native-*.log`; original native adapter:
+  `Reminders-before-core.java`. No measured performance-improvement claim.
+- LG's reminder implementation is not migrated by this slice. Its renderer/service
+  logic and preview UI are unchanged, so the long LG browser suite was not repeated;
+  shared bundle load is covered by ES5 hosts and the preview's real browser check.
+  Installer and unavailable TV checks were not repeated. Q05.3 and Q09 remain open.
