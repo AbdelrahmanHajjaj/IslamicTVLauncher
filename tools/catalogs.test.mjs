@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { validateCatalog, validateMethods } from './catalogs.mjs';
+import { validateCatalog, validateMethods, validateStations } from './catalogs.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
 const regions = JSON.parse(readFileSync(new URL('../shared/data/regions.json', import.meta.url)));
@@ -52,4 +52,30 @@ assert.throws(() => validateCatalog([...cities, cities[1]], regions), /Invalid c
 assert.throws(() => validateCatalog(cities.slice(1), regions), /fallback/);
 assert.throws(() => validateCatalog(cities, [...regions, [regions[0][0]]]), /duplicate/);
 assert.throws(() => validateCatalog(cities, [...regions, []]), /Empty region/);
-console.log('PASS: city/method defaults, unique IDs/countries, coordinates, presets, corrections, schools and bilingual labels');
+
+const stations = JSON.parse(readFileSync(new URL('../shared/data/stations.json', import.meta.url)));
+validateStations(stations);
+for (const change of [
+  station => { station.id = '../radio'; },
+  station => { station.ar = ''; },
+  station => { station.whereEn = ''; },
+  station => { station.en = 'bad\nlabel'; },
+  station => { station.reciter = 'false'; },
+  station => { station.url = 'not a URL'; },
+  station => { station.url = 'file:///radio.mp3'; },
+  station => { station.url = 'https://user:secret@example.com/radio'; },
+  station => { station.url = 'https://example.com/bad path'; },
+]) {
+  const modified = structuredClone(stations);
+  change(modified[1]);
+  assert.throws(() => validateStations(modified), /Invalid station/);
+}
+assert.throws(() => validateStations([...stations, stations[1]]), /Invalid station/);
+assert.throws(() => validateStations(stations.slice(1)), /fallback/);
+const radio = readFileSync(new URL('../app/src/main/java/tv/afnon/home/RadioCatalog.java', import.meta.url), 'utf8');
+const stationRows = new RegExp(String.raw`new Radio\.Station\(${Array(6).fill(quoted).join(', ')}, (true|false)\)`, 'g');
+assert.deepEqual([...radio.matchAll(stationRows)].map(m => ({
+  id: JSON.parse(m[1]), ar: JSON.parse(m[2]), en: JSON.parse(m[3]),
+  whereAr: JSON.parse(m[4]), whereEn: JSON.parse(m[5]), url: JSON.parse(m[6]), reciter: m[7] === 'true',
+})), stations, 'Java radio catalog must preserve all station/reciter fields and order');
+console.log('PASS: canonical catalog validation and complete Java city/region/radio fidelity');

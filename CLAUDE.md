@@ -24,7 +24,7 @@ real TV over ADB, never just in the build.
 - Plain Java + Android Views. One dependency (adhan-java). No AndroidX, Kotlin or Compose.
 - No blur, video or shadows; animate transform/opacity only. No new timers or background services: prayer checks
   share one 15 s timer in the accessibility service.
-- No network access except the chosen radio station's stream (hosts listed in `Radio.STATIONS` and the README's
+- No network access except the chosen radio station's stream (hosts listed in `shared/data/stations.json` and the README's
   Privacy section). No analytics, ads or feeds.
 - Colours/sizes/timings from `afnon-mihrab/tokens.json` (generated into `Tokens.java`, `colors.xml` and the site's
   `tokens.css` by `cd site && npm run tokens`; never edit those by hand); every string in Arabic and English in
@@ -101,8 +101,8 @@ hard-wires to an app. Tested on one Super General (Android 9) only; any change h
 ## Web preview (`site/`)
 
 Astro site on GitHub Pages (`.github/workflows/site.yml`), one page per screen and mode in Arabic (root) and English
-(`/en/`). Cities/regions/methods come directly from `shared/data/`; `scripts/extract.mjs` reads
-`Text.java`, `Radio.STATIONS`, the fonts and `docs/screenshots` into
+(`/en/`). Cities/regions/methods/stations come directly from `shared/data/`; `scripts/extract.mjs` reads
+`Text.java`, the fonts and `docs/screenshots` into
 gitignored files; strings with logic are ported by hand in `src/lib/text.ts`. Each screen is `src/screens/<X>.astro`
 plus a model (`(ctx) => {html, attr}`) that renders at build time and every second in the browser. When a screen's
 layout changes in the app, update its component. `npm run dev` / `npm run build` in `site/`.

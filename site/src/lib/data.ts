@@ -2,7 +2,7 @@
 import citiesJson from '../../../shared/data/cities.json';
 import methodsJson from '../../../shared/data/methods.json';
 import regionsJson from '../../../shared/data/regions.json';
-import stationsJson from '../data/stations.json';
+import stationsJson from '../../../shared/data/stations.json';
 
 export type City = (typeof citiesJson)[number];
 export type Station = (typeof stationsJson)[number];

@@ -1,0 +1,146 @@
+[
+  {
+    "id": "cairo",
+    "ar": "إذاعة القرآن الكريم",
+    "en": "Holy Quran Radio",
+    "whereAr": "القاهرة · 98٫2 إف إم",
+    "whereEn": "Cairo · 98.2 FM",
+    "url": "https://stream.radiojar.com/8s5u5tpdtwzuv",
+    "reciter": false
+  },
+  {
+    "id": "nablus",
+    "ar": "إذاعة القرآن الكريم",
+    "en": "Holy Quran Radio",
+    "whereAr": "نابلس",
+    "whereEn": "Nablus",
+    "url": "https://quran-radio.org:8899/;",
+    "reciter": false
+  },
+  {
+    "id": "shabab",
+    "ar": "شباب إف إم · قرآن",
+    "en": "Shabab FM Quran",
+    "whereAr": "نابلس",
+    "whereEn": "Nablus",
+    "url": "https://streaming.zaytonatube.com/ShababFM.aac",
+    "reciter": false
+  },
+  {
+    "id": "qatar",
+    "ar": "إذاعة القرآن الكريم",
+    "en": "Holy Quran Radio",
+    "whereAr": "قطر",
+    "whereEn": "Qatar",
+    "url": "https://live.kwikmotion.com/qmcquranradiolive/quranradio/playlist.m3u8",
+    "reciter": false
+  },
+  {
+    "id": "qatar2",
+    "ar": "إذاعة القرآن الكريم 2",
+    "en": "Holy Quran Radio 2",
+    "whereAr": "قطر",
+    "whereEn": "Qatar",
+    "url": "https://live.kwikmotion.com/qmcquranradio2live/quranradio2/playlist.m3u8",
+    "reciter": false
+  },
+  {
+    "id": "jordan",
+    "ar": "إذاعة القرآن الكريم",
+    "en": "Holy Quran Radio",
+    "whereAr": "الأردن",
+    "whereEn": "Jordan",
+    "url": "https://jrtv-live.ercdn.net/jrradio/quranradio.m3u8",
+    "reciter": false
+  },
+  {
+    "id": "mishary_alafasi",
+    "ar": "مشاري العفاسي",
+    "en": "Mishary Alafasy",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/mishary_alafasi",
+    "reciter": true
+  },
+  {
+    "id": "abdulbasit_abdulsamad",
+    "ar": "عبد الباسط عبد الصمد",
+    "en": "Abdul Basit Abdul Samad",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/abdulbasit_abdulsamad",
+    "reciter": true
+  },
+  {
+    "id": "mohammed_siddiq_alminshawi",
+    "ar": "محمد صديق المنشاوي",
+    "en": "Mohamed Siddiq Al-Minshawi",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/mohammed_siddiq_alminshawi",
+    "reciter": true
+  },
+  {
+    "id": "mahmoud_khalil_alhussary",
+    "ar": "محمود خليل الحصري",
+    "en": "Mahmoud Khalil Al-Husary",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/mahmoud_khalil_alhussary",
+    "reciter": true
+  },
+  {
+    "id": "maher",
+    "ar": "ماهر المعيقلي",
+    "en": "Maher Al-Muaiqly",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/maher",
+    "reciter": true
+  },
+  {
+    "id": "saad_alghamdi",
+    "ar": "سعد الغامدي",
+    "en": "Saad Al-Ghamdi",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/saad_alghamdi",
+    "reciter": true
+  },
+  {
+    "id": "abdulrahman_alsudaes",
+    "ar": "عبد الرحمن السديس",
+    "en": "Abdul Rahman Al-Sudais",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/abdulrahman_alsudaes",
+    "reciter": true
+  },
+  {
+    "id": "yasser_aldosari",
+    "ar": "ياسر الدوسري",
+    "en": "Yasser Al-Dosari",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/yasser_aldosari",
+    "reciter": true
+  },
+  {
+    "id": "nasser_alqatami",
+    "ar": "ناصر القطامي",
+    "en": "Nasser Al-Qatami",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/nasser_alqatami",
+    "reciter": true
+  },
+  {
+    "id": "mohammad_rashad_alshareef",
+    "ar": "محمد رشاد الشريف",
+    "en": "Mohammad Rashad Al-Shareef",
+    "whereAr": "تلاوة على مدار الساعة",
+    "whereEn": "Recitation, around the clock",
+    "url": "https://backup.qurango.net/radio/mohammad_rashad_alshareef",
+    "reciter": true
+  }
+]

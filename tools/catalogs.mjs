@@ -32,6 +32,23 @@ export function validateMethods(definitions) {
 validateMethods(methodDefinitions);
 const methods = new Set(methodDefinitions.map(method => method.id));
 
+export function validateStations(stations) {
+  if (!Array.isArray(stations) || stations[0]?.id !== 'cairo') throw new Error('Station catalog must retain Cairo as its fallback');
+  const ids = new Set();
+  for (const station of stations) {
+    if (!station || !['id', 'ar', 'en', 'whereAr', 'whereEn', 'url'].every(key => typeof station[key] === 'string' && station[key].trim() && !/[\u0000-\u001f]/.test(station[key])) ||
+        !/^[a-z][a-z0-9_]*$/.test(station.id) || ids.has(station.id) || typeof station.reciter !== 'boolean') {
+      throw new Error('Invalid station identity or labels');
+    }
+    let url;
+    try { url = new URL(station.url); } catch { throw new Error('Invalid station URL: ' + station.id); }
+    if (!['http:', 'https:'].includes(url.protocol) || !url.hostname || url.username || url.password || /\s/.test(station.url)) {
+      throw new Error('Invalid station URL: ' + station.id);
+    }
+    ids.add(station.id);
+  }
+}
+
 export function validateCatalog(cities, regions) {
   if (!Array.isArray(cities) || !cities.length || cities[0]?.id !== 'cairo') throw new Error('City catalog must retain Cairo as its fallback');
   if (!Array.isArray(regions) || !regions.length) throw new Error('Missing regions');
@@ -60,7 +77,9 @@ function generate() {
   if (args.length > 1 || args.length && args[0] !== '--check') throw new Error('Usage: node tools/catalogs.mjs [--check]');
   const cities = JSON.parse(read('shared/data/cities.json'));
   const regions = JSON.parse(read('shared/data/regions.json'));
+  const stations = JSON.parse(read('shared/data/stations.json'));
   validateCatalog(cities, regions);
+  validateStations(stations);
   const rows = cities.map(c => '        new Prefs.City(' + [c.id, c.ar, c.en, c.countryAr, c.countryEn].map(value => JSON.stringify(value)).concat(c.lat, c.lng, 'PrayerMethod.' + c.method, 'Madhab.' + (c.hanafi ? 'HANAFI' : 'SHAFI')).join(', ') + '),');
   const groups = regions.map(region => '        {' + region.map(value => JSON.stringify(value)).join(', ') + '},');
   const source = '// Generated from shared/data/{cities,regions}.json by tools/catalogs.mjs. Do not edit.\n' +
@@ -75,9 +94,15 @@ function generate() {
     return '    ' + method.id + '(' + JSON.stringify(method.ar) + ', ' + JSON.stringify(method.en) + ', ' + parameters + ')' + (i === methodDefinitions.length - 1 ? ';' : ',');
   });
   const nativeMethods = read('app/src/main/templates/PrayerMethod.java.template').replace('{{METHODS}}', entries.join('\n'));
+  const stationRows = stations.map(station => '        new Radio.Station(' +
+    ['id', 'ar', 'en', 'whereAr', 'whereEn', 'url'].map(key => JSON.stringify(station[key])).concat(station.reciter).join(', ') + '),');
+  const nativeStations = '// Generated from shared/data/stations.json by tools/catalogs.mjs. Do not edit.\n' +
+    'package tv.afnon.home;\n\nfinal class RadioCatalog {\n    private RadioCatalog() {}\n\n' +
+    '    static final Radio.Station[] STATIONS = {\n' + stationRows.join('\n') + '\n    };\n}\n';
   for (const [destination, output] of [
     ['app/src/main/java/tv/afnon/home/CityCatalog.java', source],
     ['app/src/main/java/tv/afnon/home/PrayerMethod.java', nativeMethods],
+    ['app/src/main/java/tv/afnon/home/RadioCatalog.java', nativeStations],
   ]) {
     if (args[0] === '--check') {
       if (read(destination) !== output) throw new Error(destination + ' is stale; run node tools/catalogs.mjs');
@@ -85,7 +110,7 @@ function generate() {
       writeFileSync(resolve(root, destination), output);
     }
   }
-  console.log(args[0] === '--check' ? 'Catalogs match canonical data' : 'Generated Android city and method catalogs');
+  console.log(args[0] === '--check' ? 'Catalogs match canonical data' : 'Generated Android city, method and radio catalogs');
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) generate();

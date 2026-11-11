@@ -68,7 +68,7 @@ Kotlin, no Compose. It has to stay smooth on a TV with under 2 GB of RAM, so:
   `tools/shot.sh`. Put screenshots in the PR, one in Arabic and one in English if layout changed.
 
 **The web preview** (`site/`) is an Astro site that copies each screen for the browser. It reads
-`shared/data/` catalogs directly; `Text.java`, `Radio.STATIONS` and fonts are still
+`shared/data/` catalogs directly; `Text.java` and fonts are still
 extracted at build time (`site/scripts/extract.mjs`). If you change a screen's layout, change its component in
 `site/src/screens/` too: `cd site && npm install && npm run dev`.
 

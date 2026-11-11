@@ -218,7 +218,7 @@ prayer/button accessibility service and may be restricted by an app or firmware.
 ## Privacy and permissions
 
 No accounts, ads, analytics or telemetry. Prayer calculation is offline. The TV launcher's only
-network feature is the selected radio stream, listed in `Radio.STATIONS`; its
+network feature is the selected radio stream, listed in `shared/data/stations.json`; its
 [network security config](app/src/main/res/xml/network_security.xml) permits plain HTTP only for Cairo's
 stream. City, favourites, themes and recent-app history stay on the TV. The phone installer separately
 uses the network for ADB setup and, when selected, downloading the upstream APK.

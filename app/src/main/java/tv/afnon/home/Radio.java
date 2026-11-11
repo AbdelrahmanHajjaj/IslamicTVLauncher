@@ -41,45 +41,9 @@ final class Radio {
             this.url = url;
             this.reciter = reciter;
         }
-
-        static Station reciter(String id, String ar, String en) {
-            return new Station(id, ar, en, "تلاوة على مدار الساعة", "Recitation, around the clock",
-                "https://backup.qurango.net/radio/" + id, true);
-        }
     }
 
-    private static final String QURAN_AR = "إذاعة القرآن الكريم", QURAN_EN = "Holy Quran Radio";
-
-    /**
-     * Each station's own stream, the one its website or official player uses. All https except radiojar, which
-     * redirects to plain http (allowed in network_security.xml). Two are HLS (Qatar, Jordan); the rest MP3 or AAC.
-     * Reciters are mp3quran.net's 24/7 channels (its API: mp3quran.net/api/v3/radios), MP3 at 128 kbps.
-     */
-    static final Station[] STATIONS = {
-        new Station("cairo", QURAN_AR, QURAN_EN, "القاهرة · 98٫2 إف إم", "Cairo · 98.2 FM",
-            "https://stream.radiojar.com/8s5u5tpdtwzuv", false),
-        new Station("nablus", QURAN_AR, QURAN_EN, "نابلس", "Nablus", "https://quran-radio.org:8899/;", false),
-        new Station("shabab", "شباب إف إم · قرآن", "Shabab FM Quran", "نابلس", "Nablus",
-            "https://streaming.zaytonatube.com/ShababFM.aac", false),
-        new Station("qatar", QURAN_AR, QURAN_EN, "قطر", "Qatar",
-            "https://live.kwikmotion.com/qmcquranradiolive/quranradio/playlist.m3u8", false),
-        new Station("qatar2", QURAN_AR + " 2", QURAN_EN + " 2", "قطر", "Qatar",
-            "https://live.kwikmotion.com/qmcquranradio2live/quranradio2/playlist.m3u8", false),
-        new Station("jordan", QURAN_AR, QURAN_EN, "الأردن", "Jordan",
-            "https://jrtv-live.ercdn.net/jrradio/quranradio.m3u8", false),
-        // Not Sharjah: its audio stream is raw ADTS AAC, which MediaPlayer's AACExtractor scans to the end before
-        // playing, so a live one never starts; its official HLS is 1080p video.
-        Station.reciter("mishary_alafasi", "مشاري العفاسي", "Mishary Alafasy"),
-        Station.reciter("abdulbasit_abdulsamad", "عبد الباسط عبد الصمد", "Abdul Basit Abdul Samad"),
-        Station.reciter("mohammed_siddiq_alminshawi", "محمد صديق المنشاوي", "Mohamed Siddiq Al-Minshawi"),
-        Station.reciter("mahmoud_khalil_alhussary", "محمود خليل الحصري", "Mahmoud Khalil Al-Husary"),
-        Station.reciter("maher", "ماهر المعيقلي", "Maher Al-Muaiqly"),
-        Station.reciter("saad_alghamdi", "سعد الغامدي", "Saad Al-Ghamdi"),
-        Station.reciter("abdulrahman_alsudaes", "عبد الرحمن السديس", "Abdul Rahman Al-Sudais"),
-        Station.reciter("yasser_aldosari", "ياسر الدوسري", "Yasser Al-Dosari"),
-        Station.reciter("nasser_alqatami", "ناصر القطامي", "Nasser Al-Qatami"),
-        Station.reciter("mohammad_rashad_alshareef", "محمد رشاد الشريف", "Mohammad Rashad Al-Shareef"),
-    };
+    static final Station[] STATIONS = RadioCatalog.STATIONS;
 
     static int stationIndex(Context c) {
         String id = Prefs.of(c).getString("station", "cairo");

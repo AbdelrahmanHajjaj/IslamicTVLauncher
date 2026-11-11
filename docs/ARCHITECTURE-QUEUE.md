@@ -85,12 +85,12 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.3, canonical radio catalog. Finish the Q03.2 commit if resuming between
-operations, then inspect `Radio.STATIONS`, its constructors/callers and existing
-site extraction. Preserve IDs/order, all URLs, bilingual names/locations and
-station/reciter distinctions. Seed from the existing generated data, compare exact
-old/new fields, and migrate all consumers plus generator validation/checks together.
-Do not play streams or claim codec/hardware validation from a data refactor.
+Next: Q03.4, canonical adhan voice catalog. Finish the Q03.3 commit if resuming
+between operations, then inspect `Adhans.VOICES`, default selections, voice lookup,
+fetch scripts, preview settings and LG build. Preserve all IDs/order, bilingual
+names, default regular/Fajr choices and media filenames. Keep restricted recordings
+ignored. Migrate generators/consumers and validation together; compare exact old/new
+metadata and packaged filenames. Do not play audio as a catalog check.
 Do not move platform directories yet (Q06). Production apps retain their existing
 domain implementations until Q04. Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
@@ -222,3 +222,19 @@ domain implementations until Q04. Private logs/helpers are under ignored
   `methods-*.log` evidence is ignored. No TV deployment or audible test was needed.
 - Context7 lacked adhan-js coverage; installed 4.4.6 source and primary Batoul Apps
   CalculationMethod/PrayerTimes sources were checked before changing adapters.
+
+### Q03.3 canonical radio (2026-11-11)
+
+- `shared/data/stations.json` owns all 16 entries, retaining exact IDs/order, URLs,
+  bilingual names/locations and broadcast/reciter flags. Android's generated
+  `RadioCatalog` feeds the unchanged `Radio.Station`/selection/playback interface.
+  Preview/LG read JSON directly; both old Java-scraping passes were deleted and
+  the obsolete ignored preview JSON was removed.
+- PASS: catalog input rejection (identities/labels/flags/URLs), full generated Java
+  round-trip and exact canonical/packaged-LG equality against the old snapshot.
+  All preview tests and 18-page build, data/token checks, Android size/build/lint,
+  LG ES5/service and bilingual browser regressions pass. Evidence: ignored
+  `state/platform-core/radio-*.log` and `stations-before.json`.
+- No playback, TV deployment or codec/TLS/hardware claim. Existing saved station
+  keys and Cairo fallback are unchanged. Installer/core logic was unaffected;
+  their suites were not repeated for this catalog-only increment.

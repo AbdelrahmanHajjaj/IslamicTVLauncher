@@ -15,7 +15,7 @@ const data = {
   cities: json('shared/data/cities.json'), methods: methods.map(method => method.id),
   presets: Object.fromEntries(methods.filter(method => method.preset).map(method => [method.id, {...method.preset, ...(method.methodAdjustments ? {methodAdjustments: method.methodAdjustments} : {})}])),
   strings: json('site/src/data/strings.json'),
-  stations: json('site/src/data/stations.json'), apps: json('webos/tv-apps.json'), voices: [], themes: [], hijri: []
+  stations: json('shared/data/stations.json'), apps: json('webos/tv-apps.json'), voices: [], themes: [], hijri: []
 };
 for (const match of read('app/src/main/java/tv/afnon/home/Adhans.java').matchAll(/\{"(\w+)", "([^"]+)", "([^"]+)"\}/g)) {
   data.voices.push({id: match[1], ar: match[2], en: match[3]});

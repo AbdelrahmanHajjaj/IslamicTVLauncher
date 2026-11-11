@@ -2,7 +2,7 @@
 //   Text.java       -> src/data/strings.json   (every `ar ? … : …` string, as {ar, en} templates)
 //   Cities/regions come directly from shared/data/; they are not extracted.
 //   Method definitions also come directly from shared/data/.
-//   Radio.STATIONS  -> src/data/stations.json
+//   Radio stations also come directly from shared/data/.
 //   res/font/*.ttf  -> src/assets/fonts/
 //   docs/screenshots -> public/screenshots/   (social preview images)
 // Templates use {param} for the Java method's parameters; "d": true means the app passes it through d()
@@ -11,7 +11,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateCatalog } from '../../tools/catalogs.mjs';
+import { validateCatalog, validateStations } from '../../tools/catalogs.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const src = (f) => readFileSync(resolve(root, 'app/src/main/java/tv/afnon/home', f), 'utf8');
@@ -95,42 +95,7 @@ validateCatalog(
   JSON.parse(readFileSync(resolve(root, 'shared/data/regions.json'), 'utf8')),
 );
 
-// ---------------------------------------------------------------- Radio.STATIONS
-
-const radio = src('Radio.java');
-const vars = Object.fromEntries([...radio.matchAll(new RegExp(String.raw`(\w+) = ${STR}`, 'g'))].map((m) => [m[1], unescape(m[2])]));
-/** A Java string expression from string literals and the constants above, e.g. QURAN_AR + " 2". */
-const value = (e) => e.split('+').map((p) => {
-  p = p.trim();
-  const lit = new RegExp(`^${STR}$`).exec(p);
-  if (lit) return unescape(lit[1]);
-  if (p in vars) return vars[p];
-  throw new Error(`Radio: can't read ${p}`);
-}).join('');
-const block = /Station\[\] STATIONS = \{([\s\S]*?)\n\s*\};/.exec(radio)[1];
-/** Each `new Station(...)` argument list, split on top-level commas (outside strings and brackets). */
-function calls(code, head) {
-  const res = [];
-  for (let at = code.indexOf(head); at !== -1; at = code.indexOf(head, at + 1)) {
-    const args = []; let cur = '', depth = 0, inStr = false;
-    for (let i = at + head.length; i < code.length; i++) {
-      const c = code[i];
-      if (inStr) { cur += c; if (c === '\\') cur += code[++i]; else if (c === '"') inStr = false; continue; }
-      if (c === '"') inStr = true;
-      if (c === '(') depth++;
-      if (c === ')' && depth-- === 0) { args.push(cur.trim()); break; }
-      if (c === ',' && depth === 0) { args.push(cur.trim()); cur = ''; } else cur += c;
-    }
-    res.push(args);
-  }
-  return res;
-}
-const stations = calls(block, 'new Station(').map((args) => {
-  const [id, ar, en, whereAr, whereEn, url] = args.slice(0, 6).map(value);
-  return { id, ar, en, whereAr, whereEn, url };
-});
-if (!stations.length) throw new Error('Radio.STATIONS not found');
-write('stations.json', stations);
+validateStations(JSON.parse(readFileSync(resolve(root, 'shared/data/stations.json'), 'utf8')));
 
 // ---------------------------------------------------------------- fonts (the app's own files)
 
@@ -157,27 +122,6 @@ const voices = [...voicesBlock.matchAll(new RegExp(String.raw`\{${STR}, ${STR}, 
   .map((m) => ({ id: unescape(m[1]), ar: unescape(m[2]), en: unescape(m[3]) }));
 if (!voices.length) throw new Error('Adhans.VOICES not found');
 write('adhans.json', voices);
-
-// ---------------------------------------------------------------- Radio.STATIONS again, with the reciters
-// (Station.reciter(id, ar, en) channels and each station's reciter flag; Settings groups the list by it)
-
-const reciterFactory = /static Station reciter\([^)]*\) \{\s*return new Station\(id, ar, en, ([\s\S]*?), true\);/.exec(radio);
-const [rWhereAr, rWhereEn, rUrl] = calls(`new Station(id, ar, en, ${reciterFactory[1]}, true)`, 'new Station(').flat().slice(3, 6);
-const literal = (e) => value(e.replace(/\s*\+\s*id\s*$/, ''));
-const allStations = [];
-for (const m of block.matchAll(/new Station\(|Station\.reciter\(/g)) {
-  const isReciter = m[0].startsWith('Station.reciter');
-  const args = calls(block.slice(m.index), m[0])[0];
-  if (isReciter) {
-    const [id, ar, en] = args.map(value);
-    allStations.push({ id, ar, en, whereAr: value(rWhereAr), whereEn: value(rWhereEn), url: literal(rUrl) + id, reciter: true });
-  } else {
-    const [id, ar, en, whereAr, whereEn, url] = args.slice(0, 6).map(value);
-    allStations.push({ id, ar, en, whereAr, whereEn, url, reciter: args[6] === 'true' });
-  }
-}
-write('stations.json', allStations);
-
 
 const prayerIcons = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(name => {
   const xml = readFileSync(resolve(root, `app/src/main/res/drawable/ic_prayer_${name}.xml`), 'utf8');
