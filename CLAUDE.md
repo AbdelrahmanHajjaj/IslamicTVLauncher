@@ -81,7 +81,7 @@ service. So filtering is off on TCL:
 
 ## Phone installer (`installer/`)
 
-A separate phone app (plain Java, libadb-android, Conscrypt) installs a locally selected APK or an upstream release over ADB. It writes a private/exportable recovery record before changing the TV. Setup commands are bundled in `Setup.java` and mirrored in `tools/setup-steps.txt`; the PC uses `tools/device.py`. Required setup failures stop cleanup. Cities, apps, icons and buttons come from `SetupProvider` (guarded by DUMP).
+A separate phone app (plain Java, libadb-android, Conscrypt) installs a locally selected APK or this project's release over ADB. Until a stable TV APK is published here, select a local build. It writes a private/exportable recovery record before changing the TV. Setup commands are bundled in `Setup.java` and mirrored in `tools/setup-steps.txt`; the PC uses `tools/device.py`. Required setup failures stop cleanup. Cities, apps, icons and buttons come from `SetupProvider` (guarded by DUMP).
 That provider is a contract: add to it, bump `SetupProvider.API`, never break what's there. Remote buttons are pref
 `keys` (`KEY=package`, KEY a keycode name or number), defaulting to `RemoteKeys.APP_KEYS`.
 `--es screen <name>` opens any installer screen with sample data (debug builds); CI screenshots them.

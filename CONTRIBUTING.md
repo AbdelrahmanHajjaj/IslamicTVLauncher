@@ -1,4 +1,4 @@
-# Contributing to Afnon · المساهمة في أفنون
+# Contributing to Islamic TV Launcher · المساهمة في المشروع
 
 Thank you for helping. Afnon is a home screen people look at five times a day, at prayer time, so
 the bar is calm, correct and reliable. A wrong Fajr time matters more than a missing feature.
@@ -23,8 +23,10 @@ With JDK 17 and `ANDROID_HOME` set to SDK 34, run
 `./gradlew -p platforms/android-tv verifyApkSize lintDebug` independently. Root
 `:app` tasks still work alongside `:installer`; neither build changes installed IDs.
 
-For this fork, also read the [fork/upstream contribution plan](docs/CONTRIBUTION-PLAN.md). It records
-proposed PR scopes and outstanding checks; the requirements below still apply.
+Changes target this project's `main`. Read the [architecture](docs/ARCHITECTURE.md)
+for implemented boundaries and the [durable queue](docs/ARCHITECTURE-QUEUE.md) for the
+active migration scope/evidence. The [upstream contribution plan](docs/CONTRIBUTION-PLAN.md)
+is historical; it does not authorize new upstream submissions or publication.
 
 ## 1. Add your city
 
@@ -44,7 +46,9 @@ lives in `shared/data/regions.json`.
 
 ## 2. Add your TV
 
-Afnon is built and tested on a TCL 55P7K (Google TV, Android 12). If you run it on another TV,
+The current Android branch has historical TCL 50C641K / Android 11 evidence; upstream
+reported TCL 55P7K / Android 12. Current migration hardware acceptance is tracked in
+the queue. If you run it on another TV,
 tell us how it went, even if everything worked:
 
 - Model, Android version and RAM.

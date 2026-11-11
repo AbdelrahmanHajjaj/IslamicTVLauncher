@@ -6,8 +6,8 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://egyjs.github.io',
-  base: '/afnon-android-tv-launcher',
+  site: 'https://abdelrahmanhajjaj.github.io',
+  base: '/IslamicTVLauncher',
   trailingSlash: 'always',
   vite: {
     optimizeDeps: { include: ['@islamic-tv/core'] },

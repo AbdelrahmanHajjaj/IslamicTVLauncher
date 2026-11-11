@@ -85,14 +85,15 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q07, ownership and architecture documentation. Finish Q06.3b's commit if
-resuming between operations. Audit actual upstream download/support references,
-especially Android installer and preview links, against this fork's identity;
-update the smallest safe set without publishing or changing installed IDs/signing.
-Document the implemented portable-core/shared-source/native-shell boundaries,
-standalone and aggregate builds, intentional platform differences and companion/
-future-platform deferrals. Retain upstream MIT and all third-party notices/credit.
-Historical validation/research is evidence, not a current support matrix.
+Next: Q07.2, distributable notice completeness. Finish Q07.1's commit if resuming
+between operations. The ownership audit found that Android TV currently packages
+font/Kotlin notices but omits the original project and CleanYourTV MIT texts.
+Preserve their canonical source bytes and use the existing generation/asset paths
+to carry full notices into the native/LG/preview distributions, without adding a
+runtime UI, network dependency or duplicate hand-maintained license source. Inspect
+actual dependency artifacts for other required existing runtime notices. Verify
+generated/source equality and packaged copies, update THIRD_PARTY/architecture
+guidance and commit the complete slice. No release or repository-setting change.
 
 Q06 is complete: `shared/core`, `platforms/android-tv` and `platforms/webos` build
 independently with canonical shared inputs. Root `:app` and installer tasks remain
@@ -818,3 +819,36 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   `isolated-native-q063b`, `check-native-{move,relocation,core-artifact}.py` and
   `check-media-inputs.py`. No physical/emulator deployment, TV picture/sound/remote
   or upgrade test, performance claim, publishing or remote operation.
+
+### Q07.1 ownership and implemented architecture (2026-11-11)
+
+- Actual installer release/tag/APK and cleanup-catalogue URLs now target this
+  project's repository; bundled setup commands, local selection, signing mismatch
+  protection and recovery behavior are unchanged. GitHub connector read verified
+  the public project/default branch and only `installer-preview` prerelease as of
+  this date; no stable TV APK exists here. No artifact downloaded or remote mutated.
+- Preview source/build links target this project and its own Pages base/canonical
+  URL; removed inherited search-verification metadata and advertised binary URL.
+  Both languages link to build/install instructions while no stable TV artifact
+  exists. This is deployment configuration, not a claim that Pages was deployed.
+  Issue/question/private-security routes target this owner; private reporting's
+  remote enablement was not changed or verified.
+- Added `docs/ARCHITECTURE.md` for implemented module/dependency boundaries,
+  independent/aggregate builds, preserved identities, policy differences and
+  explicit companion/future-platform deferrals. The queue remains the only active
+  scope/status source. Updated contribution/agent/release guidance and root README;
+  marked older upstream proposal/authorization text historical. Original MIT and
+  CleanYourTV license source bytes remain unchanged. No UI/ID/signing migration.
+- PASS: actual Setup lookup/download/catalogue methods with JVM URL handlers,
+  covering absent release, project tag lookup, same-owner catalogue, no upstream
+  fallback and preservation of the last-good APK on 404. Helper is ignored
+  `SetupSourceCheck.java`. PASS: installer build/lint (0 errors / 15 warnings),
+  18-page preview build, bilingual Home/settings browser tests on the new base,
+  canonical/CTA/repository metadata, removal of old-owner/verification/binary links
+  and no failed JS/CSS/client runtime. Logs: ignored `ownership-*`.
+- Audit follow-up Q07.2: full project/CleanYourTV texts were absent from the TV APK
+  even though retained in source; fix distribution completeness through existing
+  generated asset tooling. Q08 must also review inherited installer CI's automatic
+  prerelease/branch publication against the explicit-release workflow. Neither
+  inherited behavior was triggered. Physical phone/TV and published site routes
+  were not tested. No release, PR, merge, remote setting or detachment operation.

@@ -1,4 +1,10 @@
-# Fork and upstream contribution plan
+# Historical fork and upstream contribution plan
+
+This records earlier contribution proposals and authorizations. It is not the
+current work queue and grants no new permission to push, publish or submit upstream.
+Islamic TV Launcher is independently maintained; current architecture work follows
+[`ARCHITECTURE-QUEUE.md`](ARCHITECTURE-QUEUE.md). The original source/licence credit
+remains in the README and `LICENSE`. The text below is retained as project history.
 
 Current LG work: prepare `feature/lg-webos-port` against this fork's current `main`,
 with the webOS source/tests, probe history and platform-specific agent guidance.

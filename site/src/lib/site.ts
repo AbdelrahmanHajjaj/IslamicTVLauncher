@@ -5,8 +5,8 @@ import { CITIES } from './data';
 const cityCount = CITIES.length;
 const countryCount = new Set(CITIES.map((city) => city.countryEn)).size;
 
-export const REPO = 'https://github.com/egyjs/afnon-android-tv-launcher';
-export const APK = `${REPO}/releases/latest/download/afnon.apk`;
+export const REPO = 'https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher';
+export const INSTALL = `${REPO}#install`;
 
 type L = Record<Lang, string>;
 export type Page = {

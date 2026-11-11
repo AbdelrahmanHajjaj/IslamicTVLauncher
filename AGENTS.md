@@ -13,6 +13,8 @@ separate Android and LG webOS applications, not interchangeable build targets.
 - `platforms/android-tv/`: native Android TV launcher (`tv.afnon.home`), Java and Android Views.
 - `installer/`: Android phone installer and recovery workflow; Android targets only.
 - `site/`: Astro browser preview and shared-data/token extraction tools.
+- `shared/core/`: standalone Kotlin JVM/ES5 domain library; no platform APIs or UI.
+- `shared/data/`, `shared/design/`: canonical product data, design and distributable assets.
 - `afnon-mihrab/`: shared design tokens, patterns and design references.
 - `platforms/webos/`: LG application (`tv.afnon.webos`) and JS service
   (`tv.afnon.webos.service`). Read `platforms/webos/AGENTS.md` before changing this port.
@@ -23,6 +25,11 @@ The LG port is a normal folder in this repo, not a Git submodule. Its build cons
 shared core/data/design, common validation tools and local ignored media. Android UI code is not shared with the LG UI;
 changes to one renderer do not automatically update the other. Tizen is research
 only; do not claim a working Samsung port.
+
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) describes implemented boundaries and
+build entries. It is not a second queue; migration status and scope live only in
+`docs/ARCHITECTURE-QUEUE.md`. Preserve original MIT and third-party notices; project
+downloads/support target `AbdelrahmanHajjaj/IslamicTVLauncher`, not upstream.
 
 ## Shared rules
 

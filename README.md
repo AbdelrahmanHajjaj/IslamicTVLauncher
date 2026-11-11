@@ -1,14 +1,14 @@
 <div align="center">
 
-# IslamicTVLauncher (Afnon) · أفنون
+# Islamic TV Launcher · أفنون
 
-**An Android TV home screen built around the prayer day.**
+**A household TV launcher built around the prayer day.**
 
 <p dir="rtl"><b>شاشة رئيسية لتلفاز أندرويد، تجمع مواقيت الصلاة والقبلة والأذان وإذاعة القرآن الكريم.</b></p>
 
 Arabic and English · 137 cities in 43 countries · 19 calculation methods · 14 adhan voices · 16 radio stations and reciters
 
-[This fork](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher) · [Original Afnon](https://github.com/egyjs/afnon-android-tv-launcher) · [Build and install](#install) · [Contribution plan](docs/CONTRIBUTION-PLAN.md)
+[Project](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher) · [Original Afnon](https://github.com/egyjs/afnon-android-tv-launcher) · [Build and install](#install) · [Architecture](docs/ARCHITECTURE.md)
 
 ![Arabic Home browser preview using demonstration data](docs/screenshots/custom-home-browser-ar.png)
 
@@ -23,11 +23,16 @@ Quran radio. Show the next-prayer countdown in a mihrab or compact bar, or hide 
 adhan can appear over other apps; an optional compact prayer bar provides times and quick controls
 without returning to Home.
 
-This fork builds on [Afnon](https://github.com/egyjs/afnon-android-tv-launcher) and carries over
+This independently maintained project builds on [Afnon](https://github.com/egyjs/afnon-android-tv-launcher) and carries over
 setup, recovery and lightweight background ideas from [CleanYourTV](https://github.com/Gathin23/cleanyourtv).
 The TV app and its screensaver are named **IslamicTVLauncher (Afnon)**. The Android package remains
 `tv.afnon.home`: updates signed with the installed app's key preserve preferences and the Home
 assignment. It shares Afnon's installation identity and cannot be installed alongside it.
+
+Android and LG have separate native/platform UI shells over a portable Kotlin core
+and canonical data/design sources. See the [implemented architecture](docs/ARCHITECTURE.md)
+for boundaries and independent builds. Companion apps and additional TV platforms
+are deferred. This checkout retains its Git history and original licence notices.
 
 A [LG webOS port](platforms/webos/README.md) lives in `platforms/webos/`: full-screen HDMI inside Islamic TV Launcher,
 prayer overlays, grouped settings, local adhan and voice previews, scheduled alerts, Today & Qibla,
@@ -175,8 +180,9 @@ Theme, background and Home-layout choices are configured on the TV. The launcher
 after setup; the phone does not need to stay connected. Export the installer's private recovery record
 to phone storage before clearing its data.
 
-The upstream-download option installs the original Afnon release. To install fork features, choose
-the local APK. A signing-key mismatch stops the update and keeps the installed launcher; use the
+The GitHub option uses this project's stable `afnon.apk` release asset. A stable TV
+APK has not been published here as of 11 November 2026; choose the local APK for now.
+A signing-key mismatch stops the update and keeps the installed launcher; use the
 same signing key for later builds. The phone installer still needs a complete real-phone test for this branch.
 
 ### Audio assets
@@ -228,7 +234,8 @@ No accounts, ads, analytics or telemetry. Prayer calculation is offline. The TV 
 network feature is the selected radio stream, listed in `shared/data/stations.json`; its
 [network security config](platforms/android-tv/src/main/res/xml/network_security.xml) permits plain HTTP only for Cairo's
 stream. City, favourites, themes and recent-app history stay on the TV. The phone installer separately
-uses the network for ADB setup and, when selected, downloading the upstream APK.
+uses the network for ADB setup and, when selected, this project's release APK and
+cleanup catalogue. Setup commands are bundled; they are never fetched for execution.
 
 | Permission or service | Purpose |
 |---|---|
@@ -250,9 +257,10 @@ minus/value/plus controls, draft cancellation and saved offsets, in Arabic and E
 ## Development and contributions
 
 Follow [CONTRIBUTING.md](CONTRIBUTING.md), including bilingual text, design tokens, physical D-pad
-checks and real-TV screenshots. The [contribution plan](docs/CONTRIBUTION-PLAN.md) separates this
-fork's integration work from proposed, focused upstream PRs. Fork naming is kept out of those
-proposals; the original guide does not explicitly ban renaming, but upstream branding is the maintainer's decision.
+checks and real-TV screenshots. Changes target this project's `main`; the
+[architecture queue](docs/ARCHITECTURE-QUEUE.md) owns the active migration scope and
+acceptance evidence. The older [upstream contribution plan](docs/CONTRIBUTION-PLAN.md)
+is historical; it does not govern this migration or authorize publication.
 
 ```powershell
 python -S -B -m unittest discover -s tests -v
@@ -265,7 +273,7 @@ npm.cmd --prefix site run tokens:check
 These offline Gradle commands need dependencies already cached. Use `./gradlew` and `npm` on
 Linux/macOS. The preview's generator requires Node 24. See [local validation](docs/LOCAL-VALIDATION.md)
 for recorded results, warning counts and untested cases; a passing build alone does not make every
-feature ready for upstream.
+feature validated on a physical TV.
 
 For manual preview checks, these existing ADB hooks open temporary test states without changing the
 saved city. Screenshots go to the ignored `state/` directory:
@@ -287,10 +295,13 @@ observed on one board is not proof for every TV from that brand.
 
 | Path | Contents |
 |---|---|
+| `shared/core/` | Portable JVM/ES5 prayer and reminder rules; no UI or device APIs |
+| `shared/data/` | Canonical cities, methods, bilingual text, station and voice metadata |
 | `platforms/android-tv/src/main/java/tv/afnon/home/` | Home, apps, settings, prayer calculation, radio, overlays and screensaver |
 | `platforms/android-tv/src/main/res/drawable/` | Native drawable resources; prayer vectors and background patterns are generated |
 | `afnon-mihrab/tokens.json` | Shared design source; generated Java/XML/CSS must not be edited directly |
 | `shared/design/` | Canonical icon geometry, theme presets/order, fonts and notices, consumed by platform builds |
+| `platforms/webos/` | LG renderer, service, ES5 compatibility adapters and independent build |
 | `installer/` | Android phone installer and its private recovery/export flow |
 | `tools/device.py`, `tools/setup-steps.txt` | Guarded PC setup and bundled phone setup policy |
 | `tools/` | Installation, backup/restore, reversible disable/enable and optional audio downloads |
@@ -334,7 +345,7 @@ Android 11؛ اختبار مصدر HDMI حي واختبار الهاتف الك�
 ## Credits and licence
 
 - Original launcher, Mihrab design and project history: [egyjs/Afnon](https://github.com/egyjs/afnon-android-tv-launcher),
-  originally developed with Claude Code on a real TV. This fork retains Afnon attribution.
+  originally developed with Claude Code on a real TV. The original MIT copyright and attribution are retained.
 - Setup/recovery and colour-sampling ideas: [CleanYourTV](https://github.com/Gathin23/cleanyourtv),
   Copyright (c) 2026 Gathin, MIT; [retained licence](docs/CLEANYOURTV-LICENSE.txt).
 - Prayer calculation: [adhan-java](https://github.com/batoulapps/adhan-java), MIT, by Batoul Apps.

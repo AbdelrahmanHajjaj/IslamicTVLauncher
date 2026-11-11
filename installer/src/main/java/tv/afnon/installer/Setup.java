@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Optional upstream APK and clean catalogue downloads. Setup commands are bundled and never fetched for execution.
+ * Optional project APK and clean catalogue downloads. Setup commands are bundled and never fetched for execution.
  */
 final class Setup {
     private Setup() {}
 
     static final String PACKAGE = "tv.afnon.home";
-    private static final String REPO = "egyjs/afnon-android-tv-launcher";
+    private static final String REPO = "AbdelrahmanHajjaj/IslamicTVLauncher";
     private static final String LATEST = "https://github.com/" + REPO + "/releases/latest";
     private static final String APK = LATEST + "/download/afnon.apk";
     private static final String RAW = "https://raw.githubusercontent.com/" + REPO + "/";

@@ -1,7 +1,7 @@
 ---
 // One page of the preview: SEO head, header, the TV (slot), the page's text and the footer.
 import '../styles/base.css';
-import { APK, PAGES, REPO, href, type Page } from '../lib/site';
+import { INSTALL, PAGES, REPO, href, type Page } from '../lib/site';
 import type { Lang } from '../lib/text';
 import sacred from '../../../shared/data/sacred-text.json';
 
@@ -17,10 +17,10 @@ const name = ar ? 'أفنون' : 'Afnon';
 // The page's heading: its title without the brand part.
 const heading = page.title[lang].split(' · ').find((p) => p !== name) ?? page.title[lang];
 const L = ar
-  ? { download: 'تنزيل التطبيق (APK)', source: 'الكود المصدري على GitHub', screens: 'الشاشات', lang: 'English', skip: 'انتقل إلى الشاشة',
+  ? { install: 'البناء والتثبيت', source: 'الكود المصدري على GitHub', screens: 'الشاشات', lang: 'English', skip: 'انتقل إلى الشاشة',
       tvLabel: 'معاينة شاشة التلفاز', keys: 'الأسهم للتنقل · Enter موافق · Esc رجوع',
       foot: 'مجاني ومفتوح المصدر (MIT). المعاينة لا ترسل أي بيانات؛ إعداداتك تُحفظ في هذا المتصفح فقط.' }
-  : { download: 'Download the APK', source: 'Source on GitHub', screens: 'Screens', lang: 'العربية', skip: 'Skip to the screen',
+  : { install: 'Build and install', source: 'Source on GitHub', screens: 'Screens', lang: 'العربية', skip: 'Skip to the screen',
       tvLabel: 'TV screen preview', keys: 'Arrows move · Enter is OK · Esc is Back',
       foot: 'Free and open source (MIT). This preview sends no data; your settings stay in this browser.' };
 const jsonLd = {
@@ -34,7 +34,6 @@ const jsonLd = {
   inLanguage: ['ar', 'en'],
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   license: 'https://opensource.org/licenses/MIT',
-  downloadUrl: APK,
   codeRepository: REPO,
   screenshot: ogImage,
   url: abs(href('', lang)),
@@ -54,7 +53,6 @@ const jsonLd = {
   <link rel="sitemap" href={import.meta.env.BASE_URL.replace(/\/?$/, '/') + 'sitemap-index.xml'} />
   <link rel="icon" href={import.meta.env.BASE_URL.replace(/\/?$/, '/') + 'favicon.svg'} type="image/svg+xml" />
   <meta name="theme-color" content="#0C1B33" />
-  <meta name="google-site-verification" content="XIBd58h_6mhzlIsvAUwVvTaXrMJfuISJ2kvuXuJ1h_8" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content={name} />
   <meta property="og:locale" content={ar ? 'ar_EG' : 'en_GB'} />
@@ -78,7 +76,7 @@ const jsonLd = {
     <nav class="top-links">
       <a href={href(page.slug, other)} hreflang={other} lang={other}>{L.lang}</a>
       <a href={REPO}>GitHub</a>
-      <a class="cta" href={APK}>{L.download}</a>
+      <a class="cta" href={INSTALL}>{L.install}</a>
     </nav>
   </header>
 
@@ -107,7 +105,7 @@ const jsonLd = {
   <footer class="foot">
     <p class="sacred" lang="ar" dir="rtl">{sacred.prayerVerse.join(' ')}</p>
     <p>{L.foot}</p>
-    <p><a href={APK}>{L.download}</a> · <a href={REPO}>{L.source}</a></p>
+    <p><a href={INSTALL}>{L.install}</a> · <a href={REPO}>{L.source}</a></p>
   </footer>
 </body>
 </html>
