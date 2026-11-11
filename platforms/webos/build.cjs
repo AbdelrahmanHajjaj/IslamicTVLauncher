@@ -3,6 +3,7 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const babel = require('@babel/core');
 const acorn = require('acorn');
+const adhanRoot = path.resolve(path.dirname(require.resolve('adhan')), '../..');
 const root = path.resolve(__dirname, '../..');
 const out = path.join(__dirname, 'build');
 const read = p => fs.readFileSync(path.join(root, p), 'utf8');
@@ -12,8 +13,13 @@ const methods = json('shared/data/methods.json');
 const compact = value => Array.isArray(value) ? value.map(text => text.replace(/\s+/g, ' ')) : value.replace(/\s+/g, ' ');
 const strings = Object.fromEntries(Object.entries(json('shared/data/strings.json')).map(([key, entry]) => [key, {...entry, ar: compact(entry.ar), en: compact(entry.en)}]));
 const write = (p, text) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, text); };
+execFileSync(process.execPath, [path.join(root, 'tools/validate-shared.mjs')], { stdio: 'inherit' });
 execFileSync(process.execPath, [path.join(root, 'shared/core/build-js.cjs')], { stdio: 'inherit' });
-execFileSync(process.execPath, [path.join(root, 'site/scripts/extract.mjs')], { stdio: 'ignore' });
+const outputs = ['app', 'service'].map(part => path.join(out, part));
+for (const directory of [out, ...outputs]) {
+  if (fs.existsSync(directory) && fs.realpathSync(directory) !== directory) throw new Error('Build output must stay inside the project');
+}
+for (const directory of outputs) fs.rmSync(directory, {recursive: true, force: true});
 for (const part of ['app', 'service']) fs.cpSync(path.join(__dirname, part), path.join(out, part), { recursive: true });
 const data = {
   cities: json('shared/data/cities.json'), methods: methods.map(method => method.id),
@@ -66,7 +72,7 @@ for (const part of ['app', 'service']) {
   }
   fs.cpSync(path.join(root, 'shared/core/assets/licenses'), path.join(out, part, 'licenses'), {recursive: true});
 }
-const source = read('site/node_modules/adhan/lib/bundles/adhan.umd.js');
+const source = fs.readFileSync(path.join(adhanRoot, 'lib/bundles/adhan.umd.js'), 'utf8');
 const compiled = babel.transformSync(source, {
   configFile: false, babelrc: false, comments: false,
   presets: [[require.resolve('@babel/preset-env'), { targets: { safari: '7' }, modules: false }]]
@@ -74,7 +80,7 @@ const compiled = babel.transformSync(source, {
 for (const part of ['app', 'service']) {
   write(path.join(out, part, 'adhan.js'), '/* adhan-js 4.4.6, MIT; see licenses/adhan.txt */\n' + compiled);
   write(path.join(out, part, 'compat.js'), fs.readFileSync(path.join(__dirname, 'app/compat.js'), 'utf8'));
-  write(path.join(out, part, 'licenses/adhan.txt'), read('site/node_modules/adhan/LICENSE'));
+  write(path.join(out, part, 'licenses/adhan.txt'), fs.readFileSync(path.join(adhanRoot, 'LICENSE'), 'utf8'));
 }
 for (const theme of data.themes) {
   const colors = theme === 'mihrab' ? {} : json('shared/design/assets/themes/' + theme + '.json').colors;
@@ -93,7 +99,7 @@ for (const name of data.patterns) {
 for (const font of ['alexandria_regular', 'amiri_regular', 'marcellus_regular']) {
   write(path.join(out, 'app/fonts', font + '.ttf'), fs.readFileSync(path.join(root, 'shared/design/resources/font', font + '.ttf')));
 }
-write(path.join(out, 'app/licenses/adhan.txt'), read('site/node_modules/adhan/LICENSE'));
+write(path.join(out, 'app/licenses/adhan.txt'), fs.readFileSync(path.join(adhanRoot, 'LICENSE'), 'utf8'));
 write(path.join(out, 'app/licenses/media.txt'), read('THIRD_PARTY.md'));
 fs.cpSync(path.join(root, 'shared/design/assets/licenses'), path.join(out, 'app/licenses'), { recursive: true });
 for (const part of ['app', 'service']) {

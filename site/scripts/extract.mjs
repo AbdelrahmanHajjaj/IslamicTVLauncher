@@ -1,4 +1,4 @@
-// Reads remaining native data/assets for the preview; shared catalogs are imported directly.
+// Projects shared resources for the preview; catalogs are imported directly.
 //   Shared catalogs and text come directly from shared/data/.
 //   shared/design/resources/font/*.ttf -> src/assets/fonts/
 //   shared/{design,core}/assets/licenses/ -> public/licenses/
@@ -6,11 +6,10 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateCatalog, validateStations, validateVoices, validateThemes } from '../../tools/catalogs.mjs';
-import { validateStrings, validateFormatText, validateSacredText } from '../../tools/strings.mjs';
-import { validateIcons, validatePrayerIcons, validateAppearance } from '../../tools/design.mjs';
+import { validateShared } from '../../tools/validate-shared.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+validateShared();
 const out = resolve(root, 'site/src/data');
 mkdirSync(out, { recursive: true });
 const write = (name, data) => {
@@ -18,23 +17,7 @@ const write = (name, data) => {
   console.log(`wrote site/src/data/${name}`);
 };
 
-// ---------------------------------------------------------------- Shared catalog validation
-
-validateCatalog(
-  JSON.parse(readFileSync(resolve(root, 'shared/data/cities.json'), 'utf8')),
-  JSON.parse(readFileSync(resolve(root, 'shared/data/regions.json'), 'utf8')),
-);
-
-validateStations(JSON.parse(readFileSync(resolve(root, 'shared/data/stations.json'), 'utf8')));
-validateVoices(JSON.parse(readFileSync(resolve(root, 'shared/data/voices.json'), 'utf8')));
-validateStrings(JSON.parse(readFileSync(resolve(root, 'shared/data/strings.json'), 'utf8')));
-validateFormatText(JSON.parse(readFileSync(resolve(root, 'shared/data/format-text.json'), 'utf8')));
-validateSacredText(JSON.parse(readFileSync(resolve(root, 'shared/data/sacred-text.json'), 'utf8')));
-validateThemes(JSON.parse(readFileSync(resolve(root, 'shared/design/themes.json'), 'utf8')));
-validateIcons(JSON.parse(readFileSync(resolve(root, 'shared/design/icons.json'), 'utf8')));
-validatePrayerIcons(JSON.parse(readFileSync(resolve(root, 'shared/design/prayer-icons.json'), 'utf8')));
 const appearance = JSON.parse(readFileSync(resolve(root, 'shared/design/appearance.json'), 'utf8'));
-validateAppearance(appearance);
 
 // ---------------------------------------------------------------- shared fonts and notices
 

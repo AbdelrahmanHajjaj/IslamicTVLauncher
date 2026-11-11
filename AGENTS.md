@@ -20,7 +20,7 @@ separate Android and LG webOS applications, not interchangeable build targets.
   not the installed launcher or its production service.
 
 The LG port is a normal folder in this repo, not a Git submodule. Its build consumes
-shared core/data/design, local ignored media and site tooling. Android UI code is not shared with the LG UI;
+shared core/data/design, common validation tools and local ignored media. Android UI code is not shared with the LG UI;
 changes to one renderer do not automatically update the other. Tizen is research
 only; do not claim a working Samsung port.
 

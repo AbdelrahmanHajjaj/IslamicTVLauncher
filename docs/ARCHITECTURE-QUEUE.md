@@ -85,18 +85,22 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q06.3a2, remove LG's remaining preview-build dependency. Finish Q06.3a's
-move commit if resuming between operations. Source inspection shows LG still runs
-`site/scripts/extract.mjs` for common validation and reads Adhan from
-`site/node_modules`; its moved shell is not fully independent yet. Reuse existing
-shared validators through a small common entry, give LG the same pinned Adhan
-version directly, and remove unused preview-generation side effects. Inspect
-imports before extracting; keep all validation, dependency integrity, ES5/runtime
-notice and payload behavior. Prove an isolated LG build without Android/installer/
-site sources or SDK configuration, using shared sources/tools and ignored media.
-Compare its actual payload to the 97-file pre-move snapshot and run meaningful
-LG/shared/preview checks. No new product feature, transport or dependency upgrade.
-Then Q06.3b will place Android in `platforms/android-tv`
+Next: Q06.3b, Android project relocation and standalone build entry. Finish
+Q06.3a2's commit if resuming between operations. Inspect all native Gradle/source/
+generator/test/tool/installer/CI/documentation paths before moving `app` to
+`platforms/android-tv`. Preserve package IDs, signing/upgrade keys, task and APK
+contracts, generated outputs, media/design/core sources and existing behavior.
+Provide a standalone per-platform Gradle entry without installer/preview/LG sources
+while keeping root `:app` and installer workflows functional. Use current official
+Gradle/Android configuration docs where needed and prove clean standalone plus
+aggregate builds, real native regressions, generated data/tokens and relevant
+consumer checks. Verify absolute move/cleanup targets inside the workspace and
+preserve ignored/unrelated work. Do not add new UIs, transports or future shells.
+LG is now an independent shell in `platforms/webos`; core is standalone in
+`shared/core`. Keep the shared validator and generated-output cleanup intact.
+The current LG payload has 96 files: one unreferenced stale font in the old
+97-file cache was intentionally removed (details below). All retained bytes match.
+Android will move to `platforms/android-tv`
 with its own build entry plus working aggregate `:app`/installer/tools/generators/
 tests/CI. Inspect the smallest standalone Android settings before making that
 slice. No empty future projects, UI changes, installed-ID changes or new media.
@@ -739,3 +743,44 @@ them. Q02 commit: `83b0c72`. No release, remote detach, merge or TV firmware act
   repeated. No physical deployment/picture/sound/remote test. LG still uses preview
   extraction/Adhan dependency at this checkpoint; Q06.3a2 explicitly removes that
   remaining build coupling before claiming independently buildable shells.
+
+### Q06.3a2 independent LG build and shared validation (2026-11-11)
+
+- LG now declares Adhan 4.4.6 directly, with the exact version/integrity already
+  consumed from the preview. No calculation/library upgrade or new product network
+  behavior. Shared validation moved out of preview extraction into
+  `tools/validate-shared.mjs`, reusing all existing catalog/text/design guards plus
+  method validation. LG invokes it directly; preview extraction calls the same
+  function. LG no longer reads/generates preview files or needs its dependencies.
+- PASS: new shared-entry regression failed for missing entry, then validates a
+  source-only fixture without platform/preview trees and rejects active SVG markup.
+  Actual isolated LG build/test uses only LG, shared core/data/design, common tools,
+  wrapper/bootstrap and local media. No Android, installer, site, docs/screenshots
+  or SDK configuration is present; SDK/NDK variables were unset. Source assertion
+  and successful build prove the dependency boundary. Private fixture/evidence:
+  `isolated-lg-q063a2`, `lg-isolated-{npm,tests}.log`.
+- Isolation exposed one stale `app/fonts/amiri_bold.ttf` (368,616 bytes) in the
+  previous 97-file output. No runtime/stylesheet references it; the builder has
+  always declared only three regular fonts. The initial exact-tree assertion
+  correctly failed for that missing stale file. Kept the original snapshot and
+  explicitly excluded only that verified obsolete file from current comparison.
+  All 96 retained payload files are byte-identical, including all religious text,
+  three used fonts, media, styles, scripts, data, identities and notices.
+- Builder now replaces only generated app/service outputs after input validation
+  and core compilation, with resolved-path guards before recursive cleanup. A
+  stale-output regression failed first, then passed on normal/isolated builds.
+  Actual invalid shared input leaves the complete last-good 96-file payload intact;
+  dropping its SVG validation fails the real regression. No renderer/service/prefs
+  behavior changed. Reduction is an uncompressed unused-file payload measurement,
+  not a speed, memory, IPK-size or physical-picture improvement claim.
+- PASS: LG ES5/service/calendar/5,190-event-per-host fixtures, normal/isolated clean
+  output and input-preservation checks, bilingual browser suite; preview tests,
+  shared malformed-input check, 18-page build and built-client browser checks.
+  Runtime and 21 notice copies match source. Logs: `lg-independent-*`,
+  `lg-clean-output-red.log`, `lg-shared-validation-red.log`; active private gate:
+  `check-lg-isolated-gate.cjs`. Native/core/installer logic was unchanged and its
+  unrelated suites were not repeated. Actual TV acceptance remains Q09.
+- First offline npm attempts found uncached metadata/build-tool tarballs. Standard
+  installs fetched only the existing pinned/locked artifacts; Adhan integrity
+  matched the preview and no other LG lock versions changed. Existing glob tooling
+  deprecation remains for Q08's dependency review. No publishing or device action.

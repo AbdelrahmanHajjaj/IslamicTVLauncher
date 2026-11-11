@@ -19,6 +19,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   build and Android links it as a local composite dependency.
 - Android and LG read local recordings from ignored `state/media/` inputs,
   preserving the existing packaged audio names and bytes.
+- LG lives in `platforms/webos` and builds without the preview project. Rebuilds
+  replace generated output so obsolete files cannot linger in packages.
 
 ### LG webOS development port
 
