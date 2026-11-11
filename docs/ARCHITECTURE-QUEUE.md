@@ -92,6 +92,10 @@ existing AVD descriptor/config hashes remain unchanged. No independent required
 software work remains in this approved queue. Do not create speculative tasks or
 repeat passing suites to fill the hardware wait.
 
+Execution is blocked at Q09.4 after three consecutive goal turns with the same
+physical-device/watcher availability condition. The full objective remains
+incomplete. Resume this cursor when actual availability changes.
+
 Resume with reachable old LG and a watcher for picture/sound/remote/power tests,
 or the actual Android TV around 2026-11-25. Capture existing preferences/input/
 startup before an in-place update; preserve installed IDs, certificate and data.
@@ -1137,3 +1141,19 @@ notices (99 entries). Do not add new UIs, transports or future shells.
   reason to rerun passing checks. Physical acceptance remains the only actionable
   scope once devices/watcher are available. Unchanged unreachable LG was not probed
   again. Goal stays active at this second availability-blocker checkpoint.
+
+### Q09.4 blocked audit, checkpoint 3 (2026-11-11 07:23 UTC)
+
+- Previous turn: documentation progress, correcting contradictory Q08 status;
+  physical acceptance stayed blocked. Revalidated current committed queue and
+  clean feature branch. No new watcher/device availability was supplied; Android's
+  expected return remains in the future. No live job/process is awaiting a poll.
+- The same genuine availability blocker has now recurred across three consecutive
+  goal turns, including the turn that completed the remaining emulator evidence.
+  All independent approved software work is finished; further meaningful progress
+  requires a reachable TV/watcher or physical Android access. No passing-suite
+  repetition, unavailable-device retry or speculative scope was added.
+- Blocked audit satisfied: mark the persistent goal blocked, preserving the full
+  objective and Q09 physical gates. Resume only after changed availability; first
+  capture existing preferences/input/startup, then perform the in-place upgrade
+  and actual picture/sound/remote/lifecycle checks. No completion claim.
