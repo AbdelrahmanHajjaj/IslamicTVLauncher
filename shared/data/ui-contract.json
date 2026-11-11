@@ -1,0 +1,534 @@
+[
+  {
+    "id": "prayer.location",
+    "section": "prayer",
+    "kind": "choice",
+    "label": "location",
+    "save": "immediate"
+  },
+  {
+    "id": "prayer.method",
+    "section": "prayer",
+    "kind": "choice",
+    "label": "method",
+    "save": "immediate"
+  },
+  {
+    "id": "prayer.asr",
+    "section": "prayer",
+    "kind": "choice",
+    "label": "asrSchool",
+    "save": "immediate"
+  },
+  {
+    "id": "prayer.zone",
+    "section": "prayer",
+    "kind": "choice",
+    "label": "timeZone",
+    "save": "immediate"
+  },
+  {
+    "id": "prayer.offsets",
+    "section": "prayer",
+    "kind": "action",
+    "label": "prayerOffsets",
+    "save": "action"
+  },
+  {
+    "id": "prayer.hijri",
+    "section": "prayer",
+    "kind": "number",
+    "label": "hijriAdjust",
+    "save": "immediate"
+  },
+  {
+    "id": "prayer.facing",
+    "section": "prayer",
+    "kind": "action",
+    "label": "roomTitle",
+    "save": "action"
+  },
+  {
+    "id": "prayer.today",
+    "section": "prayer",
+    "kind": "action",
+    "label": "today",
+    "save": "action"
+  },
+  {
+    "id": "reminders.enabled",
+    "section": "reminders",
+    "kind": "toggle",
+    "label": "scheduledAlerts",
+    "save": "immediate"
+  },
+  {
+    "id": "reminders.before",
+    "section": "reminders",
+    "kind": "choice",
+    "label": "remind",
+    "save": "immediate"
+  },
+  {
+    "id": "reminders.spoken",
+    "section": "reminders",
+    "kind": "toggle",
+    "label": "remindVoiceRow",
+    "save": "immediate"
+  },
+  {
+    "id": "reminders.adhan",
+    "section": "reminders",
+    "kind": "toggle",
+    "label": "adhanRow",
+    "save": "immediate"
+  },
+  {
+    "id": "reminders.announce",
+    "section": "reminders",
+    "kind": "toggle",
+    "label": "announceRow",
+    "save": "immediate"
+  },
+  {
+    "id": "reminders.voice",
+    "section": "reminders",
+    "kind": "choice",
+    "label": "voiceRow",
+    "save": "immediate"
+  },
+  {
+    "id": "reminders.fajr-voice",
+    "section": "reminders",
+    "kind": "choice",
+    "label": "fajrVoiceRow",
+    "save": "immediate"
+  },
+  {
+    "id": "reminders.volume",
+    "section": "reminders",
+    "kind": "number",
+    "label": "appVolume",
+    "save": "immediate"
+  },
+  {
+    "id": "reminders.close",
+    "section": "reminders",
+    "kind": "choice",
+    "label": "callCloseRow",
+    "save": "immediate"
+  },
+  {
+    "id": "reminders.per-prayer",
+    "section": "reminders",
+    "kind": "action",
+    "label": "perPrayerAdhan",
+    "save": "action"
+  },
+  {
+    "id": "tests.open",
+    "section": "reminders",
+    "kind": "action",
+    "label": "testPrayerAlerts",
+    "save": "action"
+  },
+  {
+    "id": "radio.station",
+    "section": "radio",
+    "kind": "choice",
+    "label": "stationRow",
+    "save": "immediate"
+  },
+  {
+    "id": "radio.playback",
+    "section": "radio",
+    "kind": "toggle",
+    "label": "radio",
+    "save": "immediate"
+  },
+  {
+    "id": "radio.play",
+    "section": "radio",
+    "kind": "action",
+    "label": "radioPlay",
+    "save": "action"
+  },
+  {
+    "id": "radio.stop",
+    "section": "radio",
+    "kind": "action",
+    "label": "radioStop",
+    "save": "action"
+  },
+  {
+    "id": "radio.resume",
+    "section": "radio",
+    "kind": "toggle",
+    "label": "afterAdhanRow",
+    "save": "immediate"
+  },
+  {
+    "id": "radio.screen-off",
+    "section": "radio",
+    "kind": "choice",
+    "label": "radioDarkRow",
+    "save": "immediate"
+  },
+  {
+    "id": "display.language",
+    "section": "display",
+    "kind": "choice",
+    "label": "language",
+    "save": "immediate"
+  },
+  {
+    "id": "display.digits",
+    "section": "display",
+    "kind": "choice",
+    "label": "digits",
+    "save": "immediate"
+  },
+  {
+    "id": "display.clock",
+    "section": "display",
+    "kind": "choice",
+    "label": "clockRow",
+    "save": "immediate"
+  },
+  {
+    "id": "display.hide-system-apps",
+    "section": "display",
+    "kind": "toggle",
+    "label": "hideSystemApps",
+    "save": "immediate"
+  },
+  {
+    "id": "display.quick-labels",
+    "section": "display",
+    "kind": "toggle",
+    "label": "quickLabels",
+    "save": "immediate"
+  },
+  {
+    "id": "display.bar-mode",
+    "section": "display",
+    "kind": "choice",
+    "label": "prayerDock",
+    "save": "immediate"
+  },
+  {
+    "id": "display.bar-position",
+    "section": "display",
+    "kind": "choice",
+    "label": "dockPosition",
+    "save": "immediate"
+  },
+  {
+    "id": "display.bar-timeout",
+    "section": "display",
+    "kind": "choice",
+    "label": "dockAutoHide",
+    "save": "immediate"
+  },
+  {
+    "id": "display.open-bar",
+    "section": "display",
+    "kind": "action",
+    "label": "openDock",
+    "save": "action"
+  },
+  {
+    "id": "display.open-clock",
+    "section": "display",
+    "kind": "action",
+    "label": "clockScreen",
+    "save": "action"
+  },
+  {
+    "id": "appearance.countdown",
+    "section": "appearance",
+    "kind": "choice",
+    "label": "homeCountdown",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.position",
+    "section": "appearance",
+    "kind": "choice",
+    "label": "homePosition",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.prayers",
+    "section": "appearance",
+    "kind": "choice",
+    "label": "homePrayers",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.favourites",
+    "section": "appearance",
+    "kind": "choice",
+    "label": "homeFavourites",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.theme",
+    "section": "appearance",
+    "kind": "choice",
+    "label": "themeRow",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.background",
+    "section": "appearance",
+    "kind": "choice",
+    "label": "backgroundRow",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.lighting",
+    "section": "appearance",
+    "kind": "number",
+    "label": "lightingRow",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.cycle",
+    "section": "appearance",
+    "kind": "choice",
+    "label": "appearanceCycle",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.focus-lighting",
+    "section": "appearance",
+    "kind": "toggle",
+    "label": "focusLighting",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.reduce-motion",
+    "section": "appearance",
+    "kind": "toggle",
+    "label": "reduceMotion",
+    "save": "appearance"
+  },
+  {
+    "id": "appearance.reset",
+    "section": "appearance",
+    "kind": "action",
+    "label": "homeReset",
+    "save": "action"
+  },
+  {
+    "id": "appearance.apply",
+    "section": "appearance",
+    "kind": "action",
+    "label": "applyAppearance",
+    "save": "action"
+  },
+  {
+    "id": "appearance.cancel",
+    "section": "appearance",
+    "kind": "action",
+    "label": "cancel",
+    "save": "action"
+  },
+  {
+    "id": "appearance.home",
+    "section": "appearance",
+    "kind": "action",
+    "label": "home",
+    "save": "action"
+  },
+  {
+    "id": "network.settings",
+    "section": "network",
+    "kind": "action",
+    "label": "networkRow",
+    "save": "action"
+  },
+  {
+    "id": "device.settings",
+    "section": "device",
+    "kind": "action",
+    "label": "deviceRow",
+    "save": "action"
+  },
+  {
+    "id": "device.home",
+    "section": "device",
+    "kind": "action",
+    "label": "homeSettings",
+    "save": "action"
+  },
+  {
+    "id": "device.inputs",
+    "section": "device",
+    "kind": "action",
+    "label": "inputsTitle",
+    "save": "action"
+  },
+  {
+    "id": "device.apps",
+    "section": "device",
+    "kind": "action",
+    "label": "tvApps",
+    "save": "action"
+  },
+  {
+    "id": "device.screensaver",
+    "section": "device",
+    "kind": "action",
+    "label": "screensaver",
+    "save": "action"
+  },
+  {
+    "id": "device.remote",
+    "section": "device",
+    "kind": "action",
+    "label": "remoteButtons",
+    "save": "action"
+  },
+  {
+    "id": "device.health",
+    "section": "device",
+    "kind": "action",
+    "label": "serviceHealth",
+    "save": "action"
+  },
+  {
+    "id": "device.repair",
+    "section": "device",
+    "kind": "toggle",
+    "label": "repairService",
+    "save": "immediate"
+  },
+  {
+    "id": "device.startup",
+    "section": "device",
+    "kind": "toggle",
+    "label": "startupLauncher",
+    "save": "immediate"
+  },
+  {
+    "id": "device.exit-input",
+    "section": "device",
+    "kind": "action",
+    "label": "exitToInput",
+    "save": "action"
+  },
+  {
+    "id": "tests.prayer",
+    "section": "tests",
+    "kind": "choice",
+    "label": "testPrayer",
+    "save": "immediate"
+  },
+  {
+    "id": "tests.banner",
+    "section": "tests",
+    "kind": "action",
+    "label": "testBanner",
+    "save": "action"
+  },
+  {
+    "id": "tests.card",
+    "section": "tests",
+    "kind": "action",
+    "label": "testCard",
+    "save": "action"
+  },
+  {
+    "id": "tests.adhan-short",
+    "section": "tests",
+    "kind": "action",
+    "label": "testAdhanShort",
+    "save": "action"
+  },
+  {
+    "id": "tests.adhan-full",
+    "section": "tests",
+    "kind": "action",
+    "label": "testAdhanFull",
+    "save": "action"
+  },
+  {
+    "id": "tests.spoken",
+    "section": "tests",
+    "kind": "action",
+    "label": "testSpoken",
+    "save": "action"
+  },
+  {
+    "id": "tests.announcement",
+    "section": "tests",
+    "kind": "action",
+    "label": "testAnnouncement",
+    "save": "action"
+  },
+  {
+    "id": "tests.background",
+    "section": "tests",
+    "kind": "action",
+    "label": "testBackground",
+    "save": "action"
+  },
+  {
+    "id": "tests.cancel",
+    "section": "tests",
+    "kind": "action",
+    "label": "cancelTest",
+    "save": "action"
+  },
+  {
+    "id": "offsets.fajr",
+    "section": "offsets",
+    "kind": "number",
+    "label": "prayerNames:0",
+    "save": "immediate"
+  },
+  {
+    "id": "offsets.sunrise",
+    "section": "offsets",
+    "kind": "number",
+    "label": "prayerNames:1",
+    "save": "immediate"
+  },
+  {
+    "id": "offsets.dhuhr",
+    "section": "offsets",
+    "kind": "number",
+    "label": "prayerNames:2",
+    "save": "immediate"
+  },
+  {
+    "id": "offsets.asr",
+    "section": "offsets",
+    "kind": "number",
+    "label": "prayerNames:3",
+    "save": "immediate"
+  },
+  {
+    "id": "offsets.maghrib",
+    "section": "offsets",
+    "kind": "number",
+    "label": "prayerNames:4",
+    "save": "immediate"
+  },
+  {
+    "id": "offsets.isha",
+    "section": "offsets",
+    "kind": "number",
+    "label": "prayerNames:5",
+    "save": "immediate"
+  },
+  {
+    "id": "offsets.reset",
+    "section": "offsets",
+    "kind": "action",
+    "label": "resetOffsets",
+    "save": "action"
+  }
+]

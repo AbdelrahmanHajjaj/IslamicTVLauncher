@@ -1,0 +1,122 @@
+[
+  {
+    "id": "prayer.zone",
+    "state": "unimplemented",
+    "reason": "Uses the TV time zone; no app-local override editor."
+  },
+  {
+    "id": "prayer.today",
+    "state": "unimplemented",
+    "reason": "Today/Qibla is available from Home; no second Settings shortcut."
+  },
+  {
+    "id": "reminders.enabled",
+    "state": "unimplemented",
+    "reason": "Native reminder and adhan switches are independent; no master scheduled-alert switch."
+  },
+  {
+    "id": "reminders.volume",
+    "state": "unimplemented",
+    "reason": "Uses system media volume; no app-local volume editor."
+  },
+  {
+    "id": "reminders.per-prayer",
+    "state": "unimplemented",
+    "reason": "Per-prayer switches are on Today/Qibla; no Settings shortcut."
+  },
+  {
+    "id": "radio.play",
+    "state": "unimplemented",
+    "reason": "The station row uses one playback toggle instead of separate Play/Stop actions."
+  },
+  {
+    "id": "radio.stop",
+    "state": "unimplemented",
+    "reason": "The station row uses one playback toggle instead of separate Play/Stop actions."
+  },
+  {
+    "id": "display.bar-timeout",
+    "state": "unimplemented",
+    "reason": "No configurable bar timeout row."
+  },
+  {
+    "id": "display.open-clock",
+    "state": "unimplemented",
+    "reason": "Clock exists as a native screensaver; no standalone Settings action."
+  },
+  {
+    "id": "appearance.cancel",
+    "state": "unimplemented",
+    "reason": "Back discards the draft; no separate Cancel row."
+  },
+  {
+    "id": "appearance.home",
+    "state": "unimplemented",
+    "reason": "Back returns Home; no separate appearance Home row."
+  },
+  {
+    "id": "device.apps",
+    "state": "unimplemented",
+    "reason": "All apps opens from Home; no Device shortcut."
+  },
+  {
+    "id": "device.startup",
+    "state": "unimplemented",
+    "reason": "Uses Android default Home and accessibility lifecycle; no LG-style once-per-boot switch."
+  },
+  {
+    "id": "device.exit-input",
+    "state": "os-unsupported",
+    "reason": "The Android shell is system HOME, not an app over an embedded LG input."
+  },
+  {
+    "id": "tests.prayer",
+    "state": "unimplemented",
+    "reason": "Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported."
+  },
+  {
+    "id": "tests.banner",
+    "state": "unimplemented",
+    "reason": "Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported."
+  },
+  {
+    "id": "tests.card",
+    "state": "unimplemented",
+    "reason": "Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported."
+  },
+  {
+    "id": "tests.adhan-short",
+    "state": "unimplemented",
+    "reason": "Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported."
+  },
+  {
+    "id": "tests.adhan-full",
+    "state": "unimplemented",
+    "reason": "Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported."
+  },
+  {
+    "id": "tests.spoken",
+    "state": "unimplemented",
+    "reason": "Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported."
+  },
+  {
+    "id": "tests.announcement",
+    "state": "unimplemented",
+    "reason": "Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported."
+  },
+  {
+    "id": "tests.background",
+    "state": "unimplemented",
+    "reason": "Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported."
+  },
+  {
+    "id": "tests.cancel",
+    "state": "unimplemented",
+    "reason": "Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported."
+  },
+  {
+    "id": "offsets.reset",
+    "state": "unimplemented",
+    "reason": "Each prayer has a stepper; no Reset adjustments action."
+  }
+]

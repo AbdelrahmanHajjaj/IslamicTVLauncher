@@ -24,7 +24,9 @@ def text_hashes(driver="TextCatalogCheck"):
             *(str(out / name) for name in stubs),
             str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/Text.java"),
             str(ROOT / ("tests/" + driver + ".java"))], check=True, capture_output=True)
-        keys = sorted(json.loads((ROOT / "shared/data/strings.json").read_text(encoding="utf-8")))
+        # Keep the pre-extraction output proof stable when new contract labels are added.
+        keys = (json.loads((ROOT / "tests/fixtures/text-output-keys.json").read_text())
+                if driver == "TextCatalogCheck" else sorted(json.loads((ROOT / "shared/data/strings.json").read_text(encoding="utf-8"))))
         result = subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home." + driver, *keys],
             check=True, capture_output=True, text=True)
         return dict(line.split(":") for line in result.stdout.splitlines())

@@ -21,8 +21,32 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check canonical projections
+        run: node tools/catalogs.mjs --check
       - run: chmod +x gradlew && ./gradlew -p platforms/android-tv verifyApkSize lintDebug assembleDebugAndroidTest --no-daemon --stacktrace
       - name: Aggregate launcher and installer tasks
         run: ./gradlew :app:assembleDebug :installer:assembleDebug --no-daemon --stacktrace
       - name: Launcher and recovery regression checks
         run: python3 -S -B -m unittest discover -s tests -v
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Native UI contract
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: |
+            adb install -r platforms/android-tv/build/outputs/apk/debug/app-debug.apk
+            adb install -r -t platforms/android-tv/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+            adb shell am instrument -w -r -e check ui tv.afnon.home.test/tv.afnon.home.AppearanceCycleDeviceCheck | tee ui-contract-result.log
+            grep -q '^INSTRUMENTATION_CODE: -1' ui-contract-result.log
+            grep -q 'Native UI contract passed' ui-contract-result.log

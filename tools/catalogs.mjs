@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderText, validateSacredText } from './strings.mjs';
 import { validateIcons, validatePrayerIcons, validateAppearance } from './design.mjs';
+import { validateUiContract, validateUiGaps, renderUiCatalog, renderUiGaps } from './ui-contract.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
@@ -110,6 +111,14 @@ function generate() {
   const themes = JSON.parse(read('shared/design/themes.json'));
   const prayerIcons = JSON.parse(read('shared/design/prayer-icons.json'));
   const appearance = JSON.parse(read('shared/design/appearance.json'));
+  const strings = JSON.parse(read('shared/data/strings.json'));
+  const ui = JSON.parse(read('shared/data/ui-contract.json'));
+  validateUiContract(ui, strings);
+  const profiles = [
+    ['Android TV', JSON.parse(read('platforms/android-tv/src/androidTest/assets/ui-gaps.json'))],
+    ['LG webOS', JSON.parse(read('platforms/webos/ui-gaps.json'))],
+  ];
+  for (const [, gaps] of profiles) validateUiGaps(gaps, ui);
   validateCatalog(cities, regions);
   validateStations(stations);
   validateVoices(voices);
@@ -170,6 +179,8 @@ function generate() {
     ['tools/adhan-sources.tsv', voiceSources],
     ['platforms/android-tv/src/main/java/tv/afnon/home/SacredText.java', nativeSacred],
     ['platforms/android-tv/src/main/java/tv/afnon/home/ThemeCatalog.java', nativeThemes],
+    ['shared/core/src/commonMain/kotlin/tv/afnon/core/UiCatalog.kt', renderUiCatalog(ui)],
+    ['docs/UI-GAPS.md', renderUiGaps(profiles)],
     ...vectors,
     ['platforms/android-tv/src/main/java/tv/afnon/home/Text.java', renderText(JSON.parse(read('shared/data/strings.json')), read('platforms/android-tv/src/main/templates/Text.java.template'), JSON.parse(read('shared/data/format-text.json')))],
   ]) {

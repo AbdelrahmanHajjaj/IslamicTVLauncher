@@ -22,6 +22,15 @@ physical horizontal keys for RTL once and applies the returned focus target.
 Counts/columns describe visible primary/recent app rows; no pixel positions or
 platform key codes enter the core. See the [UI/input contract](../../docs/UI-CONTRACT.md).
 
+`UiContract` exposes the generated semantic settings/action catalog, validates
+binding kinds and checks actual binding IDs plus explicitly declared gaps for
+complete, nonduplicated coverage. Source definitions and label references live in
+`shared/data/ui-contract.json`; regenerate with `node tools/catalogs.mjs` before
+compiling after changes. The checked-in generated Kotlin keeps core builds standalone.
+Actual native rows and LG rows/carousels carry these IDs. Their conformance checks
+enumerate real views/DOM controls in both languages, rather than a support manifest.
+Shell gap declarations generate the [gap report](../../docs/UI-GAPS.md).
+
 Java callers use `tv.afnon.core.PrayerRules.INSTANCE`; the returned
 `PrayerSelection` exposes standard getters. JavaScript exposes the same namespace
 under the UMD module `tv.afnon:core`; load `kotlin-kotlin-stdlib.js` first

@@ -12,7 +12,7 @@ reference; platform renderers, OS APIs and saved preference keys remain separate
 | Screens/actions | Stable semantic IDs and action meaning | Bind an ID to the actual screen/control/handler; test activation and return target. |
 | Settings | ID, section, value kind, choices/bounds, save/cancel behavior and capability requirement | Bind the existing preference reader/writer and native editor; test rendered coverage and round trips. |
 | Input | Logical directions, initial/return focus, Home boundaries and modal ownership | Translate physical keys once, resolve shared targets to visible/enabled controls, then focus/activate native views. |
-| Capabilities | Explicit conditions for OS-dependent behavior | Declare supported or unsupported with a concrete reason/evidence; missing portable work remains a gap. |
+| Capabilities | Explicit shell implementation and OS conditions | Declare implemented, unimplemented or OS-unsupported; hide/lock unimplemented controls while retaining the universal definition and gap report. |
 | Presentation | Canonical bilingual labels, tokens, exact religious text and accessible action names | Check text clipping, Arabic joining, RTL, focus visibility and actual TV picture/sound separately. |
 
 The shared layer returns IDs/models/decisions and has no DOM, Android views,
@@ -62,10 +62,22 @@ stable IDs. Existing differences in defaults or option sets need explicit mappin
 OS-owned Home selection, global key interception, screensaver selection, panel-off
 audio and global overlays require capabilities. App-local navigation/appearance
 work cannot be excused as an OS limitation merely because it has not been ported.
+The owner permits those features to remain explicitly unimplemented and hidden or
+locked; initial LG policy hides them. Implemented controls must have actual working
+bindings. This applies to every shell, without narrowing the universal definition.
 An already static renderer needs an explicit reduced-motion policy; absence of a
 toggle alone does not establish a behavioral failure or capability restriction.
 
 ## Enforcement
+
+`shared/data/ui-contract.json` defines the Settings controls, six-offset editor and
+LG test pane. `tools/catalogs.mjs` generates the portable `UiCatalog`; `UiContract`
+checks IDs, kinds and coverage. Android Row objects tag their actual views; LG
+rows/carousels expose `data-ui` and use the catalog's canonical label references.
+The native `check=ui` instrumentation and LG browser suite enumerate those controls
+in Arabic and English, then require every definition to be bound or declared in a
+shell's gap file. See [declared gaps](UI-GAPS.md). These checks enforce control
+coverage; they do not yet exhaustively compare every option/value or linked editor.
 
 The implementation must provide one portable definition, shared focus rules and
 per-shell bindings. Conformance checks must:
@@ -79,8 +91,9 @@ per-shell bindings. Conformance checks must:
    partial rows, RTL mapping, optional controls and return focus.
 4. Test Android/LG adapters themselves, including Home Up/Down boundaries and modal
    key ownership. A passing pure-core test does not prove its renderer uses it.
-5. Expose existing missing common features as explicit migration gaps. Unsupported
-   declarations require a platform reason; they cannot silently turn gaps green.
+5. Expose unimplemented features in the gap report even when their controls are
+   hidden. OS-unsupported declarations require a platform reason; implementation
+   state cannot be invented merely to make the report look complete.
 
 Build/host tests complement physical TV checks. None alone proves native key
 interception, screen overscan, Arabic glyph painting, decoder/audio or power behavior.

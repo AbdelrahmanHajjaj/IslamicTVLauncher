@@ -2,6 +2,7 @@
   'use strict';
   var A = window.Afnon, D = window.AfnonData;
   var homeNavigation = window['tv.afnon:core'].tv.afnon.core.HomeNavigation;
+  var uiContract = window['tv.afnon:core'].tv.afnon.core.UiContract;
   var tv = typeof window.PalmServiceBridge !== 'undefined';
   var prefs = A.prefs(), startup = false, loaded = false, busy = false;
   var input = null, inputs = [], view = 'input', picker = null, page = 0;
@@ -27,8 +28,9 @@
   function f(key) { return D.formatText[prefs.lang][key]; }
   function escape(value) { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
   function digits(value) { return prefs.digits === 'eastern' || prefs.digits === 'auto' && prefs.lang === 'ar' ? String(value).replace(/[0-9]/g, function (n) { return '٠١٢٣٤٥٦٧٨٩'.charAt(Number(n)); }) : String(value); }
-  function button(action, label, value, className, accessibleLabel) {
+  function button(action, label, value, className, accessibleLabel, control) {
     return '<button data-action="' + action + '" data-value="' + escape(value === undefined ? '' : value) + '" class="' + (className || '') + '"' +
+      (control ? ' data-ui="' + control.id + '" data-ui-kind="' + control.kind + '"' : '') +
       (accessibleLabel ? ' aria-label="' + escape(accessibleLabel) + '" title="' + escape(accessibleLabel) + '"' : '') + '>' + label + '</button>';
   }
   function icon(name) {
@@ -136,15 +138,23 @@
     return (prefs.utcOffset === null ? t('توقيت التلفاز', 'TV time zone') + ' · ' : '') + 'UTC' +
       (offset < 0 ? '−' : '+') + Math.floor(Math.abs(offset) / 60) + ':' + (Math.abs(offset) % 60 < 10 ? '0' : '') + Math.abs(offset) % 60;
   }
-  function row(action, label, value) { return button(action, escape(label) + '<span class="value">' + escape(value) + '</span>'); }
-  function carousel(key, label) {
+  function controlLabel(control) {
+    var parts = control.labelKey.split(':'), label = s(parts[0]);
+    return parts.length === 1 ? label : label[Number(parts[1])];
+  }
+  function row(id, action, value, kind) {
+    var control = uiContract.bind(id, kind || 'action');
+    return button(action, escape(controlLabel(control)) + '<span class="value">' + escape(value) + '</span>', '', '', '', control);
+  }
+  function carousel(id, key) {
+    var control = uiContract.bind(id, 'choice'), label = controlLabel(control);
     var list = choices(key), index = 0, rtl = prefs.lang === 'ar';
     list.forEach(function (item, i) { if (item.value === appearanceDraft[key]) { index = i; } });
     function arrow(delta, disabled) {
       return '<button tabindex="-1" data-action="carousel-step" data-value="' + key + ':' + delta + '" class="carousel-arrow ' + (delta < 0 ? 'previous' : 'next') + '"' +
         (disabled ? ' disabled' : '') + ' aria-label="' + escape(label + ': ' + (delta < 0 ? t('السابق', 'Previous') : t('التالي', 'Next'))) + '">' + ((delta < 0) !== rtl ? '‹' : '›') + '</button>';
     }
-    return '<div class="carousel-row">' + button('carousel', escape(label) + '<span class="carousel-choice">' + escape(list[index].label) + '</span>', key, 'carousel-main') +
+    return '<div class="carousel-row">' + button('carousel', escape(label) + '<span class="carousel-choice">' + escape(list[index].label) + '</span>', key, 'carousel-main', '', control) +
       arrow(-1, index === 0) + arrow(1, index === list.length - 1) + '</div>';
   }
   function changeAppearance(key, delta) {
@@ -159,65 +169,65 @@
   function settingRows() {
     var city = A.city(prefs.city), result = '';
     if (section === 'prayer') {
-      result = row('city', t('المدينة', 'City'), city[prefs.lang]) +
-        row('method', t('طريقة الحساب', 'Calculation method'), methodName(prefs.method || city.method)) +
-        row('hanafi', t('حساب العصر', 'Asr calculation'), prefs.hanafi ? t('حنفي', 'Hanafi') : t('شافعي / قياسي', 'Shafi / Standard')) +
-        row('zone', t('التوقيت', 'Time zone'), zoneName()) +
-        row('offsets', t('تعديل مواقيت الصلاة', 'Prayer-time adjustments'), t('بالدقائق', 'Minutes')) +
-        row('hijriOffset', t('تعديل التاريخ الهجري', 'Hijri adjustment'), digits(prefs.hijriOffset)) +
-        row('prayer-day', t('مواقيت اليوم والقبلة', 'Today & Qibla'), '');
+      result = row('prayer.location', 'city', city[prefs.lang], 'choice') +
+        row('prayer.method', 'method', methodName(prefs.method || city.method), 'choice') +
+        row('prayer.asr', 'hanafi', prefs.hanafi ? t('حنفي', 'Hanafi') : t('شافعي / قياسي', 'Shafi / Standard'), 'choice') +
+        row('prayer.zone', 'zone', zoneName(), 'choice') +
+        row('prayer.offsets', 'offsets', t('بالدقائق', 'Minutes')) +
+        row('prayer.hijri', 'hijriOffset', digits(prefs.hijriOffset), 'number') +
+        row('prayer.today', 'prayer-day', '');
     } else if (section === 'reminders') {
-      result = row('automatic', t('التنبيهات المجدولة', 'Scheduled alerts'), onOff(prefs.automatic)) +
-        row('remind', t('التذكير قبل الصلاة', 'Reminder before prayer'), prefs.remind ? digits(prefs.remind) + f('minuteUnit') : onOff(false)) +
-        row('remindVoice', t('تذكير صوتي قبل الصلاة', 'Spoken reminder'), onOff(prefs.remindVoice)) +
-        row('adhan', t('تشغيل الأذان', 'Play adhan'), onOff(prefs.adhan)) +
-        row('announce', t('إعلان الوقت عند إيقاف الأذان', 'Announce when adhan is off'), onOff(prefs.announce)) +
-        row('voice', t('صوت الأذان', 'Adhan voice'), A.voice(prefs.voice)[prefs.lang]) +
-        row('fajrVoice', t('صوت أذان الفجر', 'Fajr voice'), A.voice(prefs.fajrVoice)[prefs.lang]) +
-        row('volume', t('مستوى صوت التطبيق', 'App audio level'), digits(prefs.volume) + '%') +
-        row('callClose', t('إغلاق شاشة الأذان', 'Close adhan screen'), prefs.callClose ? digits(prefs.callClose) + f('minuteUnit') : t('عند نهاية الصوت', 'When audio ends')) +
-        row('prayer-day', t('أذان كل صلاة', 'Per-prayer adhan switches'), '') + row('tests', t('اختبار الآن', 'Test now'), '');
+      result = row('reminders.enabled', 'automatic', onOff(prefs.automatic), 'toggle') +
+        row('reminders.before', 'remind', prefs.remind ? digits(prefs.remind) + f('minuteUnit') : onOff(false), 'choice') +
+        row('reminders.spoken', 'remindVoice', onOff(prefs.remindVoice), 'toggle') +
+        row('reminders.adhan', 'adhan', onOff(prefs.adhan), 'toggle') +
+        row('reminders.announce', 'announce', onOff(prefs.announce), 'toggle') +
+        row('reminders.voice', 'voice', A.voice(prefs.voice)[prefs.lang], 'choice') +
+        row('reminders.fajr-voice', 'fajrVoice', A.voice(prefs.fajrVoice)[prefs.lang], 'choice') +
+        row('reminders.volume', 'volume', digits(prefs.volume) + '%', 'number') +
+        row('reminders.close', 'callClose', prefs.callClose ? digits(prefs.callClose) + f('minuteUnit') : t('عند نهاية الصوت', 'When audio ends'), 'choice') +
+        row('reminders.per-prayer', 'prayer-day', '') + row('tests.open', 'tests', '');
     } else if (section === 'radio') {
-      result = row('station', t('المحطة أو القارئ', 'Station or reciter'), A.station(prefs.station)[prefs.lang]) +
-        row('radio-play', t('تشغيل الإذاعة', 'Play radio'), '') + row('radio-stop', t('إيقاف الإذاعة', 'Stop radio'), '') +
-        row('radioResume', t('استئناف الإذاعة بعد الأذان', 'Resume radio after adhan'), onOff(prefs.radioResume));
+      result = row('radio.station', 'station', A.station(prefs.station)[prefs.lang], 'choice') +
+        row('radio.play', 'radio-play', '') + row('radio.stop', 'radio-stop', '') +
+        row('radio.resume', 'radioResume', onOff(prefs.radioResume), 'toggle');
     } else if (section === 'display') {
-      result = row('language', t('اللغة', 'Language'), t('العربية', 'English')) +
-        row('digits', t('الأرقام', 'Digits'), prefs.digits === 'auto' ? t('حسب اللغة', 'Follow language') : prefs.digits === 'eastern' ? '٠١٢٣' : '0123') +
-        row('clock', t('تنسيق الساعة', 'Clock format'), digits(prefs.clock)) +
-        row('quickLabels', t('أسماء أزرار الوصول السريع', 'Quick control labels'), onOff(prefs.quickLabels)) +
-        row('dockPosition', t('موضع شريط الصلاة', 'Prayer bar position'), prefs.dockPosition === 'top' ? t('أعلى', 'Top') : t('أسفل', 'Bottom')) +
-        row('dockAutoHide', t('إخفاء الشريط تلقائيًا', 'Hide prayer bar after'), prefs.dockAutoHide ? digits(prefs.dockAutoHide) + t(' ثانية', ' sec') : t('يدويًا', 'Manually')) +
-        row('bar', t('عرض شريط الصلاة', 'Show prayer bar'), '') + row('clock-view', t('شاشة الساعة', 'Clock screen'), '');
+      result = row('display.language', 'language', t('العربية', 'English'), 'choice') +
+        row('display.digits', 'digits', prefs.digits === 'auto' ? t('حسب اللغة', 'Follow language') : prefs.digits === 'eastern' ? '٠١٢٣' : '0123', 'choice') +
+        row('display.clock', 'clock', digits(prefs.clock), 'choice') +
+        row('display.quick-labels', 'quickLabels', onOff(prefs.quickLabels), 'toggle') +
+        row('display.bar-position', 'dockPosition', prefs.dockPosition === 'top' ? t('أعلى', 'Top') : t('أسفل', 'Bottom'), 'choice') +
+        row('display.bar-timeout', 'dockAutoHide', prefs.dockAutoHide ? digits(prefs.dockAutoHide) + t(' ثانية', ' sec') : t('يدويًا', 'Manually'), 'choice') +
+        row('display.open-bar', 'bar', '') + row('display.open-clock', 'clock-view', '');
     } else if (section === 'appearance') {
       var draft = appearanceDraft;
-      result = carousel('theme', t('السمة', 'Theme')) +
-        carousel('background', t('نقش الخلفية', 'Background pattern')) +
-        carousel('homeLayout', t('العد التنازلي بالرئيسية', 'Home countdown')) +
-        (draft.homeLayout === 'compact' ? carousel('homeBar', t('موضع العد التنازلي', 'Countdown position')) :
-          draft.homeLayout === 'mihrab' ? carousel('archSide', t('جانب المحراب', 'Mihrab side')) : '') +
-        carousel('prayerMode', t('معلومات الصلاة', 'Prayer information')) +
-        row('reset-layout', t('استعادة التخطيط الافتراضي', 'Reset layout to default'), '') +
-        row('apply-appearance', t('تطبيق المظهر', 'Apply appearance'), '') + row('cancel-appearance', t('إلغاء التغييرات', 'Cancel changes'), '') +
-        row('home', t('الرئيسية', 'Home'), '');
+      result = carousel('appearance.theme', 'theme') +
+        carousel('appearance.background', 'background') +
+        carousel('appearance.countdown', 'homeLayout') +
+        (draft.homeLayout === 'compact' ? carousel('appearance.position', 'homeBar') :
+          draft.homeLayout === 'mihrab' ? carousel('appearance.position', 'archSide') : '') +
+        carousel('appearance.prayers', 'prayerMode') +
+        row('appearance.reset', 'reset-layout', '') +
+        row('appearance.apply', 'apply-appearance', '') + row('appearance.cancel', 'cancel-appearance', '') +
+        row('appearance.home', 'home', '');
     } else if (section === 'device') {
-      result = row('startup', t('فتح المشغل عند تشغيل التلفاز', 'Open launcher after TV starts'), onOff(startup)) +
-        row('inputs', t('المداخل', 'Inputs'), inputName()) + row('apps', t('تطبيقات التلفاز', 'TV apps'), '') +
-        row('tv-settings', t('إعدادات تلفاز LG والشبكة', 'LG TV & network settings'), '') +
-        row('health', t('حالة التنبيهات والتشغيل', 'Alert & startup status'), '') + row('exit', t('الخروج للمدخل الأصلي', 'Exit to native input'), '');
+      result = row('device.startup', 'startup', onOff(startup), 'toggle') +
+        row('device.inputs', 'inputs', inputName()) + row('device.apps', 'apps', '') +
+        row('device.settings', 'tv-settings', '') +
+        row('device.health', 'health', '') + row('device.exit-input', 'exit', '');
     } else if (section === 'tests') {
-      result = row('testPrayer', t('الصلاة المستخدمة للاختبار', 'Test prayer'), s('prayerNames')[testPrayer]) +
-        row('test-banner', t('اختبار لافتة فوق المدخل', 'Test banner over input'), t('بلا صوت', 'Silent')) +
-        row('test-card', t('اختبار بطاقة فوق المدخل', 'Test card over input'), t('بلا صوت', 'Silent')) +
-        row('test-adhan', t('اختبار الأذان لمدة ١٢ ثانية', 'Test adhan for 12 seconds'), '') +
-        row('test-full', t('تشغيل الأذان كاملًا', 'Play full adhan'), '') +
-        row('test-spoken', t('اختبار التذكير الصوتي', 'Test spoken reminder'), '') +
-        row('test-announcement', t('اختبار إعلان وقت الصلاة', 'Test prayer-time announcement'), '') +
-        row('test-background', t('اختبار خدمة الخلفية بعد ٣٠ ثانية', 'Test background service in 30 seconds'), '') +
-        row('cancel-test', t('إلغاء الاختبار المؤجل', 'Cancel scheduled test'), '');
+      result = row('tests.prayer', 'testPrayer', s('prayerNames')[testPrayer], 'choice') +
+        row('tests.banner', 'test-banner', t('بلا صوت', 'Silent')) +
+        row('tests.card', 'test-card', t('بلا صوت', 'Silent')) +
+        row('tests.adhan-short', 'test-adhan', '') +
+        row('tests.adhan-full', 'test-full', '') +
+        row('tests.spoken', 'test-spoken', '') +
+        row('tests.announcement', 'test-announcement', '') +
+        row('tests.background', 'test-background', '') +
+        row('tests.cancel', 'cancel-test', '');
     } else if (section === 'offsets') {
-      for (var i = 0; i < 6; i++) { result += row('offset-' + i, s('prayerNames')[i], digits(prefs.offsets[i]) + f('minuteUnit')); }
-      result += row('reset-offsets', t('إعادة الدقائق إلى الصفر', 'Reset adjustments'), '');
+      for (var i = 0; i < 6; i++) { result += row('offsets.' + ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'][i], 'offset-' + i, digits(prefs.offsets[i]) + f('minuteUnit'), 'number'); }
+      result += row('offsets.reset', 'reset-offsets', '');
     }
     return result;
   }

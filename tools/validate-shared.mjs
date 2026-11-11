@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { validateCatalog, validateMethods, validateStations, validateVoices, validateThemes } from './catalogs.mjs';
 import { validateStrings, validateFormatText, validateSacredText } from './strings.mjs';
 import { validateIcons, validatePrayerIcons, validateAppearance } from './design.mjs';
+import { validateUiContract } from './ui-contract.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const json = path => JSON.parse(readFileSync(resolve(root, path), 'utf8'));
@@ -14,6 +15,7 @@ export function validateShared() {
   validateStations(json('shared/data/stations.json'));
   validateVoices(json('shared/data/voices.json'));
   validateStrings(json('shared/data/strings.json'));
+  validateUiContract(json('shared/data/ui-contract.json'), json('shared/data/strings.json'));
   validateFormatText(json('shared/data/format-text.json'));
   validateSacredText(json('shared/data/sacred-text.json'));
   validateThemes(json('shared/design/themes.json'));

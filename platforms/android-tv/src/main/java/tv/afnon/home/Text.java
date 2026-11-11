@@ -347,4 +347,23 @@ final class Text {
     String[] homeLayouts() { return ar ? new String[] {"صفّان للمفضلة", "كلاسيكي — صف واحد"} : new String[] {"Two favourite rows", "Classic — one row"}; }
     String[] backgroundNames() { return ar ? new String[] {"حسب السمة", "زخرفة", "سادة", "بانوراما", "ضوء النهار", "جبال", "كثبان", "هالة", "سماء الليل", "أقواس", "نجوم ثمانية", "مشربية", "أرابيسك", "بلاط النجوم", "وريدات", "شبكة مثمنة", "زخارف الأركان"} : new String[] {"Theme", "Lattice", "Solid", "Panorama", "Daylight", "Mountains", "Dunes", "Halo", "Night sky", "Arches", "Eight-point stars", "Mashrabiya", "Arabesque", "Star tiles", "Rosettes", "Octagon lattice", "Corner medallions"}; }
     String[] buttonActions() { return ar ? new String[] {"الأصلي", "الرئيسية", "التطبيقات", "المداخل", "الإعدادات", "شريط الصلاة"} : new String[] {"Original", "Home", "All apps", "Inputs", "Settings", "Prayer bar"}; }
+    String timeZone() { return ar ? "التوقيت" : "Time zone"; }
+    String scheduledAlerts() { return ar ? "التنبيهات المجدولة" : "Scheduled alerts"; }
+    String appVolume() { return ar ? "مستوى صوت التطبيق" : "App audio level"; }
+    String perPrayerAdhan() { return ar ? "أذان كل صلاة" : "Per-prayer adhan switches"; }
+    String dockAutoHide() { return ar ? "إخفاء الشريط تلقائيًا" : "Hide prayer bar after"; }
+    String clockScreen() { return ar ? "شاشة الساعة" : "Clock screen"; }
+    String tvApps() { return ar ? "تطبيقات التلفاز" : "TV apps"; }
+    String startupLauncher() { return ar ? "فتح المشغل عند تشغيل التلفاز" : "Open launcher after TV starts"; }
+    String exitToInput() { return ar ? "الخروج للمدخل الأصلي" : "Exit to native input"; }
+    String testPrayer() { return ar ? "الصلاة المستخدمة للاختبار" : "Test prayer"; }
+    String testBanner() { return ar ? "اختبار لافتة فوق المدخل" : "Test banner over input"; }
+    String testCard() { return ar ? "اختبار بطاقة فوق المدخل" : "Test card over input"; }
+    String testAdhanShort() { return ar ? "اختبار الأذان لمدة ١٢ ثانية" : "Test adhan for 12 seconds"; }
+    String testAdhanFull() { return ar ? "تشغيل الأذان كاملًا" : "Play full adhan"; }
+    String testSpoken() { return ar ? "اختبار التذكير الصوتي" : "Test spoken reminder"; }
+    String testAnnouncement() { return ar ? "اختبار إعلان وقت الصلاة" : "Test prayer-time announcement"; }
+    String testBackground() { return ar ? "اختبار خدمة الخلفية بعد ٣٠ ثانية" : "Test background service in 30 seconds"; }
+    String cancelTest() { return ar ? "إلغاء الاختبار المؤجل" : "Cancel scheduled test"; }
+    String resetOffsets() { return ar ? "إعادة الدقائق إلى الصفر" : "Reset adjustments"; }
 }

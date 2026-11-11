@@ -243,6 +243,18 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
+Version 0.2.7 uses shared Home navigation. Its in-place update preserved all 30
+current preferences, HDMI 1 and startup; all 100 installed files match the build.
+Actual WebKit 538.2 passed the column/top-controls, All apps and last-app vectors
+in Arabic/RTL, and all 50 core assertions passed on Node 0.10.25. The owner
+confirmed the physical Up/Down/OK/Back routes and return focus work as expected.
+The owner then performed a watched cold power cycle: the launcher opened
+automatically with HDMI picture/sound. Service reads verified a new boot and
+exactly one successful startup launch, preserving all 30 preferences and the input.
+After the owner opened Browser for 90 seconds, it stayed visible; a same-boot read
+confirmed the launch count did not increase. This does not establish settings/action
+catalog parity or support on other models.
+
 Version 0.2.6 fixes old-WebKit clipping of Arabic status values such as enabled,
 disabled and silent; long settings values wrap. Its in-place update from 0.2.5
 preserved all 30 current preferences, HDMI 1 and startup. All 100 installed payload

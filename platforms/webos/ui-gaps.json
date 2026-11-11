@@ -1,0 +1,77 @@
+[
+  {
+    "id": "prayer.facing",
+    "state": "unimplemented",
+    "reason": "Qibla shows true north; manual screen-facing calibration is not ported."
+  },
+  {
+    "id": "radio.playback",
+    "state": "unimplemented",
+    "reason": "Uses separate Play/Stop actions instead of a station-row toggle."
+  },
+  {
+    "id": "radio.screen-off",
+    "state": "os-unsupported",
+    "reason": "No supported production panel-off integration on the tested old LG."
+  },
+  {
+    "id": "display.hide-system-apps",
+    "state": "os-unsupported",
+    "reason": "Uses an allowlisted shortcut snapshot; live installed/system-app classification is unavailable on the tested firmware."
+  },
+  {
+    "id": "display.bar-mode",
+    "state": "os-unsupported",
+    "reason": "The in-app prayer bar works; no Android-style global overlay or edge tab."
+  },
+  {
+    "id": "appearance.favourites",
+    "state": "unimplemented",
+    "reason": "Home uses fixed shortcuts; configurable favourite rows are not ported."
+  },
+  {
+    "id": "appearance.lighting",
+    "state": "unimplemented",
+    "reason": "Ambient lighting is not ported."
+  },
+  {
+    "id": "appearance.cycle",
+    "state": "unimplemented",
+    "reason": "Automatic appearance cycling is not ported."
+  },
+  {
+    "id": "appearance.focus-lighting",
+    "state": "unimplemented",
+    "reason": "App-derived focus lighting is not ported."
+  },
+  {
+    "id": "appearance.reduce-motion",
+    "state": "unimplemented",
+    "reason": "The renderer is already static with no CSS animation/transition; no user toggle is implemented."
+  },
+  {
+    "id": "network.settings",
+    "state": "unimplemented",
+    "reason": "Device settings opens LG network settings too; no separate Network section shortcut."
+  },
+  {
+    "id": "device.home",
+    "state": "os-unsupported",
+    "reason": "webOS does not expose supported system Home replacement for this app."
+  },
+  {
+    "id": "device.screensaver",
+    "state": "os-unsupported",
+    "reason": "No supported app-controlled system screensaver selection on the tested old LG."
+  },
+  {
+    "id": "device.remote",
+    "state": "os-unsupported",
+    "reason": "No supported global remote-key interception while this app is closed."
+  },
+  {
+    "id": "device.repair",
+    "state": "os-unsupported",
+    "reason": "Android accessibility recovery has no equivalent webOS service permission."
+  }
+]

@@ -991,5 +991,81 @@
       "Settings",
       "Prayer bar"
     ]
+  },
+  "timeZone": {
+    "ar": "التوقيت",
+    "en": "Time zone"
+  },
+  "scheduledAlerts": {
+    "ar": "التنبيهات المجدولة",
+    "en": "Scheduled alerts"
+  },
+  "appVolume": {
+    "ar": "مستوى صوت التطبيق",
+    "en": "App audio level"
+  },
+  "perPrayerAdhan": {
+    "ar": "أذان كل صلاة",
+    "en": "Per-prayer adhan switches"
+  },
+  "dockAutoHide": {
+    "ar": "إخفاء الشريط تلقائيًا",
+    "en": "Hide prayer bar after"
+  },
+  "clockScreen": {
+    "ar": "شاشة الساعة",
+    "en": "Clock screen"
+  },
+  "tvApps": {
+    "ar": "تطبيقات التلفاز",
+    "en": "TV apps"
+  },
+  "startupLauncher": {
+    "ar": "فتح المشغل عند تشغيل التلفاز",
+    "en": "Open launcher after TV starts"
+  },
+  "exitToInput": {
+    "ar": "الخروج للمدخل الأصلي",
+    "en": "Exit to native input"
+  },
+  "testPrayer": {
+    "ar": "الصلاة المستخدمة للاختبار",
+    "en": "Test prayer"
+  },
+  "testBanner": {
+    "ar": "اختبار لافتة فوق المدخل",
+    "en": "Test banner over input"
+  },
+  "testCard": {
+    "ar": "اختبار بطاقة فوق المدخل",
+    "en": "Test card over input"
+  },
+  "testAdhanShort": {
+    "ar": "اختبار الأذان لمدة ١٢ ثانية",
+    "en": "Test adhan for 12 seconds"
+  },
+  "testAdhanFull": {
+    "ar": "تشغيل الأذان كاملًا",
+    "en": "Play full adhan"
+  },
+  "testSpoken": {
+    "ar": "اختبار التذكير الصوتي",
+    "en": "Test spoken reminder"
+  },
+  "testAnnouncement": {
+    "ar": "اختبار إعلان وقت الصلاة",
+    "en": "Test prayer-time announcement"
+  },
+  "testBackground": {
+    "ar": "اختبار خدمة الخلفية بعد ٣٠ ثانية",
+    "en": "Test background service in 30 seconds"
+  },
+  "cancelTest": {
+    "ar": "إلغاء الاختبار المؤجل",
+    "en": "Cancel scheduled test"
+  },
+  "resetOffsets": {
+    "ar": "إعادة الدقائق إلى الصفر",
+    "en": "Reset adjustments"
   }
 }

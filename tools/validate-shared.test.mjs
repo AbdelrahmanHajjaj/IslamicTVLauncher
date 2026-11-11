@@ -10,7 +10,7 @@ const scratch = realpathSync(tmpdir());
 const fixture = mkdtempSync(join(scratch, 'islamic-tv-shared-'));
 try {
   mkdirSync(join(fixture, 'tools'));
-  for (const name of ['catalogs.mjs', 'strings.mjs', 'design.mjs', 'validate-shared.mjs']) {
+  for (const name of ['catalogs.mjs', 'strings.mjs', 'design.mjs', 'ui-contract.mjs', 'validate-shared.mjs']) {
     copyFileSync(join(root, 'tools', name), join(fixture, 'tools', name));
   }
   cpSync(join(root, 'shared/data'), join(fixture, 'shared/data'), {recursive: true});

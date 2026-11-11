@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { validateCatalog, validateMethods, validateStations, validateVoices, validateThemes } from './catalogs.mjs';
 import { renderText, validateStrings, renderLiterals, validateFormatText, validateSacredText } from './strings.mjs';
 import { validateIcons, validatePrayerIcons, validateAppearance } from './design.mjs';
+import './ui-contract.test.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
 const regions = JSON.parse(readFileSync(new URL('../shared/data/regions.json', import.meta.url)));

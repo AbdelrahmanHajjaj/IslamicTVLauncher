@@ -346,4 +346,23 @@ final class Text {
     String[] homeLayouts() { {{STRINGS:homeLayouts}} }
     String[] backgroundNames() { {{STRINGS:backgroundNames}} }
     String[] buttonActions() { {{STRINGS:buttonActions}} }
+    String timeZone() { {{STRINGS:timeZone}} }
+    String scheduledAlerts() { {{STRINGS:scheduledAlerts}} }
+    String appVolume() { {{STRINGS:appVolume}} }
+    String perPrayerAdhan() { {{STRINGS:perPrayerAdhan}} }
+    String dockAutoHide() { {{STRINGS:dockAutoHide}} }
+    String clockScreen() { {{STRINGS:clockScreen}} }
+    String tvApps() { {{STRINGS:tvApps}} }
+    String startupLauncher() { {{STRINGS:startupLauncher}} }
+    String exitToInput() { {{STRINGS:exitToInput}} }
+    String testPrayer() { {{STRINGS:testPrayer}} }
+    String testBanner() { {{STRINGS:testBanner}} }
+    String testCard() { {{STRINGS:testCard}} }
+    String testAdhanShort() { {{STRINGS:testAdhanShort}} }
+    String testAdhanFull() { {{STRINGS:testAdhanFull}} }
+    String testSpoken() { {{STRINGS:testSpoken}} }
+    String testAnnouncement() { {{STRINGS:testAnnouncement}} }
+    String testBackground() { {{STRINGS:testBackground}} }
+    String cancelTest() { {{STRINGS:cancelTest}} }
+    String resetOffsets() { {{STRINGS:resetOffsets}} }
 }

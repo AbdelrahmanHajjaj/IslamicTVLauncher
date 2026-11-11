@@ -5,6 +5,7 @@ const http = require('node:http');
 const { chromium } = require('playwright');
 const base = path.join(__dirname, 'build/app');
 const sacred = JSON.parse(fs.readFileSync(path.join(__dirname, '../../shared/data/sacred-text.json')));
+const uiGaps = JSON.parse(fs.readFileSync(path.join(__dirname, 'ui-gaps.json')));
 const shots = path.resolve(__dirname, '../../state/webos-port');
 fs.mkdirSync(shots, { recursive: true });
 const server = http.createServer((req, res) => {
@@ -130,6 +131,44 @@ const server = http.createServer((req, res) => {
     await page.screenshot({path: path.join(shots, 'home-ar.png')});
     const arCount = await page.locator('.prayer').count(); assert.equal(arCount, 6);
     await page.locator('[data-action=settings]').click();
+    async function settingsCoverage() {
+      const seen = new Set();
+      async function collect(section) {
+        const bound = await page.locator('.settings-rows button:not([data-action=carousel-step])').evaluateAll(items => items.map(el => ({
+          id: el.getAttribute('data-ui'), kind: el.getAttribute('data-ui-kind'), label: el.firstChild.textContent,
+          action: el.getAttribute('data-action')
+        })));
+        assert.ok(bound.length);
+        assert.equal(new Set(bound.map(item => item.id)).size, bound.length, 'no duplicate control in an actual section');
+        for (const item of bound) {
+          assert.ok(item.id, 'every actual settings row has a contract ID: ' + item.action);
+          const expected = await page.evaluate(({id, kind, section}) => {
+            const control = window['tv.afnon:core'].tv.afnon.core.UiContract.bind(id, kind);
+            if (control.section !== section) throw new Error('Wrong control section: ' + id);
+            const [key, index] = control.labelKey.split(':');
+            const label = window.AfnonData.strings[key][document.documentElement.lang];
+            return index === undefined ? label : label[Number(index)];
+          }, {...item, section});
+          assert.equal(item.label, expected, 'actual row uses its canonical bilingual label');
+          seen.add(item.id);
+        }
+      }
+      for (const section of ['prayer', 'reminders', 'radio', 'display', 'appearance', 'device', 'tests']) {
+        await page.locator('[data-action=section][data-value=' + section + ']').click();
+        await collect(section);
+      }
+      await page.locator('[data-action=section][data-value=prayer]').click();
+      await page.locator('[data-action=offsets]').click();
+      await collect('offsets');
+      await page.evaluate(({bound, gaps}) => window['tv.afnon:core'].tv.afnon.core.UiContract.validateCoverage(bound, gaps),
+        {bound: [...seen], gaps: uiGaps.map(gap => gap.id)});
+      const rejected = await page.evaluate(({bound, gaps}) => {
+        try { window['tv.afnon:core'].tv.afnon.core.UiContract.validateCoverage(bound.slice(1), gaps); return false; }
+        catch (error) { return /Missing UI control/.test(error.message); }
+      }, {bound: [...seen], gaps: uiGaps.map(gap => gap.id)});
+      assert.ok(rejected, 'losing a real binding fails coverage');
+      await page.locator('[data-action=section][data-value=prayer]').click();
+    }
     async function settingsValuesFit() {
       for (const [section, actions] of [['reminders', ['automatic', 'remindVoice']], ['tests', ['testPrayer', 'test-banner', 'test-card']]]) {
         await page.locator('[data-action=section][data-value=' + section + ']').click();
@@ -162,6 +201,7 @@ const server = http.createServer((req, res) => {
       }
     }
     await settingsValuesFit();
+    await settingsCoverage();
     await page.locator('[data-action=section][data-value=prayer]').click();
     await page.screenshot({path: path.join(shots, 'settings-ar.png')});
     await page.keyboard.press('ArrowLeft');
@@ -180,6 +220,7 @@ const server = http.createServer((req, res) => {
     await page.waitForFunction(() => document.documentElement.dir === 'ltr');
     assert.equal(await page.locator('html').getAttribute('dir'), 'ltr');
     await settingsValuesFit();
+    await settingsCoverage();
     await page.locator('[data-action=section][data-value=prayer]').click();
     await page.locator('[data-action=city]').click();
     await page.locator('[data-action=choose][data-value=Egypt]').click();

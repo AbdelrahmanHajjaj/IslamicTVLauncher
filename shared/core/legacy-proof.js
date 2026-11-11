@@ -72,5 +72,16 @@ function verifyIslamicTVCore(core) {
   check(home.move(home.ALL_APPS, 3, 0, 3, home.FIRST_APP, -1, 0, true) === home.WATCH_INPUT &&
     home.move(home.WATCH_INPUT, 3, 0, 3, home.FIRST_APP, 1, 0, true) === home.ALL_APPS, 'optional input action');
   check(home.initial(0, 0) === home.ALL_APPS && home.move(home.SETTINGS, 0, 2, 1, home.FIRST_APP, 0, 1, false) === home.FIRST_RECENT, 'empty Home rows');
+  var ui = core.tv.afnon.core.UiContract, controls = ui.controls(), ids = [];
+  for (i = 0; i < controls.length; i++) { ids.push(controls[i].id); }
+  check(ui.bind('appearance.countdown', 'choice').save === 'appearance', 'shared UI appearance draft');
+  check(ui.control('appearance.favourites').id !== ui.control('appearance.countdown').id, 'distinct Home concepts');
+  ui.validateCoverage(ids.slice(0, 3), ids.slice(3)); check(true, 'UI binding and gap coverage');
+  var rejected = false;
+  try { ui.validateCoverage(ids.slice(1), []); } catch (missing) { rejected = true; }
+  check(rejected, 'missing UI control rejected');
+  rejected = false;
+  try { ui.bind('appearance.countdown', 'toggle'); } catch (kind) { rejected = true; }
+  check(rejected, 'wrong UI control kind rejected');
   return {checks: checks};
 }

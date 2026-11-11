@@ -49,3 +49,12 @@ Ramadan and Friday. Update expected data only for an intentional calendar change
 The runner restores process timezone defaults and does not write preferences, open
 UI, schedule alerts or play sound. Omitting `-e check prayer` retains the existing
 appearance-cycle UI test. Emulator results describe that image/API, not a physical TV or its older ICU.
+
+Use `-e check ui` for Settings contract conformance. It opens real settings rows in
+Arabic/English, visits every section and the six-offset editor, and checks semantic
+IDs, sections, kinds, canonical labels and complete binding/gap coverage. It restores
+the saved locale and verifies preferences are unchanged. It does not play test audio
+or change TV integrations. The test dispatches logical keys through the real
+Activity handler; physical remote/firmware delivery remains a separate hardware check.
+App CI runs this mode on an API 34 emulator. Shell omissions are declared in
+`src/androidTest/assets/ui-gaps.json`; see the generated [gap report](../../docs/UI-GAPS.md).

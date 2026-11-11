@@ -26,6 +26,12 @@ identities, Arabic/English, RTL/LTR, accessibility and exact religious text.
   remote-input contract across native shells. Use Android as the parity reference;
   inventory actual gaps, distinguish missing common features from intrinsic platform
   limitations, and test bindings/behavior. Keep native renderers; no generic UI engine.
+- Owner clarified feature policy: the universal contract includes the full product
+  design/settings language; a shell may leave features unimplemented and hide/lock
+  them. Prefer hiding unimplemented LG controls initially. Explicitly distinguish
+  implemented, unimplemented and OS-unsupported; do not remove definitions or
+  silently pretend an unimplemented control works. Port supported/common bindings
+  through the contract and retain an honest gap report.
 - Shared data/design: cities, methods, bilingual text, station/voice catalogs,
   existing tokens/patterns and distributable assets. Platform outputs are generated.
 - Android: existing Java Views and native integrations; existing installer/recovery
@@ -86,16 +92,33 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Active priority | Owner-requested shared UI/settings/input contract: audit Android/LG coverage, define stable semantic IDs/capabilities and deterministic focus behavior, enforce shell bindings with tests; fix Home top-controls/All-apps navigation first. Continue this before remaining power/final hardware signoff. |
+| Q09.5 | Active priority | Owner-requested shared UI/settings/input contract. Home input and initial Settings control coverage are verified; continue bounded value/bounds and linked-editor coverage, then the new LG build's host/UI acceptance. Power/startup passed on 0.2.7; Android hardware remains open. |
 
 ## Current cursor
 
-Next: Q09.5b physical LG Home acceptance. Shared HomeNavigation is implemented and
-both Android/LG Home consume it; all software checks below pass. Package/install
-the reviewed 0.2.7 update in place, preserving all current preferences/input/startup,
-then verify real old-LG initial app focus, Up/top controls, Down/All apps and return.
-After that continue Q09.5c settings/action catalog and actual binding coverage;
-that broader contract is not implemented/enforced yet. Q09.5a's spec is
+Next: Q09.5c2, extend the verified settings identity/type/coverage foundation with
+existing choice/value/bounds mappings and linked editor/action coverage. Keep this
+bounded to actual controls, including per-prayer switches and favourite operations;
+no generic widget engine, new features or forced LG cosmetic ports. Unimplemented
+LG features may remain hidden, with explicit definitions/gaps as the owner approved.
+Q09.5c1 is software-verified: 76 controls, actual Android/LG rows, canonical labels
+and complete binding/gap coverage in both languages. Full option/value/editor
+conformance is not implemented yet. LG source is now 0.2.8; it is not packaged or
+installed. The TV remains on accepted 0.2.7 in Browser. Do not install intermediate
+builds until the remaining bounded contract work is ready for one hardware check.
+The watched cold boot passed: automatic launcher and HDMI picture/sound, new boot,
+exactly one launch (3 to 4), all 30 preferences/input preserved, no pending test.
+The owner also confirmed Browser stayed visible after 90 seconds without reopening;
+a same-boot read confirms the launch counter stayed 4. Power/startup slice accepted.
+Shared HomeNavigation is implemented, consumed by Android/LG and physically accepted
+on installed LG 0.2.7. Define the full product contract with semantic IDs, control
+patterns/canonical label references and explicit shell implementation profiles.
+Owner permits unimplemented features to be hidden/locked; use hidden initially.
+Supported features need real bindings; unimplemented and OS-unsupported stay distinct
+in the report, with no silent omission. Do not force unsupported OS operations or
+add meaningless dead controls. Existing control coverage is enforced; broader
+choice/value/editor coverage remains the next slice.
+Q09.5a's spec is
 docs/UI-CONTRACT.md. Android is the reference, with explicit owner
 choice: Up from the first app row enters the top controls row according to column,
 not always the Settings gear; Down beyond the last app row selects All apps.
@@ -105,17 +128,19 @@ as platform limitations. Preserve native rendering, stored keys and platform API
 
 Q09.4.4 background service test passed its live checks and cleanup. Owner heard
 adhan and reports Browser now, but did not observe whether Browser was visible
-before the alert. Preserve that observation limit. Actual new-boot/power acceptance
-remains open; resume it after the UI/input contract work with a watcher. Original
-English and all 30 original preferences are restored. No test activity is pending.
+before the alert. Preserve that observation limit. The separate watched new-boot/
+startup check passed on 0.2.7; leave the TV in the owner's Browser afterward.
+The later fresh backup's current Arabic choice and all 30 values are preserved.
+No test activity is pending. Do not reset Arabic from the older English snapshot.
 
 Real LG evidence so far: 0.2.4 to 0.2.5 to 0.2.6 in-place upgrades preserve all
 30 current preferences, HDMI 1 and startup state. Owner confirms picture/sound,
 physical OK/Home/arrows/Settings/Back focus, joined Arabic/RTL, short adhan and
 normal automatic audio/HDMI/settings restoration. Actual Node 0.10.25/core and
 WebKit 538.2 checks pass; all 100 installed 0.2.6 files match the reviewed package.
-Original English is restored; current backups are ignored q094-lg-*-service/.
-The second owned inspector is closed; native Browser was left untouched.
+English was restored/verified earlier; fresh pre-0.2.7 state was Arabic and the
+update preserved it. Current backups are ignored q094-lg-home-*-service/.
+The third owned inspector is closed; leave the current Browser state alone.
 Background controller state in ignored q094-background/operations.json confirms
 complete-awaiting-human and cleanupConfirmed=true; do not arm a duplicate test.
 
@@ -1377,3 +1402,144 @@ unrelated renderer redesign, transport or future shell.
 - Evidence: ignored home-focus-{before,after}.csv, old native source/harness,
   ui-home-{core-check,lg-test,lg-binding-final,android-build,preview-test,
   native-regressions-fixed}.log and common/actual-renderer tests in source.
+
+### Q09.5b installed LG Home acceptance (2026-11-11)
+
+- Committed source 37adb68. Packaged 0.2.7 without minification: 18,632,668 bytes,
+  SHA 93aab9580ef24ff85defaf41b164be4a19e40da3bd2ce25bd984ea335123a729.
+  All 100 payload/source files match. Fresh 0.2.6 backup and in-place upgrade prove
+  all 30 current preferences, input and startup preserved, scheduling successful,
+  no UI error or pending test. Fresh/current lang is Arabic; preserve it rather
+  than forcing the earlier English backup. No language change made for this check.
+- Actual ready WebKit 538.2 has stored Mosaic theme, Arabic/RTL, HDMI 1 readyState=4
+  and initial Home focus on the first app. Injected real key-handler vectors pass
+  all three top-column targets, downward All apps and last-app return. All 50 core
+  assertions pass against installed files on Node 0.10.25; all 100 installed hashes
+  match. These diagnostics remain distinct from the physical remote evidence.
+- Owner physically performed Up/top controls, Down/app, Down/All apps, OK and Back:
+  "Yes, navigation now works as expected." Home slice accepted on old LG. Android's
+  11,760 frozen transitions match; its physical hardware remains unavailable.
+- Evidence: ignored ui-home-candidate/, ui-home-upgrade-operations.json,
+  q094-lg-home-{before,after}-service/, q094-dom-ui-home-* and versioned installed
+  payload/legacy logs. Third owned inspector is closed; TV UI left untouched.
+
+### Q09.5 owner policy: universal contract, gated implementations (2026-11-11)
+
+- Owner says to port the shared features/contract, permits LG features to remain
+  unimplemented and hidden/locked, and requires universal design language. Adopt
+  one full contract; shell profiles explicitly declare implementation state. Hide
+  unimplemented LG features initially. OS limitations require their own reason;
+  an unimplemented portable feature must not be mislabeled OS-unsupported.
+- Scope refinement: enforce actual working bindings for implemented features and
+  report the rest. Unimplemented LG controls may remain hidden without blocking
+  the contract foundation solely to force every native Android feature into old
+  LG. Preserve every currently working control and all stored values. Remaining
+  feature implementation is visible, not silently claimed as complete parity.
+
+### Next catalog implementation shape
+
+- Prefer canonical shared/data/ui-contract.json plus generation into portable core
+  IDs/definitions through the existing tools, keeping core standalone after
+  generation. Definitions cover the union of current Android/LG controls/actions,
+  semantic kinds, sections, canonical label references, appearance draft grouping
+  and relevant shared bounds; no pixel/widget engine or preference-key migration.
+- Add core lookup/profile/coverage validation and shell-owned implementation
+  profiles. Every definition must be accounted for as implemented, explicitly
+  unimplemented/hidden, or genuinely OS-unsupported with a reason. Derive supported
+  coverage from actual registered/rendered bindings, not another manifest claiming
+  controls exist. Existing working controls must remain working.
+- Tag/enumerate real native rows and LG rows/carousels; check kinds, labels and
+  actual UI coverage. Native labels already use canonical Text; LG should consume
+  those references. Preserve contextual labels where needed. New LG-only label
+  keys belong in shared/data and the Text template/generator, never generated files.
+- Keep option/default/OS differences explicit. In particular Android home_layout
+  means favourite-row layout; LG homeLayout means countdown mode. Use distinct
+  semantic IDs instead of equating similarly named storage keys. Already static LG
+  motion and native/global OS controls need honest profile declarations.
+
+### Q09.4.5 watched startup acceptance (2026-11-11)
+
+- Saved a fresh 0.2.7 baseline, startup enabled and test=null. Owner turned the TV
+  off, disconnected/reconnected power and observed automatic launcher startup with
+  HDMI picture/sound, without manually launching it. The kernel boot changed;
+  lastBoot matches it, startup launchResult is successful, counter increased from
+  3 to exactly 4, all 30 preferences/input survived and no test activity is pending.
+- Owner opened LG Browser and confirmed it remained visible for about 90 seconds
+  without the launcher reopening. A subsequent read-only snapshot is on the same
+  boot with launch counter still 4 and preferences/input unchanged. Leave Browser
+  untouched. No forwarding process or one-shot test was started for these checks.
+- Private evidence: q094-lg-{power-before,reboot,power-stable}-service/snapshot.json
+  and bounded read-only helper logs. Power/startup slice accepted on this old LG;
+  this does not close unavailable Android hardware or the new UI catalog checks.
+
+### Q09.5c catalog implementation in progress
+
+- Added 76 semantic settings/action definitions, canonical label references,
+  choice/toggle/number/action kinds and immediate/appearance-draft/action semantics.
+  Generated portable core lookup/binding/coverage checks and explicit shell gaps.
+  Native actual Row objects and LG rows/carousels now carry IDs; no stored keys or
+  default values changed. LG rows consume canonical bilingual labels.
+- Generated gap report distinguishes absent controls/layout alternatives from
+  unimplemented features and OS restrictions. Existing working controls remain.
+  This slice covers Settings, its six-offset editor and LG's test pane; Home input
+  is separate. Further linked editors/favourite operations and choice/value/bounds
+  enforcement still require review before claiming the full UI contract complete.
+- PASS so far: portable core check (17 JVM/16 JS; 55 stripped ES5 assertions),
+  source/label/gap validation and isolated shared-input checks, full LG build/ES5/
+  service suite and actual browser binding/label coverage in Arabic and English.
+  Avoided a set implementation that pulled extra runtime into ES5; measured combined
+  production runtime 56,618 bytes (+11,450 over the accepted Home build).
+- Native standalone build initially lacked SDK env configuration; rerun uses the
+  already installed SDK 34. New actual-view instrumentation must be run on an owned
+  emulator, then closed; no physical Android acceptance is claimed. No new TV
+  package has been installed; the owner's LG remains on accepted 0.2.7 in Browser.
+
+### Q09.5c1 shared settings coverage: verified foundation (2026-11-11)
+
+- Canonical shared/data/ui-contract.json defines 76 settings/offset/test controls,
+  stable semantic IDs, groups, value kinds, canonical label references and save
+  semantics. Generated UiCatalog is checked in so core stays independently buildable.
+  UiContract rejects unknown IDs/kinds, duplicate declarations and omitted controls.
+  No preference keys/defaults or platform operations were migrated or renamed.
+- Native Settings Row constructors require a contract ID, validate the actual
+  widget's semantic kind and tag the real view. LG rows/carousels bind through the
+  core and consume canonical bilingual labels. Conformance enumerates actual
+  controls in every section and six-offset editor, checks duplicate IDs, sections,
+  types and labels, and combines their IDs with explicit shell gaps. Neither shell
+  has an independent manifest pretending supported controls exist.
+- Generated docs/UI-GAPS.md reports 24 absent Android controls and 15 LG controls,
+  with reasons that distinguish layout alternatives, unimplemented features and
+  tested OS restrictions. These counts describe controls, not equivalent counts of
+  missing product features. LG lighting/cycling/favourite rows/focus lighting remain
+  explicitly unimplemented and hidden; reduced-motion policy documents static UI.
+- PASS: 17 JVM /16 JS common tests; 55 legacy ES5 assertions in stripped browser and
+  CommonJS hosts, 56,618 combined production JS bytes; canonical source/generation
+  and isolation checks; full preview suite; full LG ES5/build/service/async suite;
+  actual bilingual LG browser binding/label/section coverage and existing workflows;
+  39 Python/Java/simulated-device regressions; native build/lint/test APK compilation.
+- Actual API 37 emulator ran check=ui successfully for both languages, all native
+  settings sections and six offset steppers. It restores locale and verifies every
+  preference unchanged. Early failures identified test event timing and PrayerIcon's
+  object-replacement character; dispatch through the real Activity handler is now
+  deterministic and label comparison excludes that icon placeholder. This is real
+  renderer evidence, not physical TV remote delivery. Final section check also passed.
+- Preserved all original compiled-text output hashes. Froze their original 174-key
+  set in tests/fixtures/text-output-keys.json so 19 new canonical LG label getters do
+  not invalidate the original-output proof. Generator/label tests cover the new keys.
+  A normalized-source comparison proves every native Row implementation and existing
+  preference/action handler is byte-equivalent after removing contract metadata.
+- Native APK 21,122,011 bytes, below 25 MB; lint 0 errors/55 existing warnings. No
+  speed/memory claim. LG patch versions aligned to 0.2.8 with npm-generated lock
+  metadata, full build/service checks passed after alignment. No TV install occurred.
+- Native App CI now checks generated projections and runs actual-view conformance
+  with the already-used emulator runner. Workflow YAML and its script syntax pass;
+  remote CI has not run because there is no push. Context7 lacked that action;
+  configuration checked against its official README and the existing installer job.
+- Owned emulator was closed, resumed only for the added section assertion, then
+  closed again. Both closures and unchanged original user AVD hashes are verified.
+  No inspector, emulator, one-shot test or background controller is left running.
+- Evidence: ignored ui-catalog-{core-final,lg-0.2.8-final,lg-browser-final,
+  preview-test,native-regressions-final,final-native-build,native-section-final,
+  emulator-closure}.log, ui-contract-emulator/ with original closed-session evidence,
+  and committed source/tests. Android TV hardware and actual old-LG 0.2.8 host/UI
+  acceptance remain open. Choice/bounds and linked-editor coverage is Q09.5c2 next.

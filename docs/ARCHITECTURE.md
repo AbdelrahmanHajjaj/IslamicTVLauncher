@@ -20,8 +20,8 @@ flowchart TD
 
 | Module | Owns | Leaves to its consumers |
 | --- | --- | --- |
-| `shared/core` | Six-offset validation/normalization, prayer/reminder rules, semantic Home initial focus and directional transitions | Astronomy, dates/timezones, clocks/timers, storage, rendering, physical key/device APIs and networking |
-| `shared/data` | Stable city/method/station/voice IDs, bilingual labels, formatter literals and exact sacred text | Formatting algorithms and platform capabilities |
+| `shared/core` | Six-offset validation/normalization, prayer/reminder rules, semantic Home focus, UI control identity/type/coverage checks | Astronomy, dates/timezones, clocks/timers, storage, rendering, physical key/device APIs and networking |
+| `shared/data` | Stable catalog/control IDs, bilingual labels, UI control metadata, formatter literals and exact sacred text | Formatting algorithms and platform capabilities |
 | `shared/design`, `afnon-mihrab` | Fonts/notices, theme/icon geometry/order, appearance IDs, tokens and SVG patterns | Native drawing, CSS layout, applying semantic focus and accessibility |
 | `platforms/android-tv` | Java Views, adhan-java, Android ICU, preferences, accessibility/remote handling, scheduling, media and Home integration | Shared product rules and canonical sources |
 | `platforms/webos` | ES5 renderer, adhan-js, old-LG calendar adapter, preferences, HDMI/audio handling and Activity Manager service | Shared product rules and canonical sources |

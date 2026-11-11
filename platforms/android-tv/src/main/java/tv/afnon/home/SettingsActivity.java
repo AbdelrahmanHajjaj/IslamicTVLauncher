@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.IntConsumer;
 
+import tv.afnon.core.UiContract;
+import tv.afnon.core.UiControl;
+
 /**
  * Afnon Settings (design/Settings.dc.html): sections down the start side, the section's rows beside them, and
  * a shared Home/appearance draft preview. Other changes save at once.
@@ -46,12 +49,19 @@ public class SettingsActivity extends Screen {
     /** One row: what it shows and what OK (and ◀▶ while editing) do. */
     private abstract class Row {
         final int kind;
+        final UiControl contract;
         FocusTile tile;
         TextView label, help;
         LinearLayout control;
 
-        Row(int kind) {
+        Row(String id, int kind) {
             this.kind = kind;
+            contract = UiContract.INSTANCE.control(id);
+            String semantic = contract.getKind();
+            boolean valid = kind == VALUE ? semantic.equals("choice") || semantic.equals("action")
+                : kind == SEG ? semantic.equals("choice") || semantic.equals("toggle")
+                : semantic.equals(kind == STEP ? "number" : kind == TOGGLE ? "toggle" : "choice");
+            if (!valid) throw new IllegalArgumentException("Wrong UI row kind: " + id);
         }
 
         abstract String label();
@@ -260,25 +270,25 @@ public class SettingsActivity extends Screen {
 
     private List<Row> homeRows() {
         return Arrays.asList(
-            new Row(CAROUSEL) {
+            new Row("appearance.countdown", CAROUSEL) {
                 String label() { return t.homeCountdown(); }
                 String[] segs() { return t.homeCountdowns(); }
                 int selected() { return homeDraft[0]; }
                 void select(int i) { homeDraft[0] = i; }
             },
-            new Row(CAROUSEL) {
+            new Row("appearance.position", CAROUSEL) {
                 String label() { return t.homePosition(); }
                 String[] segs() { return homeDraft[0] == HomeLayout.HIDDEN ? new String[] {"—"} : homeDraft[0] == HomeLayout.COMPACT ? t.homeBars() : t.homeSides(); }
                 int selected() { return homeDraft[0] == HomeLayout.HIDDEN ? 0 : homeDraft[homeDraft[0] == HomeLayout.COMPACT ? 2 : 1]; }
                 void select(int i) { if (homeDraft[0] != HomeLayout.HIDDEN) homeDraft[homeDraft[0] == HomeLayout.COMPACT ? 2 : 1] = i; }
             },
-            new Row(CAROUSEL) {
+            new Row("appearance.prayers", CAROUSEL) {
                 String label() { return t.homePrayers(); }
                 String[] segs() { return t.homePrayerModes(); }
                 int selected() { return homeDraft[3]; }
                 void select(int i) { homeDraft[3] = i; }
             },
-            new Row(CAROUSEL) {
+            new Row("appearance.favourites", CAROUSEL) {
                 String label() { return t.homeFavourites(); }
                 String[] segs() { return t.homeLayouts(); }
                 int selected() { return homeDraft[4]; }
@@ -329,7 +339,7 @@ public class SettingsActivity extends Screen {
         Context c = this;
         switch (s) {
             case PRAYER: return Arrays.asList(
-                new Row(VALUE) {
+                new Row("prayer.location", VALUE) {
                     String label() { return t.location(); }
                     String help() { Prefs.City city = Prefs.city(c); return t.locationHelp(city.lat, city.lng); }
                     String value() { Prefs.City city = Prefs.city(c); return t.ar ? t.place(city.ar, city.countryAr) : t.place(city.en, city.countryEn); }
@@ -339,7 +349,7 @@ public class SettingsActivity extends Screen {
                             i -> root.post(() -> openCountries(i, this::open)));
                     }
                 },
-                new Row(VALUE) {
+                new Row("prayer.method", VALUE) {
                     String label() { return t.method(); }
                     String help() { return t.methodAngles(Prefs.method(c)); }
                     String value() { return t.methodName(Prefs.method(c)); }
@@ -353,7 +363,7 @@ public class SettingsActivity extends Screen {
                         openChooser(t.method(), names, sel, i -> { Prefs.setMethod(c, Prefs.METHODS[i]); showSaved(); });
                     }
                 },
-                new Row(SEG) {
+                new Row("prayer.asr", SEG) {
                     String label() { return t.asrSchool(); }
                     String help() {
                         PrayerDay shown = editing == this ? new PrayerDay(new Date(), Prefs.where(c), Prefs.method(c),
@@ -364,7 +374,7 @@ public class SettingsActivity extends Screen {
                     int selected() { return Prefs.madhab(c) == Madhab.HANAFI ? 1 : 0; }
                     void select(int i) { Prefs.setMadhab(c, i == 1 ? Madhab.HANAFI : Madhab.SHAFI); }
                 },
-                new Row(VALUE) {
+                new Row("prayer.offsets", VALUE) {
                     String label() { return t.prayerOffsets(); }
                     String help() { return t.prayerOffsetsHelp(); }
                     String value() {
@@ -374,7 +384,7 @@ public class SettingsActivity extends Screen {
                     }
                     void open() { openPrayerOffsets(); }
                 },
-                new Row(STEP) {
+                new Row("prayer.hijri", STEP) {
                     String label() { return t.hijriAdjust(); }
                     String help() { return t.hijriToday(hijri(day)); }
                     int amount() { return Prefs.hijriOffset(c); }
@@ -383,14 +393,14 @@ public class SettingsActivity extends Screen {
                     int highest() { return Prefs.MAX_HIJRI_OFFSET; }
                     String valueOf(int n) { return t.days(n); }
                 },
-                new Row(VALUE) {
+                new Row("prayer.facing", VALUE) {
                     String label() { return t.roomRow(); }
                     String help() { return t.roomHelp(); }
                     String value() { int f = facing(); return f < 0 ? t.notSet() : t.bearingLabel(f); }
                     void open() { startSafely(new Intent(c, PrayerDayActivity.class).putExtra("room", true)); }
                 });
             case REMINDERS: return Arrays.asList(
-                new Row(VALUE) {
+                new Row("reminders.before", VALUE) {
                     // Six choices are too many for a segmented control: a list, like the adhan voices.
                     final int[] minutes = {5, 10, 15, 20, 30, 0};
                     String label() { return t.remind(); }
@@ -406,25 +416,25 @@ public class SettingsActivity extends Screen {
                             i -> { Prefs.setRemindMinutes(c, minutes[i]); showSaved(); });
                     }
                 },
-                new Row(TOGGLE) {
+                new Row("reminders.spoken", TOGGLE) {
                     String label() { return t.remindVoiceRow(); }
                     String help() { return t.remindVoiceHelp(); }
                     boolean on() { return Prefs.remindVoice(c); }
                     void set(boolean on) { Prefs.setRemindVoice(c, on); }
                 },
-                new Row(TOGGLE) {
+                new Row("reminders.adhan", TOGGLE) {
                     String label() { return t.adhanRow(); }
                     String help() { return t.adhanHelp(); }
                     boolean on() { return Prefs.adhan(c); }
                     void set(boolean on) { Prefs.setAdhan(c, on); }
                 },
-                new Row(TOGGLE) {
+                new Row("reminders.announce", TOGGLE) {
                     String label() { return t.announceRow(); }
                     String help() { return t.announceHelp(); }
                     boolean on() { return Prefs.announce(c); }
                     void set(boolean on) { Prefs.setAnnounce(c, on); }
                 },
-                new Row(SEG) {
+                new Row("reminders.close", SEG) {
                     final int[] minutes = {0, 1, 5, 10};
                     String label() { return t.callCloseRow(); }
                     String help() { return t.callCloseHelp(); }
@@ -438,7 +448,7 @@ public class SettingsActivity extends Screen {
                 },
                 voiceRow(false),
                 voiceRow(true),
-                new Row(VALUE) {
+                new Row("tests.open", VALUE) {
                     String label() { return t.testPrayerAlerts(); }
                     String help() { return RemoteKeys.watch == null ? t.serviceHelp() : t.testPrayerHelp(); }
                     void open() {
@@ -451,14 +461,14 @@ public class SettingsActivity extends Screen {
                     }
                 });
             case RADIO: return Arrays.asList(
-                new Row(TOGGLE) {
+                new Row("radio.playback", TOGGLE) {
                     String label() { return t.station(Radio.station(c)); }
                     String help() { return t.radioRowHelp(Radio.station(c)); }
                     boolean on() { return Radio.on(); }
                     void set(boolean on) { if (on) Radio.start(c); else Radio.stop(); }
                     boolean saves() { return false; }
                 },
-                new Row(VALUE) {
+                new Row("radio.station", VALUE) {
                     String label() { return t.stationRow(); }
                     String help() { return t.stationGroups()[Radio.station(c).reciter ? 1 : 0]; }
                     String value() { return t.stationChoice(Radio.station(c)); }
@@ -468,14 +478,14 @@ public class SettingsActivity extends Screen {
                         openChooser(t.stationRow(), t.stationGroups(), sel, i -> root.post(() -> openStations(i == 1, this::open)));
                     }
                 },
-                new Row(SEG) {
+                new Row("radio.resume", SEG) {
                     String label() { return t.afterAdhanRow(); }
                     String help() { return t.afterAdhanHelp(); }
                     String[] segs() { return t.afterAdhanChoices(); }
                     int selected() { return Prefs.radioResume(c) ? 0 : 1; }
                     void select(int i) { Prefs.setRadioResume(c, i == 0); }
                 },
-                new Row(SEG) {
+                new Row("radio.screen-off", SEG) {
                     final int[] minutes = {0, 15, -1};
                     String label() { return t.radioDarkRow(); }
                     String help() { return t.radioDarkHelp(); }
@@ -488,7 +498,7 @@ public class SettingsActivity extends Screen {
                     void select(int i) { Prefs.setRadioScreenOff(c, minutes[i]); }
                 });
             case DISPLAY: return Arrays.asList(
-                new Row(SEG) {
+                new Row("display.language", SEG) {
                     final String[] values = {"system", "ar", "en"};
                     String label() { return t.language(); }
                     String help() { return t.languageHelp(); }
@@ -496,13 +506,13 @@ public class SettingsActivity extends Screen {
                     int selected() { return Math.max(0, Arrays.asList(values).indexOf(prefs().getString("locale", "system"))); }
                     void select(int i) { prefs().edit().putString("locale", values[i]).apply(); relaunch(); }
                 },
-                new Row(SEG) {
+                new Row("display.digits", SEG) {
                     String label() { return t.digits(); }
                     String[] segs() { return new String[] {"0123", "٠١٢٣"}; }
                     int selected() { return t.eastern ? 1 : 0; }
                     void select(int i) { prefs().edit().putString("digits", i == 1 ? "eastern" : "western").apply(); relaunch(); }
                 },
-                new Row(SEG) {
+                new Row("display.clock", SEG) {
                     final String[] values = {"system", "12", "24"};
                     String label() { return t.clockRow(); }
                     String help() { return t.clockHelp(); }
@@ -510,50 +520,50 @@ public class SettingsActivity extends Screen {
                     int selected() { return Math.max(0, Arrays.asList(values).indexOf(Prefs.clock(c))); }
                     void select(int i) { prefs().edit().putString("clock", values[i]).apply(); readClockFormat(); }
                 },
-                new Row(TOGGLE) {
+                new Row("display.hide-system-apps", TOGGLE) {
                     String label() { return t.hideSystemApps(); }
                     String help() { return t.hideSystemAppsHelp(); }
                     boolean on() { return prefs().getBoolean("hide_system_apps", false); }
                     void set(boolean on) { prefs().edit().putBoolean("hide_system_apps", on).apply(); }
                 },
-                new Row(TOGGLE) {
+                new Row("display.quick-labels", TOGGLE) {
                     String label() { return t.quickLabels(); }
                     boolean on() { return Prefs.quickLabels(c); }
                     void set(boolean on) { prefs().edit().putBoolean("quick_labels", on).apply(); }
                 },
-                new Row(VALUE) {
+                new Row("display.bar-mode", VALUE) {
                     final String[] modes = {"hidden", "tab", "off"};
                     String label() { return t.prayerDock(); }
                     int selected() { return Math.max(0, Arrays.asList(modes).indexOf(prefs().getString("dock_mode", "hidden"))); }
                     String value() { return t.dockModes()[selected()]; }
                     void open() { openChooser(label(), t.dockModes(), selected(), i -> { prefs().edit().putString("dock_mode", modes[i]).apply(); showSaved(); }); }
                 },
-                new Row(SEG) {
+                new Row("display.bar-position", SEG) {
                     String label() { return t.dockPosition(); }
                     String[] segs() { return t.dockPositions(); }
                     int selected() { return "top".equals(prefs().getString("dock_position", "bottom")) ? 0 : 1; }
                     void select(int i) { prefs().edit().putString("dock_position", i == 0 ? "top" : "bottom").apply(); }
                 },
-                new Row(VALUE) {
+                new Row("display.open-bar", VALUE) {
                     String label() { return t.openDock(); }
                     void open() { if (!RemoteKeys.toggleDock()) SystemScreens.open(c, Settings.ACTION_ACCESSIBILITY_SETTINGS); }
                 });
             case APPEARANCE: {
                 List<Row> appearance = new ArrayList<>(homeRows());
                 appearance.addAll(Arrays.asList(
-                new Row(CAROUSEL) {
+                new Row("appearance.theme", CAROUSEL) {
                     String label() { return t.themeRow(); }
                     String[] segs() { return Arrays.copyOf(t.themeNames(), Appearance.PRESETS.length - (prefs().contains("theme_json") ? 0 : 1)); }
                     int selected() { return themeChoice; }
                     void select(int i) { themeChoice = i; }
                 },
-                new Row(CAROUSEL) {
+                new Row("appearance.background", CAROUSEL) {
                     String label() { return t.backgroundRow(); }
                     String[] segs() { return t.backgroundNames(); }
                     int selected() { return backgroundChoice; }
                     void select(int i) { backgroundChoice = i; }
                 },
-                new Row(STEP) {
+                new Row("appearance.lighting", STEP) {
                     String label() { return t.lightingRow(); }
                     int amount() { return previewStyle.lighting; }
                     int lowest() { return 0; } int highest() { return 100; }
@@ -561,32 +571,32 @@ public class SettingsActivity extends Screen {
                     void setAmount(int n) { lightChoice = n; }
                     boolean saves() { return false; }
                 },
-                new Row(CAROUSEL) {
+                new Row("appearance.cycle", CAROUSEL) {
                     String label() { return t.appearanceCycle(); }
                     String help() { return t.appearanceCycleHelp(); }
                     String[] segs() { return t.appearanceCycleChoices(); }
                     int selected() { return cycleChoice; }
                     void select(int i) { cycleChoice = i; }
                 },
-                new Row(TOGGLE) {
+                new Row("appearance.focus-lighting", TOGGLE) {
                     String label() { return t.focusLighting(); }
                     String help() { return t.focusLightingHelp(); }
                     boolean on() { return focusChoice; }
                     void set(boolean on) { focusChoice = on; }
                     boolean saves() { return false; }
                 },
-                new Row(TOGGLE) {
+                new Row("appearance.reduce-motion", TOGGLE) {
                     String label() { return t.reduceMotion(); }
                     boolean on() { return motionChoice; }
                     void set(boolean on) { motionChoice = on; }
                     boolean saves() { return false; }
                 },
-                new Row(VALUE) {
+                new Row("appearance.reset", VALUE) {
                     String label() { return t.homeReset(); }
                     boolean saves() { return false; }
                     void open() { Arrays.fill(homeDraft, 0); refresh(); }
                 },
-                new Row(VALUE) {
+                new Row("appearance.apply", VALUE) {
                     String label() { return t.applyAppearance(); }
                     void open() {
                         android.content.SharedPreferences.Editor save = prefs().edit()
@@ -605,41 +615,41 @@ public class SettingsActivity extends Screen {
                 return appearance;
             }
             case NETWORK: return Arrays.asList(
-                new Row(VALUE) {
+                new Row("network.settings", VALUE) {
                     String label() { return t.networkRow(); }
                     String help() { return t.networkHelp(); }
                     String value() { String s = ssid(); return s == null ? "" : s; }
                     void open() { SystemScreens.open(SettingsActivity.this, Settings.ACTION_WIFI_SETTINGS); }
                 });
             default: return Arrays.asList(
-                new Row(VALUE) {
+                new Row("device.settings", VALUE) {
                     String label() { return t.deviceRow(); }
                     String help() { return t.deviceHelp(); }
                     void open() { SystemScreens.open(SettingsActivity.this, Settings.ACTION_SETTINGS); }
                 },
-                new Row(VALUE) {
+                new Row("device.home", VALUE) {
                     String label() { return t.homeSettings(); }
                     void open() { SystemScreens.home(SettingsActivity.this); }
                 },
-                new Row(VALUE) {
+                new Row("device.inputs", VALUE) {
                     String label() { return t.inputsTitle(); }
                     void open() { startSafely(new Intent(c, InputsActivity.class)); }
                 },
-                new Row(VALUE) {
+                new Row("device.screensaver", VALUE) {
                     String label() { return t.screensaver(); }
                     void open() { SystemScreens.dreams(SettingsActivity.this); }
                 },
-                new Row(VALUE) {
+                new Row("device.remote", VALUE) {
                     String label() { return t.remoteButtons(); }
                     void open() { startSafely(new Intent(c, RemoteButtonsActivity.class)); }
                 },
-                new Row(VALUE) {
+                new Row("device.health", VALUE) {
                     String label() { return t.serviceHealth(); }
                     String help() { return t.serviceHelp(); }
                     String value() { return RemoteKeys.watch == null ? t.serviceStopped() : t.serviceRunning(); }
                     void open() { SystemScreens.open(SettingsActivity.this, Settings.ACTION_ACCESSIBILITY_SETTINGS); }
                 },
-                new Row(TOGGLE) {
+                new Row("device.repair", TOGGLE) {
                     String label() { return t.repairService(); }
                     String help() { return t.repairHelp(); }
                     boolean on() { return prefs().getBoolean("repair_service", false); }
@@ -650,7 +660,7 @@ public class SettingsActivity extends Screen {
 
     /** The adhan recording for every prayer but Fajr, or for Fajr: a list that plays each voice as focus reaches it. */
     private Row voiceRow(boolean fajr) {
-        return new Row(VALUE) {
+        return new Row(fajr ? "reminders.fajr-voice" : "reminders.voice", VALUE) {
             String label() { return fajr ? t.fajrVoiceRow() : t.voiceRow(); }
             String help() { return fajr ? t.fajrVoiceHelp() : t.voiceHelp(); }
             String value() { return Adhans.name(t, Prefs.voice(SettingsActivity.this, fajr)); }
@@ -707,6 +717,7 @@ public class SettingsActivity extends Screen {
 
     private void addRow(Row r, int i) {
         r.tile = new FocusTile(this, 16);
+        r.tile.setTag(r.contract);
         r.tile.setFocusScale(Tokens.FOCUS_SCALE_SETTINGS_ROW);
         r.tile.setRest(Palette.LAPIS_800, 0, 0);
         LinearLayout line = new LinearLayout(this);
@@ -1071,7 +1082,7 @@ public class SettingsActivity extends Screen {
         List<Row> result = new ArrayList<>();
         for (int i = 0; i < t.prayerNames().length; i++) {
             final int prayer = i;
-            result.add(new Row(STEP) {
+            result.add(new Row("offsets." + new String[] {"fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"}[prayer], STEP) {
                 String label() { return t.prayerNames()[prayer]; }
                 int prayer() { return prayer; }
                 String help() {
