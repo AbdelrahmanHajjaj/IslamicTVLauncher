@@ -22,7 +22,7 @@ def text_hashes(driver="TextCatalogCheck"):
             (out / name).write_text(source, encoding="utf-8")
         subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
             *(str(out / name) for name in stubs),
-            str(ROOT / "app/src/main/java/tv/afnon/home/Text.java"),
+            str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/Text.java"),
             str(ROOT / ("tests/" + driver + ".java"))], check=True, capture_output=True)
         keys = sorted(json.loads((ROOT / "shared/data/strings.json").read_text(encoding="utf-8")))
         result = subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home." + driver, *keys],

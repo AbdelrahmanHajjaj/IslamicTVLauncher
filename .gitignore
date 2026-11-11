@@ -13,6 +13,8 @@ local.properties
 app/src/main/assets/adhan/*.mp3
 # Recorded locally by tools/fetch-announce.sh with a Microsoft neural voice (not ours to redistribute)
 app/src/main/assets/announce/*.mp3
+platforms/android-tv/src/main/assets/adhan/*.mp3
+platforms/android-tv/src/main/assets/announce/*.mp3
 # Per-TV state: disabled.log, screenshots, backups
 state/
 # Machine-specific notes for Claude

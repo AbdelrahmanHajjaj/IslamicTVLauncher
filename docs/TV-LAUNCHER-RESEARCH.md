@@ -77,7 +77,7 @@ The black rectangles are the existing documentation redactions.
 Their translucent surfaces over detailed photos create a plausible readability risk. Exact
 contrast, text legibility from a sofa, screen-reader semantics, focus order and remote behavior
 cannot be certified from promotional screenshots. Afnon already has a strong filled focus state
-and ring in [FocusTile.java](../app/src/main/java/tv/afnon/home/FocusTile.java).
+and ring in [FocusTile.java](../platforms/android-tv/src/main/java/tv/afnon/home/FocusTile.java).
 
 ## Ranked improvements
 
@@ -98,9 +98,9 @@ which may be absent. This makes installed assets a feasible source, not proof th
 app will have useful artwork. [TV artwork guidance](https://developer.android.com/design/ui/tv/guides/system/tv-app-icon-guidelines),
 [PackageManager](https://developer.android.com/reference/android/content/pm/PackageManager#getApplicationBanner(java.lang.String)).
 
-**Reach:** [Apps.java](../app/src/main/java/tv/afnon/home/Apps.java),
-[MainActivity.java](../app/src/main/java/tv/afnon/home/MainActivity.java),
-[AllAppsActivity.java](../app/src/main/java/tv/afnon/home/AllAppsActivity.java), shared tokens, and the
+**Reach:** [Apps.java](../platforms/android-tv/src/main/java/tv/afnon/home/Apps.java),
+[MainActivity.java](../platforms/android-tv/src/main/java/tv/afnon/home/MainActivity.java),
+[AllAppsActivity.java](../platforms/android-tv/src/main/java/tv/afnon/home/AllAppsActivity.java), shared tokens, and the
 Home/Apps browser counterparts. Preserve lazy row creation and bounded artwork loading.
 
 **Acceptance:** banners and missing-banner fallbacks work; long Arabic/English names remain legible;
@@ -120,7 +120,7 @@ screen is still inconvenient. A small contextual hint is preferable to restoring
 instruction footer that the fork deliberately removed.
 
 **Reach:** `MainActivity.dispatchKeyEvent`, `AllAppsActivity.okKey/openMenu`, `Apps.saveFavourites`,
-[FavouriteChoice.java](../app/src/main/java/tv/afnon/home/FavouriteChoice.java), `Text.java`, and the
+[FavouriteChoice.java](../platforms/android-tv/src/main/java/tv/afnon/home/FavouriteChoice.java), `Text.java`, and the
 browser Home/Apps interactions. Keep the guard that prevents releasing a long press from selecting
 the menu's first action. Existing pure favourite tests belong in `tests/FavouriteChoiceCheck.java`.
 

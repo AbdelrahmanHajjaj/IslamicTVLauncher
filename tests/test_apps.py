@@ -117,7 +117,7 @@ class AppCacheChecks(unittest.TestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(code, encoding="utf-8")
                 sources.append(str(path))
-            source = ROOT / "app/src/main/java/tv/afnon/home"
+            source = ROOT / "platforms/android-tv/src/main/java/tv/afnon/home"
             result = subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
                 *sources, *(str(source / name) for name in ("Apps.java", "AppFilter.java", "FavouriteChoice.java")),
                 str(ROOT / "tests/AppCacheCheck.java")], capture_output=True, text=True)

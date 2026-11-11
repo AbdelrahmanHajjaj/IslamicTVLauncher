@@ -1,10 +1,13 @@
 # Changelog
 
-All notable changes to Afnon. Versions match `versionName` in `app/build.gradle` and the `vX.Y` git tags.
+All notable changes to Afnon. Versions match `versionName` in `platforms/android-tv/build.gradle` and the `vX.Y` git tags.
 
 ## [Unreleased]
 
 ### Shared foundation
+
+- Android lives in `platforms/android-tv` and builds independently with the shared
+  core/resources. Existing root `:app` tasks, APK name, installed ID and signing stay intact.
 
 - Common catalogs, bilingual text, fonts, themes and icon sources now live in
   shared modules, preserving existing IDs, choices and religious text.

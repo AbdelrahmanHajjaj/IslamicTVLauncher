@@ -78,40 +78,34 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q03 | Done | Canonical resource extraction: move source ownership out of Android; migrate all generators/consumers and fixtures together; verify catalog/text/token equivalence and deterministic regeneration. |
 | Q04 | Done | Core domain migration: extract settings and prayer-day rules in complete tested slices; cover date rollover, tomorrow Fajr, DST, offsets, Hijri range, unavailable calculations and deliberate platform differences. |
 | Q05 | Done | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
-| Q06 | Active | Separate platform projects/builds: migrate paths only after boundaries work; update Gradle, npm, installer, tools, generated outputs, tests and CI; add no empty future-platform projects. |
-| Q07 | Queued | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
+| Q06 | Done | Separate platform projects/builds: migrate paths only after boundaries work; update Gradle, npm, installer, tools, generated outputs, tests and CI; add no empty future-platform projects. |
+| Q07 | Active | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Queued | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
 
 ## Current cursor
 
-Next: Q06.3b, Android project relocation and standalone build entry. Finish
-Q06.3a2's commit if resuming between operations. Inspect all native Gradle/source/
-generator/test/tool/installer/CI/documentation paths before moving `app` to
-`platforms/android-tv`. Preserve package IDs, signing/upgrade keys, task and APK
-contracts, generated outputs, media/design/core sources and existing behavior.
-Provide a standalone per-platform Gradle entry without installer/preview/LG sources
-while keeping root `:app` and installer workflows functional. Use current official
-Gradle/Android configuration docs where needed and prove clean standalone plus
-aggregate builds, real native regressions, generated data/tokens and relevant
-consumer checks. Verify absolute move/cleanup targets inside the workspace and
-preserve ignored/unrelated work. Do not add new UIs, transports or future shells.
-LG is now an independent shell in `platforms/webos`; core is standalone in
-`shared/core`. Keep the shared validator and generated-output cleanup intact.
-The current LG payload has 96 files: one unreferenced stale font in the old
-97-file cache was intentionally removed (details below). All retained bytes match.
-Android will move to `platforms/android-tv`
-with its own build entry plus working aggregate `:app`/installer/tools/generators/
-tests/CI. Inspect the smallest standalone Android settings before making that
-slice. No empty future projects, UI changes, installed-ID changes or new media.
-Q04/Q05 software extraction is complete; clocks, calendar/astronomical engines,
-persistence, OS scheduling and playback remain adapters with existing keys/IDs.
-LG was unreachable during Q04.2; actual-host integration and native ICU accuracy,
-TV upgrade/picture/sound/remote/lifecycle acceptance remain Q09 gates. A temporary
-browser host probe must use the current `tv.afnon:core` namespace (older ignored
-helpers used the former parent-name namespace) and restore a polyfilled Math.imul.
-Private logs/helpers remain under ignored `state/platform-core/`; do not publish
-them. Q02 commit: `83b0c72`. No release, remote detach, merge or TV firmware action.
+Next: Q07, ownership and architecture documentation. Finish Q06.3b's commit if
+resuming between operations. Audit actual upstream download/support references,
+especially Android installer and preview links, against this fork's identity;
+update the smallest safe set without publishing or changing installed IDs/signing.
+Document the implemented portable-core/shared-source/native-shell boundaries,
+standalone and aggregate builds, intentional platform differences and companion/
+future-platform deferrals. Retain upstream MIT and all third-party notices/credit.
+Historical validation/research is evidence, not a current support matrix.
+
+Q06 is complete: `shared/core`, `platforms/android-tv` and `platforms/webos` build
+independently with canonical shared inputs. Root `:app` and installer tasks remain
+supported. LG currently emits 96 files; the obsolete unused font in the former
+97-file cache was intentionally removed. Android emits the same APK entry bytes
+as before relocation. Do not add new UIs, transports or future shells.
+
+Q08 still requires final automated review and measured optimization; Q09 still
+requires real TV upgrade/picture/sound/remote/lifecycle acceptance. Android hardware
+returns around 2026-11-25. LG was unreachable during Q04.2; do not label current
+integration physically validated. Any temporary old-LG browser probe must use
+`tv.afnon:core` and restore polyfilled Math.imul. Private helpers/logs/device details
+remain under ignored `state/`. No merge, release, remote detach or firmware action.
 
 ## Evidence and decisions
 
@@ -784,3 +778,43 @@ them. Q02 commit: `83b0c72`. No release, remote detach, merge or TV firmware act
   installs fetched only the existing pinned/locked artifacts; Adhan integrity
   matched the preview and no other LG lock versions changed. Existing glob tooling
   deprecation remains for Q08's dependency review. No publishing or device action.
+
+### Q06.3b independent Android project (2026-11-11)
+
+- Moved the native shell from `app` to `platforms/android-tv` after snapshotting
+  source/APK entries and verifying absolute source/destination boundaries. Preserved
+  ignored build state; no old compatibility source tree remains. Its own settings
+  select AGP 8.10.1, local core and only Google/Maven Central. Standalone project name
+  `app` preserves `app-debug.apk`; source-set paths now resolve from the project.
+  Root settings map the existing `:app` task path to the moved directory, keeping
+  installer and install/recovery commands functional. No installed identity,
+  version, signing configuration, settings key or native integration changed.
+- Updated all active generators/templates, test consumers, APK defaults, source
+  links, build/contribution/release guidance and app CI paths/commands. Generated
+  PrayerMethod's source-path comment through the actual generator. Historical
+  changelog/validation paths and protective legacy ignore rules remain historical.
+  CI now checks standalone size/lint plus aggregate launcher/installer build tasks;
+  workflow was reviewed locally, not run on GitHub.
+- PASS: clean standalone build/size/lint and root launcher/installer build/lint.
+  APK remains 20,934,629 bytes; every one of 95 APK entry names and bytes matches
+  the pre-move snapshot, including manifest/resources, DEX, 26 uncompressed clips,
+  notices and signing metadata. All 82 native input files retain their bytes except
+  the expected path-only comment in PrayerMethod template/generated Java. Actual
+  core/runtime classes and all seven Kotlin notice files remain in the APK.
+- PASS: fresh isolated build with only the native/shared inputs, wrapper and local
+  media; no aggregate settings/build/properties, installer, preview, LG or local SDK
+  config. Init assertions verify a single native project and only local core as an
+  included build, with no JitPack repo. All 95 isolated APK entries match the normal
+  build exactly. Initial private proof assertions assumed traversal order/only one
+  Gradle build; corrected the proof for unordered source traversal/included core,
+  with no product/source workaround.
+- PASS: all 39 Python/Java/simulated-TV regressions, including default and selected
+  APKs reaching the guarded CLI flow; reverting its default path fails the actual
+  new regression. Native lint stays 0 errors / 54 warnings; installer stays 0 / 15.
+  PASS: actual pattern/catalog/token regeneration, generated-source checks and
+  preview regression suite. Pattern bytes remain identical. LG product sources
+  were unchanged; its unrelated full suite/browser checks were not repeated.
+- Evidence: ignored `native-before-move.json`, `native-move-*`, `native-isolated.log`,
+  `isolated-native-q063b`, `check-native-{move,relocation,core-artifact}.py` and
+  `check-media-inputs.py`. No physical/emulator deployment, TV picture/sound/remote
+  or upgrade test, performance claim, publishing or remote operation.

@@ -156,12 +156,16 @@ recovery backup on your PC; restore only recorded changes with `tools/restore.sh
 
 ### From an Android phone
 
+The native TV project lives in [`platforms/android-tv/`](platforms/android-tv/README.md).
+It can build on its own with `./gradlew -p platforms/android-tv verifyApkSize lintDebug`;
+set `ANDROID_HOME` for that build. The root commands below also build the phone installer.
+
 Build both `:app:assembleDebug` and `:installer:assembleDebug`. The two APKs have different roles:
 
 | APK path in this checkout | Install on | Purpose |
 |---|---|---|
 | `installer/build/outputs/apk/debug/installer-debug.apk` | Android 8+ phone | Connect to the TV and guide installation, initial setup and recovery |
-| `app/build/outputs/apk/debug/app-debug.apk` | Android 8+ TV | The launcher, prayer features and TV settings |
+| `platforms/android-tv/build/outputs/apk/debug/app-debug.apk` | Android 8+ TV | The launcher, prayer features and TV settings |
 
 Copy both files to your phone and install the phone APK. Choose **Install a local Afnon APK** and
 select the TV launcher APK. Follow Prepare and Connect, then approve debugging on the TV.
@@ -222,7 +226,7 @@ prayer/button accessibility service and may be restricted by an app or firmware.
 
 No accounts, ads, analytics or telemetry. Prayer calculation is offline. The TV launcher's only
 network feature is the selected radio stream, listed in `shared/data/stations.json`; its
-[network security config](app/src/main/res/xml/network_security.xml) permits plain HTTP only for Cairo's
+[network security config](platforms/android-tv/src/main/res/xml/network_security.xml) permits plain HTTP only for Cairo's
 stream. City, favourites, themes and recent-app history stay on the TV. The phone installer separately
 uses the network for ADB setup and, when selected, downloading the upstream APK.
 
@@ -283,8 +287,8 @@ observed on one board is not proof for every TV from that brand.
 
 | Path | Contents |
 |---|---|
-| `app/src/main/java/tv/afnon/home/` | Home, apps, settings, prayer calculation, radio, overlays and screensaver |
-| `app/src/main/res/drawable/` | Native drawable resources; prayer vectors and background patterns are generated |
+| `platforms/android-tv/src/main/java/tv/afnon/home/` | Home, apps, settings, prayer calculation, radio, overlays and screensaver |
+| `platforms/android-tv/src/main/res/drawable/` | Native drawable resources; prayer vectors and background patterns are generated |
 | `afnon-mihrab/tokens.json` | Shared design source; generated Java/XML/CSS must not be edited directly |
 | `shared/design/` | Canonical icon geometry, theme presets/order, fonts and notices, consumed by platform builds |
 | `installer/` | Android phone installer and its private recovery/export flow |

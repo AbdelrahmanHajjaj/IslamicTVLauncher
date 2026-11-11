@@ -17,7 +17,7 @@ The Android `Prefs.City` interface and persisted setting IDs are unchanged. The
 preview and LG read JSON directly. `methods.json` owns ordered IDs, bilingual
 labels, custom angles/intervals and method corrections. Built-in calculation
 behavior stays in adhan-java/adhan-js. Edit Android adapter code in
-`app/src/main/templates/PrayerMethod.java.template`, then regenerate; do not edit
+`platforms/android-tv/src/main/templates/PrayerMethod.java.template`, then regenerate; do not edit
 the generated enum.
 
 `stations.json` preserves radio/reciter IDs, order, exact stream URLs, bilingual
@@ -36,7 +36,7 @@ do not commit the MP3s.
 `strings.json` owns the 174 plain bilingual strings/lists previously extracted
 from Java. `{name}` parameters and the optional `d` digit-substitution flag retain
 their existing meanings. Both languages must have the same parameters/list sizes.
-Edit native formatting code in `app/src/main/templates/Text.java.template`, then
+Edit native formatting code in `platforms/android-tv/src/main/templates/Text.java.template`, then
 regenerate. Web adapters preserve the old extractor's compact literal spacing; Android
 preserves native spacing (notably `saved` and `roomKeys`). Compiled baseline hashes
 cover both languages/digit modes and fresh label arrays.

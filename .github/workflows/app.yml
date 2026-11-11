@@ -1,12 +1,12 @@
-# Builds the TV app (app/) so changes to it are compiled on every push; releases are still built by hand (gh.md).
+# Builds the independent Android TV shell and checks aggregate task compatibility.
 name: App
 
 on:
   push:
     branches: [main]
-    paths: ['app/**', 'shared/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle.properties', 'gradle/**', '.github/workflows/app.yml']
+    paths: ['platforms/android-tv/**', 'shared/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle.properties', 'gradle/**', 'gradlew*', '.github/workflows/app.yml']
   pull_request:
-    paths: ['app/**', 'shared/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle.properties', 'gradle/**', '.github/workflows/app.yml']
+    paths: ['platforms/android-tv/**', 'shared/**', 'afnon-mihrab/**', 'installer/**', 'tools/**', 'tests/**', 'settings.gradle', 'build.gradle', 'gradle.properties', 'gradle/**', 'gradlew*', '.github/workflows/app.yml']
   workflow_dispatch:
 
 permissions:
@@ -21,6 +21,8 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - run: chmod +x gradlew && ./gradlew :app:verifyApkSize :app:lintDebug --no-daemon --stacktrace
+      - run: chmod +x gradlew && ./gradlew -p platforms/android-tv verifyApkSize lintDebug --no-daemon --stacktrace
+      - name: Aggregate launcher and installer tasks
+        run: ./gradlew :app:assembleDebug :installer:assembleDebug --no-daemon --stacktrace
       - name: Launcher and recovery regression checks
         run: python3 -S -B -m unittest discover -s tests -v

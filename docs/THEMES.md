@@ -35,7 +35,7 @@ Prayer cards align their name and time to the start edge: left in English, right
 
 ## Custom themes
 
-Custom themes are local JSON, imported over ADB. Copy a preset from `app/src/main/assets/themes/`, edit it and run:
+Custom themes are local JSON, imported over ADB. Copy a preset from `shared/design/assets/themes/`, edit it and run:
 
 ```powershell
 python -S -B tools/device.py --tv 192.168.1.50:5555 theme my-theme.json

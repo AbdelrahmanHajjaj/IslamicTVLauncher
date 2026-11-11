@@ -10,7 +10,7 @@ const width = parseFloat(tokens.background['max-width'].$value);
 const height = parseFloat(tokens.background['max-height'].$value);
 
 const source = new URL('../../afnon-mihrab/patterns/', import.meta.url);
-const output = new URL('../../app/src/main/res/drawable-nodpi/', import.meta.url);
+const output = new URL('../../platforms/android-tv/src/main/res/drawable-nodpi/', import.meta.url);
 await mkdir(output, { recursive: true });
 for (const id of appearance.patterns.slice().sort()) {
   const name = id + '.svg';

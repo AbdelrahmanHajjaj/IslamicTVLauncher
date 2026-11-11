@@ -10,7 +10,7 @@ separate Android and LG webOS applications, not interchangeable build targets.
 
 ## Repository map
 
-- `app/`: native Android TV launcher (`tv.afnon.home`), Java and Android Views.
+- `platforms/android-tv/`: native Android TV launcher (`tv.afnon.home`), Java and Android Views.
 - `installer/`: Android phone installer and recovery workflow; Android targets only.
 - `site/`: Astro browser preview and shared-data/token extraction tools.
 - `afnon-mihrab/`: shared design tokens, patterns and design references.

@@ -131,7 +131,7 @@ function generate() {
       : 'CalculationMethod.' + method.id;
     return '    ' + method.id + '(' + JSON.stringify(method.ar) + ', ' + JSON.stringify(method.en) + ', ' + parameters + ')' + (i === methodDefinitions.length - 1 ? ';' : ',');
   });
-  const nativeMethods = read('app/src/main/templates/PrayerMethod.java.template').replace('{{METHODS}}', entries.join('\n'));
+  const nativeMethods = read('platforms/android-tv/src/main/templates/PrayerMethod.java.template').replace('{{METHODS}}', entries.join('\n'));
   const stationRows = stations.map(station => '        new Radio.Station(' +
     ['id', 'ar', 'en', 'whereAr', 'whereEn', 'url'].map(key => JSON.stringify(station[key])).concat(station.reciter).join(', ') + '),');
   const nativeStations = '// Generated from shared/data/stations.json by tools/catalogs.mjs. Do not edit.\n' +
@@ -151,7 +151,7 @@ function generate() {
     'package tv.afnon.home;\n\nfinal class ThemeCatalog {\n    private ThemeCatalog() {}\n\n' +
     Object.entries({PRESETS: themes, BACKGROUNDS: [...appearance.proceduralBackgrounds, ...appearance.patterns], SURFACES: appearance.surfaces, COLORS: appearance.colors})
       .map(([name, ids]) => '    static final String[] ' + name + ' = {' + ids.map(id => JSON.stringify(id)).join(', ') + '};').join('\n') + '\n}\n';
-  const vectors = prayerIcons.prayers.map(({id, path}) => ['app/src/main/res/drawable/ic_prayer_' + id + '.xml',
+  const vectors = prayerIcons.prayers.map(({id, path}) => ['platforms/android-tv/src/main/res/drawable/ic_prayer_' + id + '.xml',
     '<?xml version="1.0" encoding="utf-8"?>\n<!-- Generated from shared/design/prayer-icons.json by tools/catalogs.mjs. Do not edit. -->\n' +
     '<vector xmlns:android="http://schemas.android.com/apk/res/android"\n' +
     '    android:width="' + prayerIcons.size + 'dp" android:height="' + prayerIcons.size + 'dp" android:viewportWidth="' + prayerIcons.size + '" android:viewportHeight="' + prayerIcons.size + '">\n' +
@@ -159,15 +159,15 @@ function generate() {
     '        android:strokeColor="#FFFFFFFF" android:strokeWidth="' + prayerIcons.strokeWidth + '"\n' +
     '        android:strokeLineCap="round" android:strokeLineJoin="round" />\n</vector>\n']);
   for (const [destination, output] of [
-    ['app/src/main/java/tv/afnon/home/CityCatalog.java', source],
-    ['app/src/main/java/tv/afnon/home/PrayerMethod.java', nativeMethods],
-    ['app/src/main/java/tv/afnon/home/RadioCatalog.java', nativeStations],
-    ['app/src/main/java/tv/afnon/home/VoiceCatalog.java', nativeVoices],
+    ['platforms/android-tv/src/main/java/tv/afnon/home/CityCatalog.java', source],
+    ['platforms/android-tv/src/main/java/tv/afnon/home/PrayerMethod.java', nativeMethods],
+    ['platforms/android-tv/src/main/java/tv/afnon/home/RadioCatalog.java', nativeStations],
+    ['platforms/android-tv/src/main/java/tv/afnon/home/VoiceCatalog.java', nativeVoices],
     ['tools/adhan-sources.tsv', voiceSources],
-    ['app/src/main/java/tv/afnon/home/SacredText.java', nativeSacred],
-    ['app/src/main/java/tv/afnon/home/ThemeCatalog.java', nativeThemes],
+    ['platforms/android-tv/src/main/java/tv/afnon/home/SacredText.java', nativeSacred],
+    ['platforms/android-tv/src/main/java/tv/afnon/home/ThemeCatalog.java', nativeThemes],
     ...vectors,
-    ['app/src/main/java/tv/afnon/home/Text.java', renderText(JSON.parse(read('shared/data/strings.json')), read('app/src/main/templates/Text.java.template'), JSON.parse(read('shared/data/format-text.json')))],
+    ['platforms/android-tv/src/main/java/tv/afnon/home/Text.java', renderText(JSON.parse(read('shared/data/strings.json')), read('platforms/android-tv/src/main/templates/Text.java.template'), JSON.parse(read('shared/data/format-text.json')))],
   ]) {
     if (args[0] === '--check') {
       if (read(destination) !== output) throw new Error(destination + ' is stale; run node tools/catalogs.mjs');

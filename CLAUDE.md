@@ -28,7 +28,7 @@ real TV over ADB, never just in the build.
   Privacy section). No analytics, ads or feeds.
 - Colours/sizes/timings from `afnon-mihrab/tokens.json` (generated into `Tokens.java`, `colors.xml` and the site's
   `tokens.css` by `cd site && npm run tokens`; never edit those by hand); every string in Arabic and English in
-  `shared/data/{strings,format-text}.json` and `app/src/main/templates/Text.java.template`; regenerate `Text.java`. Arabic (RTL) is the
+  `shared/data/{strings,format-text}.json` and `platforms/android-tv/src/main/templates/Text.java.template`; regenerate `Text.java`. Arabic (RTL) is the
   default; check RTL and LTR. No letter-spacing on Arabic. Quranic text uses Amiri and must be exact (surah:ayah).
 - D-pad focus is explicit per screen, with Left/Right swapped in RTL.
 - Never commit `state/`, `local.properties`, APKs or the adhan MP3s (no licence; `tools/fetch-adhans.sh` downloads

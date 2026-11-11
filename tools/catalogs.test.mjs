@@ -26,7 +26,7 @@ for (const change of [
 assert.throws(() => validateMethods([...methods, methods[1]]), /Invalid method/);
 assert.throws(() => validateMethods(methods.slice(1)), /fallback/);
 validateCatalog(cities, regions);
-const java = readFileSync(new URL('../app/src/main/java/tv/afnon/home/CityCatalog.java', import.meta.url), 'utf8');
+const java = readFileSync(new URL('../platforms/android-tv/src/main/java/tv/afnon/home/CityCatalog.java', import.meta.url), 'utf8');
 const quoted = String.raw`("(?:[^"\\]|\\.)*")`;
 const cityRows = new RegExp(String.raw`new Prefs\.City\(${Array(5).fill(quoted).join(', ')}, ([-\d.eE+]+), ([-\d.eE+]+), PrayerMethod\.([A-Z_]+), Madhab\.(HANAFI|SHAFI)\)`, 'g');
 const roundTrip = [...java.matchAll(cityRows)].map(m => ({
@@ -75,7 +75,7 @@ for (const change of [
 }
 assert.throws(() => validateStations([...stations, stations[1]]), /Invalid station/);
 assert.throws(() => validateStations(stations.slice(1)), /fallback/);
-const radio = readFileSync(new URL('../app/src/main/java/tv/afnon/home/RadioCatalog.java', import.meta.url), 'utf8');
+const radio = readFileSync(new URL('../platforms/android-tv/src/main/java/tv/afnon/home/RadioCatalog.java', import.meta.url), 'utf8');
 const stationRows = new RegExp(String.raw`new Radio\.Station\(${Array(6).fill(quoted).join(', ')}, (true|false)\)`, 'g');
 assert.deepEqual([...radio.matchAll(stationRows)].map(m => ({
   id: JSON.parse(m[1]), ar: JSON.parse(m[2]), en: JSON.parse(m[3]),
@@ -98,7 +98,7 @@ for (const change of [
 assert.throws(() => validateVoices([...voices, voices[1]]), /Invalid voice/);
 assert.throws(() => validateVoices(voices.slice(1)), /defaults/);
 assert.throws(() => validateVoices(voices.filter(voice => voice.id !== 'chebae_fajr')), /defaults/);
-const voiceJava = readFileSync(new URL('../app/src/main/java/tv/afnon/home/VoiceCatalog.java', import.meta.url), 'utf8');
+const voiceJava = readFileSync(new URL('../platforms/android-tv/src/main/java/tv/afnon/home/VoiceCatalog.java', import.meta.url), 'utf8');
 const voiceRows = new RegExp(String.raw`\{${Array(3).fill(quoted).join(', ')}\},`, 'g');
 assert.deepEqual([...voiceJava.matchAll(voiceRows)].map(m => ({id: JSON.parse(m[1]), ar: JSON.parse(m[2]), en: JSON.parse(m[3])})),
   voices.map(({id, ar, en}) => ({id, ar, en})), 'Java voice catalog must preserve all labels and order');
@@ -153,7 +153,7 @@ for (const change of [
   assert.throws(() => validateSacredText(modified), /Invalid sacred/);
 }
 const hashes = JSON.parse(readFileSync(new URL('../tests/fixtures/sacred-text-hashes.json', import.meta.url)));
-const sacredJava = readFileSync(new URL('../app/src/main/java/tv/afnon/home/SacredText.java', import.meta.url), 'utf8');
+const sacredJava = readFileSync(new URL('../platforms/android-tv/src/main/java/tv/afnon/home/SacredText.java', import.meta.url), 'utf8');
 for (const [key, field, text] of [
   ['prayerVerse', 'PRAYER_VERSE', sacred.prayerVerse.join('\n')], ['adhanCall', 'ADHAN_CALL', sacred.adhanCall],
 ]) {
@@ -168,7 +168,7 @@ validateThemes(themes);
 for (const invalid of [null, [], ['custom', 'mihrab'], ['mihrab', 'custom', 'other'], ['mihrab', '../theme', 'custom'],
   ['mihrab', 3, 'custom'], ['mihrab', 'mihrab', 'custom'], ['mihrab', 'custom', 'custom'],
 ]) assert.throws(() => validateThemes(invalid));
-const themeJava = readFileSync(new URL('../app/src/main/java/tv/afnon/home/ThemeCatalog.java', import.meta.url), 'utf8');
+const themeJava = readFileSync(new URL('../platforms/android-tv/src/main/java/tv/afnon/home/ThemeCatalog.java', import.meta.url), 'utf8');
 assert.deepEqual(JSON.parse('[' + /PRESETS = \{([^}]+)\}/.exec(themeJava)[1] + ']'), themes);
 console.log('PASS: ordered theme IDs, default/custom slots and generated native registry');
 

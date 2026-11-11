@@ -1,0 +1,20 @@
+pluginManagement {
+    plugins {
+        id 'com.android.application' version '8.10.1'
+    }
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+// Keep the existing APK filename in standalone and aggregate builds.
+rootProject.name = 'app'
+includeBuild('../../shared/core')

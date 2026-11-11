@@ -264,6 +264,22 @@ class RecoveryTest(unittest.TestCase):
         self.assertIn("com.gathin.tvhome", self.adb.enabled)
         self.assertIn("com.google.android.apps.tv.launcherx", self.adb.enabled)
 
+class InstallCommandTest(unittest.TestCase):
+    def test_default_and_selected_apk_reach_the_guarded_install_flow(self):
+        from unittest.mock import patch
+        default = ROOT / 'platforms/android-tv/build/outputs/apk/debug/app-debug.apk'
+        for options, expected in [([], default), (['--apk', 'selected.apk'], Path('selected.apk'))]:
+            with self.subTest(options=options), tempfile.TemporaryDirectory() as folder:
+                with patch.object(device, 'Adb') as adb, patch.object(device, 'Device') as tv, \
+                        patch.object(Path, 'is_file', return_value=True), patch('sys.stdout'):
+                    adb.return_value.run.side_effect = ['device', 'Success']
+                    adb.return_value.shell.return_value = '30'
+                    self.assertEqual(device.main(['--tv', 'test-tv', '--backup-dir', folder, 'install', *options]), 0)
+                    adb.return_value.run.assert_called_with('install', '-r', str(expected.resolve()), timeout=180)
+                    tv.return_value.backup.assert_called_once_with()
+                    tv.return_value.activate.assert_called_once_with(False)
+
+
 class ThemeCommandTest(unittest.TestCase):
     def test_json_theme_passes_intact_and_requires_save_confirmation(self):
         import json, shlex

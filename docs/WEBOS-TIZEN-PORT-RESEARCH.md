@@ -233,11 +233,11 @@ Treat undocumented settings/input targets as capabilities to probe and hide when
 ## Existing Afnon code is the best starting point
 
 The Java app is not a portable runtime. Its Android
-[manifest](../app/src/main/AndroidManifest.xml) registers HOME, an accessibility
+[manifest](../platforms/android-tv/src/main/AndroidManifest.xml) registers HOME, an accessibility
 service and a DreamService.
-[PrayerWatch.java](../app/src/main/java/tv/afnon/home/PrayerWatch.java) runs from
+[PrayerWatch.java](../platforms/android-tv/src/main/java/tv/afnon/home/PrayerWatch.java) runs from
 `RemoteKeys`, checks every 15 seconds, shows an accessibility overlay and opens
-`NowActivity`. [PrayerDock.java](../app/src/main/java/tv/afnon/home/PrayerDock.java)
+`NowActivity`. [PrayerDock.java](../platforms/android-tv/src/main/java/tv/afnon/home/PrayerDock.java)
 also uses Android accessibility windows. Those behaviors require new implementations.
 
 The browser preview already provides much of the product:

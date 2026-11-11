@@ -23,7 +23,7 @@ repo root in Git Bash, with `TV` set to the test TV's address.
 
 ## Versioning
 
-- `versionName` in `app/build.gradle` is `MAJOR.MINOR` (`0.1`, `0.2` …), with an optional patch (`0.2.1`) for a
+- `versionName` in `platforms/android-tv/build.gradle` is `MAJOR.MINOR` (`0.1`, `0.2` …), with an optional patch (`0.2.1`) for a
   fix-only release. Stay on `0.x` until Afnon has run on more TVs than the TCL 55P7K.
   - Minor: new features, settings or screens.
   - Patch: bug fixes only, nothing new to learn.
@@ -40,7 +40,7 @@ would have to uninstall and lose their settings. Keep a backup of that keystore 
 ## Release steps
 
 1. **Start clean.** `git status` shows nothing unexpected; `git pull` on `main`.
-2. **Bump the version** in `app/build.gradle`: `versionCode` +1, `versionName` to the new version.
+2. **Bump the version** in `platforms/android-tv/build.gradle`: `versionCode` +1, `versionName` to the new version.
 3. **Update the docs** for whatever changed (list below), and in `CHANGELOG.md` rename `[Unreleased]` to
    `[X.Y] - YYYY-MM-DD`, add a fresh empty `[Unreleased]`, and update the compare links at the bottom.
 4. **Build with the adhans and spoken lines in.** The APK must include the recordings:
@@ -50,7 +50,7 @@ would have to uninstall and lose their settings. Keep a backup of that keystore 
    ls state/media/adhan/*.mp3 | wc -l   # expect 14
    ls state/media/announce/*.mp3 | wc -l   # expect 12
    ./gradlew clean :app:assembleDebug
-   cp app/build/outputs/apk/debug/app-debug.apk afnon.apk
+   cp platforms/android-tv/build/outputs/apk/debug/app-debug.apk afnon.apk
    ```
 5. **Check the APK.**
    ```bash

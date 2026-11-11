@@ -18,6 +18,11 @@ The shared core targets JVM and ES5. Building the preview or LG also compiles th
 core with the repository's Gradle wrapper: install JDK 17 and Node 24 first. The
 preview consumes it as a local package; LG packages the compiler's UMD files.
 
+The native shell is in [`platforms/android-tv/`](platforms/android-tv/README.md).
+With JDK 17 and `ANDROID_HOME` set to SDK 34, run
+`./gradlew -p platforms/android-tv verifyApkSize lintDebug` independently. Root
+`:app` tasks still work alongside `:installer`; neither build changes installed IDs.
+
 For this fork, also read the [fork/upstream contribution plan](docs/CONTRIBUTION-PLAN.md). It records
 proposed PR scopes and outstanding checks; the requirements below still apply.
 
@@ -64,7 +69,7 @@ a TV with under 2 GB of RAM, so:
   `colors.xml` and the preview site's CSS are generated from it: edit the JSON, then run `npm run tokens`
   in `site/` (Node 24). Never edit the generated files; CI checks they match. Plain bilingual text
   comes from `shared/data/strings.json`, with formatter literals in `shared/data/format-text.json`.
-  Formatting logic lives in `app/src/main/templates/Text.java.template`.
+  Formatting logic lives in `platforms/android-tv/src/main/templates/Text.java.template`.
 - **Arabic and English together.** Every string has both. Check the layout in RTL and in LTR.
   Arabic gets no letter-spacing. Quranic text uses Amiri.
 - **D-pad focus is explicit.** Each screen has a focus map, with Left and Right swapped in RTL. Test

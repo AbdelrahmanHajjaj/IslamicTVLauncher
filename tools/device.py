@@ -362,7 +362,7 @@ def main(argv=None):
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("backup", help="Save the original TV state locally, without changing it")
     install = commands.add_parser("install", help="Install a locally built APK and select Home")
-    install.add_argument("--apk", type=Path, default=ROOT / "app/build/outputs/apk/debug/app-debug.apk")
+    install.add_argument("--apk", type=Path, default=ROOT / "platforms/android-tv/build/outputs/apk/debug/app-debug.apk")
     install.add_argument("--exclusive", action="store_true", help="Disable known stock launchers after verified handover")
     activate = commands.add_parser("home", help="Select the already-installed Afnon Home")
     activate.add_argument("--exclusive", action="store_true")

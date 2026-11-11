@@ -18,7 +18,7 @@ try {
   for (const name of readdirSync(join(root, 'shared/design')).filter(name => name.endsWith('.json'))) {
     copyFileSync(join(root, 'shared/design', name), join(fixture, 'shared/design', name));
   }
-  assert.ok(!existsSync(join(fixture, 'app')) && !existsSync(join(fixture, 'site')));
+  assert.ok(!existsSync(join(fixture, 'platforms')) && !existsSync(join(fixture, 'site')));
   const check = () => spawnSync(process.execPath, [join(fixture, 'tools/validate-shared.mjs')], {encoding: 'utf8'});
   const valid = check();
   assert.equal(valid.status, 0, valid.stderr);

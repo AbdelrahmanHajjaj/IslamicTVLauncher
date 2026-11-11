@@ -10,14 +10,14 @@ ROOT = Path(__file__).resolve().parents[1]
 class JavaChecks(unittest.TestCase):
     def test_appearance_rotation_policy(self):
         with tempfile.TemporaryDirectory() as output:
-            source = ROOT / "app/src/main/java/tv/afnon/home"
+            source = ROOT / "platforms/android-tv/src/main/java/tv/afnon/home"
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
                 str(source / "Tokens.java"), str(source / "AppearanceCycle.java"), str(ROOT / "tests/AppearanceCycleCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.AppearanceCycleCheck"], check=True, capture_output=True)
 
     def test_background_resolution_and_memory_budget(self):
         with tempfile.TemporaryDirectory() as output:
-            source = ROOT / "app/src/main/java/tv/afnon/home"
+            source = ROOT / "platforms/android-tv/src/main/java/tv/afnon/home"
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
                 *(str(source / name) for name in ("Tokens.java", "BackgroundSize.java")),
                 str(ROOT / "tests/BackgroundSizeCheck.java")], check=True, capture_output=True)
@@ -25,7 +25,7 @@ class JavaChecks(unittest.TestCase):
 
     def test_home_layout_modes_and_prayer_selection(self):
         with tempfile.TemporaryDirectory() as output:
-            source = ROOT / "app/src/main/java/tv/afnon/home"
+            source = ROOT / "platforms/android-tv/src/main/java/tv/afnon/home"
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
                 *(str(source / name) for name in ("Tokens.java", "FavouriteChoice.java", "HomeLayout.java")),
                 str(ROOT / "tests/HomeLayoutCheck.java")], check=True, capture_output=True)
@@ -39,11 +39,11 @@ class JavaChecks(unittest.TestCase):
         names = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"]
         canonical = json.loads((ROOT / "shared/design/prayer-icons.json").read_text())
         self.assertEqual([icon["id"] for icon in canonical["prayers"]], names)
-        source = (ROOT / "app/src/main/java/tv/afnon/home/PrayerIcon.java").read_text()
+        source = (ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/PrayerIcon.java").read_text()
         self.assertEqual(re.findall(r"R.drawable.ic_prayer_(\w+)", source), names)
         paths = []
         for i, name in enumerate(names):
-            icon = ET.parse(ROOT / f"app/src/main/res/drawable/ic_prayer_{name}.xml").getroot()
+            icon = ET.parse(ROOT / f"platforms/android-tv/src/main/res/drawable/ic_prayer_{name}.xml").getroot()
             self.assertEqual((icon.get(ns + "viewportWidth"), icon.get(ns + "viewportHeight")), (str(canonical["size"]),) * 2)
             path = icon.find("path")
             self.assertEqual(path.get(ns + "fillColor"), "#00000000")
@@ -62,7 +62,7 @@ class JavaChecks(unittest.TestCase):
         import re
         import xml.etree.ElementTree as ET
         ns = "{http://schemas.android.com/apk/res/android}"
-        java = ROOT / "app/src/main/java/tv/afnon/home"
+        java = ROOT / "platforms/android-tv/src/main/java/tv/afnon/home"
         modes = re.findall(r'"([^"\n]+)"', re.search(r'BACKGROUNDS = \{([^}]+)', (java / "ThemeCatalog.java").read_text()).group(1))
         design = json.loads((ROOT / "shared/design/appearance.json").read_text())
         self.assertEqual(modes, design["proceduralBackgrounds"] + design["patterns"])
@@ -80,11 +80,11 @@ class JavaChecks(unittest.TestCase):
             path = svg.find("{http://www.w3.org/2000/svg}path")
             self.assertTrue(path.get("d"))
             self.assertGreater(float(path.get("stroke-width")), 0)
-            png = (ROOT / f"app/src/main/res/drawable-nodpi/{resource}.png").read_bytes()
+            png = (ROOT / f"platforms/android-tv/src/main/res/drawable-nodpi/{resource}.png").read_bytes()
             self.assertEqual(png[:8], b"\x89PNG\r\n\x1a\n")
             self.assertEqual(struct.unpack(">II", png[16:24]), (1920, 1080), "Home must not enlarge a preview-resolution mask")
             self.assertLess(len(png), 200000, "Static pattern masks must stay small")
-            self.assertFalse((ROOT / f"app/src/main/res/drawable/{resource}.xml").exists())
+            self.assertFalse((ROOT / f"platforms/android-tv/src/main/res/drawable/{resource}.xml").exists())
 
     def test_phone_package_and_home_guards(self):
         javac, java = shutil.which("javac"), shutil.which("java")
@@ -98,7 +98,7 @@ class JavaChecks(unittest.TestCase):
     def test_theme_bounds_and_preset_contrast(self):
         import json
         import re
-        source = ROOT / "app/src/main/java/tv/afnon/home"
+        source = ROOT / "platforms/android-tv/src/main/java/tv/afnon/home"
         native = re.findall(r'"([^"]+)"', re.search(r'PRESETS = \{([^}]+)', (source / "ThemeCatalog.java").read_text()).group(1))
         self.assertEqual(native, json.loads((ROOT / "shared/design/themes.json").read_text()))
         browser = re.search(r'const presets:.*? = \{([^}]+)', (ROOT / "site/src/scripts/appearance.ts").read_text()).group(1)
@@ -112,10 +112,10 @@ class JavaChecks(unittest.TestCase):
         javac, java = shutil.which("javac"), shutil.which("java")
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([javac, "-encoding", "UTF-8", "-d", output,
-                str(ROOT / "app/src/main/java/tv/afnon/home/ThemeSpec.java"),
-                str(ROOT / "app/src/main/java/tv/afnon/home/ThemeCatalog.java"),
-                str(ROOT / "app/src/main/java/tv/afnon/home/ThemeSurface.java"),
-                str(ROOT / "app/src/main/java/tv/afnon/home/Tokens.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/ThemeSpec.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/ThemeCatalog.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/ThemeSurface.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/Tokens.java"),
                 str(ROOT / "tests/ThemeCheck.java")], check=True, capture_output=True)
             subprocess.run([java, "-cp", output, "tv.afnon.home.ThemeCheck"], check=True, capture_output=True)
             for path in assets.glob("*.json"):
@@ -127,7 +127,7 @@ class JavaChecks(unittest.TestCase):
     def test_remote_capture_waits_for_a_complete_press(self):
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
-                str(ROOT / "app/src/main/java/tv/afnon/home/ButtonPress.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/ButtonPress.java"),
                 str(ROOT / "tests/ButtonPressCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.ButtonPressCheck"], check=True, capture_output=True)
 
@@ -155,9 +155,9 @@ class JavaChecks(unittest.TestCase):
                 (out / name).write_text(source, encoding="utf-8")
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-cp", runtime, "-d", output,
                 *(str(out / name) for name in sources),
-                str(ROOT / "app/src/main/java/tv/afnon/home/PrayerMethod.java"),
-                str(ROOT / "app/src/main/java/tv/afnon/home/PrayerDay.java"),
-                *(str(ROOT / "app/src/main/java/tv/afnon/home" / name) for name in
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/PrayerMethod.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/PrayerDay.java"),
+                *(str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home" / name) for name in
                   ("Prefs.java", "CityCatalog.java", "Tokens.java", "HomeLayout.java", "FavouriteChoice.java", "Reminders.java")),
                 *(str(ROOT / "tests" / name) for name in ("PrayerDayCheck.java", "PrefsCheck.java", "RemindersCheck.java"))], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,
@@ -174,27 +174,27 @@ class JavaChecks(unittest.TestCase):
         self.assertTrue(android.is_file(), "Set ANDROID_HOME to an SDK with Android platform 34")
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-cp", str(android), "-d", output,
-                str(ROOT / "app/src/main/java/tv/afnon/home/AppFilter.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/AppFilter.java"),
                 str(ROOT / "tests/AppFilterCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.AppFilterCheck"], check=True, capture_output=True)
 
     def test_live_tv_prefers_hardware_and_digital_tuners(self):
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
-                str(ROOT / "app/src/main/java/tv/afnon/home/InputOrder.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/InputOrder.java"),
                 str(ROOT / "tests/InputOrderCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.InputOrderCheck"], check=True, capture_output=True)
 
     def test_prayer_bar_stays_out_of_home_settings_sleep_and_saver(self):
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
-                str(ROOT / "app/src/main/java/tv/afnon/home/DockPolicy.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/DockPolicy.java"),
                 str(ROOT / "tests/DockPolicyCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.DockPolicyCheck"], check=True, capture_output=True)
 
     def test_home_favourite_replacement_and_navigation(self):
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
-                str(ROOT / "app/src/main/java/tv/afnon/home/FavouriteChoice.java"),
+                str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/FavouriteChoice.java"),
                 str(ROOT / "tests/FavouriteChoiceCheck.java")], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.FavouriteChoiceCheck"], check=True, capture_output=True)
