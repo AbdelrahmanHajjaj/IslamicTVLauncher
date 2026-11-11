@@ -13,6 +13,7 @@ class UiControl(
     val labelKey: String,
     val save: String,
     val range: String,
+    internal val options: Array<String>,
 )
 
 @JsExport
@@ -35,6 +36,24 @@ object UiContract {
         "hijri-offset" -> PrayerRules.MAX_HIJRI_OFFSET_DAYS
         "percent" -> 100
         else -> throw IllegalArgumentException("Unknown UI number range: $id")
+    }
+
+    fun choices(id: String): Array<String> = bind(id, "choice").options.copyOf()
+
+    fun validateChoices(id: String, offered: Array<String>) {
+        val allowed = bind(id, "choice").options
+        for (value in offered) {
+            require(value in allowed) { "Unknown UI choice: $id=$value" }
+            require(offered.count { it == value } == 1) { "Duplicate UI choice: $id=$value" }
+        }
+    }
+
+    /** Conformance aggregates conditionally available editors before accounting for explicit gaps. */
+    fun validateChoiceCoverage(id: String, offered: Array<String>, gaps: Array<String>) {
+        validateChoices(id, offered)
+        validateChoices(id, gaps)
+        for (value in offered) require(value !in gaps) { "Bound UI choice declared missing: $id=$value" }
+        for (value in choices(id)) require(value in offered || value in gaps) { "Missing UI choice: $id=$value" }
     }
 
     /** Bindings come from real controls; omitted controls require explicit shell gap declarations. */

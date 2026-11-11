@@ -13,7 +13,7 @@ separate Android and LG webOS applications, not interchangeable build targets.
 - `platforms/android-tv/`: native Android TV launcher (`tv.afnon.home`), Java and Android Views.
 - `installer/`: Android phone installer and recovery workflow; Android targets only.
 - `site/`: Astro browser preview and shared-data/token extraction tools.
-- `shared/core/`: standalone Kotlin JVM/ES5 domain library; no platform APIs or UI.
+- `shared/core/`: standalone Kotlin JVM/ES5 product rules and semantic UI/input contracts; no platform APIs or rendering.
 - `shared/data/`, `shared/design/`: canonical product data, design and distributable assets.
 - `afnon-mihrab/`: shared design tokens, patterns and design references.
 - `platforms/webos/`: LG application (`tv.afnon.webos`) and JS service

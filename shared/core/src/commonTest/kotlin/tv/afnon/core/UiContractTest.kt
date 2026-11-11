@@ -6,6 +6,21 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 
 class UiContractTest {
+    @Test fun choiceValuesAreSemanticAndCoverageAccountsForExplicitGaps() {
+        assertEquals(listOf("mihrab", "compact", "hidden"), UiContract.choices("appearance.countdown").toList())
+        assertEquals(listOf("two_rows", "classic"), UiContract.choices("appearance.favourites").toList())
+        UiContract.validateChoices("appearance.position", arrayOf("top", "bottom"))
+        UiContract.validateChoiceCoverage("display.language", arrayOf("ar", "en"), arrayOf("system"))
+        assertFailsWith<IllegalArgumentException> { UiContract.validateChoiceCoverage("display.language", arrayOf("ar", "en"), emptyArray()) }
+        assertFailsWith<IllegalArgumentException> { UiContract.validateChoiceCoverage("display.language", arrayOf("ar", "en"), arrayOf("en", "system")) }
+        assertFailsWith<IllegalArgumentException> { UiContract.validateChoices("display.language", arrayOf("ar", "ar")) }
+        assertFailsWith<IllegalArgumentException> { UiContract.validateChoices("display.language", arrayOf("unknown")) }
+        assertFailsWith<IllegalArgumentException> { UiContract.choices("appearance.lighting") }
+        val copy = UiContract.choices("display.language")
+        copy[0] = "changed"
+        assertEquals("system", UiContract.choices("display.language")[0])
+    }
+
     @Test fun numberRangesUseExistingDomainLimits() {
         for (name in arrayOf("fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha")) {
             assertEquals(-PrayerRules.MAX_OFFSET_MINUTES, UiContract.minimum("offsets.$name"))

@@ -4,28 +4,35 @@
     "section": "prayer",
     "kind": "choice",
     "label": "location",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": "cities"
   },
   {
     "id": "prayer.method",
     "section": "prayer",
     "kind": "choice",
     "label": "method",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": "methods"
   },
   {
     "id": "prayer.asr",
     "section": "prayer",
     "kind": "choice",
     "label": "asrSchool",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "shafi",
+      "hanafi"
+    ]
   },
   {
     "id": "prayer.zone",
     "section": "prayer",
     "kind": "choice",
     "label": "timeZone",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": "zones"
   },
   {
     "id": "prayer.offsets",
@@ -68,7 +75,15 @@
     "section": "reminders",
     "kind": "choice",
     "label": "remind",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "5",
+      "10",
+      "15",
+      "20",
+      "30",
+      "0"
+    ]
   },
   {
     "id": "reminders.spoken",
@@ -96,14 +111,16 @@
     "section": "reminders",
     "kind": "choice",
     "label": "voiceRow",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": "voices"
   },
   {
     "id": "reminders.fajr-voice",
     "section": "reminders",
     "kind": "choice",
     "label": "fajrVoiceRow",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": "voices"
   },
   {
     "id": "reminders.volume",
@@ -118,7 +135,13 @@
     "section": "reminders",
     "kind": "choice",
     "label": "callCloseRow",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "0",
+      "1",
+      "5",
+      "10"
+    ]
   },
   {
     "id": "reminders.per-prayer",
@@ -139,7 +162,8 @@
     "section": "radio",
     "kind": "choice",
     "label": "stationRow",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": "stations"
   },
   {
     "id": "radio.playback",
@@ -174,28 +198,48 @@
     "section": "radio",
     "kind": "choice",
     "label": "radioDarkRow",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "0",
+      "15",
+      "-1"
+    ]
   },
   {
     "id": "display.language",
     "section": "display",
     "kind": "choice",
     "label": "language",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "system",
+      "ar",
+      "en"
+    ]
   },
   {
     "id": "display.digits",
     "section": "display",
     "kind": "choice",
     "label": "digits",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "auto",
+      "western",
+      "eastern"
+    ]
   },
   {
     "id": "display.clock",
     "section": "display",
     "kind": "choice",
     "label": "clockRow",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "system",
+      "12",
+      "24"
+    ]
   },
   {
     "id": "display.hide-system-apps",
@@ -216,21 +260,36 @@
     "section": "display",
     "kind": "choice",
     "label": "prayerDock",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "hidden",
+      "tab",
+      "off"
+    ]
   },
   {
     "id": "display.bar-position",
     "section": "display",
     "kind": "choice",
     "label": "dockPosition",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "top",
+      "bottom"
+    ]
   },
   {
     "id": "display.bar-timeout",
     "section": "display",
     "kind": "choice",
     "label": "dockAutoHide",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "0",
+      "10",
+      "20",
+      "30"
+    ]
   },
   {
     "id": "display.open-bar",
@@ -251,42 +310,67 @@
     "section": "appearance",
     "kind": "choice",
     "label": "homeCountdown",
-    "save": "appearance"
+    "save": "appearance",
+    "choices": [
+      "mihrab",
+      "compact",
+      "hidden"
+    ]
   },
   {
     "id": "appearance.position",
     "section": "appearance",
     "kind": "choice",
     "label": "homePosition",
-    "save": "appearance"
+    "save": "appearance",
+    "choices": [
+      "auto",
+      "left",
+      "right",
+      "top",
+      "bottom"
+    ]
   },
   {
     "id": "appearance.prayers",
     "section": "appearance",
     "kind": "choice",
     "label": "homePrayers",
-    "save": "appearance"
+    "save": "appearance",
+    "choices": [
+      "all",
+      "current",
+      "next",
+      "both",
+      "none"
+    ]
   },
   {
     "id": "appearance.favourites",
     "section": "appearance",
     "kind": "choice",
     "label": "homeFavourites",
-    "save": "appearance"
+    "save": "appearance",
+    "choices": [
+      "two_rows",
+      "classic"
+    ]
   },
   {
     "id": "appearance.theme",
     "section": "appearance",
     "kind": "choice",
     "label": "themeRow",
-    "save": "appearance"
+    "save": "appearance",
+    "choices": "themes"
   },
   {
     "id": "appearance.background",
     "section": "appearance",
     "kind": "choice",
     "label": "backgroundRow",
-    "save": "appearance"
+    "save": "appearance",
+    "choices": "backgrounds"
   },
   {
     "id": "appearance.lighting",
@@ -301,7 +385,12 @@
     "section": "appearance",
     "kind": "choice",
     "label": "appearanceCycle",
-    "save": "appearance"
+    "save": "appearance",
+    "choices": [
+      "0",
+      "15",
+      "30"
+    ]
   },
   {
     "id": "appearance.focus-lighting",
@@ -427,7 +516,14 @@
     "section": "tests",
     "kind": "choice",
     "label": "testPrayer",
-    "save": "immediate"
+    "save": "immediate",
+    "choices": [
+      "0",
+      "2",
+      "3",
+      "4",
+      "5"
+    ]
   },
   {
     "id": "tests.banner",

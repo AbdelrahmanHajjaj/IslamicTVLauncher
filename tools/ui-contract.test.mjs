@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { validateUiContract, validateUiGaps, renderUiCatalog, renderUiGaps } from './ui-contract.mjs';
+import { validateUiContract, validateUiGaps, validateUiChoiceGaps, uiChoices, renderUiCatalog, renderUiGaps } from './ui-contract.mjs';
 
 const read = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 const json = path => JSON.parse(read(path));
@@ -18,6 +18,10 @@ for (const change of [
   c => { c.save = 'action'; },
   c => { c.storageKey = 'home_layout'; },
   c => { c.range = 'percent'; },
+  c => { c.choices = []; },
+  c => { c.choices = '__proto__'; },
+  c => { c.choices = ['same', 'same']; },
+  c => { c.choices = ['bad/value']; },
 ]) {
   const modified = structuredClone(controls); change(modified[0]);
   assert.throws(() => validateUiContract(modified, strings), /Invalid UI control/);
@@ -30,16 +34,24 @@ for (const value of [undefined, 'unknown', ['prayer-offset']]) {
   assert.throws(() => validateUiContract(modified, strings), /Invalid UI control/);
 }
 const profiles = [
-  ['Android TV', json('platforms/android-tv/src/androidTest/assets/ui-gaps.json')],
-  ['LG webOS', json('platforms/webos/ui-gaps.json')],
+  ['Android TV', json('platforms/android-tv/src/androidTest/assets/ui-gaps.json'), json('platforms/android-tv/src/androidTest/assets/ui-choice-gaps.json')],
+  ['LG webOS', json('platforms/webos/ui-gaps.json'), json('platforms/webos/ui-choice-gaps.json')],
 ];
-for (const [, gaps] of profiles) {
+for (const [, gaps, choices] of profiles) {
   validateUiGaps(gaps, controls);
+  validateUiChoiceGaps(choices, controls, gaps);
+  for (const change of [g => { g.values = []; }, g => { g.values = ['unknown']; }, g => { g.values.push(g.values[0]); }]) {
+    const modified = structuredClone(choices); change(modified[0]);
+    assert.throws(() => validateUiChoiceGaps(modified, controls, gaps), /Invalid UI choice gap/);
+  }
   for (const change of [g => { g.id = 'unknown.control'; }, g => { g.reason = ''; }, g => { g.state = 'supported'; }]) {
     const modified = structuredClone(gaps); change(modified[0]);
     assert.throws(() => validateUiGaps(modified, controls), /Invalid UI gap/);
   }
   assert.throws(() => validateUiGaps([...gaps, gaps[0]], controls), /Invalid UI gap/);
+}
+for (const [id, source] of [['prayer.location', 'cities'], ['reminders.voice', 'voices'], ['radio.station', 'stations']]) {
+  assert.deepEqual(uiChoices(controls.find(c => c.id === id)), json('shared/data/' + source + '.json').map(c => c.id));
 }
 assert.equal(read('shared/core/src/commonMain/kotlin/tv/afnon/core/UiCatalog.kt'), renderUiCatalog(controls));
 assert.equal(read('docs/UI-GAPS.md'), renderUiGaps(profiles));

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "prayer.method",
+    "state": "unimplemented",
+    "values": ["city-default"],
+    "reason": "Selecting a city sets its method; the method chooser has no persistent city-default option."
+  },
+  {
+    "id": "display.digits",
+    "state": "unimplemented",
+    "values": ["auto"],
+    "reason": "The initial default follows language, but the editor offers only explicit Western/Eastern digits."
+  }
+]

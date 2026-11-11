@@ -35,6 +35,13 @@ Migration acceptance and evidence live only in ARCHITECTURE-QUEUE.md.
 | `tests.cancel` | unimplemented | Uses the native Test reminders/adhan chooser and PrayerWatch; this separate LG test control is not ported. |
 | `offsets.reset` | unimplemented | Each prayer has a stepper; no Reset adjustments action. |
 
+### Choice values
+
+| Control | Missing values | State | Reason |
+| --- | --- | --- | --- |
+| `prayer.method` | `city-default` | unimplemented | Selecting a city sets its method; the method chooser has no persistent city-default option. |
+| `display.digits` | `auto` | unimplemented | The initial default follows language, but the editor offers only explicit Western/Eastern digits. |
+
 ## LG webOS
 
 | Control | State | Reason |
@@ -54,3 +61,12 @@ Migration acceptance and evidence live only in ARCHITECTURE-QUEUE.md.
 | `device.screensaver` | os-unsupported | No supported app-controlled system screensaver selection on the tested old LG. |
 | `device.remote` | os-unsupported | No supported global remote-key interception while this app is closed. |
 | `device.repair` | os-unsupported | Android accessibility recovery has no equivalent webOS service permission. |
+
+### Choice values
+
+| Control | Missing values | State | Reason |
+| --- | --- | --- | --- |
+| `display.language` | `system` | unimplemented | The language control switches Arabic/English; TV-locale following is not implemented. |
+| `display.clock` | `system` | unimplemented | The clock editor offers 12/24-hour formats without TV-format following. |
+| `appearance.theme` | `custom` | unimplemented | Imported custom themes are not implemented; the shared preset catalog remains available. |
+| `appearance.background` | `theme`, `lattice`, `panorama`, `daylight`, `mountains`, `dunes`, `halo`, `night_sky` | unimplemented | The renderer offers plain solid fill and shared pattern masks; Android procedural backgrounds are not ported. |

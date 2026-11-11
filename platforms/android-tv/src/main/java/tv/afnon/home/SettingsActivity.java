@@ -47,7 +47,7 @@ public class SettingsActivity extends Screen {
     private static final float NAV_TOP = 152, NAV_H = 76, NAV_GAP = 10;
 
     /** One row: what it shows and what OK (and ◀▶ while editing) do. */
-    private abstract class Row {
+    abstract class Row {
         final int kind;
         final UiControl contract;
         FocusTile tile;
@@ -74,6 +74,11 @@ public class SettingsActivity extends Screen {
 
         /** SEG rows: the choices (already in the screen's digits) and the chosen one. */
         String[] segs() { return new String[0]; }
+
+        String[] keys() {
+            if (contract.getKind().equals("choice")) throw new IllegalArgumentException("Missing UI choice binding: " + contract.getId());
+            return new String[0];
+        }
 
         int selected() { return 0; }
 
@@ -268,27 +273,35 @@ public class SettingsActivity extends Screen {
         refresh();
     }
 
+    private static String[] numberKeys(int[] values) {
+        return Arrays.stream(values).mapToObj(String::valueOf).toArray(String[]::new);
+    }
+
     private List<Row> homeRows() {
         return Arrays.asList(
             new Row("appearance.countdown", CAROUSEL) {
+                String[] keys() { return new String[] {"mihrab", "compact", "hidden"}; }
                 String label() { return t.homeCountdown(); }
                 String[] segs() { return t.homeCountdowns(); }
                 int selected() { return homeDraft[0]; }
                 void select(int i) { homeDraft[0] = i; }
             },
             new Row("appearance.position", CAROUSEL) {
+                String[] keys() { return homeDraft[0] == HomeLayout.HIDDEN ? new String[0] : homeDraft[0] == HomeLayout.COMPACT ? new String[] {"top", "bottom"} : new String[] {"auto", "left", "right"}; }
                 String label() { return t.homePosition(); }
                 String[] segs() { return homeDraft[0] == HomeLayout.HIDDEN ? new String[] {"—"} : homeDraft[0] == HomeLayout.COMPACT ? t.homeBars() : t.homeSides(); }
                 int selected() { return homeDraft[0] == HomeLayout.HIDDEN ? 0 : homeDraft[homeDraft[0] == HomeLayout.COMPACT ? 2 : 1]; }
                 void select(int i) { if (homeDraft[0] != HomeLayout.HIDDEN) homeDraft[homeDraft[0] == HomeLayout.COMPACT ? 2 : 1] = i; }
             },
             new Row("appearance.prayers", CAROUSEL) {
+                String[] keys() { return new String[] {"all", "current", "next", "both", "none"}; }
                 String label() { return t.homePrayers(); }
                 String[] segs() { return t.homePrayerModes(); }
                 int selected() { return homeDraft[3]; }
                 void select(int i) { homeDraft[3] = i; }
             },
             new Row("appearance.favourites", CAROUSEL) {
+                String[] keys() { return new String[] {"two_rows", "classic"}; }
                 String label() { return t.homeFavourites(); }
                 String[] segs() { return t.homeLayouts(); }
                 int selected() { return homeDraft[4]; }
@@ -340,6 +353,7 @@ public class SettingsActivity extends Screen {
         switch (s) {
             case PRAYER: return Arrays.asList(
                 new Row("prayer.location", VALUE) {
+                    String[] keys() { return Arrays.stream(Prefs.CITIES).map(city -> city.id).toArray(String[]::new); }
                     String label() { return t.location(); }
                     String help() { Prefs.City city = Prefs.city(c); return t.locationHelp(city.lat, city.lng); }
                     String value() { Prefs.City city = Prefs.city(c); return t.ar ? t.place(city.ar, city.countryAr) : t.place(city.en, city.countryEn); }
@@ -350,6 +364,7 @@ public class SettingsActivity extends Screen {
                     }
                 },
                 new Row("prayer.method", VALUE) {
+                    String[] keys() { return Arrays.stream(Prefs.METHODS).map(method -> method.name()).toArray(String[]::new); }
                     String label() { return t.method(); }
                     String help() { return t.methodAngles(Prefs.method(c)); }
                     String value() { return t.methodName(Prefs.method(c)); }
@@ -360,10 +375,11 @@ public class SettingsActivity extends Screen {
                             names[i] = t.methodName(Prefs.METHODS[i]);
                             if (Prefs.METHODS[i] == Prefs.method(c)) sel = i;
                         }
-                        openChooser(t.method(), names, sel, i -> { Prefs.setMethod(c, Prefs.METHODS[i]); showSaved(); });
+                        openChooser(t.method(), names, sel, i -> { Prefs.setMethod(c, Prefs.METHODS[i]); showSaved(); }, null, contract.getId(), keys());
                     }
                 },
                 new Row("prayer.asr", SEG) {
+                    String[] keys() { return new String[] {"shafi", "hanafi"}; }
                     String label() { return t.asrSchool(); }
                     String help() {
                         PrayerDay shown = editing == this ? new PrayerDay(new Date(), Prefs.where(c), Prefs.method(c),
@@ -403,6 +419,7 @@ public class SettingsActivity extends Screen {
                 new Row("reminders.before", VALUE) {
                     // Six choices are too many for a segmented control: a list, like the adhan voices.
                     final int[] minutes = {5, 10, 15, 20, 30, 0};
+                    String[] keys() { return numberKeys(minutes); }
                     String label() { return t.remind(); }
                     String help() { return t.remindHelp(); }
                     int selected() {
@@ -413,7 +430,7 @@ public class SettingsActivity extends Screen {
                     String value() { return digits(t.remindChoices())[selected()]; }
                     void open() {
                         openChooser(t.remind(), digits(t.remindChoices()), selected(),
-                            i -> { Prefs.setRemindMinutes(c, minutes[i]); showSaved(); });
+                            i -> { Prefs.setRemindMinutes(c, minutes[i]); showSaved(); }, null, contract.getId(), keys());
                     }
                 },
                 new Row("reminders.spoken", TOGGLE) {
@@ -436,6 +453,7 @@ public class SettingsActivity extends Screen {
                 },
                 new Row("reminders.close", SEG) {
                     final int[] minutes = {0, 1, 5, 10};
+                    String[] keys() { return numberKeys(minutes); }
                     String label() { return t.callCloseRow(); }
                     String help() { return t.callCloseHelp(); }
                     String[] segs() { return digits(t.callCloseChoices()); }
@@ -469,6 +487,7 @@ public class SettingsActivity extends Screen {
                     boolean saves() { return false; }
                 },
                 new Row("radio.station", VALUE) {
+                    String[] keys() { return Arrays.stream(Radio.STATIONS).map(station -> station.id).toArray(String[]::new); }
                     String label() { return t.stationRow(); }
                     String help() { return t.stationGroups()[Radio.station(c).reciter ? 1 : 0]; }
                     String value() { return t.stationChoice(Radio.station(c)); }
@@ -487,6 +506,7 @@ public class SettingsActivity extends Screen {
                 },
                 new Row("radio.screen-off", SEG) {
                     final int[] minutes = {0, 15, -1};
+                    String[] keys() { return numberKeys(minutes); }
                     String label() { return t.radioDarkRow(); }
                     String help() { return t.radioDarkHelp(); }
                     String[] segs() { return digits(t.radioDarkChoices()); }
@@ -500,6 +520,7 @@ public class SettingsActivity extends Screen {
             case DISPLAY: return Arrays.asList(
                 new Row("display.language", SEG) {
                     final String[] values = {"system", "ar", "en"};
+                    String[] keys() { return values.clone(); }
                     String label() { return t.language(); }
                     String help() { return t.languageHelp(); }
                     String[] segs() { return t.languages(); }
@@ -507,6 +528,7 @@ public class SettingsActivity extends Screen {
                     void select(int i) { prefs().edit().putString("locale", values[i]).apply(); relaunch(); }
                 },
                 new Row("display.digits", SEG) {
+                    String[] keys() { return new String[] {"western", "eastern"}; }
                     String label() { return t.digits(); }
                     String[] segs() { return new String[] {"0123", "٠١٢٣"}; }
                     int selected() { return t.eastern ? 1 : 0; }
@@ -514,6 +536,7 @@ public class SettingsActivity extends Screen {
                 },
                 new Row("display.clock", SEG) {
                     final String[] values = {"system", "12", "24"};
+                    String[] keys() { return values.clone(); }
                     String label() { return t.clockRow(); }
                     String help() { return t.clockHelp(); }
                     String[] segs() { return digits(t.clocks()); }
@@ -533,12 +556,14 @@ public class SettingsActivity extends Screen {
                 },
                 new Row("display.bar-mode", VALUE) {
                     final String[] modes = {"hidden", "tab", "off"};
+                    String[] keys() { return modes.clone(); }
                     String label() { return t.prayerDock(); }
                     int selected() { return Math.max(0, Arrays.asList(modes).indexOf(prefs().getString("dock_mode", "hidden"))); }
                     String value() { return t.dockModes()[selected()]; }
-                    void open() { openChooser(label(), t.dockModes(), selected(), i -> { prefs().edit().putString("dock_mode", modes[i]).apply(); showSaved(); }); }
+                    void open() { openChooser(label(), t.dockModes(), selected(), i -> { prefs().edit().putString("dock_mode", modes[i]).apply(); showSaved(); }, null, contract.getId(), keys()); }
                 },
                 new Row("display.bar-position", SEG) {
+                    String[] keys() { return new String[] {"top", "bottom"}; }
                     String label() { return t.dockPosition(); }
                     String[] segs() { return t.dockPositions(); }
                     int selected() { return "top".equals(prefs().getString("dock_position", "bottom")) ? 0 : 1; }
@@ -552,12 +577,14 @@ public class SettingsActivity extends Screen {
                 List<Row> appearance = new ArrayList<>(homeRows());
                 appearance.addAll(Arrays.asList(
                 new Row("appearance.theme", CAROUSEL) {
+                    String[] keys() { return Arrays.copyOf(Appearance.PRESETS, segs().length); }
                     String label() { return t.themeRow(); }
                     String[] segs() { return Arrays.copyOf(t.themeNames(), Appearance.PRESETS.length - (prefs().contains("theme_json") ? 0 : 1)); }
                     int selected() { return themeChoice; }
                     void select(int i) { themeChoice = i; }
                 },
                 new Row("appearance.background", CAROUSEL) {
+                    String[] keys() { return BACKGROUNDS.clone(); }
                     String label() { return t.backgroundRow(); }
                     String[] segs() { return t.backgroundNames(); }
                     int selected() { return backgroundChoice; }
@@ -572,6 +599,7 @@ public class SettingsActivity extends Screen {
                     boolean saves() { return false; }
                 },
                 new Row("appearance.cycle", CAROUSEL) {
+                    String[] keys() { return numberKeys(AppearanceCycle.MINUTES); }
                     String label() { return t.appearanceCycle(); }
                     String help() { return t.appearanceCycleHelp(); }
                     String[] segs() { return t.appearanceCycleChoices(); }
@@ -661,6 +689,7 @@ public class SettingsActivity extends Screen {
     /** The adhan recording for every prayer but Fajr, or for Fajr: a list that plays each voice as focus reaches it. */
     private Row voiceRow(boolean fajr) {
         return new Row(fajr ? "reminders.fajr-voice" : "reminders.voice", VALUE) {
+            String[] keys() { return Arrays.stream(Adhans.VOICES).map(voice -> voice[0]).toArray(String[]::new); }
             String label() { return fajr ? t.fajrVoiceRow() : t.voiceRow(); }
             String help() { return fajr ? t.fajrVoiceHelp() : t.voiceHelp(); }
             String value() { return Adhans.name(t, Prefs.voice(SettingsActivity.this, fajr)); }
@@ -669,7 +698,7 @@ public class SettingsActivity extends Screen {
                 for (int i = 0; i < names.length; i++) names[i] = Adhans.name(t, Adhans.VOICES[i][0]);
                 openChooser(label(), names, Adhans.index(Prefs.voice(SettingsActivity.this, fajr)),
                     i -> { Prefs.setVoice(SettingsActivity.this, fajr, Adhans.VOICES[i][0]); showSaved(); },
-                    i -> preview(Adhans.VOICES[i][0]));
+                    i -> preview(Adhans.VOICES[i][0]), contract.getId(), keys());
             }
         };
     }
@@ -716,12 +745,20 @@ public class SettingsActivity extends Screen {
     // ---------------------------------------------------------------- rows
 
     private void addRow(Row r, int i) {
+        if (r.contract.getKind().equals("choice")) {
+            String[] keys = r.keys();
+            UiContract.INSTANCE.validateChoices(r.contract.getId(), keys);
+            if ((r.kind == SEG || r.kind == CAROUSEL) && keys.length != r.segs().length
+                    && !(keys.length == 0 && r.segs().length == 1)) {
+                throw new IllegalArgumentException("Wrong UI choice count: " + r.contract.getId());
+            }
+        }
         if (r.kind == STEP && (r.lowest() != UiContract.INSTANCE.minimum(r.contract.getId())
                 || r.highest() != UiContract.INSTANCE.maximum(r.contract.getId()))) {
             throw new IllegalArgumentException("Wrong UI number bounds: " + r.contract.getId());
         }
         r.tile = new FocusTile(this, 16);
-        r.tile.setTag(r.contract);
+        r.tile.setTag(r);
         r.tile.setFocusScale(Tokens.FOCUS_SCALE_SETTINGS_ROW);
         r.tile.setRest(Palette.LAPIS_800, 0, 0);
         LinearLayout line = new LinearLayout(this);
@@ -1055,6 +1092,8 @@ public class SettingsActivity extends Screen {
             Prefs.City city = Prefs.CITIES[i];
             if ((t.ar ? city.countryAr : city.countryEn).equals(country)) found.add(i);
         }
+        String[] keys = found.stream().map(i -> Prefs.CITIES[i].id).toArray(String[]::new);
+        UiContract.INSTANCE.validateChoices("prayer.location", keys);
         if (found.size() == 1) {
             Prefs.setCity(this, found.get(0));
             refresh();
@@ -1071,7 +1110,7 @@ public class SettingsActivity extends Screen {
             names[k] = t.ar ? city.ar : city.en;
             if (found.get(k) == current) sel = k;
         }
-        openChooser(country, names, sel, k -> { Prefs.setCity(this, found.get(k)); showSaved(); });
+        openChooser(country, names, sel, k -> { Prefs.setCity(this, found.get(k)); showSaved(); }, null, "prayer.location", keys);
         chooserBack = back;
     }
 
@@ -1151,17 +1190,22 @@ public class SettingsActivity extends Screen {
             names[k] = t.stationChoice(Radio.STATIONS[found.get(k)]);
             if (found.get(k) == current) sel = k;
         }
-        openChooser(t.stationGroups()[reciters ? 1 : 0], names, sel, k -> { Radio.switchTo(this, found.get(k)); showSaved(); });
+        String[] keys = found.stream().map(i -> Radio.STATIONS[i].id).toArray(String[]::new);
+        openChooser(t.stationGroups()[reciters ? 1 : 0], names, sel, k -> { Radio.switchTo(this, found.get(k)); showSaved(); }, null, "radio.station", keys);
         chooserBack = back;
     }
 
     /** A list over the screen (cities, methods): OK picks, Back cancels. Up/Down are the system's own. */
     private void openChooser(String title, String[] items, int selected, IntConsumer pick) {
-        openChooser(title, items, selected, pick, null);
+        openChooser(title, items, selected, pick, null, null, null);
     }
 
     /** onFocus, if given, hears each item as focus reaches it (the adhan list plays that voice). */
-    private void openChooser(String title, String[] items, int selected, IntConsumer pick, IntConsumer onFocus) {
+    private void openChooser(String title, String[] items, int selected, IntConsumer pick, IntConsumer onFocus, String control, String[] keys) {
+        if (control != null) {
+            UiContract.INSTANCE.validateChoices(control, keys);
+            if (items.length != keys.length) throw new IllegalArgumentException("Wrong UI choice count: " + control);
+        }
         chooser = new FrameLayout(this);
         chooser.setBackgroundColor(Palette.SCRIM_MENU);
         chooser.setClickable(true);
@@ -1194,6 +1238,7 @@ public class SettingsActivity extends Screen {
             final int index = i;
             boolean chosen = i == selected;
             FocusTile item = new FocusTile(this, 14);
+            if (control != null) item.setTag(new String[] {control, keys[index]});
             item.setFocusScale(1f);   // the list scrolls, so a grown tile would be clipped at its edges
             item.setRest(chosen ? Palette.LAPIS_700 : 0, 0, 0);
             TextView v = text(chosen ? ui500 : ui400, 26, Palette.PLASTER_100);

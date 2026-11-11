@@ -6,6 +6,7 @@ const { chromium } = require('playwright');
 const base = path.join(__dirname, 'build/app');
 const sacred = JSON.parse(fs.readFileSync(path.join(__dirname, '../../shared/data/sacred-text.json')));
 const uiGaps = JSON.parse(fs.readFileSync(path.join(__dirname, 'ui-gaps.json')));
+const uiChoiceGaps = JSON.parse(fs.readFileSync(path.join(__dirname, 'ui-choice-gaps.json')));
 const shots = path.resolve(__dirname, '../../state/webos-port');
 fs.mkdirSync(shots, { recursive: true });
 const server = http.createServer((req, res) => {
@@ -133,10 +134,11 @@ const server = http.createServer((req, res) => {
     await page.locator('[data-action=settings]').click();
     async function settingsCoverage() {
       const seen = new Set();
+      const offered = {};
       async function collect(section) {
         const bound = await page.locator('.settings-rows button:not([data-action=carousel-step])').evaluateAll(items => items.map(el => ({
           id: el.getAttribute('data-ui'), kind: el.getAttribute('data-ui-kind'), label: el.firstChild.textContent,
-          action: el.getAttribute('data-action')
+          action: el.getAttribute('data-action'), values: JSON.parse(el.getAttribute('data-ui-values'))
         })));
         assert.ok(bound.length);
         assert.equal(new Set(bound.map(item => item.id)).size, bound.length, 'no duplicate control in an actual section');
@@ -151,17 +153,37 @@ const server = http.createServer((req, res) => {
           }, {...item, section});
           assert.equal(item.label, expected, 'actual row uses its canonical bilingual label');
           seen.add(item.id);
+          if (item.kind === 'choice') {
+            assert.ok(Array.isArray(item.values), 'actual choice binding exposes values');
+            offered[item.id] ||= new Set();
+            item.values.forEach(value => offered[item.id].add(value));
+          }
         }
       }
       for (const section of ['prayer', 'reminders', 'radio', 'display', 'appearance', 'device', 'tests']) {
         await page.locator('[data-action=section][data-value=' + section + ']').click();
         await collect(section);
       }
+      await page.locator('[data-action=section][data-value=appearance]').click();
+      const countdown = page.locator('[data-action=carousel][data-value=homeLayout]');
+      const rtl = await page.locator('html').getAttribute('dir') === 'rtl';
+      await countdown.focus();
+      await page.keyboard.press(rtl ? 'ArrowRight' : 'ArrowLeft');
+      await page.keyboard.press(rtl ? 'ArrowRight' : 'ArrowLeft');
+      for (let mode = 0; mode < 3; mode++) {
+        await collect('appearance');
+        if (mode < 2) await page.keyboard.press(rtl ? 'ArrowLeft' : 'ArrowRight');
+      }
+      await page.locator('[data-action=cancel-appearance]').click();
       await page.locator('[data-action=section][data-value=prayer]').click();
       await page.locator('[data-action=offsets]').click();
       await collect('offsets');
       await page.evaluate(({bound, gaps}) => window['tv.afnon:core'].tv.afnon.core.UiContract.validateCoverage(bound, gaps),
         {bound: [...seen], gaps: uiGaps.map(gap => gap.id)});
+      await page.evaluate(({offered, gaps}) => {
+        const core = window['tv.afnon:core'].tv.afnon.core.UiContract;
+        for (const [id, values] of Object.entries(offered)) core.validateChoiceCoverage(id, values, gaps.find(g => g.id === id)?.values || []);
+      }, {offered: Object.fromEntries(Object.entries(offered).map(([id, values]) => [id, [...values]])), gaps: uiChoiceGaps});
       const rejected = await page.evaluate(({bound, gaps}) => {
         try { window['tv.afnon:core'].tv.afnon.core.UiContract.validateCoverage(bound.slice(1), gaps); return false; }
         catch (error) { return /Missing UI control/.test(error.message); }

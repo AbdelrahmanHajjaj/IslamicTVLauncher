@@ -79,8 +79,12 @@ in Arabic and English, then require every definition to be bound or declared in 
 shell's gap file. See [declared gaps](UI-GAPS.md). These checks enforce control
 coverage. Numeric range references reuse the core prayer/Hijri limits and shared
 percentage bounds; native steppers validate their ranges and LG's editor consumes
-them through its actual binding. They do not yet exhaustively compare every choice
-value or linked editor.
+them through its actual binding. Semantic choice values resolve canonical catalog
+references during generation. Both renderers validate actual option models; native
+popup lists also check their IDs/counts and LG validates the chosen offered value
+before saving. Coverage aggregates countdown-position and imported-theme variants,
+then requires explicit partial-option gaps. Stored keys, aliases and choice ordering
+remain platform-owned. Linked-editor workflows still need their own conformance.
 
 The implementation must provide one portable definition, shared focus rules and
 per-shell bindings. Conformance checks must:

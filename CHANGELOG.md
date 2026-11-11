@@ -10,6 +10,8 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   explicit platform gaps. Native Android rows and LG rows/carousels are checked
   against the portable contract so omitted controls cannot silently pass as parity.
   Numeric editors also share validated prayer/Hijri and percentage limits.
+  Choice values use shared semantic IDs with explicit option gaps; stored keys,
+  defaults and platform-specific ordering remain intact.
 
 - Android and LG share deterministic Home focus rules. LG starts on its app
   content, moves Up to the top controls and Down beyond the final app row to All

@@ -14,7 +14,7 @@
   var returnContext = null, voicePreview = null, coldAlert = false;
   var appearanceDraft = null, settingsParent = 'home', dayParent = 'home';
   var homeNodes = [], homeAppCount = 0, lastHomeApp = homeNavigation.FIRST_APP;
-  var numberControl = null;
+  var pickerControl = null;
   var appearanceKeys = ['theme', 'background', 'homeLayout', 'archSide', 'homeBar', 'prayerMode'];
   var overlay = document.getElementById('overlay');
   var sections = ['prayer', 'reminders', 'radio', 'display', 'appearance', 'device', 'tests'];
@@ -29,9 +29,10 @@
   function f(key) { return D.formatText[prefs.lang][key]; }
   function escape(value) { return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
   function digits(value) { return prefs.digits === 'eastern' || prefs.digits === 'auto' && prefs.lang === 'ar' ? String(value).replace(/[0-9]/g, function (n) { return '٠١٢٣٤٥٦٧٨٩'.charAt(Number(n)); }) : String(value); }
-  function button(action, label, value, className, accessibleLabel, control) {
+  function button(action, label, value, className, accessibleLabel, control, choiceValues) {
     return '<button data-action="' + action + '" data-value="' + escape(value === undefined ? '' : value) + '" class="' + (className || '') + '"' +
       (control ? ' data-ui="' + control.id + '" data-ui-kind="' + control.kind + '"' : '') +
+      (choiceValues ? ' data-ui-values="' + escape(JSON.stringify(choiceValues)) + '"' : '') +
       (accessibleLabel ? ' aria-label="' + escape(accessibleLabel) + '" title="' + escape(accessibleLabel) + '"' : '') + '>' + label + '</button>';
   }
   function icon(name) {
@@ -145,7 +146,19 @@
   }
   function row(id, action, value, kind) {
     var control = uiContract.bind(id, kind || 'action');
-    return button(action, escape(controlLabel(control)) + '<span class="value">' + escape(value) + '</span>', '', '', '', control);
+    var values = control.kind === 'choice' ? choiceValues(id, choices(action, true)) : null;
+    return button(action, escape(controlLabel(control)) + '<span class="value">' + escape(value) + '</span>', '', '', '', control, values);
+  }
+  function choiceValues(id, items) {
+    var values = items.map(function (item) {
+      if (id === 'prayer.method' && item.value === '') { return 'city-default'; }
+      if (id === 'prayer.zone' && item.value === '') { return 'system'; }
+      if (id === 'prayer.asr') { return item.value ? 'hanafi' : 'shafi'; }
+      if (id === 'appearance.background' && item.value === 'plain') { return 'solid'; }
+      return String(item.value);
+    });
+    uiContract.validateChoices(id, values);
+    return values;
   }
   function carousel(id, key) {
     var control = uiContract.bind(id, 'choice'), label = controlLabel(control);
@@ -155,7 +168,7 @@
       return '<button tabindex="-1" data-action="carousel-step" data-value="' + key + ':' + delta + '" class="carousel-arrow ' + (delta < 0 ? 'previous' : 'next') + '"' +
         (disabled ? ' disabled' : '') + ' aria-label="' + escape(label + ': ' + (delta < 0 ? t('السابق', 'Previous') : t('التالي', 'Next'))) + '">' + ((delta < 0) !== rtl ? '‹' : '›') + '</button>';
     }
-    return '<div class="carousel-row">' + button('carousel', escape(label) + '<span class="carousel-choice">' + escape(list[index].label) + '</span>', key, 'carousel-main', '', control) +
+    return '<div class="carousel-row">' + button('carousel', escape(label) + '<span class="carousel-choice">' + escape(list[index].label) + '</span>', key, 'carousel-main', '', control, choiceValues(id, list)) +
       arrow(-1, index === 0) + arrow(1, index === list.length - 1) + '</div>';
   }
   function changeAppearance(key, delta) {
@@ -404,14 +417,14 @@
       }
     } catch (error) { put('[data-countdown]', '—'); }
   }
-  function choices(key) {
+  function choices(key, allCountries) {
     key = key || picker;
     if (key === 'country') {
       var seen = {}, countries = [];
       D.cities.forEach(function (c) { if (!seen[c.countryEn]) { seen[c.countryEn] = true; countries.push({value: c.countryEn, label: c[prefs.lang === 'ar' ? 'countryAr' : 'countryEn']}); } });
       return countries;
     }
-    if (key === 'city') { return D.cities.filter(function (c) { return !country || c.countryEn === country; }).map(function (c) { return {value: c.id, label: c[prefs.lang]}; }); }
+    if (key === 'city') { return D.cities.filter(function (c) { return allCountries || !country || c.countryEn === country; }).map(function (c) { return {value: c.id, label: c[prefs.lang]}; }); }
     if (key === 'method') {
       return [{value: '', label: t('طريقة المدينة الافتراضية', 'City default') }].concat(D.methods.map(function (id) { return {value: id, label: methodName(id)}; }));
     }
@@ -420,6 +433,8 @@
     if (key === 'theme') { return D.themes.map(function (id, i) { return {value: id, label: s('themeNames')[i]}; }); }
     if (key === 'testPrayer') { return [0, 2, 3, 4, 5].map(function (i) { return {value: i, label: s('prayerNames')[i]}; }); }
     var options = {
+      language: [['ar', 'العربية'], ['en', 'English']],
+      hanafi: [[false, t('شافعي / قياسي', 'Shafi / Standard')], [true, t('حنفي', 'Hanafi')]],
       remind: [[0, t('متوقف', 'Off')], [5, '5'], [10, '10'], [15, '15'], [20, '20'], [30, '30']],
       callClose: [[0, t('عند نهاية الصوت', 'When audio ends')], [1, t('دقيقة', '1 minute')], [5, t('٥ دقائق', '5 minutes')], [10, t('١٠ دقائق', '10 minutes')]],
       digits: [['auto', t('حسب اللغة', 'Follow language')], ['western', '0123'], ['eastern', '٠١٢٣']],
@@ -434,11 +449,11 @@
         ['arabesque', t('أرابيسك', 'Arabesque')], ['star_tiles', t('بلاط النجوم', 'Star tiles')], ['rosettes', t('وريدات', 'Rosettes')], ['octagon_lattice', t('شبكة مثمنة', 'Octagon lattice')], ['corner_medallions', t('زخارف الأركان', 'Corner medallions')]]
     };
     if (options[key]) { return options[key].map(function (v) { return {value: v[0], label: v[1]}; }); }
-    var result = [{value: '', label: t('توقيت التلفاز', 'TV time zone')}];
-    for (var offset = -720; offset <= 840; offset += 15) {
-      result.push({value: String(offset), label: 'UTC' + (offset < 0 ? '−' : '+') + Math.floor(Math.abs(offset) / 60) + ':' + (Math.abs(offset) % 60 < 10 ? '0' : '') + Math.abs(offset) % 60});
-    }
-    return result;
+    return uiContract.choices('prayer.zone').map(function (value) {
+      if (value === 'system') { return {value: '', label: t('توقيت التلفاز', 'TV time zone')}; }
+      var offset = Number(value);
+      return {value: value, label: 'UTC' + (offset < 0 ? '−' : '+') + Math.floor(Math.abs(offset) / 60) + ':' + (Math.abs(offset) % 60 < 10 ? '0' : '') + Math.abs(offset) % 60};
+    });
   }
   function pickerTitle() {
     if (picker === 'country') { return t('الدولة', 'Country'); }
@@ -451,21 +466,23 @@
   function stepper() { return /^offset-/.test(picker) || picker === 'volume' || picker === 'hijriOffset'; }
   function openPicker(key) {
     picker = key; page = 0;
+    var source = screen.querySelector('.settings-rows [data-action="' + (key === 'country' ? 'city' : key) + '"][data-ui]');
+    if (source) { pickerControl = source.getAttribute('data-ui'); }
+    else if (!((key === 'country' || key === 'city') && pickerControl === 'prayer.location')) { throw new Error('Missing UI editor binding: ' + key); }
+    uiContract.bind(pickerControl, stepper() ? 'number' : 'choice');
     var selected = key === 'country' ? A.city(prefs.city).countryEn : key === 'zone' ? prefs.utcOffset : key === 'testPrayer' ? testPrayer : (appearanceDraft || prefs)[key];
     if (stepper()) {
-      var source = screen.querySelector('.settings-rows [data-action="' + key + '"][data-ui]');
-      if (!source) { throw new Error('Missing numeric UI binding: ' + key); }
-      numberControl = uiContract.bind(source.getAttribute('data-ui'), 'number').id;
       editValue = /^offset-/.test(key) ? prefs.offsets[Number(key.slice(7))] : prefs[key];
     }
     else {
       var list = choices();
+      if (key !== 'country') { choiceValues(pickerControl, list); }
       for (var i = 0; i < list.length; i++) { if (String(list[i].value) === String(selected === null ? '' : selected)) { page = Math.floor(i / 6); } }
     }
     show('picker');
   }
   function changeStep(delta) {
-    var min = uiContract.minimum(numberControl), max = uiContract.maximum(numberControl);
+    var min = uiContract.minimum(pickerControl), max = uiContract.maximum(pickerControl);
     editValue = Math.max(min, Math.min(max, editValue + delta * (picker === 'volume' ? 5 : 1))); render('save-step');
   }
   function savePrefs(next, focusAction, returnView) {
@@ -722,6 +739,8 @@
     }
     if (action === 'next' || action === 'previous') { page += action === 'next' ? 1 : -1; render(); }
     if (action === 'choose') {
+      if (!choices().some(function (item) { return String(item.value) === String(value); })) { throw new Error('Unknown offered UI value'); }
+      if (picker !== 'country') { choiceValues(pickerControl, [{value: value}]); }
       if (picker === 'country') { country = value; openPicker('city'); return; }
       if (picker === 'testPrayer') { testPrayer = Number(value); show('settings'); return; }
       if (picker === 'city') { next.city = value; next.method = null; next.hanafi = A.city(value).hanafi; }

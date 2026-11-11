@@ -12,6 +12,7 @@ flowchart TD
     Core --> Preview[Browser preview]
     Sources[shared/data, shared/design, afnon-mihrab] --> Generators[Canonical validation and generators]
     Generators --> Android
+    Generators --> Core
     Sources --> LG
     Sources --> Preview
 ```
@@ -20,7 +21,7 @@ flowchart TD
 
 | Module | Owns | Leaves to its consumers |
 | --- | --- | --- |
-| `shared/core` | Six-offset validation/normalization, prayer/reminder rules, semantic Home focus, UI control identity/type/coverage checks | Astronomy, dates/timezones, clocks/timers, storage, rendering, physical key/device APIs and networking |
+| `shared/core` | Six-offset validation/normalization, prayer/reminder rules, semantic Home focus, UI control/type/range/choice and coverage checks | Astronomy, dates/timezones, clocks/timers, storage, rendering, physical key/device APIs and networking |
 | `shared/data` | Stable catalog/control IDs, bilingual labels, UI control metadata, formatter literals and exact sacred text | Formatting algorithms and platform capabilities |
 | `shared/design`, `afnon-mihrab` | Fonts/notices, theme/icon geometry/order, appearance IDs, tokens and SVG patterns | Native drawing, CSS layout, applying semantic focus and accessibility |
 | `platforms/android-tv` | Java Views, adhan-java, Android ICU, preferences, accessibility/remote handling, scheduling, media and Home integration | Shared product rules and canonical sources |

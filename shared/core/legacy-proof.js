@@ -86,5 +86,13 @@ function verifyIslamicTVCore(core) {
   check(ui.minimum('offsets.fajr') === -rules.MAX_OFFSET_MINUTES && ui.maximum('offsets.isha') === rules.MAX_OFFSET_MINUTES, 'UI prayer-offset bounds');
   check(ui.minimum('prayer.hijri') === -rules.MAX_HIJRI_OFFSET_DAYS && ui.maximum('prayer.hijri') === rules.MAX_HIJRI_OFFSET_DAYS, 'UI Hijri bounds');
   check(ui.minimum('reminders.volume') === 0 && ui.maximum('appearance.lighting') === 100, 'UI percent bounds');
+  check(ui.choices('appearance.countdown')[2] === 'hidden' && ui.choices('appearance.favourites')[0] === 'two_rows', 'semantic UI choices');
+  ui.validateChoiceCoverage('display.language', ['ar', 'en'], ['system']);
+  check(ui.choices('prayer.zone').length === 106, 'UI choice coverage and time zones');
+  rejected = false;
+  try { ui.validateChoices('display.language', ['unknown']); } catch (choice) { rejected = true; }
+  check(rejected, 'unknown UI choice rejected');
+  var languageChoices = ui.choices('display.language'); languageChoices[0] = 'changed';
+  check(ui.choices('display.language')[0] === 'system', 'UI choice snapshot isolation');
   return {checks: checks};
 }

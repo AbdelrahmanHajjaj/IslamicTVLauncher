@@ -25,14 +25,20 @@ platform key codes enter the core. See the [UI/input contract](../../docs/UI-CON
 `UiContract` exposes the generated semantic settings/action catalog, validates
 binding kinds and checks actual binding IDs plus explicitly declared gaps for
 complete, nonduplicated coverage. Source definitions and label references live in
-`shared/data/ui-contract.json`; regenerate with `node tools/catalogs.mjs` before
-compiling after changes. The checked-in generated Kotlin keeps core builds standalone.
+`shared/data/ui-contract.json`. `node tools/ui-contract.mjs --write` regenerates
+only the portable catalog using shared sources; `node tools/catalogs.mjs` also
+updates native projections and the gap report. The checked-in generated Kotlin
+keeps core builds standalone. JS consumer builds check freshness before compiling.
 Actual native rows and LG rows/carousels carry these IDs. Their conformance checks
 enumerate real views/DOM controls in both languages, rather than a support manifest.
 Shell gap declarations generate the [gap report](../../docs/UI-GAPS.md).
 Numeric controls reference named ranges; `minimum`/`maximum` reuse `PrayerRules`
 for prayer/Hijri limits and define 0–100 percentages. Native steppers validate
 their bounds; LG's actual numeric editor reads them from its bound control ID.
+Choice values are semantic strings, with catalog references resolved during
+generation. `choices` returns a copy; `validateChoices` rejects unknown/duplicate
+values, while `validateChoiceCoverage` accounts for offered conditional variants
+and explicit platform option gaps. Stored-value conversions remain in the shells.
 
 Java callers use `tv.afnon.core.PrayerRules.INSTANCE`; the returned
 `PrayerSelection` exposes standard getters. JavaScript exposes the same namespace

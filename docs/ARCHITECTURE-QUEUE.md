@@ -96,14 +96,16 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.5c2, choice/value mappings followed by linked editor/action coverage.
-Numeric bounds are now implemented and verified in both renderers. Keep the rest
+Next: Q09.5c2 linked editor/action coverage for per-prayer switches and favourite
+operations, with actual bindings and relevant activation/return/save/cancel checks.
+Settings choice values and numeric bounds are verified in both renderers. Keep the rest
 bounded to actual controls, including per-prayer switches and favourite operations;
 no generic widget engine, new features or forced LG cosmetic ports. Unimplemented
 LG features may remain hidden, with explicit definitions/gaps as the owner approved.
 Q09.5c1 is software-verified: 76 controls, actual Android/LG rows, canonical labels
-and complete binding/gap coverage in both languages. Full option/value/editor
-conformance is not implemented yet. LG source is still 0.2.8; it is not packaged or
+and complete binding/gap coverage in both languages. Settings option models and
+conditional variants now have full declared coverage; linked-editor workflow
+conformance is next. LG source is still 0.2.8; it is not packaged or
 installed. The TV remains on accepted 0.2.7 in Browser. Do not install intermediate
 builds until the remaining bounded contract work is ready for one hardware check.
 The watched cold boot passed: automatic launcher and HDMI picture/sound, new boot,
@@ -1571,3 +1573,62 @@ unrelated renderer redesign, transport or future shell.
 - Choice value mapping and per-prayer/favourite linked controls are next. This is
   still the uninstalled 0.2.8 source; accepted TV remains 0.2.7 in Browser. No
   reason to repeat audio/power checks or install an intermediate package now.
+
+### Q09.5c2 choice mapping implementation in progress
+
+- Use semantic string values, resolving city/method/voice/station/theme/background
+  references from the existing canonical catalogs. Keep stored values, choice order
+  and platform labels/editors in their adapters. Validate the actual offered values;
+  aggregate conditional variants in conformance rather than narrowing the universal
+  definition to whatever happens to be visible in one current state.
+- Declare partial option gaps separately from whole missing controls, with explicit
+  reasons. Android currently lacks explicit auto digits and city-default method;
+  LG lacks system-follow language/clock, custom themes and procedural backgrounds.
+  Map LG plain to shared solid semantics, not a preference rename. Native imported
+  custom-theme and countdown-position conditions need real renderer checks.
+- Do not claim this enforcement complete until both actual adapters and conformance
+  consume it. No companion, future-shell scaffolding or intermediate TV install.
+
+### Q09.5c2 semantic choice values: verified (2026-11-11)
+
+- All 24 choice definitions now include semantic values or references to existing
+  city/method/voice/station/theme/background catalogs. Time-zone choices come from
+  the core; remaining shell values/order are preserved. Canonical IDs distinguish
+  countdown from favourite layout, city-default method and system-follow settings.
+  Native enums/indices and LG stored plain/nullable defaults are explicit adapters;
+  no preference rename, reset or new feature is introduced.
+- UiContract returns copied choice arrays and rejects unknown/duplicate offered
+  values. Full option coverage accounts for real conditional variants and explicit
+  partial gaps. Generated report includes 2 native and 4 LG partial-option gaps,
+  separately from whole missing controls. Reasons remain implementation gaps,
+  without inventing OS restrictions for cosmetic/product options.
+- Native Row.keys derives from actual arrays/catalogs; SEG/carousel counts validate
+  against the real labels, and popup builders validate option IDs/counts as they
+  open, including automatic single-city selection. Actual rows carry their native
+  binding model. LG rows/carousels derive semantic metadata from the same choice
+  builder used by the editor; opened pickers and chosen offered values validate.
+- Native conformance passed on actual API 37 for Arabic/English, including absent/
+  present valid custom-theme prerequisites and all countdown-position modes. It
+  restores all changed locale/theme prerequisites and verifies the complete saved
+  preference object unchanged. LG actual renderer coverage passes in both languages,
+  aggregating mihrab/compact/hidden variants plus all settings; prior grouped-city,
+  voice, numeric save/cancel, appearance apply/cancel and media workflows pass.
+- Portable UI catalog generation/check now runs independently of shell/preview
+  trees through tools/ui-contract.mjs [--write]. JS consumer builds fail early on
+  stale generated definitions. An isolated fixture proves checking, intentional
+  staleness rejection and regeneration with no platform/preview sources present.
+  Core's checked-in generated Kotlin remains independently compilable.
+- PASS: 19 JVM/18 JS common tests; 62 stripped ES5/browser/CommonJS assertions,
+  combined production JS 74,893 bytes; native build/lint/test APK and actual-view
+  conformance; full LG build/ES5/service/async and bilingual browser suites; full
+  preview/shared/generator checks; all 39 native Python/Java regressions. Tested
+  native APK 21,124,730 bytes; lint 0 errors/55 existing warnings. No speed claim.
+- Third closed-session snapshot preserved before reopening only the same owned
+  emulator. After success, final closure/offline serial/exited process and original
+  user AVD hashes are verified. No emulator/inspector/test activity is pending.
+  No TV install occurred; 0.2.8 remains source-only and installed old LG is 0.2.7.
+- Evidence: ignored ui-choice-{core-check,legacy-final,native-final-build,
+  native-views,emulator-closure,isolation-final,preview-test,lg-complete,
+  lg-browser-complete,native-regressions}.log and private choice-runtime records.
+  Linked per-prayer/favourite controls and editor flows are next; physical Android
+  and the final 0.2.8 old-LG host/UI checks remain open.

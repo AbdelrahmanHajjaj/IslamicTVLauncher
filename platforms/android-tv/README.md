@@ -52,9 +52,10 @@ appearance-cycle UI test. Emulator results describe that image/API, not a physic
 
 Use `-e check ui` for Settings contract conformance. It opens real settings rows in
 Arabic/English, visits every section and the six-offset editor, and checks semantic
-IDs, sections, kinds, canonical labels and complete binding/gap coverage. It restores
-the saved locale and verifies preferences are unchanged. It does not play test audio
+IDs, sections, kinds, canonical labels and complete binding/choice/gap coverage.
+It visits countdown variants and temporarily seeds a valid custom-theme prerequisite.
+It restores locale/theme prerequisites and verifies preferences are unchanged. It does not play test audio
 or change TV integrations. The test dispatches logical keys through the real
 Activity handler; physical remote/firmware delivery remains a separate hardware check.
 App CI runs this mode on an API 34 emulator. Shell omissions are declared in
-`src/androidTest/assets/ui-gaps.json`; see the generated [gap report](../../docs/UI-GAPS.md).
+`src/androidTest/assets/ui-{gaps,choice-gaps}.json`; see the generated [gap report](../../docs/UI-GAPS.md).

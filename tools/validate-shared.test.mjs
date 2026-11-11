@@ -22,6 +22,20 @@ try {
   const check = () => spawnSync(process.execPath, [join(fixture, 'tools/validate-shared.mjs')], {encoding: 'utf8'});
   const valid = check();
   assert.equal(valid.status, 0, valid.stderr);
+  const catalog = 'shared/core/src/commonMain/kotlin/tv/afnon/core/UiCatalog.kt';
+  mkdirSync(dirname(join(fixture, catalog)), {recursive: true});
+  copyFileSync(join(root, catalog), join(fixture, catalog));
+  const checkUi = (...args) => spawnSync(process.execPath, [join(fixture, 'tools/ui-contract.mjs'), ...args], {encoding: 'utf8'});
+  assert.equal(checkUi().status, 0);
+  const controlsPath = join(fixture, 'shared/data/ui-contract.json');
+  const controls = JSON.parse(readFileSync(controlsPath, 'utf8'));
+  controls.find(c => c.id === 'display.clock').choices.push('future-format');
+  writeFileSync(controlsPath, JSON.stringify(controls));
+  const stale = checkUi();
+  assert.notEqual(stale.status, 0);
+  assert.match(stale.stderr, /UiCatalog is stale/);
+  assert.equal(checkUi('--write').status, 0);
+  assert.equal(checkUi().status, 0, 'UI core generation works without platform/preview trees');
   const iconsPath = join(fixture, 'shared/design/icons.json');
   const icons = JSON.parse(readFileSync(iconsPath, 'utf8'));
   icons[Object.keys(icons)[0]] = '<script>alert(1)</script>';
@@ -29,7 +43,7 @@ try {
   const invalid = check();
   assert.notEqual(invalid.status, 0);
   assert.match(invalid.stderr, /Unsupported icon markup/);
-  console.log('PASS: shared-input validation works without platform/preview trees and rejects active SVG markup.');
+  console.log('PASS: isolated shared validation rejects active SVG; portable UI generation/check rejects stale metadata without platform/preview trees.');
 } finally {
   assert.equal(dirname(realpathSync(fixture)), scratch);
   rmSync(fixture, {recursive: true, force: true});

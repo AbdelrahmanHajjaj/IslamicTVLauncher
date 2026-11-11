@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderText, validateSacredText } from './strings.mjs';
 import { validateIcons, validatePrayerIcons, validateAppearance } from './design.mjs';
-import { validateUiContract, validateUiGaps, renderUiCatalog, renderUiGaps } from './ui-contract.mjs';
+import { validateUiContract, validateUiGaps, validateUiChoiceGaps, renderUiCatalog, renderUiGaps } from './ui-contract.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
@@ -115,10 +115,13 @@ function generate() {
   const ui = JSON.parse(read('shared/data/ui-contract.json'));
   validateUiContract(ui, strings);
   const profiles = [
-    ['Android TV', JSON.parse(read('platforms/android-tv/src/androidTest/assets/ui-gaps.json'))],
-    ['LG webOS', JSON.parse(read('platforms/webos/ui-gaps.json'))],
+    ['Android TV', JSON.parse(read('platforms/android-tv/src/androidTest/assets/ui-gaps.json')), JSON.parse(read('platforms/android-tv/src/androidTest/assets/ui-choice-gaps.json'))],
+    ['LG webOS', JSON.parse(read('platforms/webos/ui-gaps.json')), JSON.parse(read('platforms/webos/ui-choice-gaps.json'))],
   ];
-  for (const [, gaps] of profiles) validateUiGaps(gaps, ui);
+  for (const [, gaps, choices] of profiles) {
+    validateUiGaps(gaps, ui);
+    validateUiChoiceGaps(choices, ui, gaps);
+  }
   validateCatalog(cities, regions);
   validateStations(stations);
   validateVoices(voices);

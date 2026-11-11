@@ -1,0 +1,26 @@
+[
+  {
+    "id": "display.language",
+    "state": "unimplemented",
+    "values": ["system"],
+    "reason": "The language control switches Arabic/English; TV-locale following is not implemented."
+  },
+  {
+    "id": "display.clock",
+    "state": "unimplemented",
+    "values": ["system"],
+    "reason": "The clock editor offers 12/24-hour formats without TV-format following."
+  },
+  {
+    "id": "appearance.theme",
+    "state": "unimplemented",
+    "values": ["custom"],
+    "reason": "Imported custom themes are not implemented; the shared preset catalog remains available."
+  },
+  {
+    "id": "appearance.background",
+    "state": "unimplemented",
+    "values": ["theme", "lattice", "panorama", "daylight", "mountains", "dunes", "halo", "night_sky"],
+    "reason": "The renderer offers plain solid fill and shared pattern masks; Android procedural backgrounds are not ported."
+  }
+]
