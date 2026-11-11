@@ -96,6 +96,9 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
+Execution is blocked on owner/device availability; scope and acceptance criteria
+are unchanged. Resume this cursor when the owner reports readiness or hardware access.
+
 Next: Q09.5d final 0.2.8 old-LG package and actual-host/UI acceptance. The bounded
 UI contract work is software-verified: 88 semantic controls, actual native/LG
 bindings, canonical labels, choice values/bounds, five per-prayer switches, room
@@ -1779,3 +1782,18 @@ unrelated renderer redesign, transport or future shell.
 - Blocked audit: first goal turn with the explicit owner-unavailable condition.
   No new runtime test, emulator or inspector was started; the previous owned
   emulator's verified closure remains recorded. Goal is not complete or paused.
+
+### Hardware availability audit (2026-11-11)
+
+- The same readiness gate arose in the final-candidate preparation turn (8254382,
+  question pending), repeated in the owner's explicit deferral turn (00b9a4a),
+  and remains in this continuation. Three consecutive goal turns now require the
+  same external change: owner availability for LG checks; physical Android is
+  also unavailable. No further independent software item precedes those gates.
+- Local revalidation confirms a clean feature branch, retained candidate with its
+  reviewed hash/source association, and no final-candidate upgrade operation begun.
+  No TV connection, repeated test/build or device mutation was made in this audit.
+- Mark the persistent goal blocked, not complete or paused. Keep 0.2.8 uninstalled.
+  On owner readiness, resume Q09.5d with a fresh baseline and the retained candidate;
+  keep physical Android acceptance open until the device is available. Do not ask
+  the same availability question or automatically retry a TV operation meanwhile.
