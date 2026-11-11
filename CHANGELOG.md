@@ -40,9 +40,13 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### LG webOS development port
 
+- Version 0.2.6 keeps Arabic status values such as enabled/disabled and silent
+  fully visible on old WebKit; long settings values wrap inside their row.
+
 - Version 0.2.5 serializes overlapping prayer-schedule refreshes, including disable
   and write-error recovery. Adds asynchronous service regressions and platform-specific
-  agent/contributor guidance. The last physically validated installation is 0.2.4.
+  agent/contributor guidance. Its in-place upgrade and shared runtime were verified
+  on the LF6300 with preferences/input/startup preserved; see the LG hardware notes.
 
 - Version 0.2.4 adds Settings' visible Back arrow, inline appearance carousels and a
   larger preview, and confines patterns to Home. Alerts that interrupt another app

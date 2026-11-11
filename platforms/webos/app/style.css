@@ -109,7 +109,8 @@ button:disabled { color: {{color.disabled-text}}; }
 .icon-button svg { display: block; }
 .settings { width: 1300px; margin: 32px auto; }
 .settings button { display: block; width: 100%; margin-bottom: 16px; }
-.value { float: right; max-width: 64%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Old WebKit paints Arabic outside its font box; let values wrap without clipping. */
+.value { float: right; max-width: 64%; }
 [dir=rtl] .value { float: left; }
 .footnote { font-size: 22px; color: {{color.mist-400}}; margin: 20px 0; line-height: 1.8; }
 .picker { width: 1400px; margin: 36px auto; }

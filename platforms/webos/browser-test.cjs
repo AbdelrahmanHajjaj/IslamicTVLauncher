@@ -97,6 +97,39 @@ const server = http.createServer((req, res) => {
     await page.screenshot({path: path.join(shots, 'home-ar.png')});
     const arCount = await page.locator('.prayer').count(); assert.equal(arCount, 6);
     await page.locator('[data-action=settings]').click();
+    async function settingsValuesFit() {
+      for (const [section, actions] of [['reminders', ['automatic', 'remindVoice']], ['tests', ['testPrayer', 'test-banner', 'test-card']]]) {
+        await page.locator('[data-action=section][data-value=' + section + ']').click();
+        for (const action of actions) {
+          const bounds = await page.locator('[data-action=' + action + '] .value').evaluate(el => {
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            const text = range.getBoundingClientRect();
+            let fits = true;
+            // Old WebKit paints Arabic outside normal font metrics; check every clipping ancestor.
+            for (let parent = el; parent; parent = parent.parentElement) {
+              const style = getComputedStyle(parent), box = parent.getBoundingClientRect();
+              if (style.overflowX !== 'visible') fits &&= text.left >= box.left + 1 && text.right <= box.right - 1;
+              if (style.overflowY !== 'visible') fits &&= text.top >= box.top + 1 && text.bottom <= box.bottom - 1;
+            }
+            return {label: el.textContent, fits};
+          });
+          assert.ok(bounds.fits, 'settings value glyphs have paint clearance inside their clipping box: ' + bounds.label);
+        }
+        const wraps = await page.locator('[data-action=' + actions[0] + '] .value').evaluate(el => {
+          const original = el.textContent;
+          el.textContent = (original + ' ').repeat(24);
+          const value = el.getBoundingClientRect(), button = el.parentElement.getBoundingClientRect();
+          const result = {wrapped: value.height > parseFloat(getComputedStyle(el).fontSize) * 2,
+            contained: value.left >= button.left && value.right <= button.right && value.top >= button.top && value.bottom <= button.bottom};
+          el.textContent = original;
+          return result;
+        });
+        assert.ok(wraps.wrapped && wraps.contained, 'long settings values wrap inside their row');
+      }
+    }
+    await settingsValuesFit();
+    await page.locator('[data-action=section][data-value=prayer]').click();
     await page.screenshot({path: path.join(shots, 'settings-ar.png')});
     await page.keyboard.press('ArrowLeft');
     assert.equal(await page.locator(':focus').getAttribute('data-action'), 'city', 'RTL direction enters settings rows');
@@ -113,6 +146,7 @@ const server = http.createServer((req, res) => {
     await page.locator('[data-action=language]').click();
     await page.waitForFunction(() => document.documentElement.dir === 'ltr');
     assert.equal(await page.locator('html').getAttribute('dir'), 'ltr');
+    await settingsValuesFit();
     await page.locator('[data-action=section][data-value=prayer]').click();
     await page.locator('[data-action=city]').click();
     await page.locator('[data-action=choose][data-value=Egypt]').click();

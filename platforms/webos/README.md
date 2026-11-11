@@ -187,7 +187,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.5_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.6_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -240,6 +240,13 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
+Version 0.2.6 fixes old-WebKit clipping of Arabic status values such as enabled,
+disabled and silent; long settings values wrap. Its in-place update from 0.2.5
+preserved all 30 current preferences, HDMI 1 and startup. All 100 installed payload
+files matched the reviewed build; live WebKit verified the corrected values with
+no diagnostic CSS override and unchanged normal row height. The owner confirmed
+the installed text is fully readable. Runtime/data/audio/notices are unchanged.
+
 Version 0.2.5 adds serialized scheduling and the portable shared core. On the
 LF6300 / webOS 2.2, its in-place upgrade from 0.2.4 preserved all 30 preference
 values, HDMI 1 and the entire enabled-startup state. Prayer rescheduling succeeded;
@@ -247,7 +254,10 @@ the owner confirmed unchanged picture/sound with no visible error. All 100 insta
 app/service payload files matched the reviewed build. The installed service core
 passed 30 adapter assertions on Node 0.10.25; live WebKit 538.2 confirmed the shared
 core, offset/sunrise rules and a ready HDMI decoder without error. These observations
-do not validate other models/firmware. The separately versioned observations below
+also include owner confirmation that the physical OK/prayer-bar/Home/arrows/
+Settings/Back sequence and focus work normally. The owner also confirmed joined
+Arabic/RTL and the 12-second adhan's sound, automatic stop and normal HDMI/settings
+restoration. These checks do not validate other models/firmware. The separately versioned observations below
 still belong to 0.2.4 and earlier; do not relabel them as 0.2.5 tests.
 
 Version 0.2.3 adds the All apps header and appearance draft workflow. Live TV DOM

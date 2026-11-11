@@ -85,45 +85,36 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.4, finish watched LG remote, bilingual, alert/media and power acceptance.
-In-place upgrade 0.2.4 to 0.2.5 passed: 30 preference values, selected HDMI 1 and
-entire startup state preserved. Owner confirms picture/sound match with no error.
-Await physical remote/focus response before changing the UI; then run bounded
-tests sequentially and cancel any pending one-shot if stopping. Restore any
-temporary language/settings changes against the private before snapshot.
-At this human-response checkpoint the TV app remains running on its original
-input, no one-shot test is armed, and the owned inspector forwarder is closed.
-Q09.2 native
-ART/ICU and Q09.3 preference-preserving emulator upgrades passed. The owned temporary
-emulator is closed, ADB serial offline and its launcher process exited; the user's
-existing AVD descriptor/config hashes remain unchanged. No independent required
-software work remains in this approved queue. Do not create speculative tasks or
-repeat passing suites to fill the hardware wait.
+Next: Q09.4.4, watched LG closed-app background delivery/return and actual new-boot
+startup acceptance. Q09.4.3's cropped Arabic status text is fixed in installed
+0.2.6; owner confirms the installed values are readable. First restore original
+English through the settings control and verify all 30 original preference values.
+Then run one bounded 30-second Activity Manager test over native Browser, checking
+cold launch, real sound and return; cancel the one-shot on completion/abandonment.
+Power checks follow sequentially with the owner watching. Preserve selected input,
+startup choice, IDs and user data; never uninstall/clear data to make a test pass.
 
-The previous Q09.4 blocked audit remains historical. Owner presence is new evidence
-allowing watched LG acceptance now. The full objective remains incomplete;
-Android hardware acceptance still awaits actual availability.
+Real LG evidence so far: 0.2.4 to 0.2.5 to 0.2.6 in-place upgrades preserve all
+30 current preferences, HDMI 1 and startup state. Owner confirms picture/sound,
+physical OK/Home/arrows/Settings/Back focus, joined Arabic/RTL, short adhan and
+normal automatic audio/HDMI/settings restoration. Actual Node 0.10.25/core and
+WebKit 538.2 checks pass; all 100 installed 0.2.6 files match the reviewed package.
+Original English is temporarily Arabic from this test only; current backups are
+ignored q094-lg-*-service/. The second owned inspector is open. No background
+one-shot has been armed yet; record its pending/cleanup state before a handoff.
 
-Resume with reachable old LG and a watcher for picture/sound/remote/power tests,
-or the actual Android TV around 2026-11-25. Capture existing preferences/input/
-startup before an in-place update; preserve installed IDs, certificate and data.
-Never uninstall/clear data to make an upgrade pass. The API 37 phone emulator
-cannot close Android 11 TV, older ICU, physical remote, HDMI, speaker or power gates.
+Owner explicitly authorized watched in-place/audio/remote/power tests, lifting
+the earlier read-only limit. Keep tests sequential and distinguish human picture/
+sound evidence from DOM/service results. Private device details/artifacts stay
+ignored. The previous blocked audit is historical; the user has set the goal active.
 
-The current reviewed LG IPK is ready with exact payload equality. Earlier read-only
-query timed out; the new bounded query after owner presence succeeded (1.4 seconds).
-Owner then confirmed readiness for watched acceptance. Before the in-place LG
-upgrade, capture prefs/input/startup and preserve IDs/data; do not uninstall as a
-workaround. Keep raw device details ignored.
-
-Audible/power tests require a human watcher under LG's rules. Ask for watcher/TV
-availability before those dependent actions; preparation and read-only diagnostics
-may continue. Distinguish actual service/DOM diagnostics from human picture/sound/
-remote confirmation. Current production integration has not been tested on physical
-LG; the initial Q02 host proof predates full adoption. Android physical upgrade and
-ICU/remote/lifecycle acceptance wait until around 2026-11-25. Missing hardware is an
-open gate: keep the goal incomplete and do not fabricate a pass or repeatedly probe
-an unchanged unreachable device. No release, merge, remote detach or firmware work.
+Android physical upgrade/older ICU/remote/lifecycle acceptance still awaits hardware
+around 2026-11-25. Q09.2 ART/ICU and Q09.3 data-preserving emulator checks passed;
+the owned emulator is closed and the user's AVD configuration remained unchanged.
+The API 37 phone image does not close Android TV gates. Newer LG, Samsung and Sony
+hardware remain unavailable. Keep the full objective incomplete until required
+physical checks pass; add no speculative work or repeated passing suites while
+waiting. No release, merge, remote detach, firmware or root action.
 
 Q00–Q08 software work is complete. Preview retains three low build-only findings
 from one upstream-unpatched deepmerge chain, limited to repository-owned tokens and
@@ -1225,3 +1216,53 @@ notices (99 entries). Do not add new UIs, transports or future shells.
 - Read-only DOM observation while waiting for the remote answer still showed the
   input view, English/LTR, no overlay and no notice. This is not physical remote
   confirmation. No temporary preference changes or audio/power test occurred.
+
+### Q09.4.2 physical remote pass; bilingual/media checks (2026-11-11)
+
+- Owner answers the physical OK/prayer bar/Home/arrows/Settings/Back check:
+  "Remote and focus work normally." This is actual human remote evidence, separate
+  from injected DOM events. Continue watched Arabic/RTL and bounded audio tests;
+  restore the before-snapshot preferences afterward. Power acceptance remains open.
+
+- Actual short adhan: WebKit audio progressed, readyState=4 without error, HDMI
+  decoder released; after the bound it stopped, removed audio/overlay and restored
+  the exact settings row/scroll and HDMI readyState=4. Service records stopped adhan
+  and successful rescheduling; only temporary lang=ar differs from all 30 baseline
+  preferences, startup/input unchanged. Owner confirms TV-speaker sound, automatic
+  stop and normal HDMI/settings restoration.
+- Owner confirms joined Arabic and readable RTL, but reports some settings text
+  cropped. This is an open acceptance defect, not a complete bilingual pass.
+  Asked for affected rows; inspect live geometry while waiting. No background
+  one-shot or power test started. The second owned inspector remains open.
+
+### Q09.4.3 cropped Arabic values fixed and installed (2026-11-11)
+
+- Owner identified enabled/disabled and silent values. Actual WebKit spans had
+  32-pixel boxes with 33-pixel text ranges extending beyond their top/start edge,
+  while overflow:hidden clipped their paint. More line-height/padding improved
+  measured boxes but the owner still saw cropping. Removing clipping made the
+  values complete; owner confirmed this isolation, then the installed correction.
+- Minimal fix removes nowrap/hidden/ellipsis from the shared value rule. Long
+  values wrap within the existing max-width; no new text, font, token, renderer or
+  settings format. Normal status rows retain 88-pixel height. All 20 generated
+  palette CSS files carry exactly this same source change. Two manifests change
+  only version; the other 78 runtime/data/media/notice files stay byte-identical.
+- Added Arabic/English checks for status text clearance within every clipping
+  ancestor and long-value wrapping inside its row. Original modern-browser range
+  containment alone passed the old bug; strengthened the actual paint-clearance
+  condition, verified failure on original CSS and full suite pass after the fix.
+  Full LG ES5/build/service/async scheduling suite also passes. Browser Luna/decoder
+  behavior is mocked; actual LG evidence is recorded separately below.
+- Generated npm version metadata for 0.2.6 (no dependency selections changed),
+  aligned app/service IDs/manifests, and packaged without minification. Candidate
+  is 18,629,944 bytes; all 100 IPK payload files match source. Initial local diff
+  expectation omitted generated theme CSS; checked the generator and proved each
+  of its 20 palette files differs by exactly the same rule removal.
+- Fresh 0.2.5 backup, close/install-over/relaunch of 0.2.6, and after-snapshot prove
+  all 30 current preferences, startup and HDMI 1 preserved; scheduling succeeds,
+  no UI error. All 100 installed files match. Live WebKit has no diagnostic style
+  override; enabled/disabled/Fajr/silent values have clear clipping ancestors and
+  normal wrapping. Owner: "Yes, the installed fix is readable."
+- Evidence: ignored q094-crop-*, q094-dom-crop-*, q094-lg-patch-{before,after}-service/
+  and versioned installed-payload logs. Arabic remains temporary until next step;
+  no background activity armed yet. No Android/shared runtime source changed.
