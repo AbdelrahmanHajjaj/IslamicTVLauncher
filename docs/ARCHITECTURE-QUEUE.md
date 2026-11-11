@@ -85,14 +85,14 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.6, shared design/distributable assets. Finish the Q03.5c correction commit
-if resuming between operations, then inventory fonts, theme definitions/preset order and shared
-icon sources still owned by Android or site extraction. Preserve exact asset bytes,
-IDs/order, tokens/patterns and native resource references; migrate source ownership,
-build inputs/generators, consumer paths, checks and notices together. Restricted
-media stays ignored and is not made distributable by this migration. Keep existing
-shared token/pattern sources; do not redesign the UI. Separate the asset work into
-verified slices, then audit Q03's remaining dependencies before starting Q04.
+Next: Q03.6b, shared theme definitions/preset order. Finish the Q03.6a commit if
+resuming between operations, then inspect the 19 preset JSON files, 20 built-in
+IDs plus Android's final custom sentinel, and every native/preview/LG caller.
+Move source ownership and remove Java scraping while preserving IDs/order,
+palette bytes, background/lighting defaults and custom import behavior. Update
+build inputs/generators, consumer paths and checks together. Shared icons follow
+themes. Restricted media stays ignored; keep existing shared token/pattern sources
+and do not redesign the UI. Audit Q03 dependencies before starting Q04.
 Do not move platform directories yet (Q06). Production apps retain their existing
 domain implementations until Q04. Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
@@ -326,3 +326,24 @@ domain implementations until Q04. Private logs/helpers are under ignored
   `Fragment` mapping (docs.astro.build/en/reference/astro-syntax/). No new runtime
   dependency. No TV deployment or human picture/sound check; unaffected native
   Python/installer/core suites were not repeated for this constant-only slice.
+
+### Q03.6a shared fonts and notices (2026-11-11)
+
+- Seven unchanged TTFs now live in `shared/design/resources/font/`; the three
+  existing full OFL notices moved from LG into `shared/design/assets/licenses/`.
+  Android adds shared resource/asset directories to its main source set, keeping
+  every `R.font` name with no extra task or Node prerequisite. Preview/LG source
+  fonts directly from the shared tree. LG still packages only its three regular
+  fonts. Font/CSS selections, weights, shaping and UI geometry are unchanged.
+- All actual artifacts now include the three notices: Android `assets/licenses`,
+  LG `app/licenses`, preview `licenses`. Notices remain byte-identical; the new
+  generated preview copies are ignored. Attribution/source paths were updated.
+- PASS: clean Android size/build/lint (20,073,354-byte APK), exact pre/post APK
+  font names/hashes, all shared/preview/LG font hashes, and every artifact's three
+  notice hashes. Evidence: ignored `fonts-before.json`, `fonts-artifacts.json`
+  and `fonts-*.log`. The lower clean APK size is not an optimization claim.
+- PASS: preview tests/18-page build/data/tokens and LG ES5/service/bilingual browser
+  regressions. No new behavior tests were added for byte-preserving file moves.
+  Unaffected Python/installer/core suites and physical-TV checks were not repeated.
+- Context7 official Gradle/Android source-set documentation checked before build
+  changes. Direct resource directories avoided an unnecessary generated-copy task.

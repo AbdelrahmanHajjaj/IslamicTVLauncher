@@ -1,6 +1,7 @@
 // Reads remaining native data/assets for the preview; shared catalogs are imported directly.
 //   Shared catalogs and text come directly from shared/data/.
-//   res/font/*.ttf  -> src/assets/fonts/
+//   shared/design/resources/font/*.ttf -> src/assets/fonts/
+//   shared/design/assets/licenses/ -> public/licenses/
 //   docs/screenshots -> public/screenshots/ (social preview images)
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -29,14 +30,18 @@ validateStrings(JSON.parse(readFileSync(resolve(root, 'shared/data/strings.json'
 validateFormatText(JSON.parse(readFileSync(resolve(root, 'shared/data/format-text.json'), 'utf8')));
 validateSacredText(JSON.parse(readFileSync(resolve(root, 'shared/data/sacred-text.json'), 'utf8')));
 
-// ---------------------------------------------------------------- fonts (the app's own files)
+// ---------------------------------------------------------------- shared fonts and notices
 
 import { readdirSync, copyFileSync } from 'node:fs';
-const fontsIn = resolve(root, 'app/src/main/res/font');
+const fontsIn = resolve(root, 'shared/design/resources/font');
 const fontsOut = resolve(root, 'site/src/assets/fonts');
 mkdirSync(fontsOut, { recursive: true });
 for (const f of readdirSync(fontsIn)) copyFileSync(resolve(fontsIn, f), resolve(fontsOut, f));
-console.log('copied app fonts to site/src/assets/fonts');
+console.log('copied shared fonts to site/src/assets/fonts');
+const noticesIn = resolve(root, 'shared/design/assets/licenses');
+const noticesOut = resolve(root, 'site/public/licenses');
+mkdirSync(noticesOut, { recursive: true });
+for (const f of readdirSync(noticesIn)) copyFileSync(resolve(noticesIn, f), resolve(noticesOut, f));
 
 // ---------------------------------------------------------------- README screenshots, for social previews
 

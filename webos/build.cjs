@@ -87,11 +87,11 @@ for (const name of data.patterns) {
   write(path.join(out, 'app/patterns', name + '.svg'), read('afnon-mihrab/patterns/' + name + '.svg'));
 }
 for (const font of ['alexandria_regular', 'amiri_regular', 'marcellus_regular']) {
-  write(path.join(out, 'app/fonts', font + '.ttf'), fs.readFileSync(path.join(root, 'app/src/main/res/font', font + '.ttf')));
+  write(path.join(out, 'app/fonts', font + '.ttf'), fs.readFileSync(path.join(root, 'shared/design/resources/font', font + '.ttf')));
 }
 write(path.join(out, 'app/licenses/adhan.txt'), read('site/node_modules/adhan/LICENSE'));
 write(path.join(out, 'app/licenses/media.txt'), read('THIRD_PARTY.md'));
-fs.cpSync(path.join(__dirname, 'licenses'), path.join(out, 'app/licenses'), { recursive: true });
+fs.cpSync(path.join(root, 'shared/design/assets/licenses'), path.join(out, 'app/licenses'), { recursive: true });
 for (const part of ['app', 'service']) {
   for (const name of fs.readdirSync(path.join(out, part)).filter(n => n.endsWith('.js'))) {
     acorn.parse(fs.readFileSync(path.join(out, part, name), 'utf8'), { ecmaVersion: 5 });

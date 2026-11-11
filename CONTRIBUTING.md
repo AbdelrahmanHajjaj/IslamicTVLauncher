@@ -13,7 +13,7 @@ This fork also includes a separate LG webOS application in `webos/`. Read
 [`AGENTS.md`](AGENTS.md) for the platform map and [`webos/AGENTS.md`](webos/AGENTS.md)
 for LG maintenance rules. The Java, ADB, accessibility-service and APK instructions
 below apply to Android. The LG port uses ES5, a webOS JS service and IPK packages;
-its build shares Android data and assets, not Android UI or system integrations.
+its build shares catalogs, design and assets with Android; its UI and system integrations are separate.
 
 For this fork, also read the [fork/upstream contribution plan](docs/CONTRIBUTION-PLAN.md). It records
 proposed PR scopes and outstanding checks; the requirements below still apply.
