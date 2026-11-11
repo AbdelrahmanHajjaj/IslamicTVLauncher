@@ -80,27 +80,32 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q05 | Done | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
 | Q06 | Done | Separate platform projects/builds: migrate paths only after boundaries work; update Gradle, npm, installer, tools, generated outputs, tests and CI; add no empty future-platform projects. |
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
-| Q08 | Active | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
+| Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
 
 ## Current cursor
 
-Next: Q08.3 final source/diff and integrated application review. Finish Q08.2's
-commit if resuming between operations. Core/test-tool patches are now verified:
-normal/fresh core-only builds and audits pass, with unchanged production artifact
-bytes. Preserve all 13 verbatim license texts, including seven upstream trailing-
-whitespace lines in BoringSSL LICENSE (exclude only that immutable file from final
-whitespace checking; verify its Git source hash). Preview retains three low findings
-from one upstream-unpatched deepmerge chain, limited to repository-owned build
-tokens and documented as such; do not claim an all-zero preview audit.
+Next: Q09.1, old-LG hardware preflight and acceptance preparation. Finish Q08.3's
+commit if resuming between operations. Read the current LG AGENTS/README hardware
+workflow, inspect existing ignored device tooling, and make one bounded read-only
+connectivity/version/state check using the configured private alias. Keep addresses,
+keys and raw output ignored. Prepare the current reviewed IPK under ignored state;
+capture installed prefs/input/startup before any authorized in-place upgrade.
+Preserve installed IDs/data and do not uninstall as an upgrade workaround.
 
-Review the final runtime/interface/adaptor diff and existing diagnostics, then run
-final standalone/aggregate Android/installer build/lint/size, Python/Java and LG
-ES5/service/browser checks. Current core tests/preview generated/tests/build/browser
-checks just passed; repeat them only after relevant changes or unresolved concerns.
-Recheck packaged media/notices, actual runtime bytes, identities/signing and staged
-private-file safety. Record measured costs/limits without speculative startup or
-memory improvements. No broad dependency/UI work, release or remote operation.
+Audible/power tests require a human watcher under LG's rules. Ask for watcher/TV
+availability before those dependent actions; preparation and read-only diagnostics
+may continue. Distinguish actual service/DOM diagnostics from human picture/sound/
+remote confirmation. Current production integration has not been tested on physical
+LG; the initial Q02 host proof predates full adoption. Android physical upgrade and
+ICU/remote/lifecycle acceptance wait until around 2026-11-25. Missing hardware is an
+open gate: keep the goal incomplete and do not fabricate a pass or repeatedly probe
+an unchanged unreachable device. No release, merge, remote detach or firmware work.
+
+Q00–Q08 software work is complete. Preview retains three low build-only findings
+from one upstream-unpatched deepmerge chain, limited to repository-owned tokens and
+documented beside use. Core and LG audits are zero; do not claim zero preview audit.
+Keep immutable upstream notices byte-identical, including BoringSSL whitespace.
 
 Q06 is complete: `shared/core`, `platforms/android-tv` and `platforms/webos` build
 independently with canonical shared inputs. Root `:app` and installer tasks remain
@@ -984,3 +989,45 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   `check-{patched-test-tools,toolpatch-runtime,toolpatch-isolated}.*`, and fresh
   `toolpatch-core-isolated-q082`. Final platform integration/code review remains
   Q08.3. No native UI, settings, runtime API or hardware/remote operation changed.
+
+### Q08.3 final automated and source review (2026-11-11)
+
+- Reviewed pure core/exported interfaces and native/LG/preview adapters, including
+  finite/integer checks before typed conversion, six-prayer/sunrise rules, tomorrow
+  Fajr display difference, stable IDs/tie order, separate due/delivery windows,
+  persisted-claim clocks and shell-owned scheduling/storage/media. Reviewed shared
+  validation/generation, source-path/build entry contracts, notices, ownership links
+  and CI mutation boundaries. No additional introduced runtime defect found in this
+  self-review. No independent/hardware review is implied.
+- PASS: final clean standalone Android build/size/lint and root aggregate launcher/
+  installer build/lint; 39 Python/Java/simulated-TV regressions; LG ES5/service/
+  calendar/reminder/async/clean-output tests and bilingual real-browser UI checks.
+  Current core normal/fresh tests and preview tests/generated/18-page/client checks
+  passed in Q08.2 and were not needlessly repeated. Additional preview TypeScript
+  5.8.3 no-emit check passes using the existing compiler-provided tool. Initial
+  assumed site-local tsc path was absent; no dependency was added to run the check.
+- PASS: final native APK signatures/certificate continuity, actual DEX core/runtime
+  definitions, 13 upstream license Git hashes, every packaged source notice, all
+  26 identical/uncompressed native/LG media clips, four runtime JS copies and 21
+  Kotlin notice copies. LG's 100-file output matches the retained runtime snapshot
+  with exactly the documented notice/font changes. Final native ZIP still retains
+  all 95 old entry bytes plus four notice entries; final clean APK is 20,937,376
+  bytes (one byte of archive-size variation from the prior build), below 25 MB.
+  Installer is 13,223,311 bytes; lint is 0 errors / native 54, installer 15 warnings.
+  Controlled original-source lint proves the extra installer warning is tool-only.
+- Measured costs/changes: native APK is 691,161 bytes larger than Q01, within the
+  4,062,624-byte budget headroom; no startup/memory gain is asserted. Production
+  shared JS remains 38,502 bytes. Removed one 368,616-byte unused LG font from
+  generated packaging. Patched core test-tool lock reduces versioned non-link
+  node_modules entries from 97 to 62; this is development footprint only. Core and
+  LG audits are zero; three existing low preview findings remain bounded as above.
+- PASS: final diff whitespace apart from the exact pinned BoringSSL license;
+  original project/CleanYourTV source licences unchanged; no new tracked state,
+  addresses/keys, APK/IPK or restricted media. The sole tracked MP3 is the unchanged
+  historical probe test tone. No empty future shell, new transport, account or UI
+  framework. Clarified preview generation's existing native/installer output inputs.
+- Evidence: ignored `final-{android-standalone,android-aggregate,lg-tests,lg-browser,
+  python-java,typescript,native-cert}.log` and active artifact/lint/runtime/CI
+  checkers. GitHub/Linux/KVM, phone/emulator and physical TVs were not run here.
+  Old-LG actual integration, preference-preserving upgrade, picture/sound/remote/
+  power and Android/ICU acceptance remain Q09. No deployment or publication occurred.

@@ -66,7 +66,7 @@ via `ANDROID_HOME` (or its ignored local SDK configuration).
 | Core | `npm --prefix shared/core ci --ignore-scripts`, then `./gradlew -p shared/core check jvmJar --no-daemon` | Root Gradle wrapper/bootstrap; no SDK or shell sources |
 | Android TV | `./gradlew -p platforms/android-tv verifyApkSize lintDebug --no-daemon` | Shared core/design and local optional media; no installer/preview/LG sources |
 | LG | `npm --prefix platforms/webos ci`, then `npm --prefix platforms/webos test` and `npm --prefix platforms/webos run test:browser` | Shared core/data/design, tokens/patterns, common validators, wrapper and local media; no Android/installer/preview sources |
-| Preview | `npm --prefix site ci`, then `npm --prefix site test` and `npm --prefix site run build` | Shared core/data/design, common generators, native projection templates/outputs and documentation screenshots |
+| Preview | `npm --prefix site ci`, then `npm --prefix site test` and `npm --prefix site run build` | Shared core/data/design, common generators, native projections, installer notice outputs and documentation screenshots |
 
 On Windows use `gradlew.bat` and `npm.cmd`. Root aggregate commands retain
 `:app:assembleDebug` and `:installer:assembleDebug`; the TV APK remains
