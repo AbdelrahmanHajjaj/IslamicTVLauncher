@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    implementation project(':core')
+    implementation 'tv.afnon:core'
     // Offline prayer-time calculation (no network, no transitive dependencies).
     implementation 'com.batoulapps.adhan:adhan:1.2.1'
 }

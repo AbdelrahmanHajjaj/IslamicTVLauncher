@@ -15,6 +15,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   core; saved keys and each platform's existing read/write policies are preserved.
 - Android reminder eligibility/rounding and LG future-event/delivery rules use the
   core, preserving their separate windows, persisted claims and native playback.
+- The core builds independently of Android; LG/preview invoke that standalone
+  build and Android links it as a local composite dependency.
 
 ### LG webOS development port
 

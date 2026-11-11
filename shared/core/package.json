@@ -4,5 +4,8 @@
   "private": true,
   "type": "commonjs",
   "main": "build/compileSync/js/main/productionExecutable/kotlin/IslamicTVLauncher-core.js",
-  "types": "build/compileSync/js/main/productionExecutable/kotlin/IslamicTVLauncher-core.d.ts"
+  "types": "build/compileSync/js/main/productionExecutable/kotlin/IslamicTVLauncher-core.d.ts",
+  "devDependencies": {
+    "acorn": "8.19.0"
+  }
 }

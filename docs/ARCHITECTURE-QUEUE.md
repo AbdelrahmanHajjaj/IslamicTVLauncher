@@ -85,22 +85,29 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q06.1, independent build boundaries and path-migration contract. Finish the
-Q05.3 commit if resuming between operations. Inspect root/core Gradle configuration,
-shared-JS build entry, npm/build/extraction paths, installer/tools/tests/CI before
-moving anything. Prove core/LG/preview builds do not require an Android SDK or
-Android project configuration; preserve pinned tooling/lockfiles and working native
-dependency/Java interop. Keep generated module filenames/public package APIs stable
-or migrate every consumer together. Choose the smallest standalone/composite setup
-that actually works, document the decision here and verify before directory moves.
-Then move actual Android/LG sources to `platforms/{android-tv,webos}` and update all
-consumers, generated paths, CI and instructions in complete verified slices. Keep
-installer, site and tools functional; no empty future-platform projects or new UI.
+Next: Q06.2, separate restricted local media inputs from Android source paths.
+Finish Q06.1's commit if resuming between operations. Inspect fetch scripts,
+Android asset source sets/players, LG build and media references before editing.
+Move the existing 14 adhan + 12 announcement clips into ignored
+`state/media/{adhan,announce}` with verified absolute workspace paths and pre/post
+hashes; preserve any existing destination work (never overwrite different bytes).
+Both builders/fetchers must use that local media root while packaging the same
+`adhan/` / `announce/` Android assets and LG output paths. Include only the media
+input directory, never arbitrary state/backups/credentials. Preserve rights and
+source exclusion; do not fetch new media or publish binaries. Update relevant
+instructions/tests/ignore rules and verify actual APK/LG media bytes and normal
+checks before the platform source moves.
+Q06.3 then moves actual Android/LG sources to `platforms/{android-tv,webos}` and
+updates every consumer/generated path/CI/instruction. Provide independently
+buildable shells as well as working aggregate/installer/site/tool commands; inspect
+the smallest per-platform Gradle settings before changing paths. No empty future
+projects, UI redesign or changes to installed IDs, preferences or native behavior.
 Q04/Q05 software extraction is complete; clocks, calendar/astronomical engines,
 persistence, OS scheduling and playback remain adapters with existing keys/IDs.
 LG was unreachable during Q04.2; actual-host integration and native ICU accuracy,
 TV upgrade/picture/sound/remote/lifecycle acceptance remain Q09 gates. A temporary
-browser host probe must also restore Math.imul if the runtime polyfilled it.
+browser host probe must use the current `tv.afnon:core` namespace (older ignored
+helpers used the former parent-name namespace) and restore a polyfilled Math.imul.
 Private logs/helpers remain under ignored `state/platform-core/`; do not publish
 them. Q02 commit: `83b0c72`. No release, remote detach, merge or TV firmware action.
 
@@ -645,3 +652,40 @@ them. Q02 commit: `83b0c72`. No release, remote detach, merge or TV firmware act
 - Q05's software migration is complete. Actual old-LG deployment/sound/remote/power
   and Android device acceptance remain Q09. The old LG was not re-probed without
   evidence its earlier connection timeout had cleared; installer was unaffected.
+
+### Q06.1 standalone core build boundary (2026-11-11)
+
+- `shared/core` now owns its Gradle settings, strict Maven/plugin repositories,
+  JVM/npm-mode properties and compiler npm lock. Android includes it as a local
+  composite `tv.afnon:core` source dependency; existing JVM jar path and Java API
+  stay stable. LG/preview build-JS invokes the standalone project using the same
+  pinned repository wrapper. No Android plugin/configuration is needed by that path.
+- The ES5 parser is now a core-owned dev dependency, pinned to the exact already
+  installed Acorn 8.19.0/version/integrity used by LG. Core checks no longer require
+  LG node_modules/source. CI installs that small local dev graph and runs the
+  standalone build directly; no new product dependency or compiler/tool upgrade.
+- Compiler lock moved with the project. Official upgrade task changed only its
+  root name metadata (IslamicTVLauncher -> core); dependency versions/integrities
+  are unchanged. Site lock only adds the local package's dev metadata. JS output
+  filenames, private npm import and JVM jar remain stable. UMD namespace now uses
+  stable `tv.afnon:core` group/name instead of the former parent-path name; LG loader,
+  host test and core documentation migrated together. Installed TV IDs are unchanged.
+- PASS: clean standalone core/Java interop/JVM/JS/ES5 checks; clean isolated copy
+  containing only core sources/configuration/dev inputs, with Android SDK/NDK
+  variables unset. Init assertion proves one project, no Android/LG source trees,
+  no Android plugin or AGP implementation on its buildscript classpath. Uses the
+  shared wrapper only as Gradle bootstrap. All JS/types and JVM jar entry bytes
+  exactly match the normal standalone build. Proof is ignored under
+  `isolated-core-q061`, `core-isolated-*` and `core-independent-artifacts.json`.
+- PASS: Android + installer composite build/lint, all 38 Python/Java regressions,
+  actual APK classes/notices, size 21,113,583 bytes (incremental); lint 0 errors,
+  app 54 / installer 15 warnings. PASS: LG ES5/service/5,190-event-per-host fixtures
+  and bilingual browser suite; preview tests/18-page build, TypeScript, data/tokens
+  and built-client browser checks. LG/preview commands also ran with SDK variables
+  unset. Four runtime and 21 notice copies match source. Logs: `core-standalone-*`,
+  `core-composite-android.log`, `core-independent-*.log` under ignored state.
+- Runtime JS is 38,502 bytes; the 45-byte difference is namespace text, not an
+  algorithm/performance change. Gradle composite/module-name docs checked through
+  Context7 and validated with the pinned 8.11.1 / Kotlin 2.2.10 tools. Linux CI and
+  physical TVs were not run locally. Platform source/media paths have not moved
+  yet; Q06.2/3 remain required. No source publishing, remote/release or device action.

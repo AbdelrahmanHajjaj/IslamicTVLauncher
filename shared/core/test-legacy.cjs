@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const acorn = require('../../webos/node_modules/acorn');
+const acorn = require('acorn');
 const base = path.join(__dirname, 'build/compileSync/js/main/productionExecutable/kotlin');
 const names = ['kotlin-kotlin-stdlib.js', 'IslamicTVLauncher-core.js'];
 const sources = names.map(name => fs.readFileSync(path.join(base, name), 'utf8'));
@@ -26,7 +26,7 @@ for (const commonjs of [false, true]) {
     if (commonjs) modules['./' + names[i]] = context.module.exports;
   }
   vm.runInContext(proof, context);
-  const api = commonjs ? context.module.exports : context['IslamicTVLauncher:core'];
+  const api = commonjs ? context.module.exports : context['tv.afnon:core'];
   assert.equal(context.verifyIslamicTVCore(api).checks, 44);
 }
 console.log('PASS: ES5 syntax and 44 prayer/validation/reminder assertions in browser and CommonJS hosts without modern runtime APIs. Runtime JavaScript: ' + sources.reduce((n, source) => n + Buffer.byteLength(source), 0) + ' bytes.');

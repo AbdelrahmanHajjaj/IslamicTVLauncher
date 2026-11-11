@@ -1,6 +1,6 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) { require('./compat'); module.exports = factory(require('./data.json'), require('./adhan'), require('./IslamicTVLauncher-core')); }
-  else { root.Afnon = factory(root.AfnonData, root.adhan, root['IslamicTVLauncher:core']); }
+  else { root.Afnon = factory(root.AfnonData, root.adhan, root['tv.afnon:core']); }
 }(this, function (data, adhan, portable) {
   'use strict';
   var rules = portable.tv.afnon.core.PrayerRules;

@@ -3,9 +3,9 @@ name: Shared core
 on:
   push:
     branches: [main]
-    paths: ['shared/core/**', 'kotlin-js-store/**', 'settings.gradle', 'build.gradle', 'gradle.properties', 'gradle/**', 'webos/package*.json', '.github/workflows/core.yml']
+    paths: ['shared/core/**', 'gradle/**', 'gradlew*', '.github/workflows/core.yml']
   pull_request:
-    paths: ['shared/core/**', 'kotlin-js-store/**', 'settings.gradle', 'build.gradle', 'gradle.properties', 'gradle/**', 'webos/package*.json', '.github/workflows/core.yml']
+    paths: ['shared/core/**', 'gradle/**', 'gradlew*', '.github/workflows/core.yml']
   workflow_dispatch:
 
 permissions:
@@ -23,5 +23,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - run: npm --prefix webos ci --ignore-scripts
-      - run: chmod +x gradlew && ./gradlew :core:check --no-daemon --stacktrace
+          cache: npm
+          cache-dependency-path: shared/core/package-lock.json
+      - run: npm --prefix shared/core ci --ignore-scripts
+      - run: sh ./gradlew -p shared/core check jvmJar --no-daemon --stacktrace

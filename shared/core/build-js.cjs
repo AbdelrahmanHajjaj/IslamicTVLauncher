@@ -2,9 +2,9 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '../..');
-const task = ':core:compileProductionExecutableKotlinJs';
+const task = 'compileProductionExecutableKotlinJs';
 if (process.platform === 'win32') {
-  execFileSync('cmd.exe', ['/d', '/s', '/c', 'gradlew.bat ' + task + ' --no-daemon'], {cwd: root, stdio: 'inherit', windowsHide: true});
+  execFileSync('cmd.exe', ['/d', '/s', '/c', 'gradlew.bat -p shared/core ' + task + ' --no-daemon'], {cwd: root, stdio: 'inherit', windowsHide: true});
 } else {
-  execFileSync('sh', ['./gradlew', task, '--no-daemon'], {cwd: root, stdio: 'inherit'});
+  execFileSync('sh', ['./gradlew', '-p', 'shared/core', task, '--no-daemon'], {cwd: root, stdio: 'inherit'});
 }

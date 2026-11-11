@@ -7,10 +7,13 @@ plugins {
     kotlin("multiplatform") version "2.2.10"
 }
 
+group = "tv.afnon"
+
 kotlin {
     jvmToolchain(17)
     jvm()
     js {
+        outputModuleName = "IslamicTVLauncher-core"
         nodejs()
         generateTypeScriptDefinitions()
         binaries.executable()
@@ -38,8 +41,8 @@ rootProject.plugins.withType<NodeJsRootPlugin> {
 
 tasks.register<Exec>("legacyCheck") {
     dependsOn("compileProductionExecutableKotlinJs")
-    workingDir(rootProject.projectDir)
-    commandLine("node", "shared/core/test-legacy.cjs")
+    workingDir(projectDir)
+    commandLine("node", "test-legacy.cjs")
 }
 
 tasks.named("check") { dependsOn("legacyCheck") }
