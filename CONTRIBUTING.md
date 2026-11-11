@@ -20,10 +20,14 @@ proposed PR scopes and outstanding checks; the requirements below still apply.
 
 ## 1. Add your city
 
-Cities live in `Prefs.java` (`CITIES`), each with an Arabic and English name, coordinates and the
-calculation method used locally.
+Cities live in `shared/data/cities.json`, each with Arabic and English names,
+coordinates, a calculation method and an Asr-school default. Region membership
+lives in `shared/data/regions.json`.
 
-1. Add one `new City(...)` line next to its country's other cities.
+1. Add a city beside its country's other cities, keeping existing IDs and ordering.
+   Run `npm --prefix site run gen` to regenerate Android's `CityCatalog.java`, then
+   `npm --prefix site test` and `npm --prefix site run data:check`. Do not edit the
+   generated Java catalog. Cairo remains the fallback for old/unknown city settings.
 2. Use the method your local religious authority publishes, for example Egyptian General Authority
    of Survey for Egypt, or Umm al-Qura for Saudi Arabia.
 3. In the PR, compare Afnon's six times for one day with an official source (a ministry or awqaf
@@ -64,8 +68,8 @@ Kotlin, no Compose. It has to stay smooth on a TV with under 2 GB of RAM, so:
   `tools/shot.sh`. Put screenshots in the PR, one in Arabic and one in English if layout changed.
 
 **The web preview** (`site/`) is an Astro site that copies each screen for the browser. It reads
-`Text.java`, `Prefs.CITIES`, `Radio.STATIONS` and the fonts at build time (`site/scripts/extract.mjs`), so a
-new string or city shows up there by itself. If you change a screen's layout, change its component in
+`shared/data/` catalogs directly; `Text.java`, `Radio.STATIONS` and fonts are still
+extracted at build time (`site/scripts/extract.mjs`). If you change a screen's layout, change its component in
 `site/src/screens/` too: `cd site && npm install && npm run dev`.
 
 Good fits: more cities and methods, an Inputs screen, accessibility of the call screen, more

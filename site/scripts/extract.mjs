@@ -1,6 +1,6 @@
 // Reads the app's own data into JSON for the preview site, so the site never keeps a second copy:
 //   Text.java       -> src/data/strings.json   (every `ar ? … : …` string, as {ar, en} templates)
-//   Prefs.CITIES    -> src/data/cities.json
+//   Cities/regions come directly from shared/data/; they are not extracted.
 //   PrayerMethod   -> src/data/methods.json and method-presets.json
 //   Radio.STATIONS  -> src/data/stations.json
 //   res/font/*.ttf  -> src/assets/fonts/
@@ -11,6 +11,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateCatalog } from '../../tools/catalogs.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const src = (f) => readFileSync(resolve(root, 'app/src/main/java/tv/afnon/home', f), 'utf8');
@@ -87,27 +88,12 @@ for (const m of text.matchAll(methodRe)) {
 write('strings.json', strings);
 console.log(`  ${Object.keys(strings).length} strings; by hand in text.ts: ${skipped.join(', ')}`);
 
-// ---------------------------------------------------------------- Prefs: cities and methods
+// ---------------------------------------------------------------- Shared city catalogs and native methods
 
-const prefs = src('Prefs.java');
-const consts = Object.fromEntries(
-  [...prefs.matchAll(/static final PrayerMethod (\w+) = PrayerMethod\.(\w+);/g)].map((m) => [m[1], m[2]]),
+validateCatalog(
+  JSON.parse(readFileSync(resolve(root, 'shared/data/cities.json'), 'utf8')),
+  JSON.parse(readFileSync(resolve(root, 'shared/data/regions.json'), 'utf8')),
 );
-const cityRe = new RegExp(
-  String.raw`new City\(${STR}, ${STR}, ${STR}, ${STR}, ${STR}, ([-\d.]+), ([-\d.]+), (?:PrayerMethod\.)?(\w+)(?:, (\w+))?\)`, 'g');
-const cities = [...prefs.matchAll(cityRe)].map((m) => ({
-  id: unescape(m[1]), ar: unescape(m[2]), en: unescape(m[3]), countryAr: unescape(m[4]), countryEn: unescape(m[5]),
-  lat: Number(m[6]), lng: Number(m[7]), method: consts[m[8]] ?? m[8], hanafi: m[9] === 'HANAFI',
-}));
-if (cities.length < 10) throw new Error('Prefs.CITIES not found');
-write('cities.json', cities);
-
-// Location's first step: each region's countries (English names), in the order of Text.regions().
-const regionsBlock = /String\[\]\[\] REGIONS = \{([\s\S]*?)\n {4}\};/.exec(prefs)[1];
-const regions = [...regionsBlock.matchAll(/\{([^}]*)\}/g)].map((m) => [...m[1].matchAll(new RegExp(STR, 'g'))].map((x) => unescape(x[1])));
-const lost = [...new Set(cities.map((c) => c.countryEn))].filter((n) => !regions.some((r) => r.includes(n)));
-if (lost.length) throw new Error(`Prefs.REGIONS is missing ${lost.join(', ')}`);
-write('regions.json', regions);
 
 const methods = src('PrayerMethod.java');
 write('methods.json', [...methods.matchAll(/^ {4}([A-Z_]+)\(/gm)].map(m => m[1]));

@@ -1,7 +1,7 @@
-// The app's data, read from its Java sources by scripts/extract.mjs.
-import citiesJson from '../data/cities.json';
+// Canonical catalogs are shared directly; remaining native data is extracted at build time.
+import citiesJson from '../../../shared/data/cities.json';
 import methodsJson from '../data/methods.json';
-import regionsJson from '../data/regions.json';
+import regionsJson from '../../../shared/data/regions.json';
 import stationsJson from '../data/stations.json';
 
 export type City = (typeof citiesJson)[number];

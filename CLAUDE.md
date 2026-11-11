@@ -101,7 +101,8 @@ hard-wires to an app. Tested on one Super General (Android 9) only; any change h
 ## Web preview (`site/`)
 
 Astro site on GitHub Pages (`.github/workflows/site.yml`), one page per screen and mode in Arabic (root) and English
-(`/en/`). `scripts/extract.mjs` reads `Text.java`, `Prefs`, `Radio.STATIONS`, the fonts and `docs/screenshots` into
+(`/en/`). Cities/regions come directly from `shared/data/`; `scripts/extract.mjs` reads
+`Text.java`, `PrayerMethod`, `Radio.STATIONS`, the fonts and `docs/screenshots` into
 gitignored files; strings with logic are ported by hand in `src/lib/text.ts`. Each screen is `src/screens/<X>.astro`
 plus a model (`(ctx) => {html, attr}`) that renders at build time and every second in the browser. When a screen's
 layout changes in the app, update its component. `npm run dev` / `npm run build` in `site/`.

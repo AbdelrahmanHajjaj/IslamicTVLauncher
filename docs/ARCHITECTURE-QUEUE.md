@@ -85,13 +85,15 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03. Start with canonical city data, preserving existing IDs, order, defaults
-and `Prefs.City` consumers. Inspect the affected source/generator/tests only; migrate
-one catalog at a time with exact old/new data comparisons and affected regression
-checks. Do not move platform directories yet (Q06). Production apps still use their
-existing domain implementations until Q04. Build logs and private LG helpers are
-under ignored `state/platform-core/`; do not publish them. Finish the Q02 commit
-before editing Q03 source if resuming between these operations.
+Next: Q03.2, canonical method IDs/presets. Finish the Q03.1 commit if resuming
+between these operations, then inspect `PrayerMethod.java`, site prayer adapters,
+LG method handling and their tests. Preserve all 19 IDs/order, library presets,
+numeric parameters and Turkey corrections; keep library-specific API bindings in
+adapters. Remove the city validator's temporary native-enum scraping when shared
+method data exists. Continue one catalog at a time with exact old/new comparisons.
+Do not move platform directories yet (Q06). Production apps retain their existing
+domain implementations until Q04. Private logs/helpers are under ignored
+`state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
 
 ## Evidence and decisions
 
@@ -177,3 +179,24 @@ before editing Q03 source if resuming between these operations.
   in the actual Android/LG artifacts and update third-party documentation. Android
   hardware integration/performance and complete LG UI/service acceptance remain
   Q09 gates; this proof is not a user-facing platform migration.
+
+### Q03.1 canonical cities and regions (2026-11-11)
+
+- `shared/data/{cities,regions}.json` exactly preserves the previous 137 cities,
+  43 countries, six regions, ordering, identifiers, bilingual labels, coordinates,
+  methods and Hanafi flags. No new city or timetable claim. Old/new comparison
+  snapshots are ignored under `state/platform-core/{cities,regions}-before.json`.
+- `tools/catalogs.mjs` validates catalogs and generates Android `CityCatalog.java`;
+  `Prefs.City`, `Prefs.CITIES`, `Prefs.REGIONS`, fallback and persisted keys stay
+  compatible. Preview/LG read canonical JSON directly; obsolete ignored copies
+  were removed so stale imports cannot silently work. Generator check is in site CI.
+- PASS: generator input rejection and complete Java field/order round-trip;
+  exact pre-migration JSON comparison; actual compiled `Prefs`/`CityCatalog` JVM
+  initialization and every field/region versus canonical JSON (private helper
+  `state/platform-core/check-city-runtime.py`).
+- PASS: 36 Python/Java regressions; Android/installer build/lint/size; preview
+  tests and 18-page build, data and token checks; LG ES5/service and Arabic/English
+  browser regressions. Raw `cities-*.log` evidence is ignored. No TV deployment:
+  LG data values and renderer behavior are unchanged; browser media/Luna are mocked.
+- Developer guidance now points to canonical cities/regions and regeneration.
+  Remaining catalog extraction is still Q03, not a completed platform migration.

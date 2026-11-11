@@ -233,7 +233,8 @@ uses the network for ADB setup and, when selected, downloading the upstream APK.
 | Accessibility service | Remote shortcuts, prayer monitoring, reminders and the optional prayer bar |
 
 The browser preview is separate: it keeps preferences in browser storage and plays a radio stream only
-when requested. Its city and method data, prayer icons, patterns and text come from the native sources.
+when requested. Its city/region catalogs come from `shared/data/`; method data,
+prayer icons, patterns and text still come from the native sources.
 It demonstrates Home layouts, appearance and quick controls, but cannot control TV inputs, Wi-Fi,
 Android overlays or screensavers. Prayer-offset editing mirrors the TV: six centred adjusted times,
 minus/value/plus controls, draft cancellation and saved offsets, in Arabic and English.

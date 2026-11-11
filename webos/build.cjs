@@ -11,7 +11,7 @@ const write = (p, text) => { fs.mkdirSync(path.dirname(p), { recursive: true });
 execFileSync(process.execPath, [path.join(root, 'site/scripts/extract.mjs')], { stdio: 'ignore' });
 for (const part of ['app', 'service']) fs.cpSync(path.join(__dirname, part), path.join(out, part), { recursive: true });
 const data = {
-  cities: json('site/src/data/cities.json'), methods: json('site/src/data/methods.json'),
+  cities: json('shared/data/cities.json'), methods: json('site/src/data/methods.json'),
   presets: json('site/src/data/method-presets.json'), strings: json('site/src/data/strings.json'),
   stations: json('site/src/data/stations.json'), apps: json('webos/tv-apps.json'), voices: [], themes: [], hijri: []
 };

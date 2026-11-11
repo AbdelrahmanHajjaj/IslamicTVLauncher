@@ -3,9 +3,11 @@
 The current catalog contains **137 cities in 43 countries**, grouped into six regions. Choose a
 location in **Settings → Prayer times → Location**. There is no automatic location discovery.
 
-The source is [`Prefs.CITIES`](../app/src/main/java/tv/afnon/home/Prefs.java). The browser preview
-extracts this catalog during its build, and the phone installer queries it from the TV. The browser
-introduction derives its city/country totals from the extracted data. This table is a reference
+The source is [`shared/data/cities.json`](../shared/data/cities.json), with region
+membership in [`regions.json`](../shared/data/regions.json). Android's `CityCatalog.java`
+is generated; the browser and LG read the shared catalog, and the phone installer
+queries it from the TV. The browser introduction derives its city/country totals
+from the shared data. This table is a reference
 snapshot; update it and the README totals whenever the catalog changes.
 
 ## Leamington Spa
