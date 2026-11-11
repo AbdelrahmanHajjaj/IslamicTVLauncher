@@ -17,6 +17,9 @@
   "devDependencies": {
     "style-dictionary": "^5.7.0"
   },
+  "overrides": {
+    "glob": "14.0.2"
+  },
   "dependencies": {
     "@islamic-tv/core": "file:../shared/core",
     "@astrojs/sitemap": "^3.7.4",

@@ -6,6 +6,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- Patch build/test dependency selections separately from the pinned compiler and
+  TV runtime, preserving the generated Java/XML/CSS and runtime artifact bytes.
+
 - Installer CI keeps APKs and bilingual emulator screenshots as artifacts;
   opening a PR no longer publishes a prerelease or pushes a screenshots branch.
 

@@ -28,6 +28,14 @@ Use JDK 17 and Node 24. This is a standalone Gradle build; it does not configure
 Android, require an Android SDK or need LG sources/media/device keys. Its local
 Acorn development dependency parses the output as ES5.
 
+Node 24 also runs the compiler's test tooling. Supported npm overrides patch its
+Glob, minimatch, diff and serialize-javascript leaves while keeping Kotlin, Mocha
+and the Kotlin reporter pinned. Root-package task inputs include those selections
+so incremental builds regenerate the npm configuration. The canonical generated
+lock is `kotlin-js-store/package-lock.json`; regenerate it with matching overrides
+when changing tool pins, rather than editing its package entries by hand. Build/test
+tools are not bundled into the JVM library or production ES5 files.
+
 ```powershell
 npm.cmd --prefix shared/core ci --ignore-scripts
 ./gradlew.bat -p shared/core check jvmJar --no-daemon

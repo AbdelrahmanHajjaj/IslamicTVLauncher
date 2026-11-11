@@ -4,6 +4,7 @@
 //   site/src/styles/tokens.css                    (CSS custom properties for the preview site)
 // `--check` writes nothing and fails if the app's committed outputs differ (for CI).
 import StyleDictionary from 'style-dictionary';
+// shortcut: unpatched upstream deepmerge handles repository-owned tokens only; update when a compatible fix is available.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';

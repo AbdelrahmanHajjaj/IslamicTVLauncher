@@ -85,21 +85,22 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q08.1b, finish notice-header review and controlled lint comparison, then
-Q08.2 targeted build/test-tool advisory remediation. Finish Q08.1a's CI commit if
-resuming between operations. Fix the truncated SUPERCOP attribution line/extra EOF
-blank in the newly collected SPAKE2 native notice; preserve all 13 verbatim license
-files, including seven original trailing-whitespace lines in pinned BoringSSL text.
-Complete the original-installer/current-tool lint control and review live npm audit
-reports under ignored `review-*-audit.json`: LG/core package have zero advisories;
-preview has six low/moderate build-tool findings, Kotlin-generated JS test tree has
-five including a high serialize-javascript issue. Research supported narrow
-patch/test-tool configuration using official docs; avoid runtime/core/compiler or
-unrelated broad upgrades. Keep all tests/legacy output contracts. Run current core,
-Android/installer build/lint/
-size, Python/Java, preview generated/tests/build/client and LG ES5/service/browser
-checks; repeat only affected checks after any fix. Measure before claiming speed
-or memory gains. Review stage/private-file safety and record exact remaining gaps.
+Next: Q08.3 final source/diff and integrated application review. Finish Q08.2's
+commit if resuming between operations. Core/test-tool patches are now verified:
+normal/fresh core-only builds and audits pass, with unchanged production artifact
+bytes. Preserve all 13 verbatim license texts, including seven upstream trailing-
+whitespace lines in BoringSSL LICENSE (exclude only that immutable file from final
+whitespace checking; verify its Git source hash). Preview retains three low findings
+from one upstream-unpatched deepmerge chain, limited to repository-owned build
+tokens and documented as such; do not claim an all-zero preview audit.
+
+Review the final runtime/interface/adaptor diff and existing diagnostics, then run
+final standalone/aggregate Android/installer build/lint/size, Python/Java and LG
+ES5/service/browser checks. Current core tests/preview generated/tests/build/browser
+checks just passed; repeat them only after relevant changes or unresolved concerns.
+Recheck packaged media/notices, actual runtime bytes, identities/signing and staged
+private-file safety. Record measured costs/limits without speculative startup or
+memory improvements. No broad dependency/UI work, release or remote operation.
 
 Q06 is complete: `shared/core`, `platforms/android-tv` and `platforms/webos` build
 independently with canonical shared inputs. Root `:app` and installer tasks remain
@@ -939,3 +940,47 @@ remain under ignored `state/`. No merge, release, remote detach or firmware acti
   Core compiler/runtime and product dependencies remain pinned. Deepmerge has no
   upstream patched version; assess the existing trusted-token build-only use and
   document the bounded finding rather than fabricating an audit pass.
+
+### Q08.2 supported build/test dependency patches (2026-11-11)
+
+- Kotlin compiler/runtime 2.2.10, Mocha 11.7.1 and Kotlin reporter 2.1.0 stay pinned.
+  Used the pinned plugin's official BaseNpmExtension overrides for Glob 14.0.2,
+  minimatch 11.0.7, diff 8.0.3 and serialize-javascript 7.1.3; preview overrides only
+  Glob to 14.0.2. No product dependency change. Official Context7/Kotlin source and
+  Mocha migration docs informed compatibility; no unsupported reporter rewrite.
+- Actual installed-version guards caught an initially cached unpatched tree, even
+  after a task rerun. Declared the override map as rootPackageJson task input.
+  Regenerated only bounded, verified `shared/core/build/js` npm outputs with npm;
+  copied the generated lock byte-for-byte into the canonical Kotlin lock store.
+  No lock entries were hand-edited. The old lock had to be regenerated, rather
+  than trusting an install over its cached tree. Normal incremental build then
+  regenerated configuration correctly. An initial wrong NpmPlugin class import
+  was corrected to the actual NodeJsRootPlugin/NpmExtension API before acceptance.
+- PASS: forced actual core check and fresh isolated core-only check, JDK/Node only
+  with SDK variables unset and no shell/preview sources. Both run 12 JVM and 11 JS
+  tests plus 44 ES5/browser/CommonJS assertions without modern runtime APIs. Fresh
+  install consumes the exact patched canonical lock. Deliberately failing assertion
+  exits 1 under both actual Mocha and Kotlin reporters; matching/serialization APIs
+  work. Initial non-elevated child-process canary was sandbox-denied; the normal
+  process-permission run passed without product changes.
+- PASS: normal and fresh test trees audit at zero findings. Earlier audit caught
+  Mocha's separately nested minimatch, leading to its explicit fourth override;
+  no audit gate or package was hidden. Reference advisories:
+  [Glob](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4),
+  [minimatch](https://github.com/advisories/GHSA-g3hv-75wg-m249),
+  [diff](https://github.com/advisories/GHSA-73rr-hh4g-fpgx),
+  [serialize-javascript](https://github.com/advisories/GHSA-m5mm-p8h7-m29v).
+- PASS: runtime JS/types and every JVM jar entry exactly match frozen pre-patch
+  bytes, including JS size 38,502. Native Java/XML and preview CSS token outputs
+  match exactly. Preview tests, generated checks, 18-page build and bilingual
+  Home/settings real-browser/client/link checks pass. No TV speed/memory claim.
+- Preview audit drops from six low/moderate findings to three low findings from
+  the same [unpatched deepmerge issue](https://github.com/advisories/GHSA-gcqx-w48m-w2h4)
+  and its two parent packages. Existing Style Dictionary only handles repository-
+  owned local tokens, not remote/user-provided token input; documented the bounded
+  exposure and upgrade condition beside its use. No unsafe downgrade/custom parser
+  or suppressed advisory. LG and core's own package audits were already zero.
+- Evidence: ignored `toolpatch-*`, `runtime-before-toolpatch-q082.json`,
+  `check-{patched-test-tools,toolpatch-runtime,toolpatch-isolated}.*`, and fresh
+  `toolpatch-core-isolated-q082`. Final platform integration/code review remains
+  Q08.3. No native UI, settings, runtime API or hardware/remote operation changed.
