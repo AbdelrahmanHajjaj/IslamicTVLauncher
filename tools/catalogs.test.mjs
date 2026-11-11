@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { validateCatalog, validateMethods, validateStations, validateVoices, validateThemes } from './catalogs.mjs';
 import { renderText, validateStrings, renderLiterals, validateFormatText, validateSacredText } from './strings.mjs';
-import { validateIcons, validatePrayerIcons } from './design.mjs';
+import { validateIcons, validatePrayerIcons, validateAppearance } from './design.mjs';
 
 const cities = JSON.parse(readFileSync(new URL('../shared/data/cities.json', import.meta.url)));
 const regions = JSON.parse(readFileSync(new URL('../shared/data/regions.json', import.meta.url)));
@@ -193,3 +193,19 @@ for (const change of [
   assert.throws(() => validatePrayerIcons(modified));
 }
 console.log('PASS: local SVG geometry allowlist and ordered prayer vector dimensions/paths');
+
+const appearance = JSON.parse(readFileSync(new URL('../shared/design/appearance.json', import.meta.url)));
+validateAppearance(appearance);
+for (const change of [
+  data => { data.extra = []; }, data => { data.colors.pop(); }, data => { data.patterns = []; },
+  data => { data.patterns[0] = '../pattern'; }, data => { data.patterns[0] = 'bad-pattern'; }, data => { data.patterns.push(data.patterns[0]); },
+  data => { data.patterns.push(data.proceduralBackgrounds[0]); }, data => { data.surfaces[0] = 'unknown'; },
+  data => { data.proceduralBackgrounds.reverse(); }, data => { data.colors[0] = 1; },
+]) {
+  const modified = structuredClone(appearance); change(modified);
+  assert.throws(() => validateAppearance(modified));
+}
+for (const [name, expected] of Object.entries({BACKGROUNDS: [...appearance.proceduralBackgrounds, ...appearance.patterns], SURFACES: appearance.surfaces, COLORS: appearance.colors})) {
+  assert.deepEqual(JSON.parse('[' + new RegExp(name + ' = \\{([^}]+)\\}').exec(themeJava)[1] + ']'), expected);
+}
+console.log('PASS: appearance defaults, unique background groups, color slots and generated native ID lists');

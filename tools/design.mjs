@@ -7,6 +7,22 @@ const attributes = {
   rect: ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill', 'stroke'],
 };
 
+export function validateAppearance(value) {
+  const groups = ['colors', 'patterns', 'proceduralBackgrounds', 'surfaces'];
+  if (!value || Object.keys(value).sort().join(',') !== groups.join(',')) throw new Error('Invalid appearance metadata');
+  for (const group of groups) {
+    const ids = value[group];
+    const idPattern = group === 'colors' ? /^[a-z][a-z0-9_-]*$/ : /^[a-z][a-z0-9_]*$/;
+    if (!Array.isArray(ids) || !ids.length || ids.some(id => typeof id !== 'string' || !idPattern.test(id)) || new Set(ids).size !== ids.length) {
+      throw new Error('Invalid appearance IDs: ' + group);
+    }
+  }
+  const backgrounds = [...value.proceduralBackgrounds, ...value.patterns];
+  if (new Set(backgrounds).size !== backgrounds.length || value.proceduralBackgrounds[0] !== 'lattice' || value.surfaces[0] !== 'classic' || value.colors.length !== 8) {
+    throw new Error('Invalid appearance defaults or color slots');
+  }
+}
+
 export function validateIcons(icons) {
   if (!icons || typeof icons !== 'object' || Array.isArray(icons) || !Object.keys(icons).length) throw new Error('Missing icon catalog');
   for (const [id, svg] of Object.entries(icons)) {

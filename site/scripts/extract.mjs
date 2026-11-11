@@ -8,7 +8,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateCatalog, validateStations, validateVoices, validateThemes } from '../../tools/catalogs.mjs';
 import { validateStrings, validateFormatText, validateSacredText } from '../../tools/strings.mjs';
-import { validateIcons, validatePrayerIcons } from '../../tools/design.mjs';
+import { validateIcons, validatePrayerIcons, validateAppearance } from '../../tools/design.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const out = resolve(root, 'site/src/data');
@@ -33,6 +33,8 @@ validateSacredText(JSON.parse(readFileSync(resolve(root, 'shared/data/sacred-tex
 validateThemes(JSON.parse(readFileSync(resolve(root, 'shared/design/themes.json'), 'utf8')));
 validateIcons(JSON.parse(readFileSync(resolve(root, 'shared/design/icons.json'), 'utf8')));
 validatePrayerIcons(JSON.parse(readFileSync(resolve(root, 'shared/design/prayer-icons.json'), 'utf8')));
+const appearance = JSON.parse(readFileSync(resolve(root, 'shared/design/appearance.json'), 'utf8'));
+validateAppearance(appearance);
 
 // ---------------------------------------------------------------- shared fonts and notices
 
@@ -55,7 +57,7 @@ mkdirSync(shotsOut, { recursive: true });
 for (const f of readdirSync(shotsIn)) copyFileSync(resolve(shotsIn, f), resolve(shotsOut, f));
 console.log('copied docs/screenshots to site/public/screenshots');
 
-const backgroundPatterns = Object.fromEntries(['arches', 'eight_point_stars', 'mashrabiya', 'arabesque', 'star_tiles', 'rosettes', 'octagon_lattice', 'corner_medallions'].map(name => {
+const backgroundPatterns = Object.fromEntries(appearance.patterns.map(name => {
   const xml = readFileSync(resolve(root, `afnon-mihrab/patterns/${name}.svg`), 'utf8');
   const path = / d="([^"]+)"/.exec(xml)?.[1];
   const stroke = /stroke-width="([^"]+)"/.exec(xml)?.[1];

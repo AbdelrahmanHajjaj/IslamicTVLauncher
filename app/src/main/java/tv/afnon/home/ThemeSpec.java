@@ -4,12 +4,12 @@ import java.util.Map;
 
 /** Bounds and readability checks, independent of Android for local tests. */
 final class ThemeSpec {
-    static final String[] SURFACES = {"classic", "glass", "cinema", "outline", "blocks", "soft", "frame"};
+    static final String[] SURFACES = ThemeCatalog.SURFACES;
     static void surface(String name) {
         if (!java.util.Arrays.asList(SURFACES).contains(name)) throw new IllegalArgumentException("Unknown surface");
     }
-    static final String[] BACKGROUNDS = {"lattice", "solid", "panorama", "daylight", "mountains", "dunes", "halo", "night_sky", "arches", "eight_point_stars", "mashrabiya", "arabesque", "star_tiles", "rosettes", "octagon_lattice", "corner_medallions"};
-    static final String[] COLORS = {"lapis-950", "lapis-900", "lapis-800", "lapis-700", "gold-400", "gold-200", "plaster-100", "mist-400"};
+    static final String[] BACKGROUNDS = ThemeCatalog.BACKGROUNDS;
+    static final String[] COLORS = ThemeCatalog.COLORS;
     static int color(String value) {
         if (value == null || !value.matches("#[0-9a-fA-F]{6}")) throw new IllegalArgumentException("Use #RRGGBB colours");
         return (int)(0xff000000L | Long.parseLong(value.substring(1), 16));

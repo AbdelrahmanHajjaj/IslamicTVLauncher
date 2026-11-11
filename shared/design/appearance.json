@@ -1,0 +1,41 @@
+{
+  "proceduralBackgrounds": [
+    "lattice",
+    "solid",
+    "panorama",
+    "daylight",
+    "mountains",
+    "dunes",
+    "halo",
+    "night_sky"
+  ],
+  "patterns": [
+    "arches",
+    "eight_point_stars",
+    "mashrabiya",
+    "arabesque",
+    "star_tiles",
+    "rosettes",
+    "octagon_lattice",
+    "corner_medallions"
+  ],
+  "surfaces": [
+    "classic",
+    "glass",
+    "cinema",
+    "outline",
+    "blocks",
+    "soft",
+    "frame"
+  ],
+  "colors": [
+    "lapis-950",
+    "lapis-900",
+    "lapis-800",
+    "lapis-700",
+    "gold-400",
+    "gold-200",
+    "plaster-100",
+    "mist-400"
+  ]
+}

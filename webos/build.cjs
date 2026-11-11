@@ -55,7 +55,7 @@ for (const theme of data.themes) {
     data.palettes[theme][key] = colors[key] || tokens.color[key].$value;
   }
 }
-data.patterns = fs.readdirSync(path.join(root, 'afnon-mihrab/patterns')).filter(n => n.endsWith('.svg')).map(n => n.slice(0, -4));
+data.patterns = json('shared/design/appearance.json').patterns.slice().sort();
 write(path.join(out, 'app/data.js'), 'var AfnonData = ' + JSON.stringify(data) + ';\n');
 write(path.join(out, 'service/data.json'), JSON.stringify(data));
 for (const part of ['app', 'service']) fs.copyFileSync(path.join(__dirname, 'core.js'), path.join(out, part, 'core.js'));

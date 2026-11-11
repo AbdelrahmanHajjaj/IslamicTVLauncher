@@ -75,8 +75,8 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q00 | Done | Create branch, persistent goal and this ledger; route future migration work here. |
 | Q01 | Done | Baseline: dependency/caller map, current behavior differences, executable checks/tool/media availability and performance evidence; record results without private device details. |
 | Q02 | Done | Portable-core proof: shared offset/next-prayer behavior on JVM and ES5 app/service hosts; meaningful common fixtures, native-Java integration, legacy API checks, size/startup/memory evidence and actual LG probe where available; select technology with recorded rationale. |
-| Q03 | Active | Canonical resource extraction: move source ownership out of Android; migrate all generators/consumers and fixtures together; verify catalog/text/token equivalence and deterministic regeneration. |
-| Q04 | Queued | Core domain migration: extract settings and prayer-day rules in complete tested slices; cover date rollover, tomorrow Fajr, DST, offsets, Hijri range, unavailable calculations and deliberate platform differences. |
+| Q03 | Done | Canonical resource extraction: move source ownership out of Android; migrate all generators/consumers and fixtures together; verify catalog/text/token equivalence and deterministic regeneration. |
+| Q04 | Active | Core domain migration: extract settings and prayer-day rules in complete tested slices; cover date rollover, tomorrow Fajr, DST, offsets, Hijri range, unavailable calculations and deliberate platform differences. |
 | Q05 | Queued | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
 | Q06 | Queued | Separate platform projects/builds: migrate paths only after boundaries work; update Gradle, npm, installer, tools, generated outputs, tests and CI; add no empty future-platform projects. |
 | Q07 | Queued | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
@@ -85,17 +85,16 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q03.6d, audit remaining design-ID lists and Q03 dependencies. Finish the
-Q03.6c commit if resuming between operations. Inspect `ThemeSpec` background/surface/
-color ID lists, their preview counterparts and LG's supported subset. Extract
-duplicated common metadata if needed while retaining native validation/rendering
-and intentional capability differences. Verify tokens/pattern inputs, generated
-outputs and remaining source dependencies before declaring Q03 complete. Do not
-force platform-only canvas code or UI copy into a universal renderer.
-Restricted media stays ignored; keep existing shared token/pattern sources and
-do not redesign the UI.
-Do not move platform directories yet (Q06). Production apps retain their existing
-domain implementations until Q04. Private logs/helpers are under ignored
+Next: Q04.1, production adoption of the proven core in Android. Finish the Q03.6d
+commit if resuming between operations. Inspect current JVM/ES5 outputs and Java
+interop before changing callers. Link the real core, adopt offset validation and
+prayer selection, preserve native tomorrow-Fajr display/suhoor conventions and
+saved keys, and cover existing edge cases against the real JVM library (do not
+stub it in regressions). Package actual Kotlin runtime notices before linking it
+into a distributable artifact. LG/preview adoption follows as the next slice;
+remaining settings/calendar/unavailable-calculation cases stay in Q04. Keep OS
+timers/scheduling/playback out of the core and defer reminder-policy work to Q05.
+Do not move platform directories yet (Q06). Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
 
 ## Evidence and decisions
@@ -391,3 +390,30 @@ domain implementations until Q04. Private logs/helpers are under ignored
   LG browser tests were not repeated: its client code and complete icon payload
   are unchanged. No physical-TV check or performance-improvement claim; unaffected
   installer/core suites were not repeated.
+
+### Q03.6d final design metadata and Q03 audit (2026-11-11)
+
+- `shared/design/appearance.json` owns the ordered procedural backgrounds,
+  SVG-pattern IDs, surface IDs and eight theme-v1 color slots. `ThemeSpec` uses
+  generated `ThemeCatalog` arrays; preview uses the same background/color IDs.
+  LG retains its existing alphabetic pattern order and separate plain choice.
+  Native contrast/import validation and platform drawing remain in their adapters.
+- PASS: malformed/duplicate/default/slot metadata rejection; complete generated
+  arrays; exact old/new metadata, preview pattern data, LG order/CSS and all eight
+  regenerated Android PNG mask hashes. Pattern dimensions/size were checked again
+  after generation finished. No SVG, token, palette or rendered mask bytes changed.
+- PASS: 38 Python/Java regressions, preview tests/18-page build/data/tokens, Android
+  size/build/lint (incremental APK 20,255,657 bytes), LG ES5/service checks. Evidence:
+  ignored `appearance-ids-before.json` and `appearance-ids-*.log`. No new client
+  behavior or physical-TV test; unaffected browser/installer/core suites were not
+  repeated. No performance-improvement claim from differing build modes.
+- Q03 audit: common catalogs, text and distributable design sources are outside
+  Android. The preview extractor no longer reads Java, native XML or `.astro`
+  source; it validates shared inputs and projects/copies shared resources. LG no
+  longer scrapes native/preview UI source. Its remaining Android file reads are
+  the ignored, restricted local adhan/announcement clips; Q06 will separate those
+  build paths without changing rights or publishing media. Astronomical factories,
+  native formatting/contrast/canvas code and platform-only copy stay in adapters.
+- Existing token/SVG sources remain in `afnon-mihrab/`; generated Java/XML/CSS,
+  vector metadata and regenerated mask fidelity were verified. Q03 is complete
+  for the approved shared resources; production core adoption is still required.

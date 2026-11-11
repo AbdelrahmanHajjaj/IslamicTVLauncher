@@ -1,5 +1,6 @@
 import tokens from '../../../afnon-mihrab/tokens.json';
 import themes from '../../../shared/design/themes.json';
+import design from '../../../shared/design/appearance.json';
 import aurora from '../../../shared/design/assets/themes/aurora.json';
 import ember from '../../../shared/design/assets/themes/ember.json';
 import forest from '../../../shared/design/assets/themes/forest.json';
@@ -23,7 +24,7 @@ import patterns from '../data/background-patterns.json';
 import type { Prefs } from '../lib/data';
 const presets: Record<string, typeof aurora & { surface?: string }> = { aurora, ember, forest, midnight, rose, sand, slate, glass, frost, cinema, carbon, neon, blueprint, signal, arcade, dusk, oasis, brass, mosaic };
 export const THEMES = themes.filter(id => id !== 'custom');
-export const BACKGROUNDS = ['theme', 'lattice', 'solid', 'panorama', 'daylight', 'mountains', 'dunes', 'halo', 'night_sky', ...Object.keys(patterns)];
+export const BACKGROUNDS = ['theme', ...design.proceduralBackgrounds, ...design.patterns];
 const rendered = new WeakMap<HTMLElement, string>();
 export const backgroundOf = (prefs: Prefs) => prefs.background && prefs.background !== 'theme' ? prefs.background : presets[prefs.theme ?? 'mihrab']?.background ?? 'lattice';
 export function appearance(stage: HTMLElement, prefs: Prefs) {
@@ -32,7 +33,7 @@ export function appearance(stage: HTMLElement, prefs: Prefs) {
   const key = JSON.stringify([prefs.theme, prefs.background, prefs.lighting, prefs.reduceMotion, mode === 'daylight' ? Math.floor(Date.now() / 60000) : 0]);
   if (key === rendered.get(stage)) return;
   rendered.set(stage, key);
-  for (const name of Object.keys(aurora.colors)) {
+  for (const name of design.colors) {
     if (theme) stage.style.setProperty('--color-' + name, theme.colors[name as keyof typeof aurora.colors]);
     else stage.style.setProperty('--color-' + name, tokens.color[name as keyof typeof aurora.colors].$value);
   }

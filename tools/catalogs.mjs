@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderText, validateSacredText } from './strings.mjs';
-import { validateIcons, validatePrayerIcons } from './design.mjs';
+import { validateIcons, validatePrayerIcons, validateAppearance } from './design.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = path => readFileSync(resolve(root, path), 'utf8');
@@ -109,6 +109,7 @@ function generate() {
   const sacred = JSON.parse(read('shared/data/sacred-text.json'));
   const themes = JSON.parse(read('shared/design/themes.json'));
   const prayerIcons = JSON.parse(read('shared/design/prayer-icons.json'));
+  const appearance = JSON.parse(read('shared/design/appearance.json'));
   validateCatalog(cities, regions);
   validateStations(stations);
   validateVoices(voices);
@@ -116,6 +117,7 @@ function generate() {
   validateThemes(themes);
   validateIcons(JSON.parse(read('shared/design/icons.json')));
   validatePrayerIcons(prayerIcons);
+  validateAppearance(appearance);
   const rows = cities.map(c => '        new Prefs.City(' + [c.id, c.ar, c.en, c.countryAr, c.countryEn].map(value => JSON.stringify(value)).concat(c.lat, c.lng, 'PrayerMethod.' + c.method, 'Madhab.' + (c.hanafi ? 'HANAFI' : 'SHAFI')).join(', ') + '),');
   const groups = regions.map(region => '        {' + region.map(value => JSON.stringify(value)).join(', ') + '},');
   const source = '// Generated from shared/data/{cities,regions}.json by tools/catalogs.mjs. Do not edit.\n' +
@@ -145,9 +147,10 @@ function generate() {
     'package tv.afnon.home;\n\nfinal class SacredText {\n    private SacredText() {}\n\n' +
     '    static final String PRAYER_VERSE = ' + JSON.stringify(sacred.prayerVerse.join('\n')) + ';\n' +
     '    static final String ADHAN_CALL = ' + JSON.stringify(sacred.adhanCall) + ';\n}\n';
-  const nativeThemes = '// Generated from shared/design/themes.json by tools/catalogs.mjs. Do not edit.\n' +
+  const nativeThemes = '// Generated from shared/design/{themes,appearance}.json by tools/catalogs.mjs. Do not edit.\n' +
     'package tv.afnon.home;\n\nfinal class ThemeCatalog {\n    private ThemeCatalog() {}\n\n' +
-    '    static final String[] PRESETS = {' + themes.map(id => JSON.stringify(id)).join(', ') + '};\n}\n';
+    Object.entries({PRESETS: themes, BACKGROUNDS: [...appearance.proceduralBackgrounds, ...appearance.patterns], SURFACES: appearance.surfaces, COLORS: appearance.colors})
+      .map(([name, ids]) => '    static final String[] ' + name + ' = {' + ids.map(id => JSON.stringify(id)).join(', ') + '};').join('\n') + '\n}\n';
   const vectors = prayerIcons.prayers.map(({id, path}) => ['app/src/main/res/drawable/ic_prayer_' + id + '.xml',
     '<?xml version="1.0" encoding="utf-8"?>\n<!-- Generated from shared/design/prayer-icons.json by tools/catalogs.mjs. Do not edit. -->\n' +
     '<vector xmlns:android="http://schemas.android.com/apk/res/android"\n' +

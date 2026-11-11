@@ -17,6 +17,13 @@ and uses generated `ThemeCatalog.PRESETS` through the existing Appearance API.
 Preview/LG filter out `custom`, keeping their existing feature sets. Palette,
 surface, background and lighting behavior stays in each adapter.
 
+`appearance.json` owns the eight procedural backgrounds, eight SVG pattern IDs,
+seven surface IDs and eight theme-v1 color slots. Generated `ThemeCatalog` arrays
+feed native `ThemeSpec`; preview uses the same background order/color keys. LG
+retains its existing alphabetic SVG-pattern list and separate plain-background
+choice; it does not gain Android's procedural backgrounds or surface treatments.
+Contrast, import bounds and actual drawing remain in the platform adapters.
+
 `icons.json` owns the 26 existing SVG fragments used by the preview and LG.
 `prayer-icons.json` owns the six ordered prayer paths, their 24-unit grid and
 1.7-unit stroke. The catalog generator emits Android's existing vector resource

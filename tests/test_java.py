@@ -58,19 +58,20 @@ class JavaChecks(unittest.TestCase):
         self.assertEqual(len(set(paths)), 6, "Each prayer needs a distinct glyph")
 
     def test_background_patterns_and_translations(self):
+        import json
         import re
         import xml.etree.ElementTree as ET
         ns = "{http://schemas.android.com/apk/res/android}"
         java = ROOT / "app/src/main/java/tv/afnon/home"
-        modes = re.findall(r'"([^"\n]+)"', re.search(r'BACKGROUNDS = \{([^}]+)', (java / "ThemeSpec.java").read_text()).group(1))
+        modes = re.findall(r'"([^"\n]+)"', re.search(r'BACKGROUNDS = \{([^}]+)', (java / "ThemeCatalog.java").read_text()).group(1))
+        design = json.loads((ROOT / "shared/design/appearance.json").read_text())
+        self.assertEqual(modes, design["proceduralBackgrounds"] + design["patterns"])
         labels = re.search(r'String\[\] backgroundNames\(\).*', (java / "Text.java").read_text(encoding="utf-8")).group(0)
         for language in re.findall(r'new String\[\] \{([^}]+)', labels):
             self.assertEqual(len(re.findall(r'"[^"]+"', language)), len(modes) + 1)
         mappings = re.findall(r'case "([^"]+)": pattern = R.drawable.(bg_\w+)', (java / "Appearance.java").read_text())
         self.assertEqual(len(mappings), 8)
-        extractor = (ROOT / "site/scripts/extract.mjs").read_text()
-        extracted = re.findall(r"'([^']+)'", re.search(r"const backgroundPatterns = Object.fromEntries\(\[([^]]+)", extractor).group(1))
-        self.assertEqual(extracted, [mode for mode, _ in mappings])
+        self.assertEqual(design["patterns"], [mode for mode, _ in mappings])
         for mode, resource in mappings:
             self.assertIn(mode, modes)
             import struct
@@ -112,6 +113,7 @@ class JavaChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as output:
             subprocess.run([javac, "-encoding", "UTF-8", "-d", output,
                 str(ROOT / "app/src/main/java/tv/afnon/home/ThemeSpec.java"),
+                str(ROOT / "app/src/main/java/tv/afnon/home/ThemeCatalog.java"),
                 str(ROOT / "app/src/main/java/tv/afnon/home/ThemeSurface.java"),
                 str(ROOT / "app/src/main/java/tv/afnon/home/Tokens.java"),
                 str(ROOT / "tests/ThemeCheck.java")], check=True, capture_output=True)
