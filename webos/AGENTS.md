@@ -12,7 +12,7 @@ earlier experiments; later versioned validation in this README takes precedence.
 - `app/app.js`, `app/style.css`: separate TV renderer, D-pad/pointer handling, embedded
   input and audio. Keep Arabic/English together; check RTL and LTR.
 - `core.js`: LG adapter shared between its frontend and service. Uses `shared/core`
-  for offset validation and prayer selection; retains astronomy, preferences,
+  for offset validation, prayer selection and reminder event/window policy; retains astronomy, preferences,
   time/date helpers and input/app allowlists.
 - `service/service.js`: private atomic state, Activity Manager startup/prayer callbacks
   and allowlisted LG integration. Avoid duplicate or expired audible alerts.

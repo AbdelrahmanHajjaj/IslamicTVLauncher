@@ -4,6 +4,7 @@
 }(this, function (data, adhan, portable) {
   'use strict';
   var rules = portable.tv.afnon.core.PrayerRules;
+  var reminders = portable.tv.afnon.core.ReminderRules;
   var defaults = {lang: 'ar', city: 'cairo', method: null, hanafi: false, utcOffset: null,
     automatic: false, adhan: true, remind: 15, remindVoice: false, announce: true, callClose: 0,
     voice: 'alafasy', fajrVoice: 'chebae_fajr', volume: 60, bells: [true, false, true, true, true, true],
@@ -111,24 +112,22 @@
   function qibla(p) { var c = city(p.city); return adhan.Qibla(new adhan.Coordinates(c.lat, c.lng)); }
   function nextEvent(now, p, handled) {
     if (!p.automatic) { return null; }
-    var best = null; handled = handled || [];
-    function add(kind, prayer, time, prayerTime) {
-      var id = kind + ':' + prayer + ':' + prayerTime;
-      if (time > +now && handled.indexOf(id) < 0 && (!best || time < best.time)) {
-        best = {id: id, kind: kind, prayer: prayer, time: time, prayerTime: prayerTime};
-      }
-    }
+    handled = handled || [];
+    if (!Array.isArray(handled)) { throw new Error('Invalid handled events'); }
+    for (var h = 0; h < handled.length; h++) { if (typeof handled[h] !== 'string') { throw new Error('Invalid handled events'); } }
+    var days = [], mask = 0;
+    for (var i = 0; i < 6; i++) { if (p.bells[i]) { mask |= 1 << i; } }
     for (var delta = 0; delta < 3; delta++) {
-      var times = day(new Date(+now + delta * 86400000), p).times;
-      for (var i = 0; i < times.length; i++) {
-        if (i === 1 || !p.bells[i]) { continue; }
-        if (p.remind) { add('before', i, times[i] - p.remind * 60000, times[i]); }
-        if (p.adhan || p.announce) { add('call', i, times[i], times[i]); }
-      }
+      days.push(new Float64Array(day(new Date(+now + delta * 86400000), p).times));
     }
-    return best;
+    var event = reminders.nextScheduledEvent(days, +now, p.remind, mask, p.adhan || p.announce, handled);
+    return event ? {id: event.id, kind: event.kind, prayer: event.prayer, time: event.time, prayerTime: event.prayerTime} : null;
+  }
+  function deliveryState(time, now) {
+    if (typeof time !== 'number' || typeof now !== 'number') { throw new Error('Invalid delivery window'); }
+    return reminders.deliveryState(time, now, 90000);
   }
   return {defaults: defaults, maxPrayerOffset: rules.MAX_OFFSET_MINUTES, maxHijriOffset: rules.MAX_HIJRI_OFFSET_DAYS,
     prefs: prefs, city: city, input: input, wall: wall, clock: clock, day: day, next: next, select: select,
-    duration: duration, voice: voice, station: station, app: app, hijri: hijri, qibla: qibla, nextEvent: nextEvent};
+    duration: duration, voice: voice, station: station, app: app, hijri: hijri, qibla: qibla, nextEvent: nextEvent, deliveryState: deliveryState};
 }));

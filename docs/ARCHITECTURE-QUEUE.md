@@ -77,31 +77,32 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q02 | Done | Portable-core proof: shared offset/next-prayer behavior on JVM and ES5 app/service hosts; meaningful common fixtures, native-Java integration, legacy API checks, size/startup/memory evidence and actual LG probe where available; select technology with recorded rationale. |
 | Q03 | Done | Canonical resource extraction: move source ownership out of Android; migrate all generators/consumers and fixtures together; verify catalog/text/token equivalence and deterministic regeneration. |
 | Q04 | Done | Core domain migration: extract settings and prayer-day rules in complete tested slices; cover date rollover, tomorrow Fajr, DST, offsets, Hijri range, unavailable calculations and deliberate platform differences. |
-| Q05 | Active | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
-| Q06 | Queued | Separate platform projects/builds: migrate paths only after boundaries work; update Gradle, npm, installer, tools, generated outputs, tests and CI; add no empty future-platform projects. |
+| Q05 | Done | Reminder policy migration: preserve enabled/default states, expiry, deduplication, cancellation, overlap and platform lifecycle; keep OS scheduling and playback in shells. |
+| Q06 | Active | Separate platform projects/builds: migrate paths only after boundaries work; update Gradle, npm, installer, tools, generated outputs, tests and CI; add no empty future-platform projects. |
 | Q07 | Queued | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Queued | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
 
 ## Current cursor
 
-Next: Q05.3, LG future-event enumeration and inclusive delivery-window extraction.
-Finish Q05.2's commit if resuming between operations. Inspect the native-free
-`ReminderRules` contract, LG `nextEvent` and service expiry/claim order; add only
-the pure event/window rules needed by those production callers. Retain exact persisted
-`kind:prayer:epoch` IDs, three adapter-calculated days, handled exclusion and ties.
-Existing native `ReminderRules` functions already consume numeric epochs, native
-bell mask/flags and explicit exclusive window; do not alter those policies.
-Preserve different enabled/default states and event windows; keep clocks, timers,
-persistence, OS scheduling and playback in shells.
-Do not create a universal scheduler, transport or new always-running service.
-Q04's core settings/selection contracts are adopted in all production consumers;
-date/ICU/Intl/astronomical engines deliberately remain adapters. No storage schema
-migration is needed. LG was unreachable during Q04.2's silent probe; retry actual
-host integration when accessible. Native ICU accuracy and all final TV upgrade/
-picture/sound/remote/lifecycle acceptance remain Q09 gates, not software passes.
-Do not move platform directories yet (Q06). Private logs/helpers are under ignored
-`state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
+Next: Q06.1, independent build boundaries and path-migration contract. Finish the
+Q05.3 commit if resuming between operations. Inspect root/core Gradle configuration,
+shared-JS build entry, npm/build/extraction paths, installer/tools/tests/CI before
+moving anything. Prove core/LG/preview builds do not require an Android SDK or
+Android project configuration; preserve pinned tooling/lockfiles and working native
+dependency/Java interop. Keep generated module filenames/public package APIs stable
+or migrate every consumer together. Choose the smallest standalone/composite setup
+that actually works, document the decision here and verify before directory moves.
+Then move actual Android/LG sources to `platforms/{android-tv,webos}` and update all
+consumers, generated paths, CI and instructions in complete verified slices. Keep
+installer, site and tools functional; no empty future-platform projects or new UI.
+Q04/Q05 software extraction is complete; clocks, calendar/astronomical engines,
+persistence, OS scheduling and playback remain adapters with existing keys/IDs.
+LG was unreachable during Q04.2; actual-host integration and native ICU accuracy,
+TV upgrade/picture/sound/remote/lifecycle acceptance remain Q09 gates. A temporary
+browser host probe must also restore Math.imul if the runtime polyfilled it.
+Private logs/helpers remain under ignored `state/platform-core/`; do not publish
+them. Q02 commit: `83b0c72`. No release, remote detach, merge or TV firmware action.
 
 ## Evidence and decisions
 
@@ -602,3 +603,45 @@ Do not move platform directories yet (Q06). Private logs/helpers are under ignor
   logic and preview UI are unchanged, so the long LG browser suite was not repeated;
   shared bundle load is covered by ES5 hosts and the preview's real browser check.
   Installer and unavailable TV checks were not repeated. Q05.3 and Q09 remain open.
+
+### Q05.3 LG scheduled-event and delivery rules in the core (2026-11-11)
+
+- Core selects the first future unhandled candidate from three adapter-calculated
+  raw prayer days. Bell/audio/reminder gates, Sunrise exclusion, tie order and exact
+  `kind:prayer:epoch` IDs match the original. LG converts the exported event to the
+  same plain JSON; automatic-off and Date/astronomy remain in its adapter. Integer
+  safe-epoch validation prevents fractional/rounded identity changes. Native
+  reminder policy remains unchanged; no new scheduler or transport.
+- Inclusive early/due/expired classification is pure core logic with explicit
+  maximum age. The service still reads the clock before and after its persisted
+  production claim. A newly characterized slow-write boundary stays silent if
+  claiming crosses expiry; caching the earlier result fails that real regression.
+  Generation checks, 24 handled IDs, cancellation/overlap, manual/display claims,
+  audio modes and OS activity/playback integration retain their existing order.
+- PASS: missing-API red test, complete JVM/JS/Java-interoperability checks, 5,190
+  frozen event outputs on each LG host adapter, exact delivery/expiry/claim edges,
+  clock rollback, duplicates, async overlap/disable/failure recovery and cancel.
+  PASS: real ES5 tests fail incorrect delivery/event endpoints and a cached
+  pre-claim clock. New malformed handled-list and raw clock type checks reject
+  coercion/holes before entering typed core code; no saved-state reset or migration.
+- PASS: 44 assertions in ES5 browser/CommonJS hosts, now also without Math.imul,
+  Math.clz32 or modern array helpers. Exercise real 64-bit ID formatting, handled
+  arrays, nullable events and inclusive windows, including the largest safe integer.
+  JVM/JS tests verify negative epochs, ties, unavailable/unsafe/fractional input.
+  Compiler 2.2.10 generates/validates the actual Array<Float64Array>/string-array/
+  nullable-event TypeScript API. Context7 and official JsExport documentation checked
+  (https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.js/-js-export/).
+- Internal Long formatting retains decimal IDs on both hosts; Long never crosses
+  the JS API and no BigInt feature/upgrade is enabled. Its standard runtime helpers
+  increase JS to 38,547 bytes (from 20,826). The existing Apache/stdlib notices cover
+  those helpers; do not call this a speed improvement or hardware performance pass.
+- PASS: Android build/size/lint (21,113,583-byte incremental APK; 0 errors / 54
+  warnings), all 38 Python/Java regressions, actual APK core/reminder/event DEX class
+  definitions and seven runtime notice files; LG ES5/service/bilingual browser suite;
+  preview tests/18-page build and built-client browser checks in both languages.
+  All four runtime copies and 21 packaged LG/preview notice files match source.
+  Logs/private helpers: ignored `reminders-lg-*`, `reminders-slow-claim-before.log`,
+  `webos-{core,service}-before-reminders.js`, `check-lg-reminder-mutants.cjs`.
+- Q05's software migration is complete. Actual old-LG deployment/sound/remote/power
+  and Android device acceptance remain Q09. The old LG was not re-probed without
+  evidence its earlier connection timeout had cleared; installer was unaffected.

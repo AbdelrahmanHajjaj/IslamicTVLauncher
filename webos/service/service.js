@@ -186,16 +186,16 @@ register('firePrayer', function (message) {
       message.respond({returnValue: !!result.returnValue, delivery: result, scheduleResult: scheduled});
     })); });
   }
-  if (Date.now() < event.time) { finish({returnValue: true, ignored: 'early'}); return; }
+  if (core.deliveryState(event.time, Date.now()) === 'early') { finish({returnValue: true, ignored: 'early'}); return; }
   // Claim before launch; retries and clock rollback must never repeat an audible call.
   state.handled = (state.handled || []).slice(-23); state.handled.push(event.id); save(state);
-  if (Date.now() > event.time + 90000) { finish({returnValue: true, ignored: 'expired'}); return; }
+  if (core.deliveryState(event.time, Date.now()) === 'expired') { finish({returnValue: true, ignored: 'expired'}); return; }
   event.mode = event.kind === 'before' ? (p.remindVoice ? 'spoken' : 'banner') : p.adhan ? 'adhan' : 'announcement';
   deliver(event, finish);
 });
 register('takeAlert', function (message) {
   var state = read(), event = state.pendingAlert;
-  if (!event || event.id !== message.payload.id || event.displayedAt || Date.now() - event.createdAt > 90000 || Date.now() < event.createdAt) {
+  if (!event || event.id !== message.payload.id || event.displayedAt || core.deliveryState(event.createdAt, Date.now()) !== 'due') {
     message.respond({returnValue: false, errorText: 'Alert is expired or already displayed'}); return;
   }
   event.displayedAt = Date.now(); save(state); message.respond({returnValue: true, alert: event});
@@ -217,7 +217,7 @@ register('fireTest', function (message) {
   if (!message.activity) { throw new Error('Missing scheduled activity'); }
   var state = read(), event = state.test;
   function done(result) { complete(message, function () { message.respond(result); }); }
-  if (!event || event.id !== message.payload.id || event.fired || Date.now() < event.time || Date.now() > event.time + 90000) {
+  if (!event || event.id !== message.payload.id || event.fired || core.deliveryState(event.time, Date.now()) !== 'due') {
     done({returnValue: true, ignored: true}); return;
   }
   event.fired = true; save(state); deliver(event, done);

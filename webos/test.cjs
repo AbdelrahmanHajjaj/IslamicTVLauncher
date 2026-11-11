@@ -79,6 +79,13 @@ checkCalendar(A, data);
 checkCalendar(serviceCore, data);
 assert.equal(serviceCore.day(now, serviceCore.prefs({utcOffset: 120})).times[0], day.times[0], 'Node service and TV UI use the same calculation');
 for (const core of [A, serviceCore]) {
+  for (const value of [NaN, Infinity, '1', null]) assert.throws(() => core.deliveryState(value, +now), /Invalid/);
+  for (const [delta, state] of [[-1, 'early'], [0, 'due'], [90000, 'due'], [90001, 'expired']]) {
+    assert.equal(core.deliveryState(+now, +now + delta), state);
+  }
+  for (const handled of ['bad', [null], Array(2)]) {
+    assert.throws(() => core.nextEvent(now, enabled, handled), /Invalid handled events/);
+  }
   assert.equal(core.maxPrayerOffset, 30);
   assert.equal(core.maxHijriOffset, 2);
   for (const value of [-3, 3, 0.5, Infinity, '1']) assert.throws(() => core.prefs({hijriOffset: value}), /Invalid/);
@@ -105,6 +112,7 @@ let currentBoot = 'boot-a', currentInput = 'HDMI_2', failLaunch = false, failCre
 let deferActivities = false;
 const activityReplies = [];
 let clockNow = +now;
+let advanceOnWrite = 0;
 class TestDate extends Date { constructor(...args) { super(...(args.length ? args : [clockNow])); } static now() { return clockNow; } }
 function Service() {}
 Service.prototype.register = (name, fn) => { handlers[name] = fn; };
@@ -126,7 +134,7 @@ const fakeFs = {
     if (!(p in files)) throw Object.assign(new Error('missing'), {code: 'ENOENT'});
     return files[p];
   },
-  writeFileSync(p, value) { if (failWrite) throw new Error('EACCES'); files[p] = value; },
+  writeFileSync(p, value) { if (failWrite) throw new Error('EACCES'); files[p] = value; clockNow += advanceOnWrite; advanceOnWrite = 0; },
   renameSync(from, to) { files[to] = files[from]; delete files[from]; }
 };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'service/service.js'), 'utf8'), {
@@ -283,4 +291,9 @@ invoke('testAlert', {mode: 'banner', prayer: 0});
 test = invoke('status').state.test; clockNow = test.time + 90001; count = launches();
 invoke('fireTest', {id: test.id});
 assert.equal(launches(), count, 'expired manual test stays silent');
+invoke('savePrefs', {prefs: {automatic: true, utcOffset: 120}});
+const slowState = invoke('status').state;
+clockNow = slowState.alarm.time + 89999; count = launches(); advanceOnWrite = 2;
+invoke('firePrayer', {id: slowState.alarm.id, generation: slowState.alarmGeneration});
+assert.equal(launches(), count, 'delivery must expire if the persisted claim crosses its deadline');
 console.log('PASS: legacy calculations, preferences, atomic state, startup, exact prayer scheduling, asynchronous overlap/failure recovery, expired/duplicate/cancelled alerts and media diagnostics.');

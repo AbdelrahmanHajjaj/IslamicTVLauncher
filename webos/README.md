@@ -27,6 +27,8 @@ these are not the apps' official logos. No SSAP pairing key is bundled.
 The LG app and service also consume `shared/core` for offset validation and
 current/next prayer selection. Astronomy and date/time-zone handling remain in
 the LG adapter; today's Fajr row and tomorrow's separate value are preserved.
+Scheduled event selection and the inclusive 90-second delivery rule also use
+the core; the LG service retains persisted claims, cancellation and OS activities.
 
 ## Ported settings and tests
 

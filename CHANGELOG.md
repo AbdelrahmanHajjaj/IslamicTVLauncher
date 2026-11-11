@@ -13,8 +13,8 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
   each platform's Fajr/Suhoor display behavior.
 - Prayer-offset normalization and prayer/Hijri adjustment limits come from the
   core; saved keys and each platform's existing read/write policies are preserved.
-- Android reminder eligibility, announcement fallback and minute rounding use the
-  core, preserving its two-minute window and native watcher/playback behavior.
+- Android reminder eligibility/rounding and LG future-event/delivery rules use the
+  core, preserving their separate windows, persisted claims and native playback.
 
 ### LG webOS development port
 

@@ -46,5 +46,21 @@ function verifyIslamicTVCore(core) {
     reminders.dueAnnounce(times, 1000, true, true, 1, 120000) === -1, 'announcement bell fallback');
   check(reminders.dueReminder(300000, 0, 5) && !reminders.dueReminder(300001, 0, 5), 'before-prayer boundary');
   check(reminders.minutesLeft(60001, 0) === 2 && reminders.minutesLeft(0, 0) === 0, 'ceiling minutes');
+  var days = [];
+  for (var d = 0; d < 3; d++) {
+    var raw = new Float64Array(6);
+    for (i = 0; i < 6; i++) { raw[i] = epoch + d * 86400000 + times[i]; }
+    days.push(raw);
+  }
+  var event = reminders.nextScheduledEvent(days, epoch - 60000, 1, 63, true, []);
+  check(event.id === 'before:0:' + (epoch + 1000) && event.time === epoch - 59000, 'persisted epoch ID');
+  check(reminders.nextScheduledEvent(days, epoch - 60000, 1, 63, true, [event.id]).prayer === 2, 'handled event exclusion');
+  check(reminders.nextScheduledEvent(days, epoch + 10000, 0, 63, true, []).time === epoch + 86401000, 'scheduled tomorrow Fajr');
+  check(reminders.nextScheduledEvent(days, epoch, 0, 63, false, []) === null, 'disabled future events');
+  check(reminders.deliveryState(1000, 999, 90000) === 'early' && reminders.deliveryState(1000, 1000, 90000) === 'due' &&
+    reminders.deliveryState(1000, 91000, 90000) === 'due' && reminders.deliveryState(1000, 91001, 90000) === 'expired', 'inclusive delivery window');
+  var edge = [];
+  for (d = 0; d < 3; d++) { edge.push(new Float64Array([9007199254740991, 0, 0, 0, 0, 0])); }
+  check(reminders.nextScheduledEvent(edge, 0, 0, 1, true, []).id === 'call:0:9007199254740991', 'safe integer epoch text');
   return {checks: checks};
 }

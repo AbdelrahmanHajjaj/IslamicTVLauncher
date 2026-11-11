@@ -11,7 +11,7 @@ for (const source of [...sources, proof]) acorn.parse(source, {ecmaVersion: 5});
 
 for (const commonjs of [false, true]) {
   const context = vm.createContext({});
-  vm.runInContext('globalThis = undefined; Symbol = undefined; Intl = undefined; Promise = undefined; Map = undefined; Set = undefined; WeakMap = undefined; WeakSet = undefined; BigInt = undefined; Math.trunc = undefined; Math.sign = undefined; Number.isNaN = undefined; Number.isFinite = undefined; Array.from = undefined; Object.assign = undefined; Object.setPrototypeOf = undefined; ArrayBuffer.isView = undefined;', context);
+  vm.runInContext('globalThis = undefined; Symbol = undefined; Intl = undefined; Promise = undefined; Map = undefined; Set = undefined; WeakMap = undefined; WeakSet = undefined; BigInt = undefined; Math.trunc = undefined; Math.sign = undefined; Math.imul = undefined; Math.clz32 = undefined; Number.isNaN = undefined; Number.isFinite = undefined; Array.from = undefined; Array.prototype.includes = undefined; Array.prototype.find = undefined; Object.assign = undefined; Object.setPrototypeOf = undefined; ArrayBuffer.isView = undefined;', context);
   const modules = {};
   for (let i = 0; i < names.length; i++) {
     if (commonjs) {
@@ -27,6 +27,6 @@ for (const commonjs of [false, true]) {
   }
   vm.runInContext(proof, context);
   const api = commonjs ? context.module.exports : context['IslamicTVLauncher:core'];
-  assert.equal(context.verifyIslamicTVCore(api).checks, 38);
+  assert.equal(context.verifyIslamicTVCore(api).checks, 44);
 }
-console.log('PASS: ES5 syntax and 38 prayer/validation/reminder assertions in browser and CommonJS hosts without modern runtime APIs. Runtime JavaScript: ' + sources.reduce((n, source) => n + Buffer.byteLength(source), 0) + ' bytes.');
+console.log('PASS: ES5 syntax and 44 prayer/validation/reminder assertions in browser and CommonJS hosts without modern runtime APIs. Runtime JavaScript: ' + sources.reduce((n, source) => n + Buffer.byteLength(source), 0) + ' bytes.');
