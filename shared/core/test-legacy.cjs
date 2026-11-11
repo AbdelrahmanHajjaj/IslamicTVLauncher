@@ -27,6 +27,6 @@ for (const commonjs of [false, true]) {
   }
   vm.runInContext(proof, context);
   const api = commonjs ? context.module.exports : context['tv.afnon:core'];
-  assert.equal(context.verifyIslamicTVCore(api).checks, 44);
+  assert.equal(context.verifyIslamicTVCore(api).checks, 50);
 }
-console.log('PASS: ES5 syntax and 44 prayer/validation/reminder assertions in browser and CommonJS hosts without modern runtime APIs. Runtime JavaScript: ' + sources.reduce((n, source) => n + Buffer.byteLength(source), 0) + ' bytes.');
+console.log('PASS: ES5 syntax and 50 prayer/validation/reminder/Home assertions in browser and CommonJS hosts without modern runtime APIs. Runtime JavaScript: ' + sources.reduce((n, source) => n + Buffer.byteLength(source), 0) + ' bytes.');

@@ -1,6 +1,7 @@
 (function () {
   'use strict';
   var A = window.Afnon, D = window.AfnonData;
+  var homeNavigation = window['tv.afnon:core'].tv.afnon.core.HomeNavigation;
   var tv = typeof window.PalmServiceBridge !== 'undefined';
   var prefs = A.prefs(), startup = false, loaded = false, busy = false;
   var input = null, inputs = [], view = 'input', picker = null, page = 0;
@@ -11,6 +12,7 @@
   var pendingLaunch = null, seenLaunch = null, radioBeforeCall = false, audioSerial = 0, editValue = 0, country = null, dayViewMinute = -1, previewTestTimer;
   var returnContext = null, voicePreview = null, coldAlert = false;
   var appearanceDraft = null, settingsParent = 'home', dayParent = 'home';
+  var homeNodes = [], homeAppCount = 0, lastHomeApp = homeNavigation.FIRST_APP;
   var appearanceKeys = ['theme', 'background', 'homeLayout', 'archSide', 'homeBar', 'prayerMode'];
   var overlay = document.getElementById('overlay');
   var sections = ['prayer', 'reminders', 'radio', 'display', 'appearance', 'device', 'tests'];
@@ -255,6 +257,20 @@
       ['lapis-900', 'lapis-800', 'gold-400', 'plaster-100'].map(function (key) { return '<span style="background:' + c[key] + '"></span>'; }).join('') +
       '</div></div>';
   }
+  function bindHomeFocus() {
+    homeNodes = [];
+    homeNodes[homeNavigation.TODAY] = screen.querySelector('.home-quick [data-action=prayer-day]');
+    homeNodes[homeNavigation.INPUTS] = screen.querySelector('.home-quick [data-action=inputs]');
+    homeNodes[homeNavigation.RADIO] = screen.querySelector('.home-quick [data-action=radio]');
+    homeNodes[homeNavigation.NETWORK] = screen.querySelector('.home-quick [data-action=tv-settings]');
+    homeNodes[homeNavigation.SETTINGS] = screen.querySelector('.home-quick [data-action=settings]');
+    homeNodes[homeNavigation.ALL_APPS] = screen.querySelector('.home-links [data-action=apps]');
+    homeNodes[homeNavigation.WATCH_INPUT] = screen.querySelector('.home-links [data-action=input]');
+    var apps = screen.querySelectorAll('.home-apps button');
+    homeAppCount = apps.length;
+    for (var i = 0; i < apps.length; i++) { homeNodes[homeNavigation.FIRST_APP + i] = apps[i]; }
+    homeNodes.forEach(function (node, id) { if (node) { node.setAttribute('data-home-focus', String(id)); } });
+  }
   function render(focusAction) {
     document.documentElement.lang = prefs.lang; document.documentElement.dir = prefs.lang === 'ar' ? 'rtl' : 'ltr';
     var stage = document.getElementById('stage'), sheet = prefs.theme === 'mihrab' ? 'style.css' : 'theme-' + prefs.theme + '.css';
@@ -334,9 +350,11 @@
       }
     } catch (error) { html = '<section class="page">' + header(t('تعذر عرض الصفحة', 'Page unavailable')) + actions(false) + '</section>'; lastError = error.message; }
     screen.innerHTML = html;
+    if (view === 'home') { bindHomeFocus(); }
     if (view !== 'input') {
       var target = focusAction && screen.querySelector(focusAction.charAt(0) === '[' ? focusAction : '[data-action="' + focusAction + '"]');
       target = target || (view === 'settings' ? screen.querySelector('.settings-nav .selected') :
+        view === 'home' ? homeNodes[homeNavigation.initial(homeAppCount, 0)] :
         view === 'apps' ? screen.querySelector('.app-tile') : view === 'picker' && stepper() ? screen.querySelector('[data-action=save-step]') : screen.querySelector('button')); if (target) { target.focus(); }
     }
     updateClock(); report();
@@ -759,8 +777,20 @@
     if (el && el.tagName === 'BUTTON') { activate(el.getAttribute('data-action'), el.getAttribute('data-value')); }
     else if (view === 'input' && !overlay.firstChild) { show('bar'); }
   });
+  screen.addEventListener('focus', function (event) {
+    var id = Number(event.target.getAttribute('data-home-focus'));
+    if (view === 'home' && id >= homeNavigation.FIRST_APP && id < homeNavigation.FIRST_APP + homeAppCount) { lastHomeApp = id; }
+  }, true);
   function move(key) {
-    var items = screen.querySelectorAll('button'), current = document.activeElement;
+    var current = document.activeElement;
+    if (view === 'home') {
+      var dx = key === 37 ? -1 : key === 39 ? 1 : 0, dy = key === 38 ? -1 : key === 40 ? 1 : 0;
+      if (prefs.lang === 'ar') { dx = -dx; }
+      var target = homeNavigation.move(homeNodes.indexOf(current), homeAppCount, 0, Math.max(1, homeAppCount), lastHomeApp, dx, dy, !!homeNodes[homeNavigation.WATCH_INPUT]);
+      if (homeNodes[target] && !homeNodes[target].disabled) { homeNodes[target].focus(); }
+      return;
+    }
+    var items = screen.querySelectorAll('button');
     if (!current || current.tagName !== 'BUTTON') { if (items[0]) { items[0].focus(); } return; }
     var from = current.getBoundingClientRect(), x = (from.left + from.right) / 2, y = (from.top + from.bottom) / 2;
     var best = null, score = Infinity;

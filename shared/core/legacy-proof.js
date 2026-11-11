@@ -62,5 +62,15 @@ function verifyIslamicTVCore(core) {
   var edge = [];
   for (d = 0; d < 3; d++) { edge.push(new Float64Array([9007199254740991, 0, 0, 0, 0, 0])); }
   check(reminders.nextScheduledEvent(edge, 0, 0, 1, true, []).id === 'call:0:9007199254740991', 'safe integer epoch text');
+  var home = core.tv.afnon.core.HomeNavigation;
+  check(home.initial(3, 0) === home.FIRST_APP && home.initial(0, 2) === home.FIRST_RECENT, 'initial Home content');
+  check(home.move(home.FIRST_APP, 3, 0, 3, home.FIRST_APP, 0, -1, true) === home.RADIO &&
+    home.move(home.FIRST_APP + 1, 3, 0, 3, home.FIRST_APP, 0, -1, true) === home.NETWORK &&
+    home.move(home.FIRST_APP + 2, 3, 0, 3, home.FIRST_APP, 0, -1, true) === home.SETTINGS, 'top Home controls');
+  check(home.move(home.FIRST_APP, 3, 0, 3, home.FIRST_APP, 0, 1, true) === home.ALL_APPS, 'downward All apps');
+  check(home.move(home.ALL_APPS, 3, 0, 3, home.FIRST_APP + 2, 0, -1, true) === home.FIRST_APP + 2, 'last app focus');
+  check(home.move(home.ALL_APPS, 3, 0, 3, home.FIRST_APP, -1, 0, true) === home.WATCH_INPUT &&
+    home.move(home.WATCH_INPUT, 3, 0, 3, home.FIRST_APP, 1, 0, true) === home.ALL_APPS, 'optional input action');
+  check(home.initial(0, 0) === home.ALL_APPS && home.move(home.SETTINGS, 0, 2, 1, home.FIRST_APP, 0, 1, false) === home.FIRST_RECENT, 'empty Home rows');
   return {checks: checks};
 }

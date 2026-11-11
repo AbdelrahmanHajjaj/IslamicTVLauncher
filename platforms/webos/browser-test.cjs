@@ -87,7 +87,40 @@ const server = http.createServer((req, res) => {
         assert.ok(b.x >= clock.x + clock.width || b.x + b.width <= clock.x, 'top icons do not cover the clock');
         assert.ok(await control.getAttribute('aria-label'), 'icon has an accessible name');
       }
+      await homeNavigation();
     }
+    async function homeNavigation() {
+      const apps = page.locator('.home-apps button');
+      await page.evaluate(() => {
+        const api = window['tv.afnon:core'].tv.afnon.core.HomeNavigation;
+        const hook = window.homeContractHook = {api, original: api.move, calls: 0};
+        api.move = function (...args) { hook.calls++; return hook.original.apply(api, args); };
+      });
+      for (let i = 0; i < await apps.count(); i++) {
+        await apps.nth(i).focus();
+        await page.keyboard.press('ArrowDown');
+        assert.equal(await page.locator(':focus').getAttribute('data-action'), 'apps', 'Down from the last app row selects All apps');
+        await page.keyboard.press('ArrowUp');
+        assert.equal(await page.locator(':focus').getAttribute('data-value'), await apps.nth(i).getAttribute('data-value'), 'Up restores the last Home app');
+        await page.keyboard.press('ArrowUp');
+        assert.equal(await page.locator(':focus').getAttribute('data-action'), ['radio', 'tv-settings', 'settings'][i], 'Up enters the Android top-controls map');
+      }
+      const calls = await page.evaluate(() => {
+        const hook = window.homeContractHook;
+        hook.api.move = hook.original; delete window.homeContractHook;
+        return hook.calls;
+      });
+      assert.equal(calls, await apps.count() * 3, 'every Home arrow uses the shared contract exactly once');
+      await apps.first().focus();
+      await page.keyboard.press('ArrowDown');
+      await page.keyboard.press('Enter');
+      await page.waitForSelector('.app-grid');
+      await page.keyboard.press('Escape');
+      await page.waitForSelector('.home');
+      assert.equal(await page.locator(':focus').getAttribute('data-action'), 'apps', 'Back from All apps restores its Home focus');
+      await apps.first().focus();
+    }
+    assert.equal(await page.locator(':focus').getAttribute('data-action'), 'native-app', 'Home starts in app content');
     await homeControls();
     await page.locator('[data-action=prayer-day]').focus();
     await page.keyboard.press('ArrowLeft');
@@ -423,6 +456,7 @@ const server = http.createServer((req, res) => {
             const arch = await page.locator('.arch').boundingBox(), links = await page.locator('.home-links').boundingBox();
             assert.ok(arch.y > links.y + links.height || arch.y + arch.height < prayer.y, 'countdown stays clear of prayer times and app controls');
           }
+          await homeNavigation();
           await page.screenshot({path: path.join(shots, 'labels-' + lang + '-' + layout + '-' + position + '.png')});
         }
       }

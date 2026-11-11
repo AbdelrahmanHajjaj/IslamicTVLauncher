@@ -1,11 +1,20 @@
 """Run pure Java guards without an Android runtime or a TV."""
 from pathlib import Path
+import os
 import shutil
 import subprocess
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+
+def core_runtime():
+    core = ROOT / "shared/core/build/libs/core-jvm.jar"
+    assert core.is_file(), "Build the launcher/shared core first to compile the JVM rules"
+    cache = Path(os.environ.get("GRADLE_USER_HOME", Path.home() / ".gradle"))
+    stdlib = list((cache / "caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.2.10").glob("*/*.jar"))
+    assert len(stdlib) == 1, "Use the shared core's pinned Kotlin runtime"
+    return os.pathsep.join(map(str, [core, stdlib[0]]))
 
 class JavaChecks(unittest.TestCase):
     def test_appearance_rotation_policy(self):
@@ -24,12 +33,13 @@ class JavaChecks(unittest.TestCase):
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.BackgroundSizeCheck"], check=True, capture_output=True)
 
     def test_home_layout_modes_and_prayer_selection(self):
+        runtime = core_runtime()
         with tempfile.TemporaryDirectory() as output:
             source = ROOT / "platforms/android-tv/src/main/java/tv/afnon/home"
-            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-cp", runtime, "-d", output,
                 *(str(source / name) for name in ("Tokens.java", "FavouriteChoice.java", "HomeLayout.java")),
                 str(ROOT / "tests/HomeLayoutCheck.java")], check=True, capture_output=True)
-            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.HomeLayoutCheck"], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime, "tv.afnon.home.HomeLayoutCheck"], check=True, capture_output=True)
 
     def test_prayer_vectors_cover_each_prayer_in_order(self):
         import json
@@ -132,15 +142,10 @@ class JavaChecks(unittest.TestCase):
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.ButtonPressCheck"], check=True, capture_output=True)
 
     def test_prayer_offsets_and_next_day_across_clock_changes(self):
-        import os
         cache = Path(os.environ.get("GRADLE_USER_HOME", Path.home() / ".gradle"))
         jars = list((cache / "caches/modules-2/files-2.1/com.batoulapps.adhan/adhan/1.2.1").glob("*/*.jar"))
         self.assertTrue(jars, "Build the launcher first to cache its prayer library")
-        core = ROOT / "shared/core/build/libs/core-jvm.jar"
-        self.assertTrue(core.is_file(), "Build the launcher first to compile the shared JVM core")
-        stdlib = list((cache / "caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.2.10").glob("*/*.jar"))
-        self.assertEqual(len(stdlib), 1, "Use the shared core's pinned Kotlin runtime")
-        runtime = os.pathsep.join(map(str, [jars[0], core, stdlib[0]]))
+        runtime = os.pathsep.join([str(jars[0]), core_runtime()])
         with tempfile.TemporaryDirectory() as output:
             out = Path(output)
             # Platform storage/clock/ICU and appearance are stubbed; Prefs, core and astronomy are real.
@@ -194,8 +199,9 @@ class JavaChecks(unittest.TestCase):
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.DockPolicyCheck"], check=True, capture_output=True)
 
     def test_home_favourite_replacement_and_navigation(self):
+        runtime = core_runtime()
         with tempfile.TemporaryDirectory() as output:
-            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+            subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-cp", runtime, "-d", output,
                 str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/FavouriteChoice.java"),
                 str(ROOT / "tests/FavouriteChoiceCheck.java")], check=True, capture_output=True)
-            subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.FavouriteChoiceCheck"], check=True, capture_output=True)
+            subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime, "tv.afnon.home.FavouriteChoiceCheck"], check=True, capture_output=True)

@@ -946,7 +946,7 @@ public class MainActivity extends Screen {
     }
 
     private View firstApp() {
-        View first = nodes[favouriteCount > 0 ? F0 : recentCount > 0 ? M0 : ALL];
+        View first = nodes[tv.afnon.core.HomeNavigation.INSTANCE.initial(favouriteCount, recentCount)];
         // A mouse/touch app can leave Android in touch mode when Home is pressed.
         first.setFocusableInTouchMode(true);
         return first;

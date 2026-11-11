@@ -101,6 +101,9 @@ inside this app, not globally over another native app.
 | OK on full-screen input | Show prayer times and quick actions |
 | Click the picture with the Magic Remote pointer | Open the same compact prayer bar at the top |
 | Arrows | Move focus between buttons; visual direction follows the layout |
+| Enter Home | Focus the first app, matching Android |
+| Up from Home's first app row | Enter the top controls by column: Radio, Network/native settings or launcher Settings |
+| Down beyond Home's last app row | Focus All apps; Up restores the last app focus |
 | OK on a button | Activate it |
 | Back from prayer bar or Islamic TV Launcher Home | Return to full-screen input |
 | Back from Settings rows | Return to section sidebar; Back again returns Home |
@@ -187,7 +190,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.6_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.7_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 

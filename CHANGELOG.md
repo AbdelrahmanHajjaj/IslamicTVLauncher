@@ -6,6 +6,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- Android and LG share deterministic Home focus rules. LG starts on its app
+  content, moves Up to the top controls and Down beyond the final app row to All
+  apps, with consistent RTL/LTR behavior and return focus.
+
 - Patch build/test dependency selections separately from the pinned compiler and
   TV runtime, preserving the generated Java/XML/CSS and runtime artifact bytes.
 
@@ -39,6 +43,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   replace generated output so obsolete files cannot linger in packages.
 
 ### LG webOS development port
+
+- Version 0.2.7 binds Home to the shared Android-derived navigation contract,
+  including initial app focus, top controls, All apps and return focus.
 
 - Version 0.2.6 keeps Arabic status values such as enabled/disabled and silent
   fully visible on old WebKit; long settings values wrap inside their row.

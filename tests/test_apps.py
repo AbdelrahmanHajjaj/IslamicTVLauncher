@@ -1,9 +1,11 @@
 """Exercise the real app catalogue with counted Android package-manager calls."""
 from pathlib import Path
+import os
 import shutil
 import subprocess
 import tempfile
 import unittest
+from test_java import core_runtime
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -110,6 +112,7 @@ public class PackageManager {
 
 class AppCacheChecks(unittest.TestCase):
     def test_idle_cache_package_changes_and_language(self):
+        runtime = core_runtime()
         with tempfile.TemporaryDirectory() as output:
             sources = []
             for name, code in STUBS.items():
@@ -118,12 +121,12 @@ class AppCacheChecks(unittest.TestCase):
                 path.write_text(code, encoding="utf-8")
                 sources.append(str(path))
             source = ROOT / "platforms/android-tv/src/main/java/tv/afnon/home"
-            result = subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-d", output,
+            result = subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-cp", runtime, "-d", output,
                 *sources, *(str(source / name) for name in ("Apps.java", "AppFilter.java", "FavouriteChoice.java")),
                 str(ROOT / "tests/AppCacheCheck.java")], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             for sdk in (26, 34):
                 with self.subTest(android=sdk):
-                    result = subprocess.run([shutil.which("java"), "-cp", output,
+                    result = subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,
                         "tv.afnon.home.AppCacheCheck", str(sdk)], capture_output=True, text=True)
                     self.assertEqual(result.returncode, 0, result.stderr)

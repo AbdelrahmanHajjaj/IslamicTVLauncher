@@ -15,6 +15,13 @@ Android, LG and the preview consume those rules. `ReminderRules` owns native
 eligibility/rounding, LG future-event selection and inclusive delivery classification.
 The shells retain their different windows, stored keys, claims and lifecycle.
 
+`HomeNavigation` defines semantic Home focus slots, initial content focus and
+logical cardinal transitions. Android binds its existing views; LG binds actual
+Home buttons, including its optional Watch input action. Each shell translates
+physical horizontal keys for RTL once and applies the returned focus target.
+Counts/columns describe visible primary/recent app rows; no pixel positions or
+platform key codes enter the core. See the [UI/input contract](../../docs/UI-CONTRACT.md).
+
 Java callers use `tv.afnon.core.PrayerRules.INSTANCE`; the returned
 `PrayerSelection` exposes standard getters. JavaScript exposes the same namespace
 under the UMD module `tv.afnon:core`; load `kotlin-kotlin-stdlib.js` first

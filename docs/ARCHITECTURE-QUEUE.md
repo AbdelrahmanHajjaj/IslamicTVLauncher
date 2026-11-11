@@ -90,9 +90,13 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q09.5b, extract Android's Home focus map into the portable core and bind both
-Android and LG Home to it. Q09.5a's behavioral contract is docs/UI-CONTRACT.md;
-actual first findings and gaps are below. Android is the reference, with explicit owner
+Next: Q09.5b physical LG Home acceptance. Shared HomeNavigation is implemented and
+both Android/LG Home consume it; all software checks below pass. Package/install
+the reviewed 0.2.7 update in place, preserving all current preferences/input/startup,
+then verify real old-LG initial app focus, Up/top controls, Down/All apps and return.
+After that continue Q09.5c settings/action catalog and actual binding coverage;
+that broader contract is not implemented/enforced yet. Q09.5a's spec is
+docs/UI-CONTRACT.md. Android is the reference, with explicit owner
 choice: Up from the first app row enters the top controls row according to column,
 not always the Settings gear; Down beyond the last app row selects All apps.
 Replace LG Home's geometric-nearest guessing with shared deterministic behavior.
@@ -133,12 +137,12 @@ from one upstream-unpatched deepmerge chain, limited to repository-owned tokens 
 documented beside use. Core and LG audits are zero; do not claim zero preview audit.
 Keep immutable upstream notices byte-identical, including BoringSSL whitespace.
 
-Q06 is complete: `shared/core`, `platforms/android-tv` and `platforms/webos` build
-independently with canonical shared inputs. Root `:app` and installer tasks remain
-supported. LG currently emits 100 files: the unused font in the former 97-file
-cache was removed, and Q07 added four retained MIT notice copies. All retained
-runtime bytes match. Android retains all 95 former APK entry bytes plus four new
-notices (99 entries). Do not add new UIs, transports or future shells.
+Q06 is complete: core/Android/LG build independently with canonical inputs; root
+`:app` and installer tasks remain supported. Q06/Q07's path/notice acceptance
+recorded 100 LG files and 99 Android APK entries with retained bytes preserved.
+Later Home-contract runtime changes are intentional and measured in Q09.5b; do not
+reuse the old byte-equality claim as proof of current navigation artifacts. Add no
+unrelated renderer redesign, transport or future shell.
 
 ## Evidence and decisions
 
@@ -1337,3 +1341,39 @@ notices (99 entries). Do not add new UIs, transports or future shells.
   explicit capability/default mapping. LG currently has no CSS animation/transition,
   so assess reduced-motion behavior separately from its absent toggle. Do not
   inflate the gap list from labels alone or invent unsupported platform claims.
+
+### Q09.5b shared Home contract: software verified (2026-11-11)
+
+- Added pure JVM/ES5 HomeNavigation: stable semantic slots, primary/recent rows,
+  initial app focus, Android-derived top-controls boundaries, downward All apps,
+  last-primary return focus and optional Watch input. Shells map physical keys once
+  for RTL and apply actual focus; no pixel/DOM/device API enters the core. Android
+  delegates its prior map; LG binds real Home buttons and uses the core instead
+  of nearest geometry. Other screens/modal ownership retain existing behavior.
+- Froze original Android outputs before extraction: all 11,760 transitions over
+  actual app/recent/classic/wide configurations match the new native/core adapter
+  exactly. Common JVM/JS tests cover empty/partial rows, available-target/reachability
+  invariants, boundaries, invalid configurations and optional input. Java calls and
+  50 ES5/browser/CommonJS assertions pass without modern runtime APIs: 15 JVM and
+  14 JS tests total. Combined production JS runtime is 45,168 bytes (+6,666).
+- Reproduced LG's old initial focus on Today rather than app content. Actual
+  renderer key tests now pass for initial focus, all three app columns, top targets,
+  downward All apps, last-app restoration, OK activation and Back return across
+  Arabic/English and Home layouts. Instrumented test calls prove each Home arrow
+  invokes the shared core exactly once; no second hand-maintained focus table.
+- PASS: full LG ES5/build/service/async suite, full bilingual browser suite,
+  preview/shared generator tests, 39 Python/Java/simulated-device regressions and
+  independent Android size/build/lint/test-APK compilation. An older app-cache
+  harness also compiled FavouriteChoice; added the real core classpath there after
+  its failure, then the full suite passed. No stub navigation substitute.
+- Native APK 20,938,596 bytes, under 25 MB. Lint 0 errors / 55 warnings: unchanged
+  54 source diagnostics plus one newly reported AGP-version-availability notice
+  at unchanged settings.gradle, identified against retained prior XML. No source
+  warning suppression or dependency upgrade. No speed/memory claim.
+- LG patch metadata is 0.2.7, npm-generated lock version fields only. Source/native
+  IDs, existing saved keys/defaults and media remain unchanged. Hardware validation
+  of this navigation build is next; installed TV is still 0.2.6. Settings/action
+  catalog enforcement and common missing-feature work remain Q09.5c/d.
+- Evidence: ignored home-focus-{before,after}.csv, old native source/harness,
+  ui-home-{core-check,lg-test,lg-binding-final,android-build,preview-test,
+  native-regressions-fixed}.log and common/actual-renderer tests in source.
