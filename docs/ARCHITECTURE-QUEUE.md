@@ -200,3 +200,22 @@ domain implementations until Q04. Private logs/helpers are under ignored
   LG data values and renderer behavior are unchanged; browser media/Luna are mocked.
 - Developer guidance now points to canonical cities/regions and regeneration.
   Remaining catalog extraction is still Q03, not a completed platform migration.
+- Verified city slice committed as `761dace`; working tree is clean at this
+  checkpoint except subsequent ledger notes. Continue Q03.2 without redoing Q01/Q02.
+
+### Q03.2 inspected context / next action
+
+- `PrayerMethod.java` has ten original adhan-java factories and nine custom
+  presets. Turkey is custom in Java with method corrections `[0,-7,5,4,7,0]`;
+  site/LG currently use adhan-js's Turkey factory. Preserve factory method tags and
+  built-in algorithm behavior while moving numerical source ownership; do not
+  flatten MoonsightingCommittee or other library behavior into angles alone.
+- Existing generated `site/src/data/{methods,method-presets}.json` and
+  `webos/build/service/data.json.methodNames` can seed exact canonical inputs.
+  They are not authoritative sources after migration. Inspect `Text.methodName`
+  and `methodAngles` before changing labels/adapters. Keep all 19 IDs and order.
+- Affected consumers: `Prefs.METHODS` and method persistence, native prayer/text
+  helpers, preview `data.ts`/`prayer.ts`, LG `core.js`/`build.cjs`, generator and
+  tests. `tests/PrayerDayCheck.java` already covers original-method equivalence,
+  France/Gulf/Turkey behavior, offsets and date transitions. Add exact old/new
+  parameter/output comparisons and small validation tests for the new registry.
