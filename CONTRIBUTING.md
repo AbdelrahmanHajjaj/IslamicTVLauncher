@@ -14,6 +14,9 @@ This fork also includes a separate LG webOS application in `webos/`. Read
 for LG maintenance rules. The Java, ADB, accessibility-service and APK instructions
 below apply to Android. The LG port uses ES5, a webOS JS service and IPK packages;
 its build shares catalogs, design and assets with Android; its UI and system integrations are separate.
+The shared core targets JVM and ES5. Building the preview or LG also compiles that
+core with the repository's Gradle wrapper: install JDK 17 and Node 24 first. The
+preview consumes it as a local package; LG packages the compiler's UMD files.
 
 For this fork, also read the [fork/upstream contribution plan](docs/CONTRIBUTION-PLAN.md). It records
 proposed PR scopes and outstanding checks; the requirements below still apply.

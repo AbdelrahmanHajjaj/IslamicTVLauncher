@@ -12,6 +12,7 @@ kotlin {
     jvm()
     js {
         nodejs()
+        generateTypeScriptDefinitions()
         binaries.executable()
         compilerOptions {
             target.set("es5")

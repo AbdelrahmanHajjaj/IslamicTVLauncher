@@ -11,8 +11,9 @@ earlier experiments; later versioned validation in this README takes precedence.
   runtime APIs. A successful modern-browser run does not prove LG compatibility.
 - `app/app.js`, `app/style.css`: separate TV renderer, D-pad/pointer handling, embedded
   input and audio. Keep Arabic/English together; check RTL and LTR.
-- `core.js`: shared between the LG frontend and service, not Android. Owns validated
-  preferences, prayer calculation, time/date helpers and input/app allowlists.
+- `core.js`: LG adapter shared between its frontend and service. Uses `shared/core`
+  for offset validation and prayer selection; retains astronomy, preferences,
+  time/date helpers and input/app allowlists.
 - `service/service.js`: private atomic state, Activity Manager startup/prayer callbacks
   and allowlisted LG integration. Avoid duplicate or expired audible alerts.
 - `build.cjs`: reads shared catalogs/icons/fonts/themes, plus Android audio and `site/` pattern tooling;
@@ -54,7 +55,7 @@ npm --prefix webos run test:browser
 node tools/webos-background-probe/test.cjs  # when touching the historical probe
 ```
 
-The build needs the 14 adhan MP3s and 12 spoken recordings in Android's ignored
+The build needs JDK 17 for the shared core, plus the 14 adhan MP3s and 12 spoken recordings in Android's ignored
 asset directories. Do not add them or built IPKs to Git. Browser checks use an
 installed Microsoft Edge with a temporary profile; screenshots go under ignored
 `state/webos-port/`. Luna and audio/video are mocked there. New scheduling changes

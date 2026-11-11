@@ -5,7 +5,7 @@
   "description": "Afnon preview site and the token generator (afnon-mihrab/tokens.json -> app + site)",
   "scripts": {
     "test": "npm run gen && node ../tools/catalogs.test.mjs && node scripts/test.mjs",
-    "gen": "node ../tools/catalogs.mjs && node scripts/tokens.mjs && node scripts/extract.mjs",
+    "gen": "node ../shared/core/build-js.cjs && node ../tools/catalogs.mjs && node scripts/tokens.mjs && node scripts/extract.mjs",
     "dev": "npm run gen && astro dev",
     "build": "npm run gen && astro build",
     "preview": "astro preview",
@@ -18,6 +18,7 @@
     "style-dictionary": "^5.7.0"
   },
   "dependencies": {
+    "@islamic-tv/core": "file:../shared/core",
     "@astrojs/sitemap": "^3.7.4",
     "adhan": "^4.4.6",
     "astro": "^7.4.2",

@@ -12,6 +12,7 @@ const methods = json('shared/data/methods.json');
 const compact = value => Array.isArray(value) ? value.map(text => text.replace(/\s+/g, ' ')) : value.replace(/\s+/g, ' ');
 const strings = Object.fromEntries(Object.entries(json('shared/data/strings.json')).map(([key, entry]) => [key, {...entry, ar: compact(entry.ar), en: compact(entry.en)}]));
 const write = (p, text) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, text); };
+execFileSync(process.execPath, [path.join(root, 'shared/core/build-js.cjs')], { stdio: 'inherit' });
 execFileSync(process.execPath, [path.join(root, 'site/scripts/extract.mjs')], { stdio: 'ignore' });
 for (const part of ['app', 'service']) fs.cpSync(path.join(__dirname, part), path.join(out, part), { recursive: true });
 const data = {
@@ -59,6 +60,12 @@ data.patterns = json('shared/design/appearance.json').patterns.slice().sort();
 write(path.join(out, 'app/data.js'), 'var AfnonData = ' + JSON.stringify(data) + ';\n');
 write(path.join(out, 'service/data.json'), JSON.stringify(data));
 for (const part of ['app', 'service']) fs.copyFileSync(path.join(__dirname, 'core.js'), path.join(out, part, 'core.js'));
+for (const part of ['app', 'service']) {
+  for (const name of ['kotlin-kotlin-stdlib.js', 'IslamicTVLauncher-core.js']) {
+    fs.copyFileSync(path.join(root, 'shared/core/build/compileSync/js/main/productionExecutable/kotlin', name), path.join(out, part, name));
+  }
+  fs.cpSync(path.join(root, 'shared/core/assets/licenses'), path.join(out, part, 'licenses'), {recursive: true});
+}
 const source = read('site/node_modules/adhan/lib/bundles/adhan.umd.js');
 const compiled = babel.transformSync(source, {
   configFile: false, babelrc: false, comments: false,

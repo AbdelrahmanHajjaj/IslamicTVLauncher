@@ -9,5 +9,10 @@ export default defineConfig({
   site: 'https://egyjs.github.io',
   base: '/afnon-android-tv-launcher',
   trailingSlash: 'always',
+  vite: {
+    optimizeDeps: { include: ['@islamic-tv/core'] },
+    build: { commonjsOptions: { include: [/node_modules/, /shared[\\/]core/] } },
+    ssr: { external: ['@islamic-tv/core'] },
+  },
   integrations: [sitemap({ i18n: { defaultLocale: 'ar', locales: { ar: 'ar', en: 'en' } } })],
 });

@@ -1,7 +1,7 @@
 // Reads remaining native data/assets for the preview; shared catalogs are imported directly.
 //   Shared catalogs and text come directly from shared/data/.
 //   shared/design/resources/font/*.ttf -> src/assets/fonts/
-//   shared/design/assets/licenses/ -> public/licenses/
+//   shared/{design,core}/assets/licenses/ -> public/licenses/
 //   docs/screenshots -> public/screenshots/ (social preview images)
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -38,7 +38,7 @@ validateAppearance(appearance);
 
 // ---------------------------------------------------------------- shared fonts and notices
 
-import { readdirSync, copyFileSync } from 'node:fs';
+import { readdirSync, copyFileSync, cpSync } from 'node:fs';
 const fontsIn = resolve(root, 'shared/design/resources/font');
 const fontsOut = resolve(root, 'site/src/assets/fonts');
 mkdirSync(fontsOut, { recursive: true });
@@ -48,6 +48,7 @@ const noticesIn = resolve(root, 'shared/design/assets/licenses');
 const noticesOut = resolve(root, 'site/public/licenses');
 mkdirSync(noticesOut, { recursive: true });
 for (const f of readdirSync(noticesIn)) copyFileSync(resolve(noticesIn, f), resolve(noticesOut, f));
+cpSync(resolve(root, 'shared/core/assets/licenses'), noticesOut, {recursive: true});
 
 // ---------------------------------------------------------------- README screenshots, for social previews
 

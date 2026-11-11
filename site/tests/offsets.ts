@@ -18,6 +18,16 @@ for (const date of ['2026-03-29', '2026-06-21', '2026-10-25', '2026-12-21']) {
   assert.equal(+next.nextTime - +nextPlain.nextTime, offsets[next.nextIndex] * 60000);
   assert.equal(+next.suhoorEnd - +nextPlain.suhoorEnd, offsets[0] * 60000);
 }
+const cairo = {...prefs, city: 'cairo', method: 'EGYPTIAN'};
+const today = prayerDay(new Date('2026-11-10T00:00:00'), cairo);
+for (let i = 0; i < 6; i++) {
+  const boundary = prayerDay(today.times[i], cairo);
+  assert.equal(boundary.nowIndex, i === 1 ? -1 : i, `current at boundary ${i}`);
+  assert.equal(boundary.nextIndex, [2, 2, 3, 4, 5, 0][i], `next at boundary ${i}`);
+  if (i === 5) assert.ok(+boundary.times[0] > +today.times[5], 'after Isha the displayed Fajr is tomorrow');
+  else assert.equal(+boundary.times[0], +today.times[0]);
+  assert.equal(+boundary.nextTime, +boundary.times[boundary.nextIndex]);
+}
 assert.deepEqual(prayerOffsets(prefs), [0, 0, 0, 0, 0, 0]);
 assert.deepEqual(prayerOffsets({ ...prefs, prayerOffsets: [Infinity, NaN, 1.5, 99, -99] }), [0, 0, 0, 30, -30, 0]);
 

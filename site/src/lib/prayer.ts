@@ -1,9 +1,11 @@
 // PrayerDay.java and Screen.java's clock helpers, on adhan-js (the JavaScript port of the app's adhan-java).
 import { CalculationMethod, Coordinates, Madhab, PrayerTimes, Qibla } from 'adhan';
+import portable from '@islamic-tv/core';
 import type { Text } from './text';
 import { cityOf, methodOf, METHOD_DEFINITIONS, type Prefs } from './data';
 
-export const MAX_PRAYER_OFFSET = 30;
+const rules = portable.tv.afnon.core.PrayerRules;
+export const MAX_PRAYER_OFFSET = rules.MAX_OFFSET_MINUTES;
 /** Old or malformed saved preferences must not break every preview screen. */
 export const prayerOffsets = (prefs: Prefs): number[] => Array.from({ length: 6 }, (_, i) => {
   const n = prefs.prayerOffsets?.[i];
@@ -61,17 +63,16 @@ export function prayerDay(now: Date, prefs: Prefs) {
   const params = methodParams(methodOf(prefs));
   params.madhab = prefs.hanafi ? Madhab.Hanafi : Madhab.Shafi;
   const offsets = prayerOffsets(prefs);
+  rules.validateOffsets(new Int32Array(offsets));
   params.adjustments = { fajr: offsets[0], sunrise: offsets[1], dhuhr: offsets[2], asr: offsets[3], maghrib: offsets[4], isha: offsets[5] };
   const at = (d: Date) => new PrayerTimes(where, d, params);
   const today = at(now);
   const times = [today.fajr, today.sunrise, today.dhuhr, today.asr, today.maghrib, today.isha].map(minute);
 
-  let latest = -1;
-  times.forEach((t, i) => { if (t <= now) latest = i; });
-  const nowIndex = latest === SUNRISE ? -1 : latest;
-  let next = times.findIndex((t, i) => i !== SUNRISE && t > now);
   const tomorrowFajr = minute(at(addDays(now, 1)).fajr);
-  if (next === -1) { next = FAJR; times[FAJR] = tomorrowFajr; }
+  const selected = rules.select(new Float64Array(times.map(Number)), +tomorrowFajr, +now);
+  const nowIndex = selected.current, next = selected.next;
+  if (next === FAJR && times[FAJR] <= now) times[FAJR] = tomorrowFajr;
   const h = hijriOf(now, prefs.hijriOffset);
   return {
     city, times, nowIndex, nextIndex: next, nextTime: times[next],

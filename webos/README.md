@@ -8,7 +8,7 @@ the LG LF6300 running webOS 2.2 / WebKit 538.2, with a Node 0.10 service runtime
 The visible name is **Islamic TV Launcher**. The existing package/service ID is kept
 so upgrades preserve settings and the installed startup activity.
 
-The Android launcher and Astro preview are unchanged. Version 0.2.5 shares their
+The Android launcher and Astro preview have separate renderers. Version 0.2.5 shares their
 cities, prayer methods, translations, fonts, color palettes, audio recordings, radio
 stations and adhan-js calculation library. Native streaming apps cannot be embedded
 as HDMI sources. Home now follows Android's compact top icon row: Today & Qibla,
@@ -23,6 +23,10 @@ method” on webOS 2.2. Refresh the catalog from a paired external SSAP inventor
 apps change. The service permits only catalog IDs and LG Settings, and reports a
 launch failure without leaving the current page. Icons reuse our local line artwork;
 these are not the apps' official logos. No SSAP pairing key is bundled.
+
+The LG app and service also consume `shared/core` for offset validation and
+current/next prayer selection. Astronomy and date/time-zone handling remain in
+the LG adapter; today's Fajr row and tomorrow's separate value are preserved.
 
 ## Ported settings and tests
 
@@ -171,7 +175,8 @@ compare the displayed times with the timetable you follow locally.
 
 ## Build and check
 
-Use Node 24 for the build tools; the packaged service remains ES5 / Node 0.10 compatible.
+Use Node 24 and JDK 17 for the build tools. The build compiles `shared/core` with
+the root Gradle wrapper; the packaged app/service remain ES5 / Node 0.10 compatible.
 Install the existing site's dependencies first if this is a fresh checkout.
 
 ```powershell

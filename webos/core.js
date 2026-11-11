@@ -1,8 +1,9 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) { require('./compat'); module.exports = factory(require('./data.json'), require('./adhan')); }
-  else { root.Afnon = factory(root.AfnonData, root.adhan); }
-}(this, function (data, adhan) {
+  if (typeof module === 'object' && module.exports) { require('./compat'); module.exports = factory(require('./data.json'), require('./adhan'), require('./IslamicTVLauncher-core')); }
+  else { root.Afnon = factory(root.AfnonData, root.adhan, root['IslamicTVLauncher:core']); }
+}(this, function (data, adhan, portable) {
   'use strict';
+  var rules = portable.tv.afnon.core.PrayerRules;
   var defaults = {lang: 'ar', city: 'cairo', method: null, hanafi: false, utcOffset: null,
     automatic: false, adhan: true, remind: 15, remindVoice: false, announce: true, callClose: 0,
     voice: 'alafasy', fajrVoice: 'chebae_fajr', volume: 60, bells: [true, false, true, true, true, true],
@@ -35,7 +36,10 @@
     invalid([0, 5, 10, 15, 20, 30].indexOf(result.remind) < 0 || [0, 1, 5, 10].indexOf(result.callClose) < 0);
     invalid(!integer(result.volume, 0, 100) || !integer(result.hijriOffset, -2, 2));
     invalid(!Array.isArray(result.bells) || result.bells.length !== 6 || result.bells.some(function (v) { return typeof v !== 'boolean'; }) || result.bells[1]);
-    invalid(!Array.isArray(result.offsets) || result.offsets.length !== 6 || result.offsets.some(function (v) { return !integer(v, -30, 30); }));
+    invalid(!Array.isArray(result.offsets) || result.offsets.length !== 6);
+    for (var i = 0; i < 6; i++) { invalid(!integer(result.offsets[i], -2147483648, 2147483647)); }
+    try { rules.validateOffsets(new Int32Array(result.offsets)); }
+    catch (error) { throw new Error('Invalid preferences'); }
     invalid(!voice(result.voice) || !voice(result.fajrVoice) || !station(result.station));
     invalid(['auto', 'western', 'eastern'].indexOf(result.digits) < 0 || ['12', '24'].indexOf(result.clock) < 0);
     invalid(['top', 'bottom'].indexOf(result.dockPosition) < 0 || [0, 10, 20, 30].indexOf(result.dockAutoHide) < 0);
@@ -88,9 +92,10 @@
     if (times.some(function (time) { return !isFinite(time); }) || !isFinite(+tomorrow.fajr)) { throw new Error('Prayer times unavailable for this location and date'); }
     return {times: times, tomorrowFajr: Math.floor(+tomorrow.fajr / 60000) * 60000};
   }
+  function select(day, now) { return rules.select(new Float64Array(day.times), day.tomorrowFajr, +now); }
   function next(day, now) {
-    for (var i = 0; i < day.times.length; i++) { if (i !== 1 && day.times[i] > +now) { return {index: i, time: day.times[i]}; } }
-    return {index: 0, time: day.tomorrowFajr};
+    var selected = select(day, now);
+    return {index: selected.next, time: selected.nextTime};
   }
   function duration(ms) {
     var s = Math.max(0, Math.ceil(ms / 1000));
@@ -123,6 +128,6 @@
     }
     return best;
   }
-  return {defaults: defaults, prefs: prefs, city: city, input: input, wall: wall, clock: clock, day: day, next: next,
+  return {defaults: defaults, prefs: prefs, city: city, input: input, wall: wall, clock: clock, day: day, next: next, select: select,
     duration: duration, voice: voice, station: station, app: app, hijri: hijri, qibla: qibla, nextEvent: nextEvent};
 }));

@@ -85,16 +85,16 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: Q04.2, production core adoption in LG and preview. Finish the Q04.1 commit if
-resuming between operations. Inspect the existing generated UMD output and Q02
-interop proof before choosing the smallest packaging/loader bridge. Reuse the
-proven core for offset validation and current/next selection in both LG app/service
-and preview; validate JS input before integer-array conversion. Preserve LG's raw
-today row/separate tomorrow Fajr, preview's native-style Fajr replacement, existing
-defaults and saved keys. Package actual runtime notices and verify legacy ES5/API
-constraints, original/new date/offset/boundary outputs and available-host proof.
-Remaining settings/calendar/unavailable-calculation cases stay in Q04. Keep OS
-timers/scheduling/playback out of the core and defer reminder-policy work to Q05.
+Next: Q04.3, remaining settings/calendar/unavailable-calculation rules. Finish the
+Q04.2 commit if resuming between operations. Inspect current preference readers,
+writers and date adapters before choosing a small common contract; preserve
+different tolerant-read/strict-write policies, keys/defaults, native/preview Fajr
+replacement, LG's raw today row and finite Hijri table. Characterize rollover,
+tomorrow Fajr, DST, Hijri boundaries and unavailable calculations with meaningful
+tests. Do not replace platform ICU/Intl/astronomical engines or invent a universal
+settings/UI framework. Keep OS timers/scheduling/playback out of the core and
+defer reminder-policy work to Q05. LG was unreachable during Q04.2's silent probe;
+retry available-host integration when the device is accessible, with Q09 still open.
 Do not move platform directories yet (Q06). Private logs/helpers are under ignored
 `state/platform-core/`; do not publish them. Q02 commit: `83b0c72`.
 
@@ -449,3 +449,41 @@ Do not move platform directories yet (Q06). Private logs/helpers are under ignor
 - Build/contributor documentation and Unreleased notes now describe the actual
   Java-UI/Kotlin-core boundary. No physical Android TV check (hardware pending);
   unaffected preview/LG/installer suites were not repeated for this native slice.
+
+### Q04.2 LG and preview production core adoption (2026-11-11)
+
+- LG app/service now package the compiler's unchanged ES5 UMD files and call the
+  shared offset validator/current-next selector. The preview consumes the same
+  output as a private local npm package, with compiler-generated TypeScript
+  declarations. No custom runtime wrapper, platform ID/key/default change, media
+  change or new product network dependency. OS scheduling remains in the shells.
+- JS input checks reject wrong array lengths, holes, nonintegers and values outside
+  Int32 before conversion; core enforces the six [-30,30] offsets. Added app/service
+  trust-boundary and exact-prayer/sunrise assertions, nonmutation and preview Fajr
+  display tests. PASS: relaxing the overflow guard in memory fails the real suite.
+  A new UK summer-Isha test initially assumed all six times were on one calendar
+  day; corrected fixed-boundary assertions use Cairo, while parity covers rollover.
+- PASS: 26,024 original/new LG selections and 29,280 exact preview day outputs,
+  covering 19 methods, three time zones, eight seasonal/DST/year-end dates, offset
+  extremes, prayer boundaries, fixed-offset zones and all 137 cities. The 3,288
+  catalog-day cases contained no unavailable times; invalid/unavailable and Hijri
+  range handling still need Q04.3 coverage. Private snapshots/helper/results:
+  `*-before-portable.*`, `check-js-core-parity.cjs`, `js-core-parity.{json,log}`.
+- Build tools now require JDK 17 as well as Node 24 for LG/preview; site CI installs
+  Java. Generating declarations adds only compiler-dev TypeScript 5.8.3 to Kotlin's
+  npm lock, upgraded through the official lock task; the local package adds no npm
+  registry runtime dependency. Pinned compiler/stdlib versions remain 2.2.10.
+  Official Kotlin declaration docs and Context7 Vite linked-CommonJS/SSR docs checked.
+- PASS: LG ES5/service regressions and bilingual browser suite; preview tests,
+  18-page build, targeted TypeScript check, generated data/tokens; full core JVM/JS,
+  Java interop and restricted-API/ES5 checks. Built preview Home/settings in both
+  languages load without client runtime/asset errors. Logs: `js-core-*.log`.
+- PASS: all four LG runtime JS copies and 21 packaged notice files across LG app,
+  service and preview match source bytes. Runtime notices and build prerequisites
+  documented. No performance-improvement claim; Android/installer suites were not
+  repeated for JS packaging/callers, and Linux CI itself was not executed locally.
+- Actual old-LG isolated adapter probe could not connect (timeout); no installed
+  code, preferences, activities, picture or sound changed. Private failure/probe
+  helpers are `lg-adapter-core-*` / `run-lg-adapter-proof.cjs`. Q02's earlier host
+  proof does not replace final production/upgrade acceptance. Android hardware,
+  actual LG picture/sound/remote/lifecycle and upgrade checks remain Q09 gates.

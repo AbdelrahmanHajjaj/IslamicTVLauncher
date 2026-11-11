@@ -8,8 +8,9 @@ All notable changes to Afnon. Versions match `versionName` in `app/build.gradle`
 
 - Common catalogs, bilingual text, fonts, themes and icon sources now live in
   shared modules, preserving existing IDs, choices and religious text.
-- Android uses the portable core for prayer selection and calculation-offset
-  validation, retaining its astronomical library and Fajr/Suhoor display behavior.
+- Android, LG app/service and the preview use the portable core for prayer selection
+  and calculation-offset validation, retaining their astronomical libraries and
+  each platform's Fajr/Suhoor display behavior.
 
 ### LG webOS development port
 

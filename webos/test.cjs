@@ -5,7 +5,7 @@ const path = require('node:path');
 const original = require('../site/node_modules/adhan/lib/cjs/Adhan.js');
 const legacy = vm.createContext({});
 vm.runInContext('Symbol = undefined; Math.trunc = undefined; Math.sign = undefined; Number.isNaN = undefined; Intl = undefined;', legacy);
-for (const name of ['compat.js', 'adhan.js', 'data.js', 'core.js']) {
+for (const name of ['compat.js', 'adhan.js', 'data.js', 'kotlin-kotlin-stdlib.js', 'IslamicTVLauncher-core.js', 'core.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, 'build/app', name), 'utf8'), legacy);
 }
 const A = legacy.Afnon, data = legacy.AfnonData;
@@ -72,6 +72,23 @@ assert.equal(A.nextEvent(now, A.prefs({automatic: true, bells: [false, false, fa
 assert.equal(A.nextEvent(now, prefs), null);
 const serviceCore = require('./build/service/core');
 assert.equal(serviceCore.day(now, serviceCore.prefs({utcOffset: 120})).times[0], day.times[0], 'Node service and TV UI use the same calculation');
+for (const core of [A, serviceCore]) {
+  for (const value of [31, -31, 0.5, 4294967297, -4294967297, NaN, Infinity, null, true, '1', undefined]) {
+    assert.throws(() => core.prefs({offsets: [0, 0, value, 0, 0, 0]}), /Invalid/, 'reject before integer conversion: ' + value);
+  }
+  for (const offsets of [[], Array(6), Array(7).fill(0), '000000']) {
+    assert.throws(() => core.prefs({offsets}), /Invalid/, 'reject malformed offset arrays');
+  }
+  assert.deepEqual(Array.from(core.prefs({offsets: [-30, 30, 0, -1, 1, 0]}).offsets), [-30, 30, 0, -1, 1, 0]);
+  const raw = {times: [10, 20, 30, 40, 50, 60], tomorrowFajr: 100};
+  for (const [time, current, next, nextTime] of [[9, -1, 0, 10], [10, 0, 2, 30], [20, -1, 2, 30],
+    [30, 2, 3, 40], [40, 3, 4, 50], [50, 4, 5, 60], [60, 5, 0, 100], [99, 5, 0, 100]]) {
+    const selected = core.select(raw, time);
+    assert.deepEqual([selected.current, selected.next, selected.nextTime], [current, next, nextTime]);
+    assert.deepEqual({...core.next(raw, time)}, {index: next, time: nextTime});
+  }
+  assert.deepEqual(raw.times, [10, 20, 30, 40, 50, 60], 'selection preserves the raw today row');
+}
 
 const handlers = {}, calls = [], files = {}, completions = [];
 let currentBoot = 'boot-a', currentInput = 'HDMI_2', failLaunch = false, failCreate = false, failWrite = false;

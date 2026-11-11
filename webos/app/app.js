@@ -101,11 +101,10 @@
     return cachedDay;
   }
   function prayers(now) {
-    var day = schedule(now), next = A.next(day, now), labels = s('prayerNames');
+    var day = schedule(now), selected = A.select(day, now), next = {index: selected.next, time: selected.nextTime}, labels = s('prayerNames');
     var times = day.times.slice();
     if (view === 'home' && (prefs.prayerMode === 'next' || prefs.prayerMode === 'both')) { times[next.index] = next.time; }
-    var current = -1;
-    day.times.forEach(function (time, i) { if (time <= +now) { current = i === 1 ? -1 : i; } });
+    var current = selected.current;
     if (view === 'home' && prefs.prayerMode === 'current' && current < 0) { return '<p class="muted">' + t('لا توجد صلاة حالية', 'No current prayer') + '</p>'; }
     var indices = [0, 1, 2, 3, 4, 5];
     if (view === 'home' && prefs.prayerMode === 'current') { indices = [current]; }
