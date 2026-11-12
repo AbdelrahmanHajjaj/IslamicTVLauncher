@@ -67,8 +67,9 @@ a TV with under 2 GB of RAM, so:
 - **No blur, video backgrounds or shadows.** Animate with transform and opacity only.
 - **No new timers or background services.** Prayer checks share one 15-second timer in the
   accessibility service.
-- **No new network access.** The radio stream is the only connection. No analytics, no ads, no
-  feeds, no "recommended" rows.
+- **Bounded network access.** Only the chosen radio stream and the explicitly requested,
+  manual AlAdhan prayer-time comparison. No automatic comparison polling, accounts,
+  analytics, ads, feeds or "recommended" rows. Calculations and reminders remain offline.
 - **Design tokens.** Colours, sizes and timings live in `afnon-mihrab/tokens.json`. `Tokens.java`,
   `colors.xml` and the preview site's CSS are generated from it: edit the JSON, then run `npm run tokens`
   in `site/` (Node 24). Never edit the generated files; CI checks they match. Plain bilingual text

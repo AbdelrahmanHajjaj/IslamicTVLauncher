@@ -26,6 +26,7 @@ const server = http.createServer((req, res) => {
       // Mock the TV boundary and decoder events; the physical LG validates actual picture/sound.
       window.mediaCalls = [];
       window.volumeCalls = [];
+      window.onlineCalls = [];
       window.closeCount = 0; window.close = () => { window.closeCount++; };
       HTMLMediaElement.prototype.load = function () { window.mediaCalls.push({op: 'load', tag: this.tagName, src: this.getAttribute('src'), children: this.children.length}); };
       HTMLMediaElement.prototype.pause = function () { window.mediaCalls.push({op: 'pause', tag: this.tagName}); };
@@ -45,6 +46,22 @@ const server = http.createServer((req, res) => {
           localStorage.setItem('fixture', JSON.stringify(state));
           const reply = {returnValue: true, state, prefs: state.prefs, enabled: state.startup && state.startup.enabled,
             current: window.Afnon.input(state.input || 'HDMI_1'), inputs: ['HDMI_1', 'HDMI_2', 'HDMI_3', 'DTV'].map(window.Afnon.input)};
+          if (method === 'onlinePrayer') {
+            window.onlineCalls.push(p);
+            if (p.action === 'check') {
+              const finish = () => {
+                reply.returnValue = !window.failOnline;
+                const prefs = window.Afnon.prefs(state.prefs), times = window.Afnon.day(new Date(), prefs).times;
+                const differences = [0, 1, -1, 1, 0, 0];
+                reply.comparison = {date: '12-11-2026', timezone: 'Africa/Cairo', calculated: times,
+                  reference: times.map((t, i) => t + differences[i] * 60000), differences};
+                this.onservicecallback(JSON.stringify(reply));
+              };
+              if (window.deferOnline) (window.onlineReplies ||= []).push(finish);
+              else setTimeout(finish, 5);
+              return;
+            }
+          }
           if (method === 'audioVolume') {
             window.volumeCalls.push(p);
             const finish = () => {
@@ -311,8 +328,75 @@ const server = http.createServer((req, res) => {
         assert.ok(wraps.wrapped && wraps.contained, 'long settings values wrap inside their row');
       }
     }
+    async function onlineChecks() {
+      await page.locator('[data-action=section][data-value=prayer]').click();
+      const before = await page.evaluate(() => ({prefs: JSON.parse(localStorage.getItem('fixture')).prefs,
+        source: document.getElementById('input-video').innerHTML, media: window.mediaCalls.length}));
+      await page.locator('[data-action=online-prayer]').click();
+      await page.waitForSelector('.online-check tbody tr');
+      assert.equal(await page.locator('.online-check tbody tr').count(), 6);
+      assert.equal(await page.locator(':focus').getAttribute('data-action'), 'online-back');
+      const back = await page.locator('[data-action=online-back]').boundingBox(), brand = await page.locator('.online-check .brand').boundingBox();
+      assert.ok(back.x + back.width < brand.x || brand.x + brand.width < back.x, 'Back and the brand have separate header space');
+      for (const cell of await page.locator('.online-check th, .online-check td, .online-note, [data-action=online-retry]').all()) {
+        const box = await cell.boundingBox();
+        assert.ok(box.x >= 0 && box.y >= 0 && box.x + box.width <= 1920 && box.y + box.height <= 1080, 'online comparison fits screen');
+      }
+      const lang = await page.locator('html').getAttribute('lang');
+      await page.screenshot({path: path.join(shots, 'online-' + lang + '.png')});
+      assert.deepEqual(await page.evaluate(() => ({prefs: JSON.parse(localStorage.getItem('fixture')).prefs,
+        source: document.getElementById('input-video').innerHTML, media: window.mediaCalls.length})), before, 'manual comparison preserves settings and HDMI');
+      await page.keyboard.press('Escape');
+      assert.equal(await page.locator(':focus').getAttribute('data-ui'), 'prayer.online');
+      await page.evaluate(() => { window.failOnline = true; });
+      await page.locator('[data-action=online-prayer]').click();
+      await page.waitForSelector('[data-action=online-retry]');
+      assert.equal(await page.locator('.online-check [role=status]').innerText(), await page.evaluate(() => window.AfnonData.strings.onlineUnavailable[document.documentElement.lang]));
+      await page.evaluate(() => { window.failOnline = false; });
+      await page.locator('[data-action=online-retry]').click(); await page.waitForSelector('.online-check tbody tr');
+      await page.keyboard.press('Escape');
+      await page.evaluate(() => { window.deferOnline = true; });
+      await page.locator('[data-action=online-prayer]').click();
+      await page.waitForFunction(() => window.onlineReplies?.length === 1);
+      await page.keyboard.press('Escape');
+      await page.evaluate(() => window.onlineReplies.shift()());
+      assert.equal(await page.locator('.online-check').count(), 0, 'late result cannot reopen the comparison');
+      assert.equal(await page.locator(':focus').getAttribute('data-ui'), 'prayer.online');
+      assert.equal(await page.evaluate(() => window.onlineCalls.at(-1).action), 'cancel');
+      await page.locator('[data-action=online-prayer]').click();
+      await page.waitForFunction(() => window.onlineReplies?.length === 1);
+      await page.evaluate(() => {
+        const state = JSON.parse(localStorage.getItem('fixture'));
+        state.pendingAlert = {id: 'online:banner:' + Date.now(), mode: 'banner', prayer: 0, test: true};
+        localStorage.setItem('fixture', JSON.stringify(state));
+        document.dispatchEvent(new CustomEvent('webOSRelaunch', {detail: {alertId: state.pendingAlert.id}}));
+      });
+      await page.waitForSelector('#overlay [data-action=dismiss-alert]');
+      await page.evaluate(() => window.onlineReplies.shift()());
+      assert.ok(await page.evaluate(() => document.getElementById('overlay').contains(document.activeElement)), 'late response preserves alert focus');
+      await page.locator('#overlay [data-action=dismiss-alert]').click();
+      await page.waitForSelector('.online-check [data-action=online-retry]');
+      await page.keyboard.press('Escape');
+      await page.evaluate(() => {
+        const state = JSON.parse(localStorage.getItem('fixture')); delete state.pendingAlert;
+        localStorage.setItem('fixture', JSON.stringify(state));
+      });
+      await page.locator('[data-action=online-prayer]').click();
+      await page.waitForFunction(() => window.onlineReplies?.length === 1);
+      await page.evaluate(() => {
+        Object.defineProperty(document, 'hidden', {configurable: true, value: true}); document.dispatchEvent(new Event('visibilitychange'));
+        Object.defineProperty(document, 'hidden', {configurable: true, value: false}); document.dispatchEvent(new Event('visibilitychange'));
+        window.onlineReplies.shift()();
+      });
+      await page.waitForSelector('[data-action=online-retry]');
+      assert.equal(await page.locator('.online-check tbody tr').count(), 0, 'suspend cancels and keeps a retryable view');
+      await page.keyboard.press('Escape');
+      await page.evaluate(() => { window.deferOnline = false; });
+      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')).prefs), before.prefs);
+    }
     await settingsValuesFit();
     await settingsCoverage();
+    await onlineChecks();
     await page.locator('[data-action=section][data-value=prayer]').click();
     await page.screenshot({path: path.join(shots, 'settings-ar.png')});
     await page.keyboard.press('ArrowLeft');
@@ -332,6 +416,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('html').getAttribute('dir'), 'ltr');
     await settingsValuesFit();
     await settingsCoverage();
+    await onlineChecks();
     await page.locator('[data-action=section][data-value=prayer]').click();
     await page.locator('[data-action=city]').click();
     await page.locator('[data-action=choose][data-value=Egypt]').click();

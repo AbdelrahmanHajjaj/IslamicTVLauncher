@@ -18,6 +18,7 @@
   var homeNodes = [], homeAppCount = 0, lastHomeApp = homeNavigation.FIRST_APP;
   var appNodes = [];
   var pickerControl = null;
+  var onlineId = null, onlineSerial = 0, onlineData = null, onlineError = false;
   var appearanceKeys = ['theme', 'background', 'homeLayout', 'archSide', 'homeBar', 'prayerMode'];
   var overlay = document.getElementById('overlay');
   var sections = ['prayer', 'reminders', 'radio', 'display', 'appearance', 'device', 'tests'];
@@ -61,6 +62,7 @@
     return button('native-app', icon(item.icon) + '<span>' + escape(item[prefs.lang]) + '</span>', item.id, 'app-tile');
   }
   function preview(method, data) {
+    if (method === 'onlinePrayer') { return {returnValue: data.action === 'cancel'}; }
     if (method === 'audioVolume') { return {returnValue: true, mode: 'element'}; }
     var state;
     try { state = JSON.parse(localStorage.getItem('afnon-webos-preview') || '{}'); } catch (error) { state = {}; }
@@ -193,7 +195,7 @@
         row('prayer.zone', 'zone', zoneName(), 'choice') +
         row('prayer.offsets', 'offsets', t('بالدقائق', 'Minutes')) +
         row('prayer.hijri', 'hijriOffset', digits(prefs.hijriOffset), 'number') +
-        row('prayer.today', 'prayer-day', '');
+        row('prayer.today', 'prayer-day', '') + row('prayer.online', 'online-prayer', '');
     } else if (section === 'reminders') {
       result = row('reminders.enabled', 'automatic', onOff(prefs.automatic), 'toggle') +
         row('reminders.before', 'remind', prefs.remind ? digits(prefs.remind) + f('minuteUnit') : onOff(false), 'choice') +
@@ -256,6 +258,39 @@
         return button('section', sectionName(id), id, id === section || section === 'offsets' && id === 'prayer' ? 'selected' : '');
       }).join('') + '</nav>' + (section === 'appearance' ? '<div class="appearance-preview">' + appearancePreview(appearanceDraft) + '</div>' : '') + '<div class="settings-rows"><h2>' + (section === 'offsets' ? t('تعديل المواقيت', 'Time adjustments') : sectionName(section)) +
       '</h2>' + settingRows() + '</div></section>';
+  }
+  function onlineMarkup() {
+    var body = '<p role="status">' + escape(s(onlineError ? 'onlineUnavailable' : 'onlineLoading')) + '</p>';
+    if (onlineData) {
+      body = '<p class="online-meta">' + escape(A.city(prefs.city)[prefs.lang] + ' · ' + methodName(prefs.method || A.city(prefs.city).method) +
+        ' · ' + s('asrSchools')[prefs.hanafi ? 1 : 0] + ' · ' + digits(onlineData.date) + ' · ' + onlineData.timezone) + '</p><table><thead><tr><th></th><th>' +
+        escape(s('onlineCalculated')) + '</th><th>' + escape(s('onlineReference')) + '</th><th>' + escape(s('onlineDifference')) + '</th></tr></thead><tbody>';
+      for (var i = 0; i < 6; i++) {
+        var delta = onlineData.differences[i];
+        body += '<tr><th scope="row">' + escape(s('prayerNames')[i]) + '</th><td dir="ltr">' + digits(A.clock(new Date(onlineData.calculated[i]), prefs)) +
+          '</td><td dir="ltr">' + digits(A.clock(new Date(onlineData.reference[i]), prefs)) + '</td><td dir="ltr">' + digits((delta > 0 ? '+' : '') + delta) + '</td></tr>';
+      }
+      body += '</tbody></table>';
+    }
+    return '<section class="page online-check">' + header(escape(s('checkOnline')), 'online-back') + body +
+      '<p class="online-note">' + escape(s('onlineAdvisory')) + '</p>' + (onlineData || onlineError ? button('online-retry', escape(s('checkOnline'))) : '') + '</section>';
+  }
+  function cancelOnline() {
+    if (!onlineId) { return; }
+    var id = onlineId; onlineId = null; onlineError = !onlineData;
+    request('onlinePrayer', {action: 'cancel', id: id});
+  }
+  function checkOnline() {
+    cancelOnline(); onlineData = null; onlineError = false; show('online-prayer');
+    var id = instance + '-' + (++onlineSerial); onlineId = id;
+    request('onlinePrayer', {action: 'check', id: id}, function (reply) {
+      if (onlineId !== id || view !== 'online-prayer') { return; }
+      onlineId = null; onlineData = reply.returnValue && reply.comparison || null; onlineError = !onlineData;
+      if (!returnContext && !(document.hidden || document.webkitHidden)) {
+        var action = document.activeElement && document.activeElement.getAttribute('data-action');
+        render(action || 'online-back');
+      }
+    });
   }
   function appearancePreview(p) {
     var c = D.palettes[p.theme], rtl = prefs.lang === 'ar', name = s('themeNames')[D.themes.indexOf(p.theme)];
@@ -345,6 +380,8 @@
           t('القبلة ', 'Qibla ') + digits(Math.round(bearing)) + '°</h2><p class="footnote">' +
           t('الزاوية من الشمال الحقيقي، وليست اتجاه شاشة التلفاز.', 'Bearing clockwise from true north, not from the TV screen.') + '</p>' +
           button('tests', t('اختبار التنبيهات', 'Test alerts')) + button('home', t('الرئيسية', 'Home')) + '</div></section>';
+      } else if (view === 'online-prayer') {
+        html = onlineMarkup();
       } else if (view === 'radio') {
         var station = A.station(prefs.station);
         html = '<section class="page">' + header(t('إذاعة القرآن', 'Quran radio')) + '<div class="media-page"><h1>' + escape(station[prefs.lang]) +
@@ -397,6 +434,7 @@
   }
   function armDock() { clearTimeout(dockTimer); if (view === 'bar' && prefs.dockAutoHide) { dockTimer = setTimeout(function () { show('input'); }, prefs.dockAutoHide * 1000); } }
   function show(nextView, focusAction) {
+    if (nextView !== 'online-prayer') { cancelOnline(); }
     clearTimeout(noticeTimer); document.getElementById('notice').style.display = 'none';
     if (nextView !== 'picker' && (nextView !== 'settings' || section !== 'appearance')) { appearanceDraft = null; }
     view = nextView; render(focusAction); armDock();
@@ -660,6 +698,7 @@
   }
   function startAlert(alert) {
     if ([0, 2, 3, 4, 5].indexOf(alert.prayer) < 0 || ['banner', 'card', 'adhan', 'spoken', 'announcement'].indexOf(alert.mode) < 0) { return; }
+    cancelOnline();
     var audible = ['adhan', 'spoken', 'announcement'].indexOf(alert.mode) >= 0, hadAudio = !!media;
     var changedInput = alert.input && (!input || input.id !== alert.input);
     returnContext = alert.returnToPrevious ? {external: true} : rememberContext();
@@ -707,6 +746,8 @@
   function activate(action, value) {
     if (busy) { return; }
     armDock();
+    if (action === 'online-prayer' || action === 'online-retry') { checkOnline(); return; }
+    if (action === 'online-back') { show('settings', 'online-prayer'); return; }
     if (voicePreview && action !== 'preview-voice') { stopAudio('stopped', true); }
     if (action === 'apps-back') { show('home', 'apps'); return; }
     if (action === 'settings-back') {
@@ -907,6 +948,7 @@
       else if (view === 'apps') { show('home', 'apps'); }
       else if (view === 'settings') { show(settingsParent, 'settings'); }
       else if (view === 'prayer-day') { show(dayParent, 'prayer-day'); }
+      else if (view === 'online-prayer') { show('settings', 'online-prayer'); }
       else {
         var backView = view === 'picker' ? 'settings' : ['settings', 'inputs', 'prayer-day', 'radio', 'apps'].indexOf(view) >= 0 ? 'home' : view === 'input' ? 'bar' : 'input';
         if (backView === 'input' && media) { radioBeforeCall = false; stopAudio('stopped', true); } else { show(backView); }
@@ -922,8 +964,11 @@
   });
   function visibility() {
     if (document.hidden || document.webkitHidden) {
+      cancelOnline();
       returnContext = null; radioBeforeCall = false; if (media) { stopAudio('stopped', false); } dismissOverlay(); releaseVideo(); report('hidden');
-    } else if (input && !media) { play(input); updateClock(); report(); }
+    } else if (input && !media) {
+      play(input); if (view === 'online-prayer') { render('online-back'); } updateClock(); report();
+    }
   }
   document.addEventListener('visibilitychange', visibility);
   document.addEventListener('webkitvisibilitychange', visibility);

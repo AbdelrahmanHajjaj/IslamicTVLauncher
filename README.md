@@ -230,10 +230,15 @@ prayer/button accessibility service and may be restricted by an app or firmware.
 
 ## Privacy and permissions
 
-No accounts, ads, analytics or telemetry. Prayer calculation is offline. The TV launcher's only
-network feature is the selected radio stream, listed in `shared/data/stations.json`; its
+No accounts, ads, analytics or telemetry. Prayer calculation is offline. The selected
+radio streams are listed in `shared/data/stations.json`; Android's
 [network security config](platforms/android-tv/src/main/res/xml/network_security.xml) permits plain HTTP only for Cairo's
-stream. City, favourites, themes and recent-app history stay on the TV. The phone installer separately
+stream. The LG source also includes a manual AlAdhan comparison: it sends the selected
+city's coordinates, date, calculation method and Asr school to `api.aladhan.com` over
+HTTPS when requested, with no polling or schedule replacement. Its old-TV HTTPS
+compatibility still needs verification; Android and preview comparison bindings
+are not implemented yet. Favourites, themes and recent-app history stay on the TV.
+The phone installer separately
 uses the network for ADB setup and, when selected, this project's release APK and
 cleanup catalogue. Setup commands are bundled; they are never fetched for execution.
 

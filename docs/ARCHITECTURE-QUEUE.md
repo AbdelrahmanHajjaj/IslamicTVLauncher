@@ -101,9 +101,11 @@ prayer times remain the offline schedule source. Add a manual Check online actio
 for all supported locations/methods; reference results are advisory. Public-provider
 requests are explicitly authorized; no account, project-hosted backend, background
 polling or automatic schedule replacement. Keep network I/O in platform adapters.
-Canonical method mapping and pure comparison rules are implemented and software-
-verified. Next wire the shared Check online action, bounded HTTPS and date/metadata
-validation into Android, LG and preview. Old-LG secure TLS remains unverified.
+Canonical mapping/comparison and the LG manual action/view/HTTPS adapter are
+implemented and software-verified. Next implement the native Android adapter/view
+and Settings binding, remove its temporary prayer.online gap, then port the preview.
+Use today's civil Fajr after Isha; keep the reference advisory and settings intact.
+Old-LG secure TLS/UI remain unverified; do not install or contact the TV while deferred.
 
 Owner explicitly deferred further TV changes: Later; leave the TV unchanged. Do not
 run the prepared 20-second video-only probe, another update or audio/power/UI test
@@ -2211,3 +2213,67 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
 - Continue g with actual renderer action/bindings and network adapters; do not mark
   the online check complete or advance to global size h yet. Transparency and
   physical remote checks remain deferred. No running tool jobs remain after checks.
+
+### Q09.5g adapter and action integration (2026-11-12)
+
+- Previous goal turn was progress: committed 1f9fb7d portable comparison and all
+  affected software checks. Continue the same item; no hardware mutation/readiness
+  is inferred. Next implementation uses fixed api.aladhan.com HTTPS only, bounded
+  body/total timeout and cancellation, no redirect/HTTP/TLS bypass or persistence.
+  The manual view must survive failure/Back/alert interruption without late focus
+  changes. Validate response identity before showing six times/differences.
+- Legacy transport APIs were checked against Node 0.10.25 primary docs/source
+  (nodejs.org/docs/v0.10.25/api/{https,http,tls}.html and nodejs/node v0.10.25).
+  Context7 returned current docs, so these exact-version sources take precedence.
+  Standard HTTPS verifies chain and hostname; req.abort is available. This proves
+  API shape, not old-LG certificate/cipher compatibility. Keep that gate open.
+
+- The LG adapter is the first complete shell slice. Add the canonical manual action
+  and bilingual copy, bind it to an LG read-only comparison view, and declare the
+  native action unimplemented until its adapter/view is wired next. Preview parity
+  follows in g. Do not mistake an explicit temporary gap for platform incapability.
+
+- LG slice is implemented: service/online-prayer.js uses standard verified HTTPS
+  to fixed api.aladhan.com, identity encoding, 12-second absolute deadline, 32 KiB
+  body cap, no redirects/fallback, strict date/coordinates/method/school/high-latitude
+  metadata and ISO offset/calendar checks. Six finite ordered reference instants
+  are compared with the raw civil-day calculation, including current saved offsets.
+  Moonsighting validates general shafaq/NONE; middle-of-night is explicit elsewhere.
+- onlinePrayer check/cancel protocol uses transient owner IDs: one active request,
+  stale cancellation cannot abort its successor, start/fetch/timeout failures reply
+  without saving state or invoking native TV APIs. No data cache or automatic check.
+- Universal prayer.online action and eight canonical bilingual labels are added;
+  real LG Settings binds it to a read-only six-row report with source/date/city/
+  method/school/timezone, signed differences, advisory offsets note, Back and retry.
+  Back/suspend/alerts cancel work; late replies cannot reopen a view or steal alert
+  focus. Alert restoration and visible resume provide a retryable cancelled view.
+  Native is explicitly unimplemented/hidden for this action until the next slice;
+  preview wiring is also pending. Current contract 89 controls; native whole gaps
+  25, LG 22. This is an implementation gap, not an OS incapability.
+- PASS: complete LG build/ES5/service/volume/online regression suite; bilingual
+  browser success/failure/retry/Back/return-focus, late reply, suspension and silent
+  alert interruption. The check leaves HDMI/source and preferences unchanged.
+  Browser screenshot review caught Back/brand overlap; spacing and RTL arrow were
+  corrected and assertions now cover the header as well as table/footer bounds.
+  Final desktop-only online-{ar,en}.png were inspected; no TV screenshot claim.
+- PASS: actual PC Node 24 standard HTTPS with the production module: Cairo returns
+  [0,1,-1,1,0,0]; London, Kolkata (+05:30), Melbourne DST (+11:00) and New York (-05:00)
+  also validate successfully with their catalog method/school and explicit ISO
+  instants. Evidence adapter-pc-https.log and adapter-pc-global.json. This does NOT
+  validate the TV's old CA store/ciphers, Node 0.10 runtime or native LG UI.
+- PASS: core 29 JVM / 28 JS tests and 77 stripped ES5 assertions, runtime 85,226
+  bytes. Shared catalog/generation/isolated freshness checks, both original native
+  text-output/formatter hash tests, preview tests and 18-page build pass. Android
+  standalone build/test-APK compilation/size/lint pass: 21,144,228-byte launcher,
+  0 errors and 55 existing warnings. No native view/binding for this action exists
+  yet, and no physical or emulator acceptance is claimed for this new slice.
+- Evidence: ignored online-reference/{adapter-lg-check,action-lg-check,
+  action-lg-final-build,action-lg-browser-verified,action-core-check,
+  action-preview-check,action-preview-build,action-android-check}.log and browser
+  images under state/webos-port. Source build has 101 payload files. Installed
+  0.2.9 remains its earlier verified 100-file package/72-host-assertion baseline;
+  do not overwrite its package/version identity with these unverified new bytes.
+- Policy/privacy/changelog and generated gap documentation now reflect the bounded
+  manual comparison. No new dependency, account, backend, automatic network timer,
+  recurring activity, settings migration, firmware/root or TV mutation was added.
+  All jobs completed; continue native/preview g before global sizing h.

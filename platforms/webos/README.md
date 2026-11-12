@@ -277,6 +277,21 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
+The source adds **Prayer & Qibla → Check online**, a manual AlAdhan comparison for
+all catalog cities and 19 named methods. The read-only view shows the requested
+date, city, method, school, provider timezone, six calculated/reference times and
+signed differences (AlAdhan minus calculated, in minutes). Calculated values retain
+saved offsets; provider values omit them. Different engines/conventions may differ;
+this is an advisory calculation reference, not an official local timetable.
+Back, suspension and an interrupting alert cancel pending work. Errors offer a
+manual retry without changing any setting, input, startup state or alert schedule.
+Only requested checks contact api.aladhan.com over verified HTTPS, with a 12-second
+total timeout, 32 KiB body limit and no redirects or insecure fallback. No account,
+backend, polling, persistent online data or development PC is required.
+This feature has computer-only service/browser/HTTPS proof and is not installed
+on the LF6300. Secure TLS on its Node 0.10.25 host remains unverified. The installed
+0.2.9 acceptance below applies to the earlier volume/navigation/rounding package.
+
 Version 0.2.9 was installed over 0.2.8 on 12 November 2026. All 100 payload files
 match the verified package; Node 0.10.25 passes 72 shared and 30 adapter assertions,
 and WebKit 538.2 passes the 72 shared assertions. All 30 preferences, HDMI selection

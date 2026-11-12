@@ -124,6 +124,26 @@ register('audioVolume', function (message) {
   if (volumeQueue.length === 1) { runVolume(); }
 });
 register('status', function (message) { message.respond({returnValue: true, state: read(), boot: boot()}); });
+var onlineJob = null;
+register('onlinePrayer', function (message) {
+  var p = message.payload;
+  if (typeof p.id !== 'string' || !/^[0-9]{1,16}-[0-9]{1,10}$/.test(p.id) || ['check', 'cancel'].indexOf(p.action) < 0) {
+    throw new Error('Invalid online check');
+  }
+  if (p.action === 'cancel') {
+    if (onlineJob && onlineJob.id === p.id && onlineJob.cancel) { onlineJob.cancel(); }
+    message.respond({returnValue: true}); return;
+  }
+  var prefs = core.prefs(read().prefs);
+  if (onlineJob && onlineJob.cancel) { onlineJob.cancel(); }
+  var job = {id: p.id, cancel: null}; onlineJob = job;
+  try {
+    job.cancel = require('./online-prayer')(prefs, new Date(), function (error, result) {
+      if (onlineJob === job) { onlineJob = null; }
+      message.respond(error ? {returnValue: false, errorText: error.message} : {returnValue: true, comparison: result});
+    });
+  } catch (error) { if (onlineJob === job) { onlineJob = null; } throw error; }
+});
 register('inputs', function (message) {
   call('luna://com.webos.service.eim/getCurrentInput', {}, safe(message, function (current) {
     call('luna://com.webos.service.eim/getAllInputStatus', {}, safe(message, function (all) {
@@ -200,7 +220,7 @@ register('startupTick', function (message) {
 });
 register('report', function (message) {
   var p = message.payload;
-  if (['input', 'bar', 'home', 'settings', 'inputs', 'picker', 'prayer-day', 'radio', 'apps', 'clock', 'error', 'hidden'].indexOf(p.view) < 0 ||
+  if (['input', 'bar', 'home', 'settings', 'inputs', 'picker', 'prayer-day', 'online-prayer', 'radio', 'apps', 'clock', 'error', 'hidden'].indexOf(p.view) < 0 ||
       typeof p.instance !== 'string' || !/^[0-9-]{1,40}$/.test(p.instance) ||
       (p.input !== null && !core.input(p.input))) { throw new Error('Invalid app status'); }
   var state = read();

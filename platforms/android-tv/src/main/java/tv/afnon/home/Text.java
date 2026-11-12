@@ -366,4 +366,12 @@ final class Text {
     String testBackground() { return ar ? "اختبار خدمة الخلفية بعد ٣٠ ثانية" : "Test background service in 30 seconds"; }
     String cancelTest() { return ar ? "إلغاء الاختبار المؤجل" : "Cancel scheduled test"; }
     String resetOffsets() { return ar ? "إعادة الدقائق إلى الصفر" : "Reset adjustments"; }
+    String checkOnline() { return ar ? "مقارنة المواقيت عبر الإنترنت" : "Check online"; }
+    String onlineHelp() { return ar ? "مقارنة مع AlAdhan دون تغيير المواقيت أو التنبيهات المحسوبة." : "Compare with AlAdhan without changing calculated times or reminders."; }
+    String onlineLoading() { return ar ? "جارٍ التحقق من AlAdhan…" : "Checking AlAdhan…"; }
+    String onlineUnavailable() { return ar ? "تعذرت المقارنة عبر الإنترنت. حاول مرة أخرى لاحقًا." : "Online check unavailable. Try again later."; }
+    String onlineCalculated() { return ar ? "الحساب المحلي" : "Calculated"; }
+    String onlineReference() { return ar ? "AlAdhan" : "AlAdhan"; }
+    String onlineDifference() { return ar ? "الفارق بالدقائق (AlAdhan − الحساب)" : "AlAdhan − calculated (min)"; }
+    String onlineAdvisory() { return ar ? "مقارنة استرشادية. الحساب المحلي يتضمن تعديلاتك المحفوظة؛ مواقيت AlAdhan لا تتضمنها. قد يختلف التقريب أو العرف المحلي." : "Advisory comparison. Calculated times include your saved offsets; AlAdhan values do not. Rounding and local conventions may differ."; }
 }

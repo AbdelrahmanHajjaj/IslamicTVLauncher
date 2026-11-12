@@ -24,8 +24,9 @@ real TV over ADB, never just in the build.
 - Java + Android Views for UI; adhan-java for astronomy; Kotlin shared core for product rules. No AndroidX or Compose.
 - No blur, video or shadows; animate transform/opacity only. No new timers or background services: prayer checks
   share one 15 s timer in the accessibility service.
-- No network access except the chosen radio station's stream (hosts listed in `shared/data/stations.json` and the README's
-  Privacy section). No analytics, ads or feeds.
+- Network access is limited to the chosen radio station's stream and the owner-approved
+  manual AlAdhan prayer-time comparison (see the queue and README Privacy section).
+  No automatic comparison polling, accounts, analytics, ads or feeds.
 - Colours/sizes/timings from `afnon-mihrab/tokens.json` (generated into `Tokens.java`, `colors.xml` and the site's
   `tokens.css` by `cd site && npm run tokens`; never edit those by hand); every string in Arabic and English in
   `shared/data/{strings,format-text}.json` and `platforms/android-tv/src/main/templates/Text.java.template`; regenerate `Text.java`. Arabic (RTL) is the

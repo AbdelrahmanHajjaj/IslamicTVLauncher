@@ -20,6 +20,13 @@ filesystem, network or device callbacks. It does not draw screens. Shells retain
 native layouts, media, scheduling and OS integration. Sharing rules must not reset
 or rename a user's settings, input, theme or startup choice.
 
+`prayer.online` is a manual, read-only comparison action. Its view identifies the
+date, location, method/school and reference source; shows all six civil-day times
+(today's Fajr even after Isha) and signed minute differences; and supports failure,
+retry and Back with return focus. Leaving or interrupting it cancels pending work.
+It never writes preferences or replaces calculated schedules/reminders. Shells
+which have not implemented it must declare a gap and hide the action.
+
 ## Home focus
 
 Directions below use logical start/end. A shell translates physical Left/Right

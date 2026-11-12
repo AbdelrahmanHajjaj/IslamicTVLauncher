@@ -365,4 +365,12 @@ final class Text {
     String testBackground() { {{STRINGS:testBackground}} }
     String cancelTest() { {{STRINGS:cancelTest}} }
     String resetOffsets() { {{STRINGS:resetOffsets}} }
+    String checkOnline() { {{STRINGS:checkOnline}} }
+    String onlineHelp() { {{STRINGS:onlineHelp}} }
+    String onlineLoading() { {{STRINGS:onlineLoading}} }
+    String onlineUnavailable() { {{STRINGS:onlineUnavailable}} }
+    String onlineCalculated() { {{STRINGS:onlineCalculated}} }
+    String onlineReference() { {{STRINGS:onlineReference}} }
+    String onlineDifference() { {{STRINGS:onlineDifference}} }
+    String onlineAdvisory() { {{STRINGS:onlineAdvisory}} }
 }

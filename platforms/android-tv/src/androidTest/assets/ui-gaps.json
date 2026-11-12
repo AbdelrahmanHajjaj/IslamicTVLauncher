@@ -1,5 +1,10 @@
 [
   {
+    "id": "prayer.online",
+    "state": "unimplemented",
+    "reason": "Manual online comparison and its native view are not implemented yet."
+  },
+  {
     "id": "prayer.zone",
     "state": "unimplemented",
     "reason": "Uses the TV time zone; no app-local override editor."

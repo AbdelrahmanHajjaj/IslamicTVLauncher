@@ -65,6 +65,13 @@
     "save": "action"
   },
   {
+    "id": "prayer.online",
+    "section": "prayer",
+    "kind": "action",
+    "label": "checkOnline",
+    "save": "action"
+  },
+  {
     "id": "reminders.enabled",
     "section": "reminders",
     "kind": "toggle",

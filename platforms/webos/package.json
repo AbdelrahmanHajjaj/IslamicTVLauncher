@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node build.cjs",
-    "test": "node ../../tools/validate-shared.test.mjs && node test-build.cjs && node test.cjs && node test-volume.cjs",
+    "test": "node ../../tools/validate-shared.test.mjs && node test-build.cjs && node test.cjs && node test-volume.cjs && node test-online.cjs",
     "test:browser": "node browser-test.cjs"
   },
   "devDependencies": {

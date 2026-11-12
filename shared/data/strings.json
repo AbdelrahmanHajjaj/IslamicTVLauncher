@@ -1067,5 +1067,37 @@
   "resetOffsets": {
     "ar": "إعادة الدقائق إلى الصفر",
     "en": "Reset adjustments"
+  },
+  "checkOnline": {
+    "ar": "مقارنة المواقيت عبر الإنترنت",
+    "en": "Check online"
+  },
+  "onlineHelp": {
+    "ar": "مقارنة مع AlAdhan دون تغيير المواقيت أو التنبيهات المحسوبة.",
+    "en": "Compare with AlAdhan without changing calculated times or reminders."
+  },
+  "onlineLoading": {
+    "ar": "جارٍ التحقق من AlAdhan…",
+    "en": "Checking AlAdhan…"
+  },
+  "onlineUnavailable": {
+    "ar": "تعذرت المقارنة عبر الإنترنت. حاول مرة أخرى لاحقًا.",
+    "en": "Online check unavailable. Try again later."
+  },
+  "onlineCalculated": {
+    "ar": "الحساب المحلي",
+    "en": "Calculated"
+  },
+  "onlineReference": {
+    "ar": "AlAdhan",
+    "en": "AlAdhan"
+  },
+  "onlineDifference": {
+    "ar": "الفارق بالدقائق (AlAdhan − الحساب)",
+    "en": "AlAdhan − calculated (min)"
+  },
+  "onlineAdvisory": {
+    "ar": "مقارنة استرشادية. الحساب المحلي يتضمن تعديلاتك المحفوظة؛ مواقيت AlAdhan لا تتضمنها. قد يختلف التقريب أو العرف المحلي.",
+    "en": "Advisory comparison. Calculated times include your saved offsets; AlAdhan values do not. Rounding and local conventions may differ."
   }
 }

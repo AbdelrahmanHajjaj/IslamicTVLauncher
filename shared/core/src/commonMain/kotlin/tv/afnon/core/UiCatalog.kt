@@ -11,6 +11,7 @@ internal object UiCatalog {
         UiControl("prayer.hijri", "prayer", "number", "hijriAdjust", "immediate", "hijri-offset", emptyArray()),
         UiControl("prayer.facing", "prayer", "number", "roomTitle", "immediate", "bearing", emptyArray()),
         UiControl("prayer.today", "prayer", "action", "today", "action", "", emptyArray()),
+        UiControl("prayer.online", "prayer", "action", "checkOnline", "action", "", emptyArray()),
         UiControl("reminders.enabled", "reminders", "toggle", "scheduledAlerts", "immediate", "", emptyArray()),
         UiControl("reminders.before", "reminders", "choice", "remind", "immediate", "", arrayOf("5", "10", "15", "20", "30", "0")),
         UiControl("reminders.spoken", "reminders", "toggle", "remindVoiceRow", "immediate", "", emptyArray()),
