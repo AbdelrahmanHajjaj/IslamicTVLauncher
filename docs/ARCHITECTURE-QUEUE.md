@@ -106,6 +106,14 @@ candidate hash and source freshness before any authorized upgrade, capture curre
 preferences/input/startup then, and install over the existing app without uninstalling.
 Preparation does not close any hardware gate.
 
+Hardware hold audit (2026-11-13): first consecutive continuation at this impasse
+after 93e370a's completed package preparation. Previous turn was progress; this
+continuation makes no product progress and is not a verified process wait. Clean
+feature branch, committed candidate provenance and package hash are rechecked.
+LG watcher deferral and unavailable Android TV still prevent the remaining gates;
+no independent queue item remains. Goal stays active and incomplete. Do not repeat
+tests or create new scope to fill the wait; resume hardware work only when available.
+
 Q09.5h source sizing is software-complete across core, LG, native Android and
 preview: 80/90/100/110%, default 100, all existing app-owned screens/alerts/menus,
 unchanged video/background framing, bounded controls/focus and preserved settings.
