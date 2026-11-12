@@ -41,6 +41,11 @@ final class PrayerRuntimeDeviceCheck {
     }
 
     private static void core() {
+        check(PrayerRules.INSTANCE.floorToMinute(30_000) == 0, "Shared downward minute");
+        check(com.batoulapps.adhan.data.CalendarUtil.roundedMinute(new Date(30_000)).getTime() == 0,
+            "Actual Android library uses shared downward minute");
+        check(com.batoulapps.adhan.data.CalendarUtil.roundedMinute(new Date(-1)).getTime() == -60_000,
+            "Actual Android library floors before epoch");
         check(PrayerRules.INSTANCE.normalizeOffset(Double.NaN) == 0, "Nonfinite offset");
         check(PrayerRules.INSTANCE.normalizeOffset(100) == 30, "Offset clamp");
         double[] times = {1_000_000, 2_000_000, 3_000_000, 4_000_000, 5_000_000, 6_000_000};

@@ -5,6 +5,7 @@ process.env.TZ = 'Europe/London';
 const server = await createServer({ configFile: false, logLevel: 'error', server: { middlewareMode: true }, ssr: {external: ['@islamic-tv/core']} });
 try {
   await server.ssrLoadModule('/tests/methods.ts');
+  await server.ssrLoadModule('/tests/rounding.ts');
   await server.ssrLoadModule('/tests/text-format.ts');
   await server.ssrLoadModule('/tests/offsets.ts');
   await server.ssrLoadModule('/tests/calendar.ts');

@@ -12,13 +12,18 @@ const A = legacy.Afnon, data = legacy.AfnonData;
 const prefs = A.prefs({utcOffset: 120});
 const now = new Date('2026-11-10T10:00:00Z');
 const day = A.day(now, prefs);
-const expected = new original.PrayerTimes(new original.Coordinates(30.0444, 31.2357), new Date(2026, 10, 10), original.CalculationMethod.Egyptian());
+const expectedParams = original.CalculationMethod.Egyptian();
+expectedParams.rounding = original.Rounding.None;
+const expected = new original.PrayerTimes(new original.Coordinates(30.0444, 31.2357), new Date(2026, 10, 10), expectedParams);
 assert.equal(day.times[0], Math.floor(+expected.fajr / 60000) * 60000);
 assert.equal(A.clock(new Date('2026-11-10T10:30:00Z'), prefs), '12:30');
 assert.equal(A.wall(new Date('2026-11-10T23:30:00Z'), prefs).getUTCDate(), 11);
 assert.equal(A.next(day, day.times[0]).index, 2, 'sunrise is not a prayer notification');
 assert.equal(A.next(day, day.times[5]).time, day.tomorrowFajr);
 assert.equal(day.times[0], Math.floor(+expected.fajr / 60000) * 60000, 'after Isha, keep today’s Fajr in today’s row');
+const floorCairo = A.day(new Date('2026-11-12T10:00:00Z'), prefs);
+assert.deepEqual(Array.from(floorCairo.times, time => { const wall = A.wall(new Date(time), prefs); return wall.getUTCHours() * 60 + wall.getUTCMinutes(); }),
+  [288,377,700,879,1020,1100], 'Cairo rounds seconds down; existing method corrections remain');
 for (const city of data.cities) {
   const result = A.day(now, A.prefs({city: city.id, hanafi: city.hanafi, utcOffset: 120}));
   assert.ok(result.times.every(Number.isFinite), city.id);

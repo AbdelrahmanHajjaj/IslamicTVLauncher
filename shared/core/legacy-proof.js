@@ -100,5 +100,10 @@ function verifyIslamicTVCore(core) {
   try { ui.prayerAdhanId(1); } catch (sunrise) { rejected = true; }
   check(ui.prayerAdhanId(2) === 'prayer.adhan-dhuhr' && rejected, 'per-prayer UI mapping excludes sunrise');
   check(ui.minimum('prayer.facing') === 0 && ui.maximum('prayer.facing') === 359, 'numeric bearing contract');
+  check(rules.floorToMinute(30000) === 0 && rules.floorToMinute(59999) === 0, 'prayer minute rounds down');
+  check(rules.floorToMinute(-1) === -60000, 'pre-epoch prayer minute floors');
+  rejected = false;
+  try { rules.floorToMinute(NaN); } catch (badTime) { rejected = true; }
+  check(rejected, 'invalid rounding input rejected');
   return {checks: checks};
 }

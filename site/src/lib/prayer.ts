@@ -1,5 +1,5 @@
 // PrayerDay.java and Screen.java's clock helpers, on adhan-js (the JavaScript port of the app's adhan-java).
-import { CalculationMethod, Coordinates, Madhab, PrayerTimes, Qibla } from 'adhan';
+import { CalculationMethod, Coordinates, Madhab, PrayerTimes, Qibla, Rounding } from 'adhan';
 import portable from '@islamic-tv/core';
 import type { Text } from './text';
 import { cityOf, methodOf, METHOD_DEFINITIONS, type Prefs } from './data';
@@ -41,10 +41,11 @@ export const methodParams = (m: string) => {
     const a = method.methodAdjustments;
     params.methodAdjustments = {fajr: a[0], sunrise: a[1], dhuhr: a[2], asr: a[3], maghrib: a[4], isha: a[5]};
   }
+  params.rounding = Rounding.None;
   return params;
 };
 
-const minute = (d: Date) => new Date(Math.floor(d.getTime() / 60000) * 60000);
+const minute = (d: Date) => new Date(rules.floorToMinute(d.getTime()));
 const addDays = (d: Date, n: number) => { const c = new Date(d); c.setDate(c.getDate() + n); return c; };
 
 /** Umm al-Qura Hijri date: 0-based month, as the app's IslamicCalendar. */

@@ -17,6 +17,12 @@ not configure the phone installer, preview or LG project. The output remains
 `platforms/android-tv/build/outputs/apk/debug/app-debug.apk`, with a strict 25 MB limit.
 Use the same signing key as the installed app when upgrading to preserve its data.
 
+The build resolves Adhan Java 1.2.1's sources classifier and extracts its 19 unchanged
+astronomy/data source files under `build/generated/adhan`. The owned `CalendarUtil`
+adapter changes only minute rounding, delegating to the shared downward rule.
+This retains the existing library parameters and formulas without upgrading the
+runtime dependency. The full upstream MIT notice and source reference stay packaged.
+
 The repository's aggregate build keeps the existing task names:
 
 ```sh

@@ -99,7 +99,16 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 Execution resumed on 2026-11-12: owner reports the LG is available now. Scope and
 acceptance criteria are unchanged; continue Q09.5d with the refreshed baseline.
 
-Next: Q09.5e owner-requested All apps header navigation refinement, shared by
+Next: Q09.5e All apps header navigation. Q09.5f global downward minute rounding is
+implemented/software-verified and committed as the next source increment; retain
+it for the upcoming LG patch. The installed LG remains accepted 0.2.8. Source
+versions are aligned to uninstalled 0.2.9, with 69 legacy assertions. Do not claim
+new rounding is live until the next verified in-place package/host check. Preserve
+all parameters, built-in corrections and saved offsets. Then Q09.5g optional online comparison
+for every supported location/method, not just Egypt. First implementation is a
+manual Check online action; offline calculations remain the schedule source and
+online results are advisory. No account/cloud or automatic schedule replacement.
+Q09.5e is the owner-requested All apps header navigation refinement, shared by
 Android/LG: Up from any column of the first app row reaches Back; logical horizontal
 movement stays in the Back → Prayer → Settings header row. Keep lower-row paging,
 activation/Back behavior and all stored preferences intact. Add actual adapter
@@ -1867,3 +1876,98 @@ unrelated renderer redesign, transport or future shell.
 - Continue as Q09.5e before the Android hardware gate: put the deterministic All
   apps focus rule in core and bind both actual shells, with core/adapter checks.
   No visual redesign, new settings/features, media/power test or companion work.
+
+### Q09.5f Cairo accuracy report (2026-11-12)
+
+- Owner reports Cairo prayer times differ from online/other applications despite
+  the Egyptian method. Exact example: Maghrib today is 17:00 in the references but
+  17:01 on LG; some other prayers differ by two minutes. Prioritize this correctness
+  investigation, retaining Q09.5e All apps navigation unchanged in the queue.
+- Saved calculation inputs: Cairo (30.0444,31.2357), city-default EGYPTIAN, standard
+  Asr, TV timezone (no override), all six manual offsets zero. No setting was changed.
+- Official ESA praytimes.aspx and Dar al-Ifta /ar/prayer both show Cairo on
+  2026-11-12: Fajr 04:48, sunrise 06:17, Dhuhr 11:39, Asr 14:39, Maghrib 17:00,
+  Isha 18:20. Preserve dated source evidence and reproduce the exact discrepancy
+  before hypothesis testing or implementation. Use the diagnosing-bugs feedback loop.
+
+### Q09.5f diagnosis and global rounding/online decisions (2026-11-12)
+
+- Reproduced the exact reported Maghrib discrepancy on installed Node 0.10.25:
+  12 November Cairo times are 04:48,06:18,11:40,14:39,17:01,18:20, versus official
+  04:48,06:17,11:39,14:39,17:00,18:20. TV timezone is UTC+2 and offsets are zero.
+  Fast local command `node state/platform-core/cairo-repro-local.cjs` reproduces
+  the same path/output and fails 1021 !==1020 on Maghrib. No TV setting/UI mutation.
+- Ranked rounding, built-in corrections, location conventions, then date/timezone
+  hypotheses were shown before probes. Raw Egyptian Maghrib is 17:00:30; library
+  nearest-minute rounding gives 17:01. Factory also adds one minute to Dhuhr. Each
+  was varied separately. These findings do not prove the authority uses floor.
+- Compared seven dated November rows (42 values) from Dar al-Ifta's official table.
+  Current defaults mismatch 12 values, maximum two minutes; universal floor alone
+  mismatches 22, and floor plus removing Dhuhr correction mismatches 19. Therefore
+  no claim that flooring/subtracting a minute universally reproduces the official
+  calendar. Context7 lacked these libraries; pinned upstream JS source and original
+  Java 1.2.1 source were consulted directly. JS supports unrounded output; Java's
+  current pinned API rounds internally and needs a minimal source-level adaptation
+  to preserve seconds before applying the same shared floor rule. No astronomy rewrite.
+- Owner rejected an official-timetable option: keep calculation-only, with an
+  online check when possible. Clarified this is global, not Egypt-only, and then
+  explicitly chose downward library rounding (17:00:30→17:00). This intentional
+  global behavior change is authorized despite the measured official-table tradeoff.
+  Retain all existing method corrections/user offsets; no guessed calibration.
+- Q09.5g: add a manual online comparison across supported locations/methods, keeping
+  calculations primary and offline-capable. Investigate a public provider and actual
+  old-LG HTTPS compatibility before promising support. Network access for this
+  requested comparison is an explicit scope addition; no account, analytics, feed,
+  background polling or silent online override. Keep core free of I/O; validate
+  provider data and keep networking/errors in the shells. The manual first shape
+  was communicated; no extra preference answer is pending.
+- Evidence: ignored cairo-2026-11-12-{red.log,actual.json}, cairo-local-red.log,
+  cairo-rounding-method-probes.log, cairo-month-{reference.json,probe-results.json,
+  probes.log}. No production calculation, offset or package changed in this diagnosis.
+
+### Q09.5f global minute rounding: software verified (2026-11-12)
+
+- Owner's explicit floor policy is implemented for every method, retaining all
+  angles, fixed intervals, method corrections and saved manual offsets. Shared
+  PrayerRules.floorToMinute validates finite epoch milliseconds and floors whole
+  minutes, including pre-epoch values. LG/preview request unrounded astronomy
+  before invoking the shared rule; tomorrow Fajr and scheduled events use it too.
+- Native 1.2.1's binary discards seconds internally and exposes no rounding option.
+  Compile that same pinned sources artifact: all 19 non-adapter Java files match
+  upstream bytes exactly. Only CalendarUtil.roundedMinute delegates to the shared
+  rule; its other utilities and all astronomical formulas remain unchanged. No
+  new runtime library/version, generic patch framework or copied astronomy engine.
+  Full MIT/source notices are retained and the modification is disclosed.
+- Regression was red on the actual original library's :30 input, before production
+  edits. The new real-library check passes half-minute/millisecond/signed epochs,
+  all 19 methods' single offset application and Cairo's floor vector. Original
+  local Cairo repro now passes with Maghrib 17:00; Dhuhr's existing +1 correction
+  remains intact. This policy does not promise exact official calendar matching.
+- Updated the 5,190-event timestamp baseline through an independent oracle: the
+  original 6fb81fa policy first reproduces the old frozen hash; changing only its
+  astronomy rounding selection then exactly matches the current core's new hash.
+  Its reminder function is byte-unchanged. Only authorized timestamp normalization
+  changes; no silent weakening of event selection/deduplication checks.
+- PASS: 22 JVM/21 JS common tests; 69 stripped ES5/browser/CommonJS assertions,
+  combined production JS 78,742 bytes; all 40 native Python/Java regressions;
+  full LG ES5/build/service/async and bilingual mocked browser suite; full preview
+  source/formatter/calendar suite with an all-19-method raw-to-floor check.
+  Native standalone build/lint/test APK and aggregate launcher/installer build pass.
+  Standalone APK 21,125,215 bytes; aggregate APK 20,956,410 bytes, both below budget.
+  Aggregate APK preserves all 26 recordings and Adhan notices byte-for-byte;
+  lint remains 0 errors/55 existing warnings. No performance-improvement claim.
+- Actual owned API 37 ART run passes the library/shared floor checks and all 14
+  ICU calendar fixtures, with unchanged system timezone and no TV interaction.
+  Sixth prior closed-session snapshot preserved; owned emulator shutdown, offline
+  serial, exited process and original AVD hashes are verified afterward.
+- Discovered system Node is now 26. Repeated JS/core/LG/browser/preview checks with
+  available bundled Node 24.14.0 as documented. The 1,274 shipped Hijri boundaries
+  remain byte-equivalent in data to installed 0.2.8; no unintended calendar change.
+  LG package/lock/app/service versions align at 0.2.9; its full build/service suite
+  passes. No new package is built/installed yet; real LG 0.2.9 host/rounding proof
+  and physical Android remain open. Continue the queued header/online work.
+- Evidence: ignored rounding-{native-red,core-check,native-regressions,
+  native-source-build,native-final-build,root-build,native-art,reminder-oracle,
+  source-scope,node24-core,node24-lg,node24-lg-browser,node24-preview,
+  lg-0.2.9,emulator-closure}.log/json, cairo-local-green.log and private emulator
+  rounding-prayer records. The TV remains on the accepted 0.2.8 state.

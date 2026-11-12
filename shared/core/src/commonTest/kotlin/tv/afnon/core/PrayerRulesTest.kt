@@ -6,6 +6,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class PrayerRulesTest {
+    @Test fun prayerMinutesAlwaysRoundDown() {
+        for ((time, expected) in listOf(30000.0 to 0.0, 59999.0 to 0.0, 60000.0 to 60000.0,
+            -1.0 to -60000.0, -30000.0 to -60000.0, -60000.0 to -60000.0)) {
+            assertEquals(expected, PrayerRules.floorToMinute(time))
+        }
+        for (time in listOf(Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY)) {
+            assertFailsWith<IllegalArgumentException> { PrayerRules.floorToMinute(time) }
+        }
+    }
+
     @Test fun onlyFiveExactIndexesArePrayers() {
         for (index in listOf(0.0, 2.0, 3.0, 4.0, 5.0)) assertEquals(true, PrayerRules.isPrayer(index))
         for (index in listOf(-1.0, 1.0, 6.0, 0.5, 4294967297.0, Double.NaN, Double.POSITIVE_INFINITY)) {

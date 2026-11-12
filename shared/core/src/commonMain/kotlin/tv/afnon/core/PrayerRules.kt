@@ -3,6 +3,7 @@
 package tv.afnon.core
 
 import kotlin.js.JsExport
+import kotlin.math.floor
 
 @JsExport
 class PrayerSelection(val current: Int, val next: Int, val nextTime: Double)
@@ -11,6 +12,11 @@ class PrayerSelection(val current: Int, val next: Int, val nextTime: Double)
 object PrayerRules {
     const val MAX_OFFSET_MINUTES = 30
     const val MAX_HIJRI_OFFSET_DAYS = 2
+
+    fun floorToMinute(epochMilliseconds: Double): Double {
+        require(epochMilliseconds.isFinite()) { "Invalid prayer time" }
+        return floor(epochMilliseconds / 60000.0) * 60000.0
+    }
 
     // Exact numeric matches keep untrusted JS fractions/large indexes from becoming prayers.
     fun isPrayer(index: Double): Boolean = when (index) {

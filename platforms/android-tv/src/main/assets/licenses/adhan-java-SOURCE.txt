@@ -3,3 +3,5 @@ Artifact: com.batoulapps.adhan:adhan:1.2.1
 Source tag v1.2.1: eefc4ed1b910ec144dff247f45b2b23a16c7d0c2
 https://github.com/batoulapps/adhan-java/tree/eefc4ed1b910ec144dff247f45b2b23a16c7d0c2
 The complete unmodified upstream LICENSE is adhan-java-LICENSE.txt beside this file.
+Build input: the same pinned artifact's :sources classifier, with its astronomy unchanged.
+CalendarUtil.roundedMinute is adapted to the launcher's shared downward minute rule.

@@ -12,6 +12,11 @@ today's times. Platform adapters retain astronomical calculation, calendar/timez
 resolution, persisted defaults, formatting, display conventions and OS integration.
 The core has no Android, DOM, filesystem, network or timer dependency.
 
+`floorToMinute` validates a finite epoch-millisecond value and rounds downward,
+including before the epoch. JS adapters request unrounded astronomy first; the
+native Adhan minute adapter delegates to this same rule before seconds are lost.
+All methods preserve their angle/interval corrections and the user's saved offsets.
+
 Android, LG and the preview consume those rules. `ReminderRules` owns native
 eligibility/rounding, LG future-event selection and inclusive delivery classification.
 The shells retain their different windows, stored keys, claims and lifecycle.

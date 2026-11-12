@@ -2,6 +2,20 @@ plugins {
     id 'com.android.application'
 }
 
+def adhanSources = configurations.create('adhanSources') {
+    canBeConsumed = false
+    transitive = false
+}
+def generatedAdhan = layout.buildDirectory.dir('generated/adhan')
+// The pinned binary rounds internally; compile its unchanged sources with our minute-rule adapter.
+def unpackAdhan = tasks.register('unpackAdhanSources', Sync) {
+    from({ zipTree(adhanSources.singleFile) }) {
+        include '**/*.java'
+        exclude 'com/batoulapps/adhan/data/CalendarUtil.java'
+    }
+    into generatedAdhan
+}
+
 android {
     namespace 'tv.afnon.home'
     compileSdk 34
@@ -21,6 +35,7 @@ android {
     }
 
     sourceSets.main {
+        java.srcDir generatedAdhan
         res.srcDir file('../../shared/design/resources')
         assets.srcDir file('../../shared/design/assets')
         assets.srcDir file('../../shared/core/assets')
@@ -30,9 +45,10 @@ android {
 
 dependencies {
     implementation 'tv.afnon:core'
-    // Offline prayer-time calculation (no network, no transitive dependencies).
-    implementation 'com.batoulapps.adhan:adhan:1.2.1'
+    add(adhanSources.name, 'com.batoulapps.adhan:adhan:1.2.1:sources')
 }
+
+tasks.withType(JavaCompile).configureEach { dependsOn(unpackAdhan) }
 
 // The distributed launcher must stay below 25 MB (decimal), including bundled audio.
 def verifyApkSize = tasks.register('verifyApkSize') {

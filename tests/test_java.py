@@ -16,6 +16,12 @@ def core_runtime():
     assert len(stdlib) == 1, "Use the shared core's pinned Kotlin runtime"
     return os.pathsep.join(map(str, [core, stdlib[0]]))
 
+def adhan_sources():
+    sources = sorted((ROOT / 'platforms/android-tv/build/generated/adhan').rglob('*.java'))
+    assert len(sources) == 19, 'Build the launcher first to prepare pinned Adhan sources'
+    return [*(str(file) for file in sources),
+            str(ROOT / 'platforms/android-tv/src/main/java/com/batoulapps/adhan/data/CalendarUtil.java')]
+
 class JavaChecks(unittest.TestCase):
     def test_appearance_rotation_policy(self):
         with tempfile.TemporaryDirectory() as output:
@@ -142,10 +148,7 @@ class JavaChecks(unittest.TestCase):
             subprocess.run([shutil.which("java"), "-cp", output, "tv.afnon.home.ButtonPressCheck"], check=True, capture_output=True)
 
     def test_prayer_offsets_and_next_day_across_clock_changes(self):
-        cache = Path(os.environ.get("GRADLE_USER_HOME", Path.home() / ".gradle"))
-        jars = list((cache / "caches/modules-2/files-2.1/com.batoulapps.adhan/adhan/1.2.1").glob("*/*.jar"))
-        self.assertTrue(jars, "Build the launcher first to cache its prayer library")
-        runtime = os.pathsep.join([str(jars[0]), core_runtime()])
+        runtime = core_runtime()
         with tempfile.TemporaryDirectory() as output:
             out = Path(output)
             # Platform storage/clock/ICU and appearance are stubbed; Prefs, core and astronomy are real.
@@ -159,6 +162,7 @@ class JavaChecks(unittest.TestCase):
             for name, source in sources.items():
                 (out / name).write_text(source, encoding="utf-8")
             subprocess.run([shutil.which("javac"), "-encoding", "UTF-8", "-cp", runtime, "-d", output,
+                *adhan_sources(),
                 *(str(out / name) for name in sources),
                 str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/PrayerMethod.java"),
                 str(ROOT / "platforms/android-tv/src/main/java/tv/afnon/home/PrayerDay.java"),
@@ -172,6 +176,15 @@ class JavaChecks(unittest.TestCase):
                 "tv.afnon.home.PrefsCheck"], check=True, capture_output=True)
             subprocess.run([shutil.which("java"), "-cp", output + os.pathsep + runtime,
                 "tv.afnon.home.RemindersCheck"], check=True, capture_output=True)
+
+    def test_prayer_library_rounds_down(self):
+        runtime = core_runtime()
+        with tempfile.TemporaryDirectory() as output:
+            subprocess.run([shutil.which('javac'), '-encoding', 'UTF-8', '-cp', runtime, '-d', output,
+                *adhan_sources(), str(ROOT / 'platforms/android-tv/src/main/java/tv/afnon/home/PrayerMethod.java'),
+                str(ROOT / 'tests/PrayerRoundingCheck.java')], check=True, capture_output=True)
+            subprocess.run([shutil.which('java'), '-cp', output + os.pathsep + runtime,
+                'tv.afnon.home.PrayerRoundingCheck'], check=True, capture_output=True)
 
     def test_system_filter_keeps_media_games_and_store(self):
         import os

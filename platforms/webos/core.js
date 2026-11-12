@@ -83,15 +83,16 @@
       }
     }
     params.madhab = p.hanafi ? adhan.Madhab.Hanafi : adhan.Madhab.Shafi;
+    params.rounding = adhan.Rounding.None;
     params.adjustments = {fajr: p.offsets[0], sunrise: p.offsets[1], dhuhr: p.offsets[2], asr: p.offsets[3], maghrib: p.offsets[4], isha: p.offsets[5]};
     var date = wall(now, p), coords = new adhan.Coordinates(c.lat, c.lng);
     function calculate(delta) {
       return new adhan.PrayerTimes(coords, new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + delta), params);
     }
     var today = calculate(0), tomorrow = calculate(1);
-    var times = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(function (name) { return Math.floor(+today[name] / 60000) * 60000; });
+    var times = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(function (name) { return +today[name]; });
     if (times.some(function (time) { return !isFinite(time); }) || !isFinite(+tomorrow.fajr)) { throw new Error('Prayer times unavailable for this location and date'); }
-    return {times: times, tomorrowFajr: Math.floor(+tomorrow.fajr / 60000) * 60000};
+    return {times: times.map(function (time) { return rules.floorToMinute(time); }), tomorrowFajr: rules.floorToMinute(+tomorrow.fajr)};
   }
   function select(day, now) { return rules.select(new Float64Array(day.times), day.tomorrowFajr, +now); }
   function next(day, now) {

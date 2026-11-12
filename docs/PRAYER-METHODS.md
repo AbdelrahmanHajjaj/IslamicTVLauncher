@@ -5,8 +5,20 @@ Choose **Settings → Prayer times → Calculation method**. All 19 presets calc
 Definitions and bilingual names live in [`shared/data/methods.json`](../shared/data/methods.json).
 `node tools/catalogs.mjs` generates Android's enum from that data and its native
 adapter template. The preview and LG consume the same definitions. Built-in
-library factories retain their own calculation behavior; custom corrections are
+library factories retain their angles and method corrections; custom corrections are
 separate from saved user offsets.
+
+Calculated times round down to the start of their minute across all presets,
+including presets whose library default rounds upward. For example, 17:00:30
+becomes 17:00. The core rule applies to displayed times, tomorrow's Fajr and alert
+timestamps; manual offsets and built-in method corrections are applied once and
+retained. Android compiles the pinned Adhan Java sources with only its minute
+rounding adapter changed; the astronomical formulas are unchanged.
+
+These are calculated presets rather than copies of official published calendars.
+Even matching method names can differ from a calendar by a minute or two because
+of rounding, corrections or local conventions. Global downward rounding is the
+owner's chosen policy; it does not promise an exact official-calendar match.
 
 ## Existing methods
 

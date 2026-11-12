@@ -6,6 +6,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- Prayer times now round down to the start of the calculated minute across all
+  methods: 17:00:30 becomes 17:00. Displays and scheduled alerts use the same rule;
+  existing method corrections and saved manual offsets remain intact.
+
 - Settings controls now have shared semantic IDs, canonical bilingual labels and
   explicit platform gaps. Native Android rows and LG rows/carousels are checked
   against the portable contract so omitted controls cannot silently pass as parity.
