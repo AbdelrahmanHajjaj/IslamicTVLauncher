@@ -12,6 +12,7 @@ try {
   await server.ssrLoadModule('/tests/home.ts');
   await server.ssrLoadModule('/tests/prayer-day.ts');
   await server.ssrLoadModule('/tests/appearance-cycle.ts');
+  await server.ssrLoadModule('/tests/online-prayer.ts');
 } finally {
   await server.close();
 }

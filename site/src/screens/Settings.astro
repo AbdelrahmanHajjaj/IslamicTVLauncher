@@ -25,6 +25,15 @@ const { t, lang } = ctx;
   <div class="rows" data-rows set:html={rowsHtml(ctx, PRAYER)} />
   <div class="saved" data-saved role="status">{t.s('saved')}</div>
   <div class="chooser" data-chooser hidden></div>
+  <section class="online-check" data-online hidden role="dialog" aria-modal="true" aria-label={t.s('checkOnline')}>
+    <div class="online-heading">
+      <button class="ft online-back" data-online-back type="button" aria-label={t.s('back')}><Icon name="back" size={32} /></button>
+      <h2 class="display-bold">{t.s('checkOnline')}</h2>
+    </div>
+    <div class="online-body" data-online-body role="status" aria-live="polite"></div>
+    <p class="online-note">{t.s('onlineAdvisory')}</p>
+    <button class="ft online-retry" data-online-retry type="button" hidden>{t.s('checkOnline')}</button>
+  </section>
   <div class="toast" data-toast-out hidden role="status"></div>
   <a data-home href={href('', lang) + '#tv'} tabindex="-1" hidden>{lang === 'ar' ? 'الرئيسية' : 'Home'}</a>
   <audio data-audio preload="none"></audio>
@@ -40,9 +49,10 @@ const { t, lang } = ctx;
   import { APPS } from './apps';
   import type { Ctx } from '../lib/ctx';
   import type { Lang } from '../lib/text';
+  import {fetchComparison, onlineRequest} from '../lib/online-prayer';
   import {
     APPEARANCE, DOCK_MODES, REMIND, VOICES, chooserHtml, citiesOf, commit, countries, methodItems, regionOf, moveDraft, pick, rowsFor, rowsHtml,
-    savedDraft, sectionName, stationChoice, stationsOf, type Edit, type SPrefs,
+    savedDraft, sectionName, stationChoice, stationsOf, onlineHtml, type Edit, type SPrefs,
   } from './settings';
 
   const stage = document.querySelector<HTMLElement>('.tv')!;
@@ -67,6 +77,11 @@ const { t, lang } = ctx;
     let lastRows = rowsEl.innerHTML;
     let radioOn = false;
     let ctx!: Ctx;
+    const onlineEl = $('[data-online]'), onlineBody = $('[data-online-body]');
+    const onlineBack = $('[data-online-back]'), onlineRetry = $('[data-online-retry]');
+    type OnlineView = {row: number; request: AbortController | null};
+    let online: OnlineView | null = null;
+    const onlineBackground = [...root.children].filter(el => el !== onlineEl) as HTMLElement[];
 
     const rowEls = () => [...rowsEl.querySelectorAll<HTMLElement>('[data-row]')];
     const focusRow = (i: number) => {
@@ -176,6 +191,36 @@ const { t, lang } = ctx;
       chooserEl.innerHTML = '';
       focusRow(row);
     };
+    const cancelOnline = () => {
+      if (!online?.request) return;
+      const request = online.request; online.request = null; request.abort();
+      onlineBody.textContent = ctx.t.s('onlineUnavailable'); onlineRetry.hidden = false;
+    };
+    const closeOnline = (restoreFocus = true) => {
+      if (!online) return;
+      const row = online.row; cancelOnline(); online = null; onlineEl.hidden = true;
+      onlineBackground.forEach(el => { el.inert = false; });
+      onlineBody.replaceChildren();
+      if (restoreFocus) focusRow(row);
+    };
+    const checkOnline = async (row: number) => {
+      cancelOnline();
+      const controller = new AbortController(), snapshot = ctx;
+      const owner: OnlineView = {row, request: controller};
+      online = owner; onlineEl.hidden = false; onlineRetry.hidden = true;
+      onlineBackground.forEach(el => { el.inert = true; });
+      onlineBody.textContent = ctx.t.s('onlineLoading'); onlineBack.focus({preventScroll: true});
+      try {
+        const result = await fetchComparison(onlineRequest(snapshot.now, snapshot.prefs), controller.signal);
+        if (online !== owner || !owner.request) return;
+        onlineBody.innerHTML = onlineHtml(snapshot, result); onlineRetry.hidden = false;
+      } catch {
+        if (online !== owner || !owner.request) return;
+        onlineBody.textContent = ctx.t.s('onlineUnavailable'); onlineRetry.hidden = false;
+      } finally { if (online === owner) owner.request = null; }
+    };
+    document.addEventListener('visibilitychange', () => { if (document.hidden) cancelOnline(); });
+    window.addEventListener('pagehide', () => closeOnline(false));
     const choose = (i: number) => {
       const before = chooser;
       onPick(i);
@@ -269,6 +314,7 @@ const { t, lang } = ctx;
     const act = (i: number) => {
       const r = rowsFor(rowCtx(), section, radioOn, offsetsPage)[i];
       if (!r) return;
+      if (r.id === 'prayer.online') { void checkOnline(i); return; }
       if (r.id === 'homeReset' && appearanceDraft) save({ ...appearanceDraft, homeCountdown: 0, homeSide: 0, homeBar: 0, homePrayers: 0, homeLayout: 'two_rows' });
       else if (r.id === 'apply' && appearanceDraft) { appearanceDraft = armCycle(appearanceDraft, Date.now()); update(appearanceDraft); showSaved(); }
       else if (r.kind === 'carousel') return;
@@ -297,7 +343,7 @@ const { t, lang } = ctx;
 
     // ------------------------------------------------------------ keys: the D-pad map of SettingsActivity
     root.addEventListener('keydown', (e) => {
-      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey && e.key !== 'Tab') return;
       const k = e.key;
       const a = document.activeElement as HTMLElement;
       const ok = k === 'Enter' || k === ' ';
@@ -305,8 +351,20 @@ const { t, lang } = ctx;
       const vert = k === 'ArrowUp' ? -1 : k === 'ArrowDown' ? 1 : 0;
       const horiz = k === 'ArrowRight' ? 1 : k === 'ArrowLeft' ? -1 : 0;
       const toEnd = rtl ? -horiz : horiz; // +1 toward the end of the line, mirrored in RTL
-      if (!ok && !back && !vert && !horiz) return;
       const handled = () => { e.preventDefault(); e.stopPropagation(); };
+
+      if (online) {
+        if (!ok && !back && !vert && !horiz && k !== 'Tab') return;
+        handled();
+        if (back) closeOnline();
+        else if (ok && (a === onlineBack || a === onlineRetry)) a.click();
+        else if (vert || k === 'Tab') {
+          const retry = !onlineRetry.hidden && (vert > 0 || k === 'Tab' && a === onlineBack);
+          (retry ? onlineRetry : onlineBack).focus({preventScroll: true});
+        }
+        return;
+      }
+      if (!ok && !back && !vert && !horiz) return;
 
       if (chooser) {
         handled();
@@ -351,6 +409,10 @@ const { t, lang } = ctx;
 
     // Focus on a section shows it at once, as on the TV.
     root.addEventListener('focusin', (e) => {
+      if (online) {
+        if (!onlineEl.contains(e.target as Node)) onlineBack.focus({preventScroll: true});
+        return;
+      }
       const n = (e.target as HTMLElement).dataset?.nav;
       if (n != null) setSection(+n);
     });
@@ -358,6 +420,11 @@ const { t, lang } = ctx;
     // Pointer: the same actions.
     root.addEventListener('click', (e) => {
       const el = e.target as HTMLElement;
+      if (online) {
+        if (el.closest('[data-online-back]')) closeOnline();
+        else if (el.closest('[data-online-retry]')) void checkOnline(online.row);
+        return;
+      }
       if (chooser) {
         const item = el.closest<HTMLElement>('[data-item]');
         if (item) choose(+item.dataset.item!);
@@ -390,6 +457,20 @@ const { t, lang } = ctx;
 </script>
 
 <style is:global>
+  .settings .online-check { position:absolute; inset:0; z-index:2; background:var(--color-lapis-900); padding:var(--space-safe-block) var(--space-safe-inline); display:flex; flex-direction:column; align-items:flex-start; gap:var(--space-4); }
+  .settings .online-check[hidden], .settings .online-check [hidden] { display:none; }
+  .settings .online-heading { display:flex; align-items:center; gap:var(--space-6); width:100%; }
+  .settings .online-heading h2 { margin:0; font-size:var(--font-size-title); line-height:1.3; }
+  .settings .online-back { position:relative; display:grid; place-items:center; flex:none; width:72px; height:72px; border-radius:var(--radius-pill); }
+  [dir=rtl] .settings .online-back svg { transform:scaleX(-1); }
+  .settings .online-body { width:100%; font-size:var(--font-size-body-l); line-height:1.6; }
+  .settings .online-context, .settings .online-note { margin:0; font-size:var(--font-size-caption); line-height:1.6; }
+  .settings .online-context { margin-bottom:var(--space-4); }
+  .settings .online-check table { width:100%; border-collapse:collapse; }
+  .settings .online-check th, .settings .online-check td { padding:12px var(--space-4); text-align:center; border-bottom:1px solid var(--color-lapis-700); }
+  .settings .online-check thead { font-size:var(--font-size-label); color:var(--color-mist-400); }
+  .settings .online-check tbody th { font-weight:500; }
+  .settings .online-retry { position:relative; display:flex; align-items:center; justify-content:center; width:580px; height:72px; font-size:var(--font-size-body); border-radius:var(--radius-cell); }
   .settings .slide { width: var(--layout-settings-carousel-width); height: var(--layout-settings-carousel-height); padding: 0 12px; display: grid; place-items: center; overflow: hidden; white-space: nowrap; font-size: var(--font-size-label); opacity: .65; }
   .settings .slide.home-choice { width:var(--layout-settings-home-arrow-width); }
   .settings .slide.home-choice.on { width:var(--layout-settings-home-choice-width); }

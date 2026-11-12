@@ -11,6 +11,10 @@ import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET, MAX_
 import type { Text } from '../lib/text';
 import { prayerLabel } from '../lib/prayer-icon';
 import { loadFacing } from './prayer-day';
+import portable from '@islamic-tv/core';
+import type { OnlineResult } from '../lib/online-prayer';
+
+const onlineControl = portable.tv.afnon.core.UiContract.bind('prayer.online', 'action');
 
 export const PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, APPEARANCE = 4, NETWORK = 5, DEVICE = 6, SECTIONS = 7;
 export type Kind = 'value' | 'seg' | 'step' | 'toggle' | 'carousel';
@@ -87,6 +91,7 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
       { id: 'offsets', kind: 'value', label: t.s('prayerOffsets'), help: t.s('prayerOffsetsHelp'), value: t.offsetCount(prayerOffsets(p).filter(n => n !== 0).length) },
       { id: 'hijri', kind: 'step', label: t.s('hijriAdjust'), help: (t.ar ? 'اليوم: ' : 'Today: ') + hijri(t, c.day), value: t.days(p.hijriOffset) },
       { id: 'room', kind: 'value', label: t.s('roomTitle'), help: t.s('roomHelp'), value: facing < 0 ? t.s('notSet') : t.bearingLabel(facing) },
+      { id: onlineControl.id, kind: 'value', label: t.s(onlineControl.labelKey), help: t.s('onlineHelp') },
     ];
     case REMINDERS: return [
       { id: 'remind', kind: 'value', label: t.s('remind'), help: t.s('remindHelp'), value: t.d(t.list('remindChoices')[remindIndex(p)]), selected: remindIndex(p) },
@@ -179,6 +184,7 @@ export function pick(c: Ctx, id: string, i: number): SPrefs | null {
 const chevron = '<svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
 export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 'var(--layout-settings-rows-top)') {
+  const binding = r.id === onlineControl.id ? ` data-ui="${onlineControl.id}" data-ui-kind="${onlineControl.kind}"` : '';
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
   else if (r.kind === 'carousel') {
@@ -193,7 +199,7 @@ export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 'var(
   else if (r.kind === 'step')
     control = `<span class="stepb" data-step="-1">−</span><span class="stepv">${esc(r.value ?? '')}</span><span class="stepb" data-step="1">+</span>`;
   else control = `<span class="switch${r.on ? ' on' : ''}"><i></i></span>`;
-  return `<button class="ft row srow${editing ? ' editing' : ''}${r.prayer !== undefined ? ' offset-row' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}" style="top:calc(${top} + ${i} * (var(--layout-settings-row-height) + var(--layout-settings-row-gap)))">`
+  return `<button class="ft row srow${editing ? ' editing' : ''}${r.prayer !== undefined ? ' offset-row' : ''}" data-row="${i}" data-id="${r.id}" data-kind="${r.kind}"${binding} style="top:calc(${top} + ${i} * (var(--layout-settings-row-height) + var(--layout-settings-row-gap)))">`
     + `<span class="words"><span class="rl">${r.prayer !== undefined ? prayerLabel(r.prayer, esc(r.label)) : esc(r.label)}</span>${r.help && r.prayer === undefined ? `<span class="rh">${esc(r.help)}</span>` : ''}</span>
     ${r.prayer !== undefined ? `<span class="offset-time num" dir="ltr">${esc(r.help)}</span>` : ''}`
     + `<span class="ctl">${control}</span></button>`;
@@ -213,6 +219,18 @@ export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | 
     return rowHtml(c.t, shown, i, true, section === APPEARANCE ? '0px' : 'var(--layout-settings-rows-top)');
   }).join('');
 export const previewHtml = (c: Ctx) => clock(c.t, c.day.times[ASR], c.h24);
+
+export function onlineHtml(c: Ctx, result: OnlineResult) {
+  const {t, h24} = c, source = result.source;
+  const context = t.onlineContext(t.ar ? source.city.ar : source.city.en, source.method, source.hanafi, source.date, result.timezone);
+  return `<p class="online-context">${esc(context)}</p><table><thead><tr><th></th><th>${esc(t.s('onlineCalculated'))}</th>`
+    + `<th>${esc(t.s('onlineReference'))}</th><th>${esc(t.s('onlineDifference'))}</th></tr></thead><tbody>`
+    + t.list('prayerNames').map((name, i) => `<tr><th scope="row">${esc(name)}</th>`
+      + `<td class="num" dir="ltr">${esc(clock(t, new Date(source.calculated[i]), h24))}</td>`
+      + `<td class="num" dir="ltr">${esc(clock(t, new Date(result.reference[i]), h24))}</td>`
+      + `<td class="num" dir="ltr">${t.d((result.differences[i] > 0 ? '+' : '') + result.differences[i])}</td></tr>`).join('')
+    + '</tbody></table>';
+}
 
 // ---------------------------------------------------------------- chooser lists
 

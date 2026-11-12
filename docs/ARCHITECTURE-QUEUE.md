@@ -96,18 +96,20 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next actionable software item: Q09.5g global manual online comparison. Calculated
-prayer times remain the offline schedule source. Add a manual Check online action
-for all supported locations/methods; reference results are advisory. Public-provider
-requests are explicitly authorized; no account, project-hosted backend, background
-polling or automatic schedule replacement. Keep network I/O in platform adapters.
-Canonical mapping/comparison and both LG/native Android actions/views/HTTPS
-adapters are implemented and software-verified. Native's temporary prayer.online
-gap is removed and actual rendered coverage passes. Next port the browser preview
-settings action/comparison view and bounded cancellable HTTPS adapter. Its current
-displayed day may substitute tomorrow's Fajr after Isha: use raw civil-day values
-for the comparison. Keep the reference advisory and all saved settings intact.
-Old-LG secure TLS/UI remain unverified; do not install or contact the TV while deferred.
+Next actionable software item: Q09.5h one global UI size control, including every
+screen and the prayer bar. Scale text and controls together; current size by
+default, bounded range, preserved preferences and both languages/focus/clipping.
+Keep HDMI/video unscaled. Inspect each renderer's existing canvas/density/layout
+entry points before choosing the smallest complete per-platform implementation;
+share the semantic setting/range in core, not rendering or a generic UI engine.
+
+Q09.5g manual online comparison is source-complete and software-verified across
+LG, native Android and preview: fixed HTTPS, bounded/cancellable requests, validated
+source identity, raw civil-day times (not tomorrow-Fajr display substitution), six
+advisory differences, retry and late-result focus guards. Calculated times remain
+the offline schedule source; no accounts, backend, polling or schedule replacement.
+Native's temporary prayer.online gap is removed. Old-LG secure TLS/UI and physical
+Android-TV acceptance remain unverified; do not contact the LG while deferred.
 
 Owner explicitly deferred further TV changes: Later; leave the TV unchanged. Do not
 run the prepared 20-second video-only probe, another update or audio/power/UI test
@@ -2352,3 +2354,52 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
   No TV was contacted or changed. Native/LG hardware gates stay open.
 - Continue g with the browser preview port. No new dependency, account/backend,
   recurring network work, settings migration, schedule replacement or UI engine.
+
+### Q09.5g browser preview completion (2026-11-12)
+
+- Previous turn was progress: 4b81040 ports the native adapter/view, removes its
+  gap and proves real ART/network/UI behavior with full cleanup. Only preview
+  wiring remains actionable in g; no TV or emulator is needed for this slice.
+- Reuse the Settings modal/focus pattern and canonical action/copy. Extract a raw
+  civil-day helper from the current calculation adapter; preserve its displayed
+  tomorrow-Fajr convention elsewhere. Snapshot source inputs for the report.
+- Browser fetch uses fixed verified HTTPS/CORS, credentials omit, cache no-store,
+  referrer no-referrer, redirect error, total deadline/cancellation and a 32 KiB
+  decoded streaming-body limit. Accept-Encoding is browser-controlled; no proxy,
+  HTTP/TLS bypass, account or new dependency. Context7 /mdn/content confirmed abort
+  after headers, ReadableStream/getReader and forbidden Accept-Encoding behavior.
+  Back/hide/page navigation cancel work; stale responses cannot take modal focus.
+
+- Preview slice implemented: Settings binds prayer.online to a read-only bilingual
+  six-row report, with source city/method/school/date/timezone, saved clock/digits,
+  calculated offsets and signed reference differences. civilPrayerTimes reuses
+  the calculation setup without changing the displayed tomorrow-Fajr convention.
+  The modal makes background controls inert, retains remote/Tab focus, and restores
+  the invoking row on Back. Pending work cancels on Back, hide or page navigation;
+  stale responses cannot reopen or replace the cancelled view.
+- Browser transport uses standard verified HTTPS/CORS with no credentials/referrer,
+  redirect rejection, a 12-second absolute deadline, fatal UTF-8 decoding and a
+  32 KiB streaming limit. Strict provider/date/coordinate/method/school/high-latitude/
+  ISO calendar/order checks match the native/LG adapters. No cache, persistence,
+  polling, schedule change or dependency was added.
+- PASS: full preview tests, including all 19 method URLs, malformed identities and
+  ISO dates, timezones, raw civil Fajr after Isha, offsets, shared binding, escaped
+  report, streamed chunks, invalid UTF-8, response bounds and cancellation. Existing
+  formatter/calendar/rounding/layout regressions and generated validators pass.
+  The 18-page production build and tokens freshness check pass.
+- PASS in actual built headless Edge, Arabic and English: manual-only networking,
+  six report rows, raw Fajr/offsets, 12/24 clocks/digits, header/table/footer bounds,
+  Back/return focus, D-pad/Tab/Shift-Tab modal containment, retry, late response,
+  synthetic hidden-page cancellation, actual page-navigation cancellation, real
+  12-second timeout and no automatic retry. Stored preferences and audio state
+  remain unchanged. Both preview-online-{ar,en}.png were visually inspected as
+  readable desktop preview output, not TV captures.
+- PASS: actual browser HTTPS/CORS to AlAdhan with default certificate verification
+  and production transport returned Cairo 12-Nov-2026; saved offsets [5,0,-3,0,0,0]
+  produced differences [-5,1,2,1,0,0]. Evidence: ignored online-reference/
+  {browser-final-tests,browser-first-build,browser-first-ui}.log and
+  preview-real-https.json. Owned browser and local server closed in finally.
+- Q09.5g is source-complete across the three consumers. Old-LG TLS/UI and physical
+  Android-TV checks remain open; installed LG is unchanged at its earlier 0.2.9
+  package, owner app audio 30% / TV master 75. No TV or emulator was contacted.
+  Continue Q09.5h global UI sizing; do not claim overall migration completion.

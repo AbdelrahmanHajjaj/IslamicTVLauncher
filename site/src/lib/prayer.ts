@@ -58,8 +58,7 @@ export function hijriOf(date: Date, offsetDays = 0) {
 
 export type PrayerDay = ReturnType<typeof prayerDay>;
 
-/** One moment's view of the prayer day: the six times, the current prayer and the next. */
-export function prayerDay(now: Date, prefs: Prefs) {
+function calculation(prefs: Prefs) {
   const city = cityOf(prefs);
   const where = new Coordinates(city.lat, city.lng);
   const params = methodParams(methodOf(prefs));
@@ -68,8 +67,20 @@ export function prayerDay(now: Date, prefs: Prefs) {
   rules.validateOffsets(new Int32Array(offsets));
   params.adjustments = { fajr: offsets[0], sunrise: offsets[1], dhuhr: offsets[2], asr: offsets[3], maghrib: offsets[4], isha: offsets[5] };
   const at = (d: Date) => new PrayerTimes(where, d, params);
-  const today = at(now);
-  const times = [today.fajr, today.sunrise, today.dhuhr, today.asr, today.maghrib, today.isha].map(minute);
+  return {city, where, at};
+}
+
+const timesOf = (day: PrayerTimes) => [day.fajr, day.sunrise, day.dhuhr, day.asr, day.maghrib, day.isha].map(minute);
+
+/** All six times for the selected civil day, including today's Fajr after Isha. */
+export function civilPrayerTimes(now: Date, prefs: Prefs) {
+  return timesOf(calculation(prefs).at(now));
+}
+
+/** One moment's view of the prayer day: the six times, the current prayer and the next. */
+export function prayerDay(now: Date, prefs: Prefs) {
+  const {city, where, at} = calculation(prefs);
+  const times = timesOf(at(now));
 
   const tomorrowFajr = minute(at(addDays(now, 1)).fajr);
   const selected = rules.select(new Float64Array(times.map(Number)), +tomorrowFajr, +now);

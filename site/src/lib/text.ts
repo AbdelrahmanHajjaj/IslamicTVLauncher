@@ -44,11 +44,17 @@ export function makeText(lang: Lang, eastern = lang === 'ar') {
   };
   const station = (st: Station) => d(ar ? st.ar : st.en);
   const stationWhere = (st: Station) => d(ar ? st.whereAr : st.whereEn);
+  const sep = () => d(' · ');
+  const school = (hanafi: boolean) => hanafi ? copy.asrHanafi : copy.asrStandard;
+  const methodName = (m: string) => {
+    const method = METHOD_DEFINITIONS.find(value => value.id === m) ?? METHOD_DEFINITIONS[0];
+    return ar ? method.ar : method.en;
+  };
 
   return {
     lang, ar, eastern, d, s, list,
     dir: ar ? 'rtl' : 'ltr',
-    sep: () => d(' · '),
+    sep,
     ampm: (am: boolean) => am ? copy.am : copy.pm,
     all: (n: number) => d(s('allTitle') + '\n' + n),
     hintOk: (what: string) => 'OK  ' + what,
@@ -70,11 +76,9 @@ export function makeText(lang: Lang, eastern = lang === 'ar') {
       d(ar ? 'الشاشة مطفأة والإذاعة تعمل · اضغط أي زر للعودة' : 'Screen off, radio playing · press any key to come back'),
     nowHint: () => d(ar ? 'رجوع للإغلاق · يُغلق تلقائيًا بعد 10 دقائق' : 'Back to dismiss · closes by itself after 10 min'),
     chip: (prayer: string) => s('chip', {prayer: String(prayer)}),
-    school: (hanafi: boolean) => hanafi ? copy.asrHanafi : copy.asrStandard,
-    methodName: (m: string) => {
-      const method = METHOD_DEFINITIONS.find(value => value.id === m) ?? METHOD_DEFINITIONS[0];
-      return ar ? method.ar : method.en;
-    },
+    school, methodName,
+    onlineContext: (place: string, method: string, hanafi: boolean, date: string, zone: string) =>
+      [place, methodName(method), school(hanafi), d(date), zone].join(sep()),
     place: (city: string, country: string) => city + copy.placeSeparator + country,
     offsetMinutes: (n: number) => d(`${n > 0 ? '+' : ''}${n}` + copy.offsetMinuteSuffix),
     offsetCount: (n: number) => d(n === 0 ? copy.offsetAllZero : n + copy.offsetChangedSuffix),
