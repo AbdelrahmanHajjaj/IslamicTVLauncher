@@ -250,6 +250,19 @@
     ]
   },
   {
+    "id": "display.size",
+    "section": "display",
+    "kind": "choice",
+    "label": "uiSize",
+    "save": "immediate",
+    "choices": [
+      "80",
+      "90",
+      "100",
+      "110"
+    ]
+  },
+  {
     "id": "display.hide-system-apps",
     "section": "display",
     "kind": "toggle",

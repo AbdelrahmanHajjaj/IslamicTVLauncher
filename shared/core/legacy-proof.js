@@ -122,5 +122,9 @@ function verifyIslamicTVCore(core) {
   rejected = false;
   try { comparison.aladhanMethod('UNKNOWN'); } catch (badMethod) { rejected = true; }
   check(rejected, 'no fallback for unknown online authority');
+  var uiScale = core.tv.afnon.core.UiScale;
+  check(uiScale.DEFAULT_PERCENT === 100, 'original UI size is the default');
+  check(uiScale.percent(80) === 80 && uiScale.percent(90) === 90 && uiScale.percent(100) === 100 && uiScale.percent(110) === 110, 'shared UI size choices');
+  check(uiScale.percent(NaN) === 100 && uiScale.percent(Infinity) === 100 && uiScale.percent(99.9) === 100 && uiScale.percent(120) === 100, 'invalid size fallback');
   return {checks: checks};
 }

@@ -2403,3 +2403,36 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
   Android-TV checks remain open; installed LG is unchanged at its earlier 0.2.9
   package, owner app audio 30% / TV master 75. No TV or emulator was contacted.
   Continue Q09.5h global UI sizing; do not claim overall migration completion.
+
+### Q09.5h global UI sizing (2026-11-12)
+
+- Previous increment 1fea449 completes the preview comparison and its browser HTTPS
+  proof. Work now reaches the one approved global size setting; TV stays untouched.
+- Both TV renderers place content on a 1920x1080 canvas with overscan margins.
+  Start with shared 80/90/100/110 percent choices (100 default). A bounded increase
+  uses those margins; prove every app-owned screen/control at both bounds before
+  claiming renderer completion. Keep HDMI/video dimensions unchanged. Full-width
+  bars require width fitting and edge anchoring, not an enlarged clipped viewport.
+- Reuse each shell's existing settings picker and persistence. Share the control,
+  allowed values and safe fallback only; keep transforms/layout/rendering native.
+  Cover Settings/Home/All apps/Today/online report, pickers, alerts, quick menus,
+  screensaver/screen-off and prayer bar. OS-owned external screens remain OS-owned.
+  Initial shared slice declares hidden renderer gaps until real binding follows.
+- Shared slice implemented: display.size choice, canonical bilingual name/help,
+  UiScale's 100% default/invalid-value fallback and common policy/choice consistency
+  tests. Native and LG explicitly declare temporary unimplemented gaps (90 total
+  controls; native 25 / LG 23 whole gaps). No size control is visible or saved yet.
+  Next implement LG's actual picker and UI-only fitting, then native and preview.
+- Generation caught the missing native text-template markers before projection;
+  markers were added and outputs regenerated. The initial core test run against
+  that stale catalog failed; the regenerated run passes without weakening checks.
+- PASS: core 31 JVM / 30 JS tests, Java interoperability and 80 stripped-host ES5
+  assertions; runtime 86,287 bytes. Full preview tests/18-page build, independent LG
+  ES5/service/online/volume checks and bilingual actual rendered binding coverage
+  with mocked TV APIs pass. Original native bilingual text/hash regressions pass.
+  Android standalone launcher/test-APK build/size/lint passes: 21,151,359 bytes,
+  0 errors / the same 55 lint warnings. No TV or emulator was contacted or changed.
+- Evidence: ignored online-reference/size-{catalogs,core-verified,preview-tests,
+  preview-build,lg-tests,lg-browser,native-text,android-check}.log. Owned browser
+  completed and closed; no background check remains. Renderer work is still open;
+  do not mistake the tested policy for a working global-size setting.

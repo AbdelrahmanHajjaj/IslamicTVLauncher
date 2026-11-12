@@ -372,6 +372,8 @@ final class Text {
     String onlineCalculated() { {{STRINGS:onlineCalculated}} }
     String onlineReference() { {{STRINGS:onlineReference}} }
     String onlineDifference() { {{STRINGS:onlineDifference}} }
+    String uiSize() { {{STRINGS:uiSize}} }
+    String uiSizeHelp() { {{STRINGS:uiSizeHelp}} }
     String onlineAdvisory() { {{STRINGS:onlineAdvisory}} }
     String onlineContext(String place, PrayerMethod method, Madhab school, String date, String zone) {
         return place + sep() + methodName(method) + sep() + school(school) + sep() + d(date) + sep() + zone;

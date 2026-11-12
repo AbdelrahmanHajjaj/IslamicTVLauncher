@@ -1,5 +1,10 @@
 [
   {
+    "id": "display.size",
+    "state": "unimplemented",
+    "reason": "Global size contract is defined; native renderer and picker integration follow in Q09.5h."
+  },
+  {
     "id": "prayer.zone",
     "state": "unimplemented",
     "reason": "Uses the TV time zone; no app-local override editor."

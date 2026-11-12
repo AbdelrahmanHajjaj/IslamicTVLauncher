@@ -10,6 +10,7 @@ Migration acceptance and evidence live only in ARCHITECTURE-QUEUE.md.
 
 | Control | State | Reason |
 | --- | --- | --- |
+| `display.size` | unimplemented | Global size contract is defined; native renderer and picker integration follow in Q09.5h. |
 | `prayer.zone` | unimplemented | Uses the TV time zone; no app-local override editor. |
 | `prayer.today` | unimplemented | Today/Qibla is available from Home; no second Settings shortcut. |
 | `reminders.enabled` | unimplemented | Native reminder and adhan switches are independent; no master scheduled-alert switch. |
@@ -46,6 +47,7 @@ Migration acceptance and evidence live only in ARCHITECTURE-QUEUE.md.
 
 | Control | State | Reason |
 | --- | --- | --- |
+| `display.size` | unimplemented | Global size contract is defined; LG renderer and picker integration follow in Q09.5h. |
 | `prayer.facing` | unimplemented | Qibla shows true north; manual screen-facing calibration is not ported. |
 | `radio.playback` | unimplemented | Uses separate Play/Stop actions instead of a station-row toggle. |
 | `radio.screen-off` | os-unsupported | No supported production panel-off integration on the tested old LG. |

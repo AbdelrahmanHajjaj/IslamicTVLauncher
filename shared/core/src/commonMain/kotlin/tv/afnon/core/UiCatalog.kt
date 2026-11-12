@@ -32,6 +32,7 @@ internal object UiCatalog {
         UiControl("display.language", "display", "choice", "language", "immediate", "", arrayOf("system", "ar", "en")),
         UiControl("display.digits", "display", "choice", "digits", "immediate", "", arrayOf("auto", "western", "eastern")),
         UiControl("display.clock", "display", "choice", "clockRow", "immediate", "", arrayOf("system", "12", "24")),
+        UiControl("display.size", "display", "choice", "uiSize", "immediate", "", arrayOf("80", "90", "100", "110")),
         UiControl("display.hide-system-apps", "display", "toggle", "hideSystemApps", "immediate", "", emptyArray()),
         UiControl("display.quick-labels", "display", "toggle", "quickLabels", "immediate", "", emptyArray()),
         UiControl("display.bar-mode", "display", "choice", "prayerDock", "immediate", "", arrayOf("hidden", "tab", "off")),

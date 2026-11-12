@@ -1096,6 +1096,14 @@
     "ar": "الفارق بالدقائق (AlAdhan − الحساب)",
     "en": "AlAdhan − calculated (min)"
   },
+  "uiSize": {
+    "ar": "حجم الواجهة",
+    "en": "Interface size"
+  },
+  "uiSizeHelp": {
+    "ar": "كل الشاشات وشريط الصلاة",
+    "en": "All screens and the prayer bar"
+  },
   "onlineAdvisory": {
     "ar": "مقارنة استرشادية. الحساب المحلي يتضمن تعديلاتك المحفوظة؛ مواقيت AlAdhan لا تتضمنها. قد يختلف التقريب أو العرف المحلي.",
     "en": "Advisory comparison. Calculated times include your saved offsets; AlAdhan values do not. Rounding and local conventions may differ."
