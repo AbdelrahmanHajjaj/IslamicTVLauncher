@@ -92,133 +92,55 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Active priority | Owner-requested shared UI/settings/input contract. Home input and initial Settings control coverage are verified; continue bounded value/bounds and linked-editor coverage, then the new LG build's host/UI acceptance. Power/startup passed on 0.2.7; Android hardware remains open. |
+| Q09.5 | Active priority | Shared controls/bindings/bounds and Home/All apps rules are implemented. LG 0.2.9 volume is accepted; live HDMI background and physical All apps checks await a watcher. Continue approved global online comparison and one global UI size control; Android hardware remains open. |
 
 ## Current cursor
 
-Execution resumed on 2026-11-12: owner reports the LG is available now. Scope and
-acceptance criteria are unchanged; continue Q09.5d with the refreshed baseline.
+Next actionable software item: Q09.5g global manual online comparison. Calculated
+prayer times remain the offline schedule source. Add a manual Check online action
+for all supported locations/methods; reference results are advisory. Public-provider
+requests are explicitly authorized; no account, project-hosted backend, background
+polling or automatic schedule replacement. Keep network I/O in platform adapters.
+First establish provider/date/method compatibility and secure old-LG feasibility.
 
-Next: Q09.5i package the software-verified 0.2.9 source and verify the candidate,
-then perform the authorized in-place LG update and bounded watched volume/mihrab,
-All apps and rounding checks. The original 50 !=7 regression and the rapid-replay
-race are now green. Full LG ES5/service/native-volume and browser suites pass on
-Node 24.14.0. Commit the volume slice before packaging. Installed TV is still 0.2.8;
-no new audible adhan or package has been installed. Transparency is committed at
-9e10bed and All apps navigation at d6d039c. Capture a fresh settings/input/startup
-and master-volume baseline, and confirm watcher availability before audible work.
+Owner explicitly deferred further TV changes: Later; leave the TV unchanged. Do not
+run the prepared 20-second video-only probe, another update or audio/power/UI test
+until watcher readiness returns. Continue independent software work meanwhile.
 
-Q09.5i LG adhan volume diagnosis was prioritized by the owner's new defect
-report. Saved app volume 15% reportedly still plays very loudly. Do not start an
-audible repro without a watcher; establish a real host/device feedback loop before
-changing playback. Owner also requests a transparent adhan-screen background with
-only the centered mihrab visible, confirmed on LG while adhan plays (not the silent
-banner). Investigate decoder/background limitations and preserve restoration;
-do not promise live HDMI under local audio if the tested hardware cannot do it.
-Owner selected temporary native TV-volume adjustment with restoration on the old
-LG. Apply the saved app percentage relative to the captured current level; never
-raise it to achieve attenuation or change mute. Restore only while still owning
-the applied level; respect subsequent remote changes. Cover failure/cancellation,
-overlap, suspend/closure and crash recovery, and verify a bounded watched adhan.
-Do not ship the costly whole-recording Web Audio prototype.
-Then resume Q09.5g optional online comparison
-for every supported location/method, not just Egypt. First implementation is a
-manual Check online action; offline calculations remain the schedule source and
-online results are advisory. No account/cloud or automatic schedule replacement.
-Then Q09.5h: add one global UI size control for the entire app, including the
-prayer bar. Owner expanded the initial bar request and explicitly chose one global
-control; do not add separate font/bar controls. Scale text and controls together,
-retain the current size by default, preserve bar behavior and preferences, and
-bind both renderers and preview through the universal contract. Choose a bounded
-range supported by their layouts; verify Arabic/English, readable text, reachable
-focus, clipping and actual old-LG rendering. HDMI/video is content, not UI to zoom.
-Q09.5e is the owner-requested All apps header navigation refinement, shared by
-Android/LG: Up from any column of the first app row reaches Back; logical horizontal
-movement stays in the Back → Prayer → Settings header row. Keep lower-row paging,
-activation/Back behavior and all stored preferences intact. Add actual adapter
-checks and verify the resulting LG patch while the owner is available; physical
-Android acceptance remains separate. LG 0.2.8 is installed and
-its payload, live legacy hosts, bilingual bindings and preserved state are verified.
-The header is circular in both logical directions, so either horizontal key from
-Back reaches Prayer or Settings, matching the owner's request. Translate RTL once.
-Q09.5e is now implemented and software-verified along with Q09.5f global downward
-rounding (committed da2fbd2). Retain both for the upcoming LG patch. Installed LG
-remains accepted 0.2.8; source versions align to uninstalled 0.2.9, with 72 legacy
-assertions. Do not claim these source changes are live before the next verified
-in-place package/host check. Preserve all calculation parameters and saved offsets.
-The bounded
-UI contract work is software-verified: 88 semantic controls, actual native/LG
-bindings, canonical labels, choice values/bounds, five per-prayer switches, room
-direction and favourite action flows. Native has 24 whole-control gaps and LG 22;
-partial-option gaps remain separately declared. LG editing/cosmetic features may
-stay hidden with honest unimplemented reasons, as the owner approved. Do not add a
-generic UI engine, speculative features or forced cosmetic ports.
+Installed LG 0.2.9 is verified against the package (100 files), actual Node 0.10.25
+(72 common + 30 adapter assertions) and WebKit 538.2 (72 common assertions). Upgrade
+preserved all 30 preferences, HDMI_1 and full startup state. Owner confirmed normal
+picture/sound. Downward minute rounding is installed; Cairo fixture Maghrib is 17:00.
 
-Authorized 0.2.7→0.2.8 close/install/relaunch succeeded. Fresh before/after/final
-snapshots q095-ready-lg-*-service prove all 30 original preferences, Arabic, input
-and complete startup state unchanged. All 100 installed payload files match the
-candidate, and all 66 core assertions pass on actual Node 0.10.25 and WebKit 538.2.
-Actual WebKit checks in Arabic/English account for all 88 controls (66 bound/22
-gaps), 20 choice models/conditional variants, five prayer bindings and Home vectors.
-English was temporary and Arabic is restored; no test is pending. Owner confirms
-unchanged HDMI picture/sound, joined/readable Arabic values and normal physical
-Home Up/Down/All apps/Back routes. Q09.5d is accepted; the new All apps header request
-is Q09.5e. The owned inspector and its endpoint are verified closed. No duplicate audible/
-power test is justified by these metadata/focus changes. Physical Android remains
-unavailable until around 2026-11-25 and is a separate open gate.
+Q09.5i volume is accepted: saved 15% produced actual 75→11→75, quiet playback,
+automatic stop and normal restoration. Owner subsequently confirmed changing app
+audio to 30%; they also changed TV volume to 75. Preserve both current choices.
+Final snapshot: no pending test/volume owner/audio/overlay, input view, decoder=4,
+no error. Owned inspector and emulator are closed. Never restore older snapshots.
 
-HomeNavigation is shared and physically accepted on installed LG 0.2.7. Its Up
-route uses Android's column-dependent top controls; Down beyond apps selects All
-apps. Watched cold boot/startup passed: automatic launcher and HDMI picture/sound,
-exactly one launch (3 to 4), all 30 preferences/input preserved, no pending test.
-Browser then stayed visible for 90 seconds without a repeat launch; the same-boot
-counter remained 4. Preserve the current Arabic preference, not an older English
-snapshot. See docs/UI-CONTRACT.md for the implemented semantic/input specification;
-the remaining gate is actual final-package verification, followed by unavailable
-physical Android acceptance around 2026-11-25.
+Q09.5i live background is unresolved. CSS outer alpha is 0 and Settings is hidden,
+but startAudio unloads HDMI, leaving a blank video plane. A reversible 15-second
+video-only probe restored normally; owner did not observe its picture/sound. The
+20-second encodeURI variant is prepared but NOT RUN. Do not claim coexistence or
+add speculative audio backends before the native result is actually observed.
+No root/firmware, fake still image or permanent PC requirement.
 
-Q09.4.4 background service test passed its live checks and cleanup. Owner heard
-adhan and reports Browser now, but did not observe whether Browser was visible
-before the alert. Preserve that observation limit. The separate watched new-boot/
-startup check passed on 0.2.7; leave the TV in the owner's Browser afterward.
-The later fresh backup's current Arabic choice and all 30 values are preserved.
-No test activity is pending. Do not reset Arabic from the older English snapshot.
+Q09.5e All apps rules are implemented across core/Android/LG/preview and software
+verified: Up from any first-row column reaches Back; horizontal movement stays in
+the circular Back/Prayer/Settings row, with one RTL translation. Physical LG
+acceptance remains open. Home's existing shared navigation is physically accepted.
 
-Real LG evidence so far: 0.2.4 to 0.2.5 to 0.2.6 in-place upgrades preserve all
-30 current preferences, HDMI 1 and startup state. Owner confirms picture/sound,
-physical OK/Home/arrows/Settings/Back focus, joined Arabic/RTL, short adhan and
-normal automatic audio/HDMI/settings restoration. Actual Node 0.10.25/core and
-WebKit 538.2 checks pass; all 100 installed 0.2.6 files match the reviewed package.
-English was restored/verified earlier; fresh pre-0.2.7 state was Arabic and the
-update preserved it. Current backups are ignored q094-lg-home-*-service/.
-The third owned inspector is closed; leave the current Browser state alone.
-Background controller state in ignored q094-background/operations.json confirms
-complete-awaiting-human and cleanupConfirmed=true; do not arm a duplicate test.
+After g, Q09.5h adds one global UI size control, including the prayer bar. Scale
+text and controls together; keep current size by default, bound the range, preserve
+settings and verify both languages/focus/clipping. HDMI/video is content to leave
+unscaled. No separate bar/font controls or generic renderer engine.
 
-Owner explicitly authorized watched in-place/audio/remote/power tests, lifting
-the earlier read-only limit. Keep tests sequential and distinguish human picture/
-sound evidence from DOM/service results. Private device details/artifacts stay
-ignored. The previous blocked audit is historical; the user has set the goal active.
-
-Android physical upgrade/older ICU/remote/lifecycle acceptance still awaits hardware
-around 2026-11-25. Q09.2 ART/ICU and Q09.3 data-preserving emulator checks passed;
-the owned emulator is closed and the user's AVD configuration remained unchanged.
-The API 37 phone image does not close Android TV gates. Newer LG, Samsung and Sony
-hardware remain unavailable. Keep the full objective incomplete until required
-physical checks pass; add no speculative work or repeated passing suites while
-waiting. No release, merge, remote detach, firmware or root action.
-
-Q00–Q08 software work is complete. Preview retains three low build-only findings
-from one upstream-unpatched deepmerge chain, limited to repository-owned tokens and
-documented beside use. Core and LG audits are zero; do not claim zero preview audit.
-Keep immutable upstream notices byte-identical, including BoringSSL whitespace.
-
-Q06 is complete: core/Android/LG build independently with canonical inputs; root
-`:app` and installer tasks remain supported. Q06/Q07's path/notice acceptance
-recorded 100 LG files and 99 Android APK entries with retained bytes preserved.
-Later Home-contract runtime changes are intentional and measured in Q09.5b; do not
-reuse the old byte-equality claim as proof of current navigation artifacts. Add no
-unrelated renderer redesign, transport or future shell.
+Q00–Q08 and Q09.5's initial semantic UI/binding work are complete; see evidence and
+docs/UI-CONTRACT.md. Android physical acceptance awaits hardware around 2026-11-25;
+API 37 phone emulator checks do not close TV gates. Newer LG/Samsung/Sony remain
+unverified. Preview retains three documented low build-only deepmerge findings;
+core/LG audits are zero. Preserve notices and the APK budget. No release, merge,
+remote detachment or unrelated work; keep the overall goal active and incomplete.
 
 ## Evidence and decisions
 
@@ -2170,3 +2092,70 @@ unrelated renderer redesign, transport or future shell.
   24.14.0 with explicit npm CLI, then browser-test.cjs. Legacy hardware/package
   verification and watched adhan/restoration remain open. The previous goal turn
   was progress (commits, actual-host diagnosis and red repro), not a blocked wait.
+
+- Volume source is committed at c1f59af. Verified candidate is ignored
+  volume-candidate/tv.afnon.webos_0.2.9_all.ipk, 18,651,494 bytes, SHA-256
+  e459b4b351e14ff1d21669fb56b72bdb8ab32050f345f7ef4ddaff95a4742540.
+  All 100 app/service files match the tested build byte-for-byte; only expected
+  packageinfo metadata is added. Existing identities/version are verified.
+  Owner explicitly reports ready for the watched in-place update and quiet test.
+  Fresh q095-volume-lg-before-service snapshot is captured; perform the guarded
+  close/install/relaunch once, then inspect actual state before audible playback.
+
+### Q09.5i 0.2.9 installed: volume accepted, visible transparency unresolved (2026-11-12)
+
+- Guarded in-place close/install/relaunch all succeeded, recorded once in ignored
+  volume-upgrade-operations.json. All 100 installed files match the verified IPK.
+  Actual Node 0.10.25 passes 72 common assertions plus 30 adapter assertions;
+  actual WebKit 538.2 passes 72, decoder ready=4/no error, Arabic retained.
+- Fresh before/after snapshots prove all 30 preferences, input HDMI_1 and complete
+  startup state unchanged. Master volume changed 50→75 between snapshots; owner
+  explicitly confirms they changed it. Preserve their chosen 75, not the older 50.
+  v029-baseline-comparison.json retains this variance and owner confirmation.
+- Installed native volume round trip with no adhan confirms 75→11→75, mute false
+  throughout, prepare mode tv and release success. Actual renderer's fixed Cairo
+  12-Nov floor fixture is [288,377,700,879,1020,1100], Maghrib 17:00.
+- Watched short adhan goes through the actual Test alerts handler. During playing,
+  2 s and 6 s, native volume is 11 and element volume 1; playback time advances.
+  Returns to Settings automatically with volume 75, no audio/overlay, decoder=4,
+  no error, no watchdog intervention. Owner confirms quiet and restored normally.
+  Synthetic click did not focus the test row first; recorded returned focus is the
+  original sidebar section. Do not claim this proves a physical test-row focus path.
+- Visual result is NOT accepted. Actual call has one mihrab, outer computed
+  rgba(0,0,0,0), underlying Settings hidden, but the owner still sees no transparent
+  live background. This is the video layer being unloaded for native MP3 playback,
+  not the Settings screen remaining behind it. Owner asks whether Settings caused
+  it; answered candidly that decoder handoff is the cause. Retain this distinction
+  and investigate actual picture/audio coexistence rather than another CSS tweak.
+- Evidence: q095-volume-lg-{before,after}-service/snapshot.json,
+  v029-dom-{core,volume-roundtrip-result,rounding,watched-result}-result.json.
+  New owned v029 inspector is open with running:true; no emulator or pending adhan
+  test is active. Completed adhan observers/timers were removed; clear remaining
+  diagnostics and close the owned inspector after current checks.
+
+### Q09.5i watched-check deferral and cleanup (2026-11-12)
+
+- HDMI element exposes audioTracks but its list is empty. LG's primary mediaOption
+  reference documents option.mediaFormat.type=video_only. A reversible 15-second
+  probe used it, restored the original service/webos-external source, ready=4 and
+  no error. Owner said they did not notice; this does NOT prove muted HDMI or live
+  picture coexistence. The next prepared variant follows documented encodeURI
+  exactly and extends observation to 20 seconds. It has not been run.
+- Owner explicitly answered Later; leave the TV unchanged when asked to watch
+  the repeat. Do not infer continued readiness from earlier watched checks. Only
+  final reads/completed-probe cleanup and closing the owned PC inspector followed;
+  no input/source/volume/screen mutation was started afterward.
+- Final q095-volume-lg-final-service snapshot has HDMI_1, unchanged full startup,
+  no pending test, no volume owner and TV volume 75/unmuted. All preferences except
+  app volume match the original snapshot. App volume is now 30%, after 15% survived
+  the update and was used by the accepted adhan test. Owner explicitly confirms
+  changing app audio to 30%. Preserve this and their chosen TV volume 75.
+- Completed probe variables removed; original HDMI source type/ready=4/no error,
+  no audio/overlay, screen visibility normal. Owned v029 inspector identity checked
+  and closed; endpoint unreachable. Evidence v029-inspector-closure.json and
+  v029-dom-{video-only-result,final-cleanup}-result.json. No running tool jobs remain.
+- Continue Q09.5g on the computer while TV work is deferred. Its public-provider
+  requests are authorized by the owner's explicit online-check request; this is
+  not a companion/cloud-account project. Keep all I/O in platform adapters and
+  calculations the offline schedule source. Do not add speculative alternate
+  audio backends before the native video-only result is actually observed.

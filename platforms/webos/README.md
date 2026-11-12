@@ -94,14 +94,14 @@ Activity Manager background service and has a cancellation action.
 Silent banners/cards do not pause, unload or reload the input. Audible playback must
 release the input decoder first on the LF6300; after Stop, end or a media error, the
 audio source is removed and the same recorded input is reloaded inside the app.
-Installed 0.2.8 never changes master TV volume. Its media-element volume setting
-is ineffective on this old webOS 2.2 decoder: the owner reports loud playback with
+Version 0.2.8 did not change master TV volume. Its media-element volume setting
+was ineffective on this old webOS 2.2 decoder: the owner reported loud playback with
 a correctly saved 15% setting. LG documents media-element volume control from
 [webOS 4.0](https://forum.webostv.developer.lge.com/t/send-key-messages-by-web-apps/397).
-Use the TV remote for the installed build until the replacement is hardware-verified.
+Version 0.2.9 replaces that ineffective control on the tested LF6300.
 Spoken Arabic clips are the same clips as Android, including Friday's Jumuah line.
 
-The 0.2.9 source uses temporary native TV volume on SDK versions below 4. It applies
+Version 0.2.9 uses temporary native TV volume on SDK versions below 4. It applies
 the saved percentage to the current TV level (50 at 15% becomes 7), verifies that
 level before playing, and restores it after Stop, completion, errors, dismissal or
 suspend. It never changes mute. A changed remote volume is retained if it differs
@@ -276,6 +276,20 @@ These actions cancel only this package's own activities; they do not touch other
 native input settings or Developer Mode.
 
 ## Hardware validation
+
+Version 0.2.9 was installed over 0.2.8 on 12 November 2026. All 100 payload files
+match the verified package; Node 0.10.25 passes 72 shared and 30 adapter assertions,
+and WebKit 538.2 passes the 72 shared assertions. All 30 preferences, HDMI selection
+and complete startup state are preserved. The owner changed master volume from 50
+to 75 during the update; the app retained that choice. At the saved 15% setting,
+actual adhan playback used native level 11 and restored 75 without changing mute.
+The owner confirmed quiet playback, automatic stop and normal sound restoration.
+
+The adhan's outer CSS is transparent and Settings is hidden, but the owner did
+not see a transparent live background: local MP3 playback still unloads HDMI.
+CSS transparency alone does not satisfy that visual requirement. Live HDMI during
+adhan is not claimed. A bounded video-only input probe restored normally, but its
+picture/sound result was not observed; it establishes no coexistence capability.
 
 Version 0.2.8 was installed over 0.2.7 on the LF6300 on 12 November 2026. All 100
 installed payload files match the reviewed package. All 30 preferences, Arabic,

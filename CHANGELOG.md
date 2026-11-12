@@ -10,9 +10,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   methods: 17:00:30 becomes 17:00. Displays and scheduled alerts use the same rule;
   existing method corrections and saved manual offsets remain intact.
 
-- LG's adhan screen shows only the central mihrab over a transparent outer area,
-  hiding its originating page until dismissal. Silent prayer banners keep their
-  existing appearance and input playback behavior.
+- LG's adhan screen removes the outer dim layer and hides its originating page
+  until dismissal. On the tested old LG, local audio still releases HDMI's decoder,
+  so a live TV background during adhan remains unresolved. Silent prayer banners
+  keep their existing appearance and input playback behavior.
   Old LG audio uses temporary TV volume because its decoder ignores per-element
   volume. The app applies the saved percentage before playback and restores the
   previous level on Stop/end/error/exit, preserving mute and changed remote levels.
