@@ -106,12 +106,13 @@ candidate hash and source freshness before any authorized upgrade, capture curre
 preferences/input/startup then, and install over the existing app without uninstalling.
 Preparation does not close any hardware gate.
 
-Hardware hold audit (2026-11-13): first consecutive continuation at this impasse
-after 93e370a's completed package preparation. Previous turn was progress; this
-continuation makes no product progress and is not a verified process wait. Clean
-feature branch, committed candidate provenance and package hash are rechecked.
+Hardware hold audit (2026-11-13): third consecutive continuation at this impasse
+after 93e370a's completed package preparation. Both preceding hold continuations
+made no product progress; this is not a verified process wait. Rechecked current
+cursor and worktree: only our ledger checkpoint changed; hardware acceptance
+remains. Candidate provenance and package hash were verified in the first hold audit.
 LG watcher deferral and unavailable Android TV still prevent the remaining gates;
-no independent queue item remains. Goal stays active and incomplete. Do not repeat
+no independent queue item remains. Goal is blocked and incomplete. Do not repeat
 tests or create new scope to fill the wait; resume hardware work only when available.
 
 Q09.5h source sizing is software-complete across core, LG, native Android and
@@ -168,7 +169,8 @@ docs/UI-CONTRACT.md. Android physical acceptance awaits hardware around 2026-11-
 API 37 phone emulator checks do not close TV gates. Newer LG/Samsung/Sony remain
 unverified. Preview retains three documented low build-only deepmerge findings;
 core/LG audits are zero. Preserve notices and the APK budget. No release, merge,
-remote detachment or unrelated work; keep the overall goal active and incomplete.
+remote detachment or unrelated work; the overall goal remains incomplete at the
+hardware gate, with execution blocked as recorded above.
 
 ## Evidence and decisions
 
