@@ -101,6 +101,17 @@ a correctly saved 15% setting. LG documents media-element volume control from
 Use the TV remote for the installed build until the replacement is hardware-verified.
 Spoken Arabic clips are the same clips as Android, including Friday's Jumuah line.
 
+The 0.2.9 source uses temporary native TV volume on SDK versions below 4. It applies
+the saved percentage to the current TV level (50 at 15% becomes 7), verifies that
+level before playing, and restores it after Stop, completion, errors, dismissal or
+suspend. It never changes mute. A changed remote volume is retained if it differs
+from the app's applied level. Newer SDKs keep media-element attenuation; those
+hosts are not hardware-validated. Failure to prepare volume prevents playback.
+The baseline is saved before native changes. After a process crash, recovery waits
+for a new silent app instance: volume may stay reduced until the launcher reopens.
+There is no timer that could raise TV volume over frozen audio. Restoring a record
+is conditional on the TV still having the level applied by that record.
+
 The 0.2.9 source removes the adhan screen's outer dim layer and hides its
 originating page while the central mihrab is visible. Dismissal restores the page
 and its focus. This does not establish live HDMI behind local audio; the LF6300

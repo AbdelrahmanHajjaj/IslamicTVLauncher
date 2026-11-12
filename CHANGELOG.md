@@ -13,6 +13,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 - LG's adhan screen shows only the central mihrab over a transparent outer area,
   hiding its originating page until dismissal. Silent prayer banners keep their
   existing appearance and input playback behavior.
+  Old LG audio uses temporary TV volume because its decoder ignores per-element
+  volume. The app applies the saved percentage before playback and restores the
+  previous level on Stop/end/error/exit, preserving mute and changed remote levels.
+  After a process crash, the saved baseline is recovered when the launcher reopens.
 
 - Settings controls now have shared semantic IDs, canonical bilingual labels and
   explicit platform gaps. Native Android rows and LG rows/carousels are checked

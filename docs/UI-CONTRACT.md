@@ -68,6 +68,12 @@ Android, LG and the browser preview bind this rule and translate RTL once.
 
 ## Settings coverage
 
+The audio-level percentage is stored unchanged by native adapters. Old LG applies
+it relative to the captured TV level because its decoder cannot attenuate an
+element; newer supported SDKs use element volume. Stop/end/error/suspend restores
+the owned level, with manual changes retained. Crash recovery waits for a silent
+new app instance rather than raising volume over potentially frozen playback.
+
 Common product concepts include location/calculation, six prayer adjustments,
 Hijri correction, Qibla orientation, reminders/adhan/voices, station/resume behavior,
 language/digits/clock, Home layout/prayer information/favourites, appearance and

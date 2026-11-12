@@ -25,11 +25,12 @@ const server = http.createServer((req, res) => {
     await page.addInitScript(() => {
       // Mock the TV boundary and decoder events; the physical LG validates actual picture/sound.
       window.mediaCalls = [];
+      window.volumeCalls = [];
       window.closeCount = 0; window.close = () => { window.closeCount++; };
       HTMLMediaElement.prototype.load = function () { window.mediaCalls.push({op: 'load', tag: this.tagName, src: this.getAttribute('src'), children: this.children.length}); };
       HTMLMediaElement.prototype.pause = function () { window.mediaCalls.push({op: 'pause', tag: this.tagName}); };
       HTMLMediaElement.prototype.play = function () {
-        window.mediaCalls.push({op: 'play', tag: this.tagName, src: this.getAttribute('src')});
+        window.mediaCalls.push({op: 'play', tag: this.tagName, src: this.getAttribute('src'), masterVolume: window.mockMasterVolume === undefined ? 50 : window.mockMasterVolume, elementVolume: this.volume});
         setTimeout(() => this.dispatchEvent(new Event('playing')), 0); return Promise.resolve();
       };
       window.PalmServiceBridge = function () {
@@ -44,6 +45,29 @@ const server = http.createServer((req, res) => {
           localStorage.setItem('fixture', JSON.stringify(state));
           const reply = {returnValue: true, state, prefs: state.prefs, enabled: state.startup && state.startup.enabled,
             current: window.Afnon.input(state.input || 'HDMI_1'), inputs: ['HDMI_1', 'HDMI_2', 'HDMI_3', 'DTV'].map(window.Afnon.input)};
+          if (method === 'audioVolume') {
+            window.volumeCalls.push(p);
+            const finish = () => {
+              reply.mode = window.legacyVolume ? 'tv' : 'element';
+              if (window.failVolume && p.action === 'prepare') {
+                reply.returnValue = false; reply.errorText = 'Fixture volume failure';
+              } else if (window.legacyVolume) {
+                const owner = window.mockVolumeOwner;
+                if (p.action === 'prepare') {
+                  const original = owner && window.mockMasterVolume === owner.applied ? owner.original : window.mockMasterVolume;
+                  const applied = Math.floor(original * state.prefs.volume / 100);
+                  window.mockMasterVolume = applied; window.mockVolumeOwner = {id: p.id, original, applied};
+                } else if (p.action === 'release' && owner && owner.id === p.id) {
+                  if (window.mockMasterVolume === owner.applied) window.mockMasterVolume = owner.original;
+                  window.mockVolumeOwner = null;
+                }
+              }
+              this.onservicecallback(JSON.stringify(reply));
+            };
+            if (window.deferVolume && p.action === 'prepare') { (window.volumeReplies ||= []).push(finish); }
+            else setTimeout(finish, 5);
+            return;
+          }
           if (method === 'takeAlert') { reply.alert = state.pendingAlert; if (state.expiredAlert) { reply.returnValue = false; } }
           if (method === 'launchApp' && window.failAppLaunch) { reply.returnValue = false; reply.errorText = 'App unavailable'; }
           setTimeout(() => this.onservicecallback(JSON.stringify(reply)), 5);
@@ -487,7 +511,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('[data-action=toggle-adhan]').innerText(), 'Play');
     assert.equal(await page.locator('.call-frame').count(), 1, 'Stop preserves the call screen for replay');
     await page.locator('[data-action=toggle-adhan]').click();
-    assert.equal(await page.locator('[data-action=toggle-adhan]').innerText(), 'Stop');
+    await page.waitForFunction(() => document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
     await page.keyboard.press('Escape');
     await page.waitForSelector('#input-video source', {state: 'attached'});
     assert.equal(await page.locator(':focus').getAttribute('data-action'), 'test-adhan', 'adhan returns to the original test row');
@@ -672,6 +696,93 @@ const server = http.createServer((req, res) => {
     await page.locator('[data-action=dismiss-alert]').click();
     assert.equal(await page.evaluate(() => window.closeCount), 0, 'expired cold-start alerts do not make later in-app tests exit');
     assert.equal(await page.locator('.settings-page').count(), 1);
+    await page.evaluate(() => {
+      const state = JSON.parse(localStorage.getItem('fixture')); state.prefs.volume = 15;
+      localStorage.setItem('fixture', JSON.stringify(state));
+    });
+    await page.reload(); await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.evaluate(() => { window.legacyVolume = true; window.mockMasterVolume = 50; window.mediaCalls = []; });
+    await tests(); await page.locator('[data-action=test-adhan]').click();
+    await page.waitForFunction(() => window.mediaCalls.some(c => c.op === 'play' && c.tag === 'AUDIO'));
+    const legacyPlayback = await page.evaluate(() => window.mediaCalls.find(c => c.op === 'play' && c.tag === 'AUDIO'));
+    assert.equal(legacyPlayback.masterVolume, 7, 'old LG must apply 15% of the captured TV level before adhan playback');
+    assert.equal(legacyPlayback.elementVolume, 1, 'native volume fallback does not apply attenuation twice');
+    await page.locator('[data-action=toggle-adhan]').click();
+    await page.waitForFunction(() => window.mockMasterVolume === 50);
+    assert.equal(await page.locator('.call-frame').count(), 1, 'Stop restores volume while keeping the replay screen');
+    await page.locator('[data-action=toggle-adhan]').click();
+    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
+    const owners = await page.evaluate(() => window.volumeCalls.filter(call => call.action === 'prepare').map(call => call.id));
+    assert.equal(new Set(owners).size, owners.length, 'each replay has a distinct volume owner');
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => window.mockMasterVolume === 50);
+    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.evaluate(() => { window.mediaCalls = []; });
+    await tests(); await page.locator('[data-action=test-adhan]').click();
+    await page.waitForFunction(() => window.mockMasterVolume === 7);
+    await page.locator('[data-action=toggle-adhan]').click();
+    await page.waitForFunction(() => window.mockMasterVolume === 50);
+    await page.evaluate(() => { window.deferVolume = true; });
+    await page.locator('[data-action=toggle-adhan]').click();
+    await page.waitForFunction(() => window.volumeReplies && window.volumeReplies.length === 1);
+    await page.waitForTimeout(700); // Cross the original 450 ms decoder-release delay while replay preparation is pending.
+    assert.equal(await page.evaluate(() => window.mediaCalls.filter(c => c.op === 'play' && c.tag === 'AUDIO').length), 0, 'an old play timer cannot bypass replay volume preparation');
+    await page.evaluate(() => { window.deferVolume = false; window.volumeReplies.shift()(); });
+    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => window.mockMasterVolume === 50);
+    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.evaluate(() => { window.failVolume = true; window.mediaCalls = []; });
+    await tests(); await page.locator('[data-action=test-adhan]').click();
+    await page.waitForSelector('#input-video source', {state: 'attached'});
+    assert.equal(await page.evaluate(() => window.mediaCalls.filter(c => c.op === 'play' && c.tag === 'AUDIO').length), 0, 'preparation failure never falls back to loud playback');
+    assert.equal(await page.evaluate(() => window.mockMasterVolume), 50);
+    await page.evaluate(() => { window.failVolume = false; window.deferVolume = true; window.mediaCalls = []; });
+    await tests(); await page.locator('[data-action=test-adhan]').click();
+    await page.waitForFunction(() => window.volumeReplies && window.volumeReplies.length === 1);
+    await page.keyboard.press('Escape');
+    await page.evaluate(() => { window.deferVolume = false; window.volumeReplies.shift()(); });
+    await page.waitForFunction(() => window.mockMasterVolume === 50 && !document.querySelector('audio'));
+    assert.equal(await page.evaluate(() => window.mediaCalls.filter(c => c.op === 'play' && c.tag === 'AUDIO').length), 0, 'cancelled preparation cannot start audio after its reply arrives');
+    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await tests(); await page.locator('[data-action=test-adhan]').click();
+    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('audio').getAttribute('src'));
+    await page.evaluate(() => { window.mockMasterVolume = 22; });
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#input-video source', {state: 'attached'});
+    assert.equal(await page.evaluate(() => window.mockMasterVolume), 22, 'manual remote level survives dismissal');
+    await page.evaluate(() => { window.mockMasterVolume = 50; });
+    await tests(); await page.locator('[data-action=test-adhan]').click();
+    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('audio').getAttribute('src'));
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', {configurable: true, value: true});
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await page.waitForFunction(() => window.mockMasterVolume === 50 && !document.querySelector('audio'));
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', {configurable: true, value: false});
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.evaluate(() => {
+      const state = JSON.parse(localStorage.getItem('fixture')); state.prefs.callClose = 1;
+      localStorage.setItem('fixture', JSON.stringify(state));
+    });
+    await page.reload(); await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.evaluate(() => { window.legacyVolume = true; window.mockMasterVolume = 50; });
+    await tests(); await page.locator('[data-action=test-full]').click();
+    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('audio').getAttribute('src'));
+    await page.evaluate(() => document.querySelector('audio').dispatchEvent(new Event('ended')));
+    await page.waitForFunction(() => window.mockMasterVolume === 50);
+    assert.equal(await page.locator('.call-frame').count(), 1, 'completed full adhan restores level while keeping its timed call screen');
+    await page.locator('[data-action=toggle-adhan]').click();
+    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
+    await page.evaluate(() => {
+      const audio = document.querySelector('audio');
+      Object.defineProperty(audio, 'error', {value: {code: 4}}); audio.dispatchEvent(new Event('error'));
+    });
+    await page.waitForSelector('#input-video source', {state: 'attached'});
+    assert.equal(await page.evaluate(() => window.mockMasterVolume), 50, 'native volume also restores after decoder failure');
     assert.deepEqual(errors, []);
     console.log('PASS: Arabic/English controls, grouped settings, offsets and cancel, prayer bells, overlays preserving HDMI, audio stop/end/error recovery, radio, theme/layout and persistence. Decoder and Luna boundaries are mocked; actual LG tests remain separate.');
     console.log('Preview screenshots: ' + shots);

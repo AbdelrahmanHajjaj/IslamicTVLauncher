@@ -31,6 +31,98 @@ function call(uri, params, callback) {
 function safe(message, callback) {
   return function (result) { try { callback(result); } catch (error) { message.respond({returnValue: false, errorText: error.message}); } };
 }
+var volumeQueue = [], volumeSdk = null;
+function volumeId(id) { return typeof id === 'string' && /^[0-9]{1,16}-[0-9]{1,10}$/.test(id); }
+function volumeLevel(value) { return typeof value === 'number' && isFinite(value) && value % 1 === 0 && value >= 0 && value <= 100; }
+function volumeOwner() {
+  var owner = read().audioVolume;
+  if (owner && (!volumeId(owner.id) || !volumeLevel(owner.original) || !volumeLevel(owner.applied) || owner.applied > owner.original || typeof owner.confirmed !== 'boolean')) {
+    throw new Error('Invalid saved audio volume');
+  }
+  return owner;
+}
+function saveVolume(owner) { var state = read(); state.audioVolume = owner; save(state); }
+function newerVolumeId(a, b) {
+  var aa = a.split('-').map(Number), bb = b.split('-').map(Number);
+  return aa[0] > bb[0] || aa[0] === bb[0] && aa[1] > bb[1];
+}
+function runVolume() {
+  var job = volumeQueue[0], finished = false;
+  function finish(result) {
+    if (finished) { return; } finished = true;
+    try { job.respond(result); }
+    finally { volumeQueue.shift(); if (volumeQueue.length) { runVolume(); } }
+  }
+  function checked(uri, params, next) {
+    call(uri, params, function (reply) {
+      if (finished) { return; }
+      try {
+        if (reply.returnValue !== true) { throw new Error(reply.errorText || 'TV audio level request failed'); }
+        next(reply);
+      } catch (error) { finish({returnValue: false, errorText: error.message}); }
+    });
+  }
+  function current(next) {
+    checked('luna://com.webos.audio/getVolume', {}, function (reply) {
+      if (!volumeLevel(reply.volume)) { throw new Error('Unknown TV audio level'); }
+      next(reply.volume);
+    });
+  }
+  function restore() {
+    var owner = volumeOwner();
+    if (!owner || (job.action === 'release' ? owner.id !== job.id : !newerVolumeId(job.id, owner.id))) {
+      finish({returnValue: true}); return;
+    }
+    current(function (level) {
+      if (level !== owner.applied) {
+        // An unacknowledged setter may still finish; keep its baseline for the next safe recovery.
+        if (owner.confirmed) { saveVolume(null); }
+        finish({returnValue: true}); return;
+      }
+      checked('luna://com.webos.audio/setVolume', {volume: owner.original}, function () {
+        current(function (actual) {
+          if (actual === owner.applied && actual !== owner.original) { throw new Error('TV audio level was not restored'); }
+          saveVolume(null); finish({returnValue: true});
+        });
+      });
+    });
+  }
+  function prepare() {
+    if (volumeSdk >= 4) { finish({returnValue: true, mode: 'element'}); return; }
+    current(function (level) {
+      var previous = volumeOwner();
+      if (previous && newerVolumeId(previous.id, job.id)) { throw new Error('Audio request superseded'); }
+      var original = previous && level === previous.applied ? previous.original : level;
+      var applied = Math.floor(original * core.prefs(read().prefs).volume / 100);
+      var owner = {id: job.id, original: original, applied: applied, confirmed: false};
+      saveVolume(owner);
+      checked('luna://com.webos.audio/setVolume', {volume: applied}, function () {
+        current(function (actual) {
+          if (actual !== applied) { throw new Error('TV audio level was not applied'); }
+          owner.confirmed = true; saveVolume(owner);
+          finish({returnValue: true, mode: 'tv'});
+        });
+      });
+    });
+  }
+  try {
+    if (job.action !== 'prepare') { restore(); }
+    else if (volumeSdk !== null) { prepare(); }
+    else {
+      checked('luna://com.webos.service.tv.systemproperty/getSystemInfo', {keys: ['sdkVersion']}, function (reply) {
+        if (typeof reply.sdkVersion !== 'string' || !/^[1-9][0-9]*\.[0-9]/.test(reply.sdkVersion)) { throw new Error('Unknown TV audio support'); }
+        volumeSdk = Number(reply.sdkVersion.split('.')[0]); prepare();
+      });
+    }
+  } catch (error) { finish({returnValue: false, errorText: error.message}); }
+}
+register('audioVolume', function (message) {
+  var p = message.payload;
+  if (!volumeId(p.id) || ['prepare', 'release', 'recover'].indexOf(p.action) < 0) { throw new Error('Invalid audio volume request'); }
+  // shortcut: crash recovery waits for a silent new app instance; add earlier recovery only with a reliable playback-stop signal.
+  volumeQueue.push({id: p.id, action: p.action, respond: function (reply) { message.respond(reply); }});
+  if (volumeQueue.length === 1) { runVolume(); }
+});
 register('status', function (message) { message.respond({returnValue: true, state: read(), boot: boot()}); });
 register('inputs', function (message) {
   call('luna://com.webos.service.eim/getCurrentInput', {}, safe(message, function (current) {

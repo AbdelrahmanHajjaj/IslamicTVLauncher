@@ -99,11 +99,14 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 Execution resumed on 2026-11-12: owner reports the LG is available now. Scope and
 acceptance criteria are unchanged; continue Q09.5d with the refreshed baseline.
 
-Next: Q09.5i implement the approved old-LG temporary-volume adapter. The exact
-client regression is red (volume-client-red.log: master 50 != expected 7 at 15%).
-Owned uncommitted browser-test.cjs changes add that test and native-boundary mocks;
-retain and finish them. Transparency is separately verified/committed at 9e10bed;
-All apps navigation is committed at d6d039c. No TV package has changed.
+Next: Q09.5i package the software-verified 0.2.9 source and verify the candidate,
+then perform the authorized in-place LG update and bounded watched volume/mihrab,
+All apps and rounding checks. The original 50 !=7 regression and the rapid-replay
+race are now green. Full LG ES5/service/native-volume and browser suites pass on
+Node 24.14.0. Commit the volume slice before packaging. Installed TV is still 0.2.8;
+no new audible adhan or package has been installed. Transparency is committed at
+9e10bed and All apps navigation at d6d039c. Capture a fresh settings/input/startup
+and master-volume baseline, and confirm watcher availability before audible work.
 
 Q09.5i LG adhan volume diagnosis was prioritized by the owner's new defect
 report. Saved app volume 15% reportedly still plays very loudly. Do not start an
@@ -2124,3 +2127,46 @@ unrelated renderer redesign, transport or future shell.
   developer operation; do not assume an ordinary JS service can use it for
   recovery. It has not been called/tested as part of this diagnosis. Current
   inspector and owned emulator are both verified closed; no running tool jobs.
+
+### Q09.5i temporary native volume: software verified (2026-11-12)
+
+- Existing app-level setting and all 30 preferences remain intact. A serialized
+  service adapter reads documented sdkVersion: old hosts capture their current
+  native volume, persist the original/applied levels before changing it, apply
+  floor(original*savedPercent/100) and verify the result before permitting audio.
+  Native mode sets element volume to 1 to avoid double attenuation; SDK >=4 uses
+  the existing element percentage without master changes. Modern-host support is
+  documentation/mocked evidence only; actual target remains 2.2.0.
+- Each play/replay owns a distinct ID. Stale callbacks/timers cannot start playback
+  or restore over a newer owner. Native volume calls are serialized; async writes
+  read fresh settings so they cannot overwrite a newer preference/input change.
+  Failure to determine/apply volume stops before sound. Never change mute.
+- Stop, natural completion, decoder error, dismissal and suspend stop/pause audio
+  before releasing the owned volume. Restoration is read back; failed restoration
+  retains its baseline. If current volume differs from the applied level, preserve
+  the remote's value. Return focus is immediate; input/external-window restoration
+  follows the volume operation. Full-call holding screens release volume at end
+  and reacquire it on replay.
+- Persisted crash recovery runs only from a newer silent app instance before input
+  discovery. Reading status or merely starting the service never raises volume.
+  Known limit: after an abrupt process crash, TV volume can remain reduced until
+  the launcher reopens. There is no expiry/background worker which could restore
+  loud volume over a frozen audio element. No new timer, activity, dependency,
+  permanent PC requirement, native Android change or core/platform API leakage.
+- Original client red reproduction (50 !=7 at 15%) is green. Additional fast
+  Stop/replay regression went red (one old play call while new preparation was
+  pending); merged playback through the prepared owner, cancel the old timer and
+  guard promises by owner ID. It now passes. No affected code is installed yet.
+- PASS: required LG shared validation, full build/ES5/service/async suite, focused
+  real-service volume tests and complete Arabic/English mocked browser checks.
+  Coverage includes 0/5/15/60/100%, mute, both SDK modes, ineffective setters and
+  restore failures, persisted recovery, stale IDs, async overlap, duplicate replies,
+  concurrent settings, preparation cancellation, Stop/replay, full-call completion,
+  decoder error, suspend and manual remote changes. Build still has 100 payload
+  files and all four version sources align at 0.2.9.
+- Evidence: ignored volume-{first-service-check,first-client-check,service-regression,
+  full-check,client-check,final-service,final-browser,fast-replay-red,
+  verified-service,verified-browser}.log. Final green commands use bundled Node
+  24.14.0 with explicit npm CLI, then browser-test.cjs. Legacy hardware/package
+  verification and watched adhan/restoration remain open. The previous goal turn
+  was progress (commits, actual-host diagnosis and red repro), not a blocked wait.

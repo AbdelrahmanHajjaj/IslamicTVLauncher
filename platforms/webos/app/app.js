@@ -12,7 +12,7 @@
   var bridges = [], instance = String(Date.now()), cachedDay = null, cacheKey = '', noticeTimer;
   var lastError = null;
   var section = 'prayer', testPrayer = 0, dockTimer, overlayTimer, audioTimer, mediaTimer, media = null;
-  var pendingLaunch = null, seenLaunch = null, radioBeforeCall = false, audioSerial = 0, editValue = 0, country = null, dayViewMinute = -1, previewTestTimer;
+  var pendingLaunch = null, seenLaunch = null, radioBeforeCall = false, audioSerial = 0, volumeSerial = 0, editValue = 0, country = null, dayViewMinute = -1, previewTestTimer;
   var returnContext = null, voicePreview = null, coldAlert = false;
   var appearanceDraft = null, settingsParent = 'home', dayParent = 'home';
   var homeNodes = [], homeAppCount = 0, lastHomeApp = homeNavigation.FIRST_APP;
@@ -61,6 +61,7 @@
     return button('native-app', icon(item.icon) + '<span>' + escape(item[prefs.lang]) + '</span>', item.id, 'app-tile');
   }
   function preview(method, data) {
+    if (method === 'audioVolume') { return {returnValue: true, mode: 'element'}; }
     var state;
     try { state = JSON.parse(localStorage.getItem('afnon-webos-preview') || '{}'); } catch (error) { state = {}; }
     if (method === 'savePrefs') { state.prefs = A.prefs(data.prefs); }
@@ -84,7 +85,7 @@
     }
     var bridge = new PalmServiceBridge(), done = false;
     bridges.push(bridge);
-    var timeout = setTimeout(function () { finish({returnValue: false, errorText: 'Service response timed out'}); }, 16000);
+    var timeout = setTimeout(function () { finish({returnValue: false, errorText: 'Service response timed out'}); }, method === 'audioVolume' ? 30000 : 16000);
     function finish(reply) {
       if (done) { return; } done = true; clearTimeout(timeout);
       var index = bridges.indexOf(bridge); if (index >= 0) { bridges.splice(index, 1); }
@@ -560,6 +561,13 @@
     if (media) { request('media', {kind: media.kind, event: event, time: isFinite(media.audio.currentTime) ? media.audio.currentTime : 0, detail: detail || ''}); }
   }
   function dismissOverlay() { clearTimeout(overlayTimer); overlay.innerHTML = ''; overlay.className = ''; screen.style.visibility = ''; }
+  function releaseAudioVolume(item, callback) {
+    var id = item.volumeId;
+    request('audioVolume', {action: 'release', id: id}, function (reply) {
+      if (!reply.returnValue && (!media || media === item && item.volumeId === id)) { notify(t('تعذر استعادة مستوى صوت التلفاز.', 'Could not restore the TV audio level.'), reply.errorText); }
+      if (callback) { callback(); }
+    });
+  }
   function stopAudio(reason, restore, detail) {
     if (!media) { if (restore) { finishOverlay(); } return; }
     mediaReport(reason || 'stopped', detail);
@@ -568,32 +576,60 @@
     old.audio.pause(); old.audio.removeAttribute('src'); old.audio.load();
     if (old.audio.parentNode) { old.audio.parentNode.removeChild(old.audio); }
     dismissOverlay();
-    if (restore && !(document.hidden || document.webkitHidden)) {
-      var keepView = returnContext && returnContext.view !== 'input';
-      if (restoreContext() === false) { return; }
-      var serial = audioSerial;
+    var restoreSerial = audioSerial, external = returnContext && returnContext.external;
+    var keepView = returnContext && returnContext.view !== 'input';
+    if (restore && !external && !(document.hidden || document.webkitHidden)) { restoreContext(); }
+    releaseAudioVolume(old, function () {
+      if (restoreSerial !== audioSerial || media || !restore || document.hidden || document.webkitHidden) { return; }
+      if (external && restoreContext() === false) { return; }
       mediaTimer = setTimeout(function () {
-        if (serial !== audioSerial || media) { return; }
+        if (restoreSerial !== audioSerial || media) { return; }
         if (radioBeforeCall && prefs.radioResume) { radioBeforeCall = false; startRadio(keepView); }
         else { radioBeforeCall = false; play(input); }
       }, 450);
-    }
+    });
   }
   function startAudio(kind, url, seconds) {
     if (media) { stopAudio('stopped', false); }
     releaseVideo();
-    var audio = document.createElement('audio'), serial = ++audioSerial;
+    var audio = document.createElement('audio'), serial = ++audioSerial, decoderReadyAt = Date.now() + 450;
     audio.setAttribute('preload', 'none'); audio.volume = prefs.volume / 100;
-    media = {kind: kind, audio: audio, serial: serial, started: false};
+    var item = {kind: kind, audio: audio, serial: serial, started: false};
+    media = item;
     document.getElementById('stage').appendChild(audio);
     function active() { return media && media.serial === serial; }
-    function failed(detail) {
-      if (!active()) { return; }
+    function failed(detail, ownerId) {
+      if (!active() || ownerId && (item.volumeId !== ownerId || item.paused)) { return; }
       stopAudio('error', true, detail);
       notify(t('تعذر تشغيل الصوت. تمت العودة للمدخل.', 'Audio could not play. Returning to input.'), detail);
     }
+    item.play = function () {
+      var id = instance + '-' + (++volumeSerial); item.volumeId = id; item.started = false;
+      clearTimeout(mediaTimer); clearTimeout(audioTimer);
+      request('audioVolume', {action: 'prepare', id: id}, function (reply) {
+        if (!active() || item.volumeId !== id || item.paused) {
+          request('audioVolume', {action: 'release', id: id}); return;
+        }
+        if (!reply.returnValue || ['tv', 'element'].indexOf(reply.mode) < 0) { failed(reply.errorText || 'Audio level unavailable'); return; }
+        audio.volume = reply.mode === 'tv' ? 1 : prefs.volume / 100;
+        if (kind !== 'radio' && !item.deadline) {
+          item.deadline = setTimeout(function () { if (active()) { stopAudio('stopped', true); } }, (seconds || (prefs.callClose ? prefs.callClose * 60 : 600)) * 1000);
+        }
+        // This LG needs the HDMI decoder released; only this prepared owner may start playback.
+        mediaTimer = setTimeout(function () {
+          if (!active() || item.volumeId !== id || item.paused) { return; }
+          if (!audio.getAttribute('src')) { audio.src = url; audio.load(); }
+          item.started = false;
+          try { var started = audio.play(); if (started && started.catch) { started.catch(function (error) { failed(error.message, id); }); } }
+          catch (error) { failed(error.message, id); }
+          if (active() && !item.started) {
+            audioTimer = setTimeout(function () { failed('Audio did not start within 15 seconds', id); }, 15000);
+          }
+        }, Math.max(0, decoderReadyAt - Date.now()));
+      });
+    };
     audio.addEventListener('playing', function () {
-      if (!active()) { return; } media.started = true; clearTimeout(audioTimer); mediaReport('playing');
+      if (!active() || item.paused) { return; } media.started = true; clearTimeout(audioTimer); mediaReport('playing');
       var status = overlay.querySelector('[data-audio-status]') || screen.querySelector('[data-radio-status]');
       if (status) { status.textContent = t('جارٍ التشغيل', 'Playing'); }
       var toggle = overlay.querySelector('[data-action=toggle-adhan]'); if (toggle) { toggle.textContent = t('إيقاف', 'Stop'); }
@@ -604,6 +640,7 @@
       media.ended = true;
       if (kind === 'radio') { stopAudio('ended', true); }
       else if (!seconds && prefs.callClose > 0 && kind === 'adhan') {
+        releaseAudioVolume(item);
         var status = overlay.querySelector('[data-audio-status]'); if (status) { status.textContent = t('انتهى الأذان', 'Adhan finished'); }
         var toggle = overlay.querySelector('[data-action=toggle-adhan]'); if (toggle) { toggle.textContent = t('تشغيل', 'Play'); }
       } else { stopAudio('ended', true); }
@@ -615,20 +652,8 @@
       if (progressCount === 2 || progressCount === 15) { mediaReport('progress'); }
       if (progressCount >= 15) { clearInterval(media.progressTimer); }
     }, 1000);
-    if (kind !== 'radio') {
-      media.deadline = setTimeout(function () { if (active()) { stopAudio('stopped', true); } }, (seconds || (prefs.callClose ? prefs.callClose * 60 : 600)) * 1000);
-    }
     mediaReport('loading');
-    // This LG needs the HDMI source unloaded before it can allocate an audio decoder.
-    mediaTimer = setTimeout(function () {
-      if (!active()) { return; }
-      audio.src = url; audio.load();
-      try { var started = audio.play(); if (started && started.catch) { started.catch(function (error) { failed(error.message); }); } }
-      catch (error) { failed(error.message); }
-      if (active() && !media.started) {
-        audioTimer = setTimeout(function () { failed('Audio did not start within 15 seconds'); }, 15000);
-      }
-    }, 450);
+    item.play();
   }
   function startRadio(keepView) {
     radioBeforeCall = false; dismissOverlay(); startAudio('radio', A.station(prefs.station).url, 0); if (!keepView) { show('radio'); }
@@ -714,14 +739,14 @@
       var toggle = overlay.querySelector('[data-action=toggle-adhan]');
       if (media.paused || media.ended) {
         clearTimeout(overlayTimer); media.paused = false; media.ended = false;
+        toggle.textContent = t('جارٍ التحميل…', 'Loading…');
         try {
-          media.audio.currentTime = 0;
-          var playing = media.audio.play();
-          if (playing && playing.catch) { playing.catch(function (error) { stopAudio('error', true, error.message); }); }
-          toggle.textContent = t('إيقاف', 'Stop');
+          if (media.audio.getAttribute('src')) { media.audio.currentTime = 0; }
+          media.play();
         } catch (error) { stopAudio('error', true, error.message); }
       } else {
-        media.audio.pause(); media.paused = true; mediaReport('stopped'); toggle.textContent = t('تشغيل', 'Play');
+        clearTimeout(mediaTimer); clearTimeout(audioTimer);
+        media.audio.pause(); media.paused = true; mediaReport('stopped'); releaseAudioVolume(media); toggle.textContent = t('تشغيل', 'Play');
         if (prefs.callClose === 0) { overlayTimer = setTimeout(function () { stopAudio('stopped', true); }, 10000); }
       }
       return;
@@ -927,7 +952,10 @@
       try { prefs = A.prefs(reply.state.prefs); } catch (error) { notify(t('تعذر قراءة الإعدادات المحفوظة.', 'Saved settings could not be read.'), error.message); return; }
       startup = !!(reply.state.startup && reply.state.startup.enabled); loaded = true;
       if (reply.state.pendingAlert && !reply.state.pendingAlert.displayedAt) { pendingLaunch = reply.state.pendingAlert.id; coldAlert = true; }
-      discover(true);
+      request('audioVolume', {action: 'recover', id: instance + '-0'}, function (result) {
+        if (!result.returnValue) { notify(t('تعذر استعادة مستوى صوت التلفاز.', 'Could not restore the TV audio level.'), result.errorText); }
+        discover(true);
+      });
       if (prefs.automatic) { request('syncAlerts', {}, function (result) { if (!result.returnValue) { notify(t('تعذر جدولة التنبيهات', 'Could not schedule alerts'), result.errorText); } }); }
     });
   }
