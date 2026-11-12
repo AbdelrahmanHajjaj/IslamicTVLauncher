@@ -101,10 +101,12 @@ prayer times remain the offline schedule source. Add a manual Check online actio
 for all supported locations/methods; reference results are advisory. Public-provider
 requests are explicitly authorized; no account, project-hosted backend, background
 polling or automatic schedule replacement. Keep network I/O in platform adapters.
-Canonical mapping/comparison and the LG manual action/view/HTTPS adapter are
-implemented and software-verified. Next implement the native Android adapter/view
-and Settings binding, remove its temporary prayer.online gap, then port the preview.
-Use today's civil Fajr after Isha; keep the reference advisory and settings intact.
+Canonical mapping/comparison and both LG/native Android actions/views/HTTPS
+adapters are implemented and software-verified. Native's temporary prayer.online
+gap is removed and actual rendered coverage passes. Next port the browser preview
+settings action/comparison view and bounded cancellable HTTPS adapter. Its current
+displayed day may substitute tomorrow's Fajr after Isha: use raw civil-day values
+for the comparison. Keep the reference advisory and all saved settings intact.
 Old-LG secure TLS/UI remain unverified; do not install or contact the TV while deferred.
 
 Owner explicitly deferred further TV changes: Later; leave the TV unchanged. Do not
@@ -2277,3 +2279,76 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
   manual comparison. No new dependency, account, backend, automatic network timer,
   recurring activity, settings migration, firmware/root or TV mutation was added.
   All jobs completed; continue native/preview g before global sizing h.
+
+### Q09.5g native Android comparison slice (2026-11-12)
+
+- Previous turn was progress: 83c2c19 adds the LG manual action, transient service
+  transport and verified renderer lifecycle. Continue native Android, then preview.
+  LG remains untouched; no watcher/old-TLS readiness is inferred.
+- Native work reaches raw civil-day calculation, a platform-only HTTPS/JSON adapter,
+  read-only Activity, Settings action/manifest and real contract-gap accounting.
+  Reuse current astronomy/offset setup; extract its civil-day helper rather than
+  calculating from the tomorrow-Fajr display convention. Preserve existing rules.
+- Use API-26 standard OffsetDateTime and HttpsURLConnection, fixed HTTPS endpoint,
+  default TLS/hostname checks, no redirects/cache, bounded body and a one-shot
+  request deadline. Cancellation/late-result guards must cover pause, Back and
+  retry; no recurring timer/service/network dependency. Native API references were
+  checked through Context7 then official Android references (Context7's broad query
+  was insufficient). A request deadline is not automatic comparison polling.
+
+- Native slice implemented: PrayerDay.civilTimes reuses the existing parameter/
+  offset setup and minute adapter without tomorrow-Fajr substitution. Constructor
+  behavior, astronomy, corrections and reminder/display conventions stay intact.
+  OnlinePrayer owns fixed HTTPS, default TLS/hostname verification, no redirects/
+  cache, 32 KiB raw body cap, 6-second socket limits and a 12-second one-shot abort.
+  Background disconnect and a cancellation flag keep UI/Back responsive; closed
+  connections are released. Strict native JSON/OffsetDateTime validation matches
+  LG's metadata, timezone-offset/calendar, six-time ordering and Moonsighting rules.
+- Settings now binds prayer.online to the native read-only comparison Activity;
+  the temporary gap is removed (89 definitions, native 24 whole gaps, LG 22).
+  The view preserves source/date/method/school, saved offsets and digit/clock format,
+  with D-pad Back/retry and source-owner guards against late results. Pause/Back
+  cancel; process/window restoration offers retry without automatically requesting.
+  It follows the underlying Settings orientation. A narrowly documented manifest
+  lint exclusion covers the TV-specific inherited-orientation policy; no general
+  checks were disabled. No new production/test-facing shortcut or extra permission.
+- Real-host feedback found and fixed two renderer defects before committing:
+  fixed-height Amiri heading clipped, corrected using the existing title/line-height
+  layout; screenshot review then caught the default 12-hour format at a saved 24,
+  fixed by calling readClockFormat before rendering. New assertions verify both
+  formats in both languages. Original native-online-{ar,en}.png preserve the rejected
+  clock output; accepted final images are native-online-clock-{ar,en}.png.
+- Test harness corrections retained as red evidence: Android Settings activates on
+  D-pad (not tile.performClick), establish non-touch focus, write images to target
+  cache (instrumentation runs as target UID), and use shell Back for an external
+  fixture because startActivitySync cannot launch another process. No production
+  input behavior was changed to accommodate those harness assumptions.
+- PASS on the identity-checked owned API 37 phone emulator at 1920x1080: strict
+  native JSON/ISO metadata negatives, all 19 authority URLs/schools, raw Cairo civil
+  Fajr/offset snapshot, body/status/type/TLS failures, cancellation before/during
+  read, real 12-second blocked-body abort, bilingual actual Settings activation,
+  six-row rendering/text bounds, saved 12/24-hour formats, remote retry/Back/return
+  focus, stale callbacks, real external-app pause/resume and preference restoration.
+  Transport negatives/results used fixtures; rendered Views and lifecycle are real.
+- PASS: separate actual Android standard verified HTTPS to AlAdhan returned
+  Cairo 12-Nov [0,1,-1,1,0,0]. Real ART prayer/core/reminder/14 ICU calendar cases
+  and full bilingual native UI contract/favourite flows also pass. This is emulator
+  evidence, not Android TV/older-ICU/physical-remote or old-LG acceptance.
+- PASS: 14 affected JVM Java regressions, two existing native bilingual text/hash
+  regressions, shared catalog/freshness checks and preview regressions. Standalone
+  launcher/test-APK build, size and lint pass; 0 errors and the same 55 existing
+  lint warnings. Test-only compatibility APIs emit a javac deprecation note.
+  Current APK: 21,151,236 bytes (<25,000,000); see native-clock-build.log.
+- Evidence: ignored online-reference/{native-java-check,native-final-build,
+  native-clock-build,native-online-verified,native-online-clock-verified,
+  native-real-https,native-prayer-runtime,native-ui-contract,
+  native-preview-regression}.log; earlier native-online-{first..sixth} logs retain
+  failed feedback (their descriptive filenames are not test status). Captures are
+  native-online-clock-{ar,en}.png, visually inspected as readable emulator output.
+- Both owned sessions are closed (eighth/ninth prior-closure snapshots retained).
+  Initial/final preference objects match; original display size restored; temporary
+  device captures removed; original user AVD descriptor/config hashes unchanged.
+  Private native-{clock-}cleanup.json and current owned session record prove cleanup.
+  No TV was contacted or changed. Native/LG hardware gates stay open.
+- Continue g with the browser preview port. No new dependency, account/backend,
+  recurring network work, settings migration, schedule replacement or UI engine.

@@ -4,6 +4,15 @@ The native Java Views launcher keeps package `tv.afnon.home`, its existing setti
 and debug signing configuration. The portable domain rules come from `shared/core`;
 astronomy, Android ICU dates, persistence, scheduling, playback and UI stay here.
 
+**Settings → Prayer times → Check online** makes one advisory AlAdhan comparison
+for the selected city/method/school and today's civil day. It shows six calculated
+times, six reference times and signed minute differences. Calculated times retain
+saved offsets; provider values omit them. The schedule and settings remain local.
+The HTTPS adapter validates response identity, ISO dates/offsets and six usable
+times, with a 32 KiB body cap, no redirects/cache and a 12-second one-shot deadline.
+Pause/Back cancel the request; returning offers manual retry. No account, polling,
+new network dependency or background service is involved.
+
 From the repository root, with JDK 17 and Android SDK 34 installed:
 
 ```sh
@@ -70,3 +79,12 @@ establishes remote focus mode, with further key codes dispatched through the rea
 Activity handler; physical remote/firmware delivery remains a separate hardware check.
 App CI runs this mode on an API 34 emulator. Shell omissions are declared in
 `src/androidTest/assets/ui-{gaps,choice-gaps}.json`; see the generated [gap report](../../docs/UI-GAPS.md).
+
+Use `-e check online` for the comparison's strict JSON/ISO, 19-method mapping,
+offset/civil-Fajr, bounded transport/deadline and bilingual rendered UI checks.
+Negative HTTPS cases use fake connections; UI checks restore all preferences and
+the process timezone. They exercise the actual Settings action, D-pad return focus,
+12/24-hour formats, cancellation and an external fixture's pause/resume interruption.
+Use `-e check online-network` separately for one real verified HTTPS request to
+AlAdhan. This sends the fixed public Cairo test coordinates/date/method/school.
+Emulator proof does not validate a physical Android TV's firmware or network stack.

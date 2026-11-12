@@ -414,6 +414,11 @@ public class SettingsActivity extends Screen {
                     String help() { return t.roomHelp(); }
                     String value() { int f = facing(); return f < 0 ? t.notSet() : t.bearingLabel(f); }
                     void open() { startSafely(new Intent(c, PrayerDayActivity.class).putExtra("room", true)); }
+                },
+                new Row("prayer.online", VALUE) {
+                    String label() { return t.checkOnline(); }
+                    String help() { return t.onlineHelp(); }
+                    void open() { startSafely(new Intent(c, OnlinePrayerActivity.class)); }
                 });
             case REMINDERS: return Arrays.asList(
                 new Row("reminders.before", VALUE) {

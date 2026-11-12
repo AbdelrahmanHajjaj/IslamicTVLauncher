@@ -10,7 +10,6 @@ Migration acceptance and evidence live only in ARCHITECTURE-QUEUE.md.
 
 | Control | State | Reason |
 | --- | --- | --- |
-| `prayer.online` | unimplemented | Manual online comparison and its native view are not implemented yet. |
 | `prayer.zone` | unimplemented | Uses the TV time zone; no app-local override editor. |
 | `prayer.today` | unimplemented | Today/Qibla is available from Home; no second Settings shortcut. |
 | `reminders.enabled` | unimplemented | Native reminder and adhan switches are independent; no master scheduled-alert switch. |

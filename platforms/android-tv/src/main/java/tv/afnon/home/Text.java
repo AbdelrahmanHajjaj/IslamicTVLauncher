@@ -374,4 +374,7 @@ final class Text {
     String onlineReference() { return ar ? "AlAdhan" : "AlAdhan"; }
     String onlineDifference() { return ar ? "الفارق بالدقائق (AlAdhan − الحساب)" : "AlAdhan − calculated (min)"; }
     String onlineAdvisory() { return ar ? "مقارنة استرشادية. الحساب المحلي يتضمن تعديلاتك المحفوظة؛ مواقيت AlAdhan لا تتضمنها. قد يختلف التقريب أو العرف المحلي." : "Advisory comparison. Calculated times include your saved offsets; AlAdhan values do not. Rounding and local conventions may differ."; }
+    String onlineContext(String place, PrayerMethod method, Madhab school, String date, String zone) {
+        return place + sep() + methodName(method) + sep() + school(school) + sep() + d(date) + sep() + zone;
+    }
 }

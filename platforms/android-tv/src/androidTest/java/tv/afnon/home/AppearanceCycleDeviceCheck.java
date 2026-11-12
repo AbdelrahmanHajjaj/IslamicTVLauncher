@@ -15,12 +15,15 @@ import java.util.Map;
 public final class AppearanceCycleDeviceCheck extends Instrumentation {
     private boolean prayerCheck;
     private boolean uiCheck;
+    private boolean onlineCheck, onlineNetwork;
 
     @Override public void onCreate(Bundle arguments) {
         String requested = arguments == null ? null : arguments.getString("check");
-        if (requested != null && !requested.equals("prayer") && !requested.equals("ui")) throw new IllegalArgumentException("Unknown device check: " + requested);
+        if (requested != null && !requested.equals("prayer") && !requested.equals("ui") && !requested.equals("online") && !requested.equals("online-network")) throw new IllegalArgumentException("Unknown device check: " + requested);
         prayerCheck = "prayer".equals(requested);
         uiCheck = "ui".equals(requested);
+        onlineCheck = "online".equals(requested) || "online-network".equals(requested);
+        onlineNetwork = "online-network".equals(requested);
         super.onCreate(arguments);
         start();
     }
@@ -28,6 +31,7 @@ public final class AppearanceCycleDeviceCheck extends Instrumentation {
     @Override public void onStart() {
         if (prayerCheck) { PrayerRuntimeDeviceCheck.run(this); return; }
         if (uiCheck) { UiContractDeviceCheck.run(this); return; }
+        if (onlineCheck) { OnlinePrayerDeviceCheck.run(this, onlineNetwork); return; }
         SharedPreferences prefs = Prefs.of(getTargetContext());
         Map<String, ?> saved = prefs.getAll();
         Bundle result = new Bundle();

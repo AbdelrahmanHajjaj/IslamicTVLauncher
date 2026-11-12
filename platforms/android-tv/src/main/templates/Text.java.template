@@ -373,4 +373,7 @@ final class Text {
     String onlineReference() { {{STRINGS:onlineReference}} }
     String onlineDifference() { {{STRINGS:onlineDifference}} }
     String onlineAdvisory() { {{STRINGS:onlineAdvisory}} }
+    String onlineContext(String place, PrayerMethod method, Madhab school, String date, String zone) {
+        return place + sep() + methodName(method) + sep() + school(school) + sep() + d(date) + sep() + zone;
+    }
 }

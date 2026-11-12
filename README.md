@@ -58,6 +58,11 @@ for completed checks and remaining hardware tests.
   The preview follows the selected 12-hour (AM/PM) or 24-hour format. OK saves; Back cancels.
   Home, reminders, adhan and the screensaver use the same saved offsets. Changing city or method
   preserves offsets, so review them afterwards. Fixed offsets do not reproduce a seasonal mosque timetable.
+- **Manual online comparison.** Android and LG source builds offer **Check online** in prayer settings
+  to compare six calculated times with AlAdhan and show signed minute differences.
+  Calculated times keep your saved offsets; reference values omit them. Results are advisory,
+  with retry and cancellation, and never replace the offline schedule. The preview binding
+  and old-LG HTTPS/hardware verification remain pending.
 - **Adhan and reminders.** Fourteen voices, a separate Fajr recording, per-prayer switches, advance
   reminders and optional spoken announcements. The call screen restores its temporary volume change
   afterwards. Test the banner or adhan from Settings without consuming a scheduled alert.
@@ -233,18 +238,18 @@ prayer/button accessibility service and may be restricted by an app or firmware.
 No accounts, ads, analytics or telemetry. Prayer calculation is offline. The selected
 radio streams are listed in `shared/data/stations.json`; Android's
 [network security config](platforms/android-tv/src/main/res/xml/network_security.xml) permits plain HTTP only for Cairo's
-stream. The LG source also includes a manual AlAdhan comparison: it sends the selected
+stream. Android and LG source builds also include a manual AlAdhan comparison: it sends the selected
 city's coordinates, date, calculation method and Asr school to `api.aladhan.com` over
 HTTPS when requested, with no polling or schedule replacement. Its old-TV HTTPS
-compatibility still needs verification; Android and preview comparison bindings
-are not implemented yet. Favourites, themes and recent-app history stay on the TV.
+compatibility still needs verification; the preview comparison binding is not
+implemented yet. Favourites, themes and recent-app history stay on the TV.
 The phone installer separately
 uses the network for ADB setup and, when selected, this project's release APK and
 cleanup catalogue. Setup commands are bundled; they are never fetched for execution.
 
 | Permission or service | Purpose |
 |---|---|
-| `INTERNET`, `WAKE_LOCK` | Radio playback, including screen-off listening |
+| `INTERNET`, `WAKE_LOCK` | Radio playback, including screen-off listening; `INTERNET` also serves manual prayer-time comparisons |
 | `RECORD_AUDIO` | Android Visualizer reads the launcher's own audio for level bars; it does not record the microphone |
 | `WRITE_SECURE_SETTINGS` | Sleep-timer management, supported TCL button mappings, saver selection and optional prayer-service recovery |
 | `REQUEST_DELETE_PACKAGES` | Opens Android's uninstall confirmation when explicitly requested |

@@ -6,11 +6,11 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
-- LG adds a manual **Check online** comparison with AlAdhan for all catalog
+- Android and LG add a manual **Check online** comparison with AlAdhan for all catalog
   locations and methods. It shows six calculated/reference times and signed minute
   differences, with cancellation and retry. Calculations and reminders stay offline;
   saved offsets/settings are preserved. Old-LG HTTPS compatibility awaits hardware
-  verification; native Android and preview bindings are still being ported.
+  verification; the preview binding is still being ported.
 
 - Prayer times now round down to the start of the calculated minute across all
   methods: 17:00:30 becomes 17:00. Displays and scheduled alerts use the same rule;

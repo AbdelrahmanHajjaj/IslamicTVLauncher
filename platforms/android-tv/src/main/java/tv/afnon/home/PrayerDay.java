@@ -40,18 +40,9 @@ final class PrayerDay {
     }
 
     PrayerDay(Date now, Coordinates where, PrayerMethod method, Madhab madhab, int hijriOffset, int[] offsets) {
-        CalculationParameters params = method.getParameters();
-        params.madhab = madhab;
-        PrayerRules.INSTANCE.validateOffsets(offsets);
+        CalculationParameters params = parameters(method, madhab, offsets);
         // Reuse these parameters for tomorrow too, so Fajr alerts and Suhoor share the displayed offset.
-        params.adjustments = new PrayerAdjustments(offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5]);
-        PrayerTimes today = new PrayerTimes(where, DateComponents.from(now), params);
-        times[FAJR] = minute(today.fajr);
-        times[SUNRISE] = minute(today.sunrise);
-        times[DHUHR] = minute(today.dhuhr);
-        times[ASR] = minute(today.asr);
-        times[MAGHRIB] = minute(today.maghrib);
-        times[ISHA] = minute(today.isha);
+        System.arraycopy(times(new PrayerTimes(where, DateComponents.from(now), params)), 0, times, 0, 6);
 
         Calendar c = Calendar.getInstance();
         c.setTime(now);
@@ -80,6 +71,22 @@ final class PrayerDay {
         ramadan = hijriMonth == IslamicCalendar.RAMADAN;
 
         qibla = new Qibla(where).direction;
+    }
+
+    static Date[] civilTimes(DateComponents date, Coordinates where, PrayerMethod method, Madhab madhab, int[] offsets) {
+        return times(new PrayerTimes(where, date, parameters(method, madhab, offsets)));
+    }
+
+    private static CalculationParameters parameters(PrayerMethod method, Madhab madhab, int[] offsets) {
+        PrayerRules.INSTANCE.validateOffsets(offsets);
+        CalculationParameters params = method.getParameters();
+        params.madhab = madhab;
+        params.adjustments = new PrayerAdjustments(offsets[0], offsets[1], offsets[2], offsets[3], offsets[4], offsets[5]);
+        return params;
+    }
+
+    private static Date[] times(PrayerTimes day) {
+        return new Date[] {minute(day.fajr), minute(day.sunrise), minute(day.dhuhr), minute(day.asr), minute(day.maghrib), minute(day.isha)};
     }
 
     /**

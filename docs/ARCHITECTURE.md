@@ -43,6 +43,11 @@ filenames and the `tv.afnon:core` JS namespace. Load the Kotlin standard library
 before the browser module. See [core contracts and checks](../shared/core/README.md).
 The initial host proof does not certify every later integrated build on hardware.
 
+Manual online prayer comparison keeps HTTPS/JSON/ISO validation and cancellation
+in the platform adapters. `PrayerComparison` supplies canonical named-method lookup
+and signed whole-minute differences. A reference never writes settings or replaces
+the offline schedule; each shell binds the shared read-only `prayer.online` action.
+
 ## Deliberate platform differences
 
 - Android/preview replace the displayed Fajr slot with tomorrow's after Isha. LG
