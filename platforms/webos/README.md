@@ -54,10 +54,10 @@ to the Prayer section. Unsaved appearance changes are discarded when leaving.
 - TV: preserved input selection and startup, native LG Settings shortcut, selected
   TV-app shortcuts, and an alert/startup status action.
 
-The 0.2.8 source binds those five prayer switches to the same semantic controls
+Version 0.2.8 binds those five prayer switches to the same semantic controls
 as Android; sunrise stays informational. Bilingual browser checks exercise every
 switch's saved value and Back to its originating setting. These checks mock the LG
-boundary; the installed TV is still 0.2.7 pending the final 0.2.8 hardware check.
+boundary; actual TV evidence is recorded under Hardware validation below.
 Shared favourite editing and native Uninstall action definitions are retained in
 the catalog, with explicit unimplemented gaps: this shell keeps its fixed shortcuts
 and hides those actions. This is an implementation gap, without a claim that every
@@ -251,6 +251,19 @@ These actions cancel only this package's own activities; they do not touch other
 native input settings or Developer Mode.
 
 ## Hardware validation
+
+Version 0.2.8 was installed over 0.2.7 on the LF6300 on 12 November 2026. All 100
+installed payload files match the reviewed package. All 30 preferences, Arabic,
+HDMI 1 and the complete startup state survived unchanged; the owner confirmed
+unchanged picture/sound with no visible error. The installed core passes all 66
+assertions on Node 0.10.25 and WebKit 538.2, with a ready decoder and no video error.
+Actual Arabic/English DOM checks cover 66 bound controls plus 22 declared gaps,
+canonical labels, choice values/conditional variants, five prayer bindings and
+Home/return-focus vectors. English was temporary and Arabic was restored exactly.
+Installed Arabic status values have clear clipping bounds without diagnostic CSS.
+The owner also confirms joined/readable Arabic values and physical Home Up/Down,
+All apps, OK and Back/return-focus routes. These checks are specific to this device;
+they do not establish support on other models or implement the declared gaps.
 
 Version 0.2.7 uses shared Home navigation. Its in-place update preserved all 30
 current preferences, HDMI 1 and startup; all 100 installed files match the build.

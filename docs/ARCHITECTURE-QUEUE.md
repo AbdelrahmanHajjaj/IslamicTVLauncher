@@ -1,6 +1,6 @@
 # Architecture migration queue
 
-Updated: 2026-11-11 (Africa/Cairo). Owner: project owner. Execution: autonomous,
+Updated: 2026-11-12 (Africa/Cairo). Owner: project owner. Execution: autonomous,
 sequential, on `feature/platform-core`. Starting commit: `74a4287`.
 
 ## Resume contract
@@ -96,10 +96,17 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Execution is blocked on owner/device availability; scope and acceptance criteria
-are unchanged. Resume this cursor when the owner reports readiness or hardware access.
+Execution resumed on 2026-11-12: owner reports the LG is available now. Scope and
+acceptance criteria are unchanged; continue Q09.5d with the refreshed baseline.
 
-Next: Q09.5d final 0.2.8 old-LG package and actual-host/UI acceptance. The bounded
+Next: Q09.5e owner-requested All apps header navigation refinement, shared by
+Android/LG: Up from any column of the first app row reaches Back; logical horizontal
+movement stays in the Back → Prayer → Settings header row. Keep lower-row paging,
+activation/Back behavior and all stored preferences intact. Add actual adapter
+checks and verify the resulting LG patch while the owner is available; physical
+Android acceptance remains separate. LG 0.2.8 is installed and
+its payload, live legacy hosts, bilingual bindings and preserved state are verified.
+The bounded
 UI contract work is software-verified: 88 semantic controls, actual native/LG
 bindings, canonical labels, choice values/bounds, five per-prayer switches, room
 direction and favourite action flows. Native has 24 whole-control gaps and LG 22;
@@ -107,20 +114,18 @@ partial-option gaps remain separately declared. LG editing/cosmetic features may
 stay hidden with honest unimplemented reasons, as the owner approved. Do not add a
 generic UI engine, speculative features or forced cosmetic ports.
 
-Build/review the final candidate, save fresh current LG preferences/input/startup,
-then use the already authorized in-place upgrade workflow. Verify installed files
-and core's 66-assertion proof on actual Node 0.10.25/WebKit 538.2, real control
-bindings/labels and preserved settings. Obtain human confirmation of visible UI,
-Arabic values, picture/sound and remote behavior. The verified 0.2.8 candidate is
-packaged under ignored state/platform-core/ui-contract-candidate, not installed.
-The fresh backup is q095-lg-before-service; the TV remains on accepted 0.2.7 in
-Browser. Owner answered "Later; keep the TV unchanged" on 2026-11-11. Defer the
-update and watched checks until the owner reports readiness; do not repeat the
-availability question or infer readiness from elapsed time. Refresh/recheck the
-baseline when resuming. No further independent software item is queued before
-this hardware gate; physical Android also remains unavailable until around 2026-11-25.
-No duplicate audible/power test is justified by
-these metadata/focus changes; those require a watcher if a new reason emerges.
+Authorized 0.2.7→0.2.8 close/install/relaunch succeeded. Fresh before/after/final
+snapshots q095-ready-lg-*-service prove all 30 original preferences, Arabic, input
+and complete startup state unchanged. All 100 installed payload files match the
+candidate, and all 66 core assertions pass on actual Node 0.10.25 and WebKit 538.2.
+Actual WebKit checks in Arabic/English account for all 88 controls (66 bound/22
+gaps), 20 choice models/conditional variants, five prayer bindings and Home vectors.
+English was temporary and Arabic is restored; no test is pending. Owner confirms
+unchanged HDMI picture/sound, joined/readable Arabic values and normal physical
+Home Up/Down/All apps/Back routes. Q09.5d is accepted; the new All apps header request
+is Q09.5e. The owned inspector and its endpoint are verified closed. No duplicate audible/
+power test is justified by these metadata/focus changes. Physical Android remains
+unavailable until around 2026-11-25 and is a separate open gate.
 
 HomeNavigation is shared and physically accepted on installed LG 0.2.7. Its Up
 route uses Android's column-dependent top controls; Down beyond apps selects All
@@ -1797,3 +1802,68 @@ unrelated renderer redesign, transport or future shell.
   On owner readiness, resume Q09.5d with a fresh baseline and the retained candidate;
   keep physical Android acceptance open until the device is available. Do not ask
   the same availability question or automatically retry a TV operation meanwhile.
+
+### Q09.5d LG readiness resumed (2026-11-12)
+
+- Owner set the goal active and reported "LG tv available now". This resumes the
+  already authorized in-place upgrade and watched UI checks; no further permission
+  question is needed. Keep physical Android acceptance separate and open.
+- Retained 0.2.8 candidate hash/source association verified against 09f7d31; later
+  commits are documentation only. Fresh read-only q095-ready-lg-before-service
+  backup succeeds, with 30 current preferences, installed 0.2.7 and no test or
+  undelivered alert pending. Preserve this fresh state rather than older snapshots.
+- Prepared bounded close/install/launch helper with exact candidate hash and
+  operation-record guard. No mutation has started at this checkpoint. Once started,
+  inspect authoritative operation/device state before retrying any timeout/failure.
+
+### Q09.5d installed 0.2.8 live verification (2026-11-12)
+
+- Close, in-place install and launch completed with CLI success and a terminal
+  operation record. Installed version is 0.2.8; all 100 payload files match the
+  reviewed candidate. No uninstall, identity change, firmware or release operation.
+  All 30 preferences, input and entire enabled-startup state match the fresh
+  before snapshot. Owner confirms picture/sound match, with no visible error.
+- Actual installed service core passes all 66 assertions on Node 0.10.25. Actual
+  WebKit 538.2 passes the same 66 checks, exposes 88 definitions, has a ready input
+  decoder (readyState 4), no video error and no active test overlay.
+- Actual Arabic and English rendering each pass complete binding/gap coverage:
+  66 bound controls +22 declared gaps, canonical labels and section/kind checks,
+  20 offered choice models including all countdown variants, five correctly mapped
+  prayer controls excluding sunrise, nine Home focus vectors and Prayer-day Back
+  return to its originating setting. Appearance edits stayed drafts and were
+  cancelled; no prayer switch, time offset, audio control or startup was changed.
+- Real language control was exercised and Arabic restored. Initial live-test
+  setup incorrectly expected Home after the language save and its Enter toggled
+  English back to Arabic; observed actual state before retrying. Corrected the
+  private fixture to leave Settings through its Back control, then English proof
+  passed and Arabic was restored through the real save callback. No product fix.
+- Actual installed Arabic values (enabled, disabled, Fajr and both silent test
+  values) have visible overflow/normal wrapping and clear clipping ancestors,
+  normal 88px rows and no diagnostic styling. Left Test alerts visible and asked
+  the owner to confirm joined/readable Arabic plus physical Home focus routes.
+  Those two human answers remain pending; decoder/DOM checks do not replace them.
+- Final service snapshot proves exact restoration of all 30 original preferences,
+  Arabic, input and startup after bilingual checks, with no pending test. The one
+  owned inspector was closed after process/path/arguments/creation-time identity
+  checks; process exit and unreachable local endpoint are verified. UI untouched
+  by cleanup. No emulator, forwarding process or one-shot test is left active.
+- Evidence: ignored ui-contract-{upgrade,lg-ready-after,lg-installed-payload,
+  lg-installed-legacy,lg-webkit-core,lg-webkit-coverage-ar,
+  lg-webkit-coverage-en-fixed,lg-language-restored,lg-arabic-values,
+  lg-ready-final}.log, upgrade/final-parity records, q095-ready-lg-*-service
+  snapshots and q095-inspector-closure.json. Physical Android gate remains open.
+
+### Q09.5d human acceptance and Q09.5e steering (2026-11-12)
+
+- Owner confirms installed Arabic is joined and all status values are fully
+  readable, including بلا صوت. Physical Home Up/Down, All apps, OK and Back/return
+  focus work. Together with the recorded picture/sound, payload, host/runtime,
+  bilingual DOM and preference checks, Q09.5d 0.2.8 is accepted on this old LG.
+- Owner requests a small All apps refinement: from any first-row column, Up should
+  select Back; while on Back, Left/Right should navigate the header's Prayer and
+  Settings controls instead of dropping into the app grid. Interpret the header
+  directions logically with one RTL translation, as elsewhere. Keep native lower
+  grid movement/paging and existing action handlers unchanged.
+- Continue as Q09.5e before the Android hardware gate: put the deterministic All
+  apps focus rule in core and bind both actual shells, with core/adapter checks.
+  No visual redesign, new settings/features, media/power test or companion work.

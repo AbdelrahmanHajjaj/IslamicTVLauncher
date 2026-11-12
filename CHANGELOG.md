@@ -57,6 +57,11 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### LG webOS development port
 
+- Version 0.2.8 binds settings, choices, numeric ranges and five prayer controls
+  to the shared UI contract, with explicit platform gaps. Its LF6300 in-place
+  upgrade preserves preferences/input/startup; shared runtime and bilingual UI
+  bindings are checked on the actual legacy Node/WebKit hosts.
+
 - Version 0.2.7 binds Home to the shared Android-derived navigation contract,
   including initial app focus, top controls, All apps and return focus.
 
