@@ -1,8 +1,8 @@
 import tokens from '../../../afnon-mihrab/tokens.json';
 import type { Prefs } from './data';
+import { safeInline } from './ui-scale';
 
 export const HOME = Object.fromEntries(Object.entries(tokens.layout.home).map(([k, v]) => [k, parseFloat(v.$value)])) as Record<keyof typeof tokens.layout.home, number>;
-const margin = parseFloat(tokens.space['safe-inline'].$value);
 export const homeChoice = (n: number | undefined, max: number) => Number.isInteger(n) ? Math.max(0, Math.min(max, n!)) : 0;
 export function homePrayers(table: number | undefined, current: number, next: number): number[] {
   return [[0, 1, 2, 3, 4, 5], [current], [next], [current, next], []][homeChoice(table, 4)];
@@ -10,6 +10,7 @@ export function homePrayers(table: number | undefined, current: number, next: nu
 
 /** Mirrors HomeLayout.java; all visual dimensions come from the shared tokens. */
 export function homeLayout(p: Prefs, count: number, rtl: boolean) {
+  const margin = safeInline(p);
   const mode = homeChoice(p.homeCountdown, 2), table = homeChoice(p.homePrayers, 4), side = homeChoice(p.homeSide, 2);
   const classic = p.homeLayout === 'classic', gap = HOME.gap;
   count = Math.max(0, Math.min(classic ? 4 : 9, count));

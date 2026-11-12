@@ -10,6 +10,7 @@ try {
   await server.ssrLoadModule('/tests/offsets.ts');
   await server.ssrLoadModule('/tests/calendar.ts');
   await server.ssrLoadModule('/tests/home.ts');
+  await server.ssrLoadModule('/tests/ui-scale.ts');
   await server.ssrLoadModule('/tests/prayer-day.ts');
   await server.ssrLoadModule('/tests/appearance-cycle.ts');
   await server.ssrLoadModule('/tests/online-prayer.ts');

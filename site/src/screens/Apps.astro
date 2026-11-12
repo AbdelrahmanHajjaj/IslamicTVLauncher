@@ -66,12 +66,19 @@ const menuText = {
 <div class="toast" data-toast-out hidden role="status"></div>
 
 <script>
+  import { safeInline } from '../lib/ui-scale';
   import { live } from '../scripts/live';
   import { appsModel } from './apps';
 
   const stage = document.querySelector<HTMLElement>('.tv')!;
   if (stage.dataset.screen === 'apps') {
-    live(appsModel);
+    live(appsModel, c => {
+      const margin = safeInline(c.prefs), width = (1920 - 2 * margin - 4 * 32) / 5;
+      stage.querySelectorAll<HTMLElement>('[data-app]').forEach(tile => {
+        tile.style.insetInlineStart = `${margin + Number(tile.dataset.app) % 5 * (width + 32)}px`;
+        tile.style.width = `${width}px`;
+      });
+    });
 
     const $ = <T extends HTMLElement = HTMLElement>(s: string) => stage.querySelector<T>(s)!;
 

@@ -261,11 +261,13 @@ cleanup catalogue. Setup commands are bundled; they are never fetched for execut
 | Accessibility service | Remote shortcuts, prayer monitoring, reminders and the optional prayer bar |
 
 The browser preview is separate: it keeps preferences in browser storage and plays a radio stream only
-when requested. Its city, region and method catalogs come from `shared/data/`;
-prayer icons, patterns and other text still come from the native sources.
+when requested. Its catalogs and text come from `shared/data/`; fonts and design
+assets use `shared/design/` and `afnon-mihrab/`.
 It demonstrates Home layouts, appearance and quick controls, but cannot control TV inputs, Wi-Fi,
 Android overlays or screensavers. Prayer-offset editing mirrors the TV: six centred adjusted times,
 minus/value/plus controls, draft cancellation and saved offsets, in Arabic and English.
+Interface size uses the same four choices as the apps and resizes preview screens,
+menus and alerts together; the website frame keeps its size.
 [Browser offset screenshots](docs/screenshots/README.md#browser-offset-preview) show this separate preview.
 
 ## Development and contributions

@@ -307,6 +307,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 
   .pills { justify-content:flex-end; position: absolute; top: 56px; display: flex; gap: var(--layout-home-gap); }
   .pill { position: relative; height: 72px; padding: 0 28px; border-radius: 36px; align-items: center; gap: 14px; font-size: 24px; --rest-border: var(--color-line-soft); --rest-border-width: var(--border-chip-width); }
+  .pills:not(.icons-only) .pill { padding-inline:var(--space-3); gap:var(--space-2); white-space:nowrap; flex-shrink:0; }
   .gear { inset-inline-start: calc(var(--layout-courtyard-inset-inline-start) + var(--layout-courtyard-width) - 72px); top: 56px; width: 72px; height: 72px; border-radius: 36px; align-items: center; justify-content: center; --rest-border: var(--color-line-soft); --rest-border-width: var(--border-chip-width); }
   .icons-only .pill-label { display: none; }
   .radio-pill .bars { display: none; }
@@ -336,7 +337,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   .fav > span { flex-shrink:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   :global([data-home-layout='classic']) .fav :global(.app-icon) { width:var(--layout-home-app-icon-classic-size); height:var(--layout-home-app-icon-classic-size); }
   .more { top: 890px; width: calc((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6); height:94px; border-radius: var(--radius-cell); padding: 18px; align-items: flex-end; font-size: var(--font-size-label); text-align: start; }
-  .all { white-space: pre-line; padding: 12px; --rest-fill: transparent; --rest-border: var(--color-line-dash); --rest-border-width: 0; border: 2px dashed var(--color-line-dash); }
+  .all { white-space: pre-line; padding: 12px calc(var(--space-1) / 2); --rest-fill: transparent; --rest-border: var(--color-line-dash); --rest-border-width: 0; border: 2px dashed var(--color-line-dash); }
   .all:focus { border-color: transparent; }
 
   .card { position: absolute; inset-inline-end: var(--space-safe-inline); bottom: var(--space-safe-block); width: var(--layout-toast-width); padding: 32px 36px; border-radius: var(--radius-panel); background: var(--color-lapis-900); color: var(--color-plaster-100); display: flex; flex-direction: column; gap: 10px; box-shadow: 0 0 0 2px var(--color-gold-400); --spatial-navigation-contain: contain; }

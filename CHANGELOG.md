@@ -11,7 +11,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   controls, alerts and the prayer bar together; HDMI video stays unchanged. Native
   Android also sizes quick menus, dialogs and the screensaver; enlarged settings
   scroll to keep every row reachable. Cancellation restores the originating row.
-  Preview integration and physical-TV acceptance remain pending.
+  The browser preview applies the same choice to its screens and menus while
+  keeping the website frame and backgrounds unchanged. Arabic All apps labels
+  keep their count inside the tile, and labelled Home buttons stay on one line.
+  Physical-TV sizing acceptance remains pending.
 
 - Android, LG and the browser preview add a manual **Check online** comparison with AlAdhan for all catalog
   locations and methods. It shows six calculated/reference times and signed minute

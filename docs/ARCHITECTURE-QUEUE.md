@@ -1,6 +1,6 @@
 # Architecture migration queue
 
-Updated: 2026-11-12 (Africa/Cairo). Owner: project owner. Execution: autonomous,
+Updated: 2026-11-13 (Africa/Cairo). Owner: project owner. Execution: autonomous,
 sequential, on `feature/platform-core`. Starting commit: `74a4287`.
 
 ## Resume contract
@@ -92,22 +92,23 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Active priority | Shared controls/input and global online comparison are source-complete. Global sizing policy, LG and native Android renderers are software-verified; continue preview sizing. LG live HDMI background and physical All apps/sizing/online checks await a watcher; Android hardware remains open. |
+| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are implemented and software-verified across their consumers. Prepare the next LG upgrade locally; keep the TV unchanged. LG live HDMI background and physical All apps/sizing/online checks await a watcher; Android hardware remains open. |
 
 ## Current cursor
 
-Next actionable software item: Q09.5h preview global sizing.
-The shared display.size / UiScale policy and LG picker/rendering are implemented
-and software-verified: 80/90/100/110%, default 100, all app-owned screens/alerts/bar,
-unchanged video dimensions, bounded focus/clipping and preserved preferences.
-Native preference/picker and all app-owned UI entries are now integrated and
-software-verified, including centered modals, separate windows/dialogs and dream.
-Its temporary gap is removed; build/contract checks and owned-emulator cleanup
-passed. Port the preview's actual preference/picker and all UI entries next, using
-the shared policy. Physical acceptance remains open.
-Ui currently converts design pixels from display width; avoid a shared static
-scale leaking between activities/services. Keep rendering native and do not add
-separate font/bar settings or a generic UI engine. Physical acceptance stays open.
+Next safe action: Q09/Q09.5 LG upgrade preparation locally. Inspect current LG
+version, packaging/media prerequisites and upgrade evidence; prepare a fresh
+reviewable package containing the verified source changes, preserving installed
+IDs/settings and notices. Do not install, launch, probe or change the TV while the
+owner's watcher deferral remains. Preparation does not close any hardware gate.
+
+Q09.5h source sizing is software-complete across core, LG, native Android and
+preview: 80/90/100/110%, default 100, all existing app-owned screens/alerts/menus,
+unchanged video/background framing, bounded controls/focus and preserved settings.
+Native separate windows/dialogs/dream and preview layout variants are checked;
+both owned emulator and browser/server sessions are closed. Required physical
+acceptance remains open. Keep renderers native; no separate font/bar setting,
+generic rendering framework or companion work.
 
 Q09.5g manual online comparison is source-complete and software-verified across
 LG, native Android and preview: fixed HTTPS, bounded/cancellable requests, validated
@@ -146,9 +147,9 @@ acceptance remains open. Home's existing shared navigation is physically accepte
 
 Q09.5h scales text and controls together, including the prayer bar, with the
 current size by default and a bounded range. LG source is verified in browser
-mocks, not installed. Native is verified on the owned emulator; preview sizing
-remains open. HDMI/video stays
-unscaled. No separate bar/font controls or generic renderer engine.
+mocks, not installed. Native is verified on the owned emulator and preview in the
+actual browser. HDMI/video stays unscaled. No separate bar/font controls or
+generic renderer engine. Physical sizing acceptance remains open.
 
 Q00–Q08 and Q09.5's initial semantic UI/binding work are complete; see evidence and
 docs/UI-CONTRACT.md. Android physical acceptance awaits hardware around 2026-11-25;
@@ -2539,26 +2540,52 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
   Physical Android TV, old-LG sizing/online/All apps and adhan live-background gates
   remain open. Overall goal remains active; no release, push, merge or detachment.
 
-### Q09.5h preview entry audit (2026-11-12)
+### Q09.5h preview sizing integration (2026-11-13)
 
-- 593c1a1 commits verified native sizing and cleanup; working tree was clean.
-  Preview is the first actionable item. No preview implementation or browser
-  session has started, and no device is connected by this work.
-- Preview uses one 1920x1080 Tv.astro stage with --k fitting the website frame;
-  retain that distinction from the saved app-size choice and keep its lattice/
-  background unscaled. Prefs/load/save/live updates are in lib/data.ts and
-  scripts/live.ts. Settings rows/edit commits are settings.ts/Settings.astro;
-  neither currently implements display.size. Reuse core UiScale and native-like
-  inline save/cancel; preserve other localStorage values.
-- Check every existing page and overlay: Home and its quick/reminder/radio/
-  screen-off UI, Apps/menu, PrayerDay/room picker, Settings/chooser/online report,
-  Call and Screensaver/drift. Home geometry also feeds the miniature preview.
-  Keep native renderers and existing semantic input routes; do not scale the
-  whole website/frame or introduce a generic UI engine or new dependency.
-- Existing site/scripts/test.mjs loads TypeScript fixtures through Vite; extend
-  that harness for meaningful preference/policy/layout checks. Existing ignored
-  online-reference/check-preview-browser.cjs uses installed Playwright/Edge and a
-  bounded local static server against site/dist; reuse the established browser
-  workflow for actual picker/navigation/geometry and reviewed bilingual extremes.
-  Playwright skill reread; npx is available. Avoid dumping whole Astro components:
-  Settings.astro includes a large controller/style block; read bounded portions.
+- Previous goal turn was progress: 593c1a1 committed native sizing and verified
+  emulator cleanup; 2e1ca02 recorded the preview entry. This slice binds the real
+  display.size choice and canonical labels to local uiScale, using shared UiScale
+  validation and the existing inline editor. Missing/type-confused values use 100;
+  invalid writes are rejected, and other saved/unknown preferences are preserved.
+- Website --k fitting and background/lattice remain separate from app content.
+  Native DOM/CSS scales screens, controls and menus, fits enlarged groups/focus
+  rings, counter-sizes full-screen backdrops and bounds scaled screensaver drift.
+  DOM changes and font readiness fit before paint, reusing the existing tick and
+  native MutationObserver; no new timer, rendering framework or dependency.
+- Home/All apps preserve grid gaps with the enlarged safe margin; the miniature
+  Home preview uses the same geometry. Text-bound inspection caught Arabic All
+  apps wrapping beyond its original tile, including at default size. Tighter inner
+  padding keeps its label/count inside. Labelled top controls now use shared compact
+  spacing and stay on one line without overlapping. Current 100% app size remains.
+- PASS: site test (ui-size/preview-final-tests.log): canonical resources/text/icons/
+  notices, all 19 methods/downward rounding, offsets/calendar/DST, prayer UI,
+  appearance cycling, online comparison and new size policy/binding/draft/storage
+  tests. Expanded Home geometry checks cover 28,800 combinations with transformed
+  focus-clearance assertions. No shared core/data/design sources changed.
+- PASS: standalone 18-page build, last source build ui-size/preview-pill-build.log;
+  canonical data and token freshness, and git whitespace checks. No native/LG build
+  dependency or runtime was added to the preview's build.
+- PASS: ui-size/preview-final-browser.log, all eight Arabic/English x
+  80/90/100/110 cases in actual Edge against a bounded local build server: real
+  picker save/cancel/return/reopen and preservation of every fixture preference,
+  all Settings sections and pages, city/menu/room/online modal coverage, input,
+  radio and screen-off UI with media mocked, All apps first-row Up and menu Back
+  return focus,
+  clock-advanced bounded screensaver drift and focused wake preserving the size.
+  At both extremes, five Home layout variants include labels, Classic, countdown
+  side, compact top/bottom and hidden countdown. Controls, focus rings and direct
+  text fit; labelled controls stay single-line and separate. No runtime errors.
+- Reviewed actual browser captures in ignored ui-size/preview: both-language
+  settings, Home and its labelled/compact variants, online report and screensaver
+  remain readable, with joined Arabic. Screenshots are browser evidence, not TV
+  captures; actual video/audio/OS integrations are not thereby proven.
+- Earlier ignored logs retain the stale-document/clock-focus harness failures,
+  delayed row-fit failure and text-wrap failures; corrections were verified in
+  the final matrix. Context7 MDN transform composition and Playwright clock docs
+  informed the native browser implementation/checks. All owned browser contexts,
+  processes and local servers closed normally; no emulator or LG was contacted.
+- Source sizing is software-complete across core/LG/native/preview. Preserve LG
+  app audio 30% / TV master 75. Continue Q09 hardware acceptance preparation locally;
+  installed LG remains 0.2.9 and new source features await an upgrade and watcher.
+  Android TV hardware, old-LG new UI/secure online checks and adhan live-background
+  investigation remain open. Overall goal remains active and incomplete.

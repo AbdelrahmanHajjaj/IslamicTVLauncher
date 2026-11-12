@@ -13,8 +13,10 @@ import { prayerLabel } from '../lib/prayer-icon';
 import { loadFacing } from './prayer-day';
 import portable from '@islamic-tv/core';
 import type { OnlineResult } from '../lib/online-prayer';
+import { UI_SIZES, uiPercent } from '../lib/ui-scale';
 
 const onlineControl = portable.tv.afnon.core.UiContract.bind('prayer.online', 'action');
+const sizeControl = portable.tv.afnon.core.UiContract.bind('display.size', 'choice');
 
 export const PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, APPEARANCE = 4, NETWORK = 5, DEVICE = 6, SECTIONS = 7;
 export type Kind = 'value' | 'seg' | 'step' | 'toggle' | 'carousel';
@@ -109,6 +111,7 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
       { id: 'lang', kind: 'seg', label: t.s('language'), help: t.s('languageHelp'), segs: [t.ar ? 'التلفاز' : 'TV', 'العربية', 'English'], selected: t.ar ? 1 : 2 },
       { id: 'digits', kind: 'seg', label: t.s('digits'), help: '', segs: ['0123', '٠١٢٣'], selected: t.eastern ? 1 : 0 },
       { id: 'clock', kind: 'seg', label: t.s('clockRow'), help: t.s('clockHelp'), segs: t.list('clocks').map(t.d), selected: Math.max(0, CLOCKS.indexOf(p.clock)) },
+      { id: sizeControl.id, kind: 'seg', label: t.s(sizeControl.labelKey), help: t.s('uiSizeHelp'), segs: UI_SIZES.map(value => t.d(value + '%')), selected: UI_SIZES.indexOf(String(uiPercent(p.uiScale))) },
       { id: 'quickLabels', kind: 'toggle', label: t.s('quickLabels'), help: '', on: p.quickLabels ?? false },
       { id: 'dockMode', kind: 'value', label: t.s('prayerDock'), help: '', value: t.list('dockModes')[DOCK_MODES.indexOf(p.dockMode ?? 'hidden')] },
       { id: 'dockPosition', kind: 'seg', label: t.s('dockPosition'), help: '', segs: t.list('dockPositions'), selected: p.dockPosition === 'top' ? 0 : 1 },
@@ -161,6 +164,10 @@ export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
 export function pick(c: Ctx, id: string, i: number): SPrefs | null {
   const p = { ...(c.prefs as SPrefs) };
   switch (id) {
+    case 'display.size': {
+      if (!Number.isInteger(i) || !UI_SIZES[i]) throw new RangeError('Invalid interface size choice');
+      return { ...p, uiScale: Number(UI_SIZES[i]) };
+    }
     case 'homeCountdown': return { ...p, homeCountdown: homeChoice(i, 2) };
     case 'homePosition': return p.homeCountdown === 2 ? p : p.homeCountdown === 1 ? { ...p, homeBar: homeChoice(i, 1) } : { ...p, homeSide: homeChoice(i, 2) };
     case 'homePrayers': return { ...p, homePrayers: homeChoice(i, 4) };
@@ -184,7 +191,8 @@ export function pick(c: Ctx, id: string, i: number): SPrefs | null {
 const chevron = '<svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
 export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 'var(--layout-settings-rows-top)') {
-  const binding = r.id === onlineControl.id ? ` data-ui="${onlineControl.id}" data-ui-kind="${onlineControl.kind}"` : '';
+  const contract = r.id === onlineControl.id ? onlineControl : r.id === sizeControl.id ? sizeControl : null;
+  const binding = contract ? ` data-ui="${contract.id}" data-ui-kind="${contract.kind}"` : '';
   let control = '';
   if (r.kind === 'value') control = `<span class="val">${esc(r.value ?? '')}</span>${chevron}`;
   else if (r.kind === 'carousel') {

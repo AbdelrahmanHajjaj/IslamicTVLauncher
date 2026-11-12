@@ -55,6 +55,13 @@ h1, h2, h3 { font-family: var(--display); font-weight: var(--display-weight); li
   --spatial-navigation-contain: contain;
 }
 .tv * { -webkit-tap-highlight-color: transparent; }
+.tv-ui { position:absolute; inset:0; width:1920px; height:1080px; transform:scale(var(--ui-size, 1)); transform-origin:center; }
+.tv[data-screen='screensaver'] .tv-ui { transform:none; }
+/* Backdrops cover the frame while their controls keep the chosen size. */
+.tv .tv-ui :is(.chooser, .menu, .picker, .screen-off, .scrim, .online-check) {
+  left:calc(960px - 960px / var(--ui-size, 1)); top:calc(540px - 540px / var(--ui-size, 1));
+  right:auto; bottom:auto; width:calc(1920px / var(--ui-size, 1)); height:calc(1080px / var(--ui-size, 1));
+}
 :where(.tv) :where(a, button) { color: inherit; font: inherit; text-decoration: none; text-align: inherit; }
 :where(.tv) :where(button) { border: 0; background: none; padding: 0; cursor: pointer; }
 .tv .num { font-feature-settings: 'tnum'; }

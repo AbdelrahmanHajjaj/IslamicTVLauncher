@@ -5,12 +5,15 @@ import { makeCtx } from '../src/lib/ctx';
 import { cellsHtml } from '../src/screens/home';
 import { rowsFor, pick, DISPLAY, APPEARANCE, PRAYER, rowsHtml, previewHtml } from '../src/screens/settings';
 
-for (let homeCountdown = 0; homeCountdown < 3; homeCountdown++)
+for (const uiScale of [100, 110]) for (let homeCountdown = 0; homeCountdown < 3; homeCountdown++)
 for (let homeSide = 0; homeSide < 3; homeSide++) for (let homeBar = 0; homeBar < 2; homeBar++)
 for (let homePrayers = 0; homePrayers < 5; homePrayers++) for (let count = 0; count <= 9; count++)
 for (const homeLayoutMode of ['classic', 'two_rows'] as const) for (const rtl of [false, true]) for (const quickLabels of [false, true]) {
-  const h = homeLayout({ ...DEFAULT_PREFS, quickLabels, homeCountdown, homeSide, homeBar, homePrayers, homeLayout: homeLayoutMode }, count, rtl);
+  const h = homeLayout({ ...DEFAULT_PREFS, uiScale, quickLabels, homeCountdown, homeSide, homeBar, homePrayers, homeLayout: homeLayoutMode }, count, rtl);
   assert.ok(h.x >= 96 && h.x + h.width <= 1824);
+  const factor = uiScale / 100, focusEdge = (10 + (h.tileWidth + 20) * .03) * factor + 12;
+  assert.ok(960 + (h.x - 960) * factor + .001 >= focusEdge, 'Focused grid clears the scaled left edge');
+  assert.ok(960 - (h.x + h.width - 960) * factor + .001 >= focusEdge, 'Focused grid clears the scaled right edge');
   assert.ok(h.recentY + 94 <= 1024);
   assert.ok(h.count === 0 || h.tileHeight >= 120);
   assert.ok(h.tileWidth > 0 && h.tileWidth <= 640);

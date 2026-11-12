@@ -42,13 +42,14 @@ const m = screensaverModel(ctx);
       wake.click();
     });
     // AfnonDream.drift: fade out, move somewhere new inside the safe margins, fade back in.
-    const place = (x: number, y: number) => group.style.setProperty('transform', `translate(${x}px, ${y}px)`);
+    const place = (x: number, y: number) => group.style.setProperty('translate', `${x}px ${y}px`);
     const fadeMs = () => parseFloat(getComputedStyle(group).transitionDuration) * 1000 || 0;
     place(1140, 250);
     window.setInterval(() => {
       group.style.opacity = '0';
       window.setTimeout(() => {
-        place(96 + Math.random() * (1920 - 192 - 440), 56 + Math.random() * (1080 - 112 - 640));
+        const factor = Number(stage.dataset.uiSize) / 100;
+        place(96 + Math.random() * (1920 - 192 - 440 * factor), 56 + Math.random() * (1080 - 112 - 640 * factor));
         group.style.opacity = '1';
       }, fadeMs());
     }, Number(group.dataset.drift));
@@ -57,7 +58,7 @@ const m = screensaverModel(ctx);
 
 <style>
   .wake { position: absolute; inset: 0; z-index: 1; outline: none; cursor: pointer; }
-  .group { position: absolute; left: 0; top: 0; width: 440px; height: 640px; transform: translate(1140px, 250px); transition: opacity var(--motion-screensaver-fade) linear; }
+  .group { position: absolute; left: 0; top: 0; width: 440px; height: 640px; translate:1140px 250px; scale:var(--ui-size, 1); transform-origin:0 0; transition: opacity var(--motion-screensaver-fade) linear; }
   .outline { position: absolute; inset: 0; overflow: visible; }
   .outline path { fill: none; stroke: var(--color-screensaver-arch-line); stroke-width: 2; }
   .col { position: absolute; left: 20px; right: 20px; top: 190px; display: flex; flex-direction: column; align-items: center; text-align: center; }

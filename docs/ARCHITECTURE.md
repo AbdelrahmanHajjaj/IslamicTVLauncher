@@ -54,6 +54,9 @@ backgrounds at viewport size, uses local themed dialog resources and bounds drea
 drift by the scaled group. Display-pixel conversion remains separate from the
 saved UI percentage, so service and Activity initialization cannot compound it.
 External Android settings remain controlled by the OS.
+The preview keeps website fitting (`--k`) separate from a scaled DOM content
+layer. It fits enlarged groups after model/DOM/font changes, counter-sizes modal
+backdrops and bounds screensaver drift; saved browser preferences stay local.
 
 ## Deliberate platform differences
 
