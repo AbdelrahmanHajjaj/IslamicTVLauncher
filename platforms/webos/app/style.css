@@ -169,6 +169,7 @@ button:disabled { color: {{color.disabled-text}}; }
 [dir=rtl] .banner-overlay .alert-box { padding-right: 44px; padding-left: 360px; }
 .card-overlay .alert-box { position: absolute; left: 510px; top: 250px; width: 900px; text-align: center; padding: 48px; }
 .audio-overlay { background: {{color.scrim}}; pointer-events: auto !important; }
+.adhan-overlay { background: transparent; }
 .audio-overlay .alert-box { position: absolute; left: 260px; right: 260px; top: 180px; text-align: center; padding: 72px; }
 .audio-overlay .alert-box h1 { font-size: 64px; line-height: 1.8; }
 .audio-overlay button { margin-top: 48px; }

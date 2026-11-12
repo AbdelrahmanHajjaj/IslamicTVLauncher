@@ -94,8 +94,17 @@ Activity Manager background service and has a cancellation action.
 Silent banners/cards do not pause, unload or reload the input. Audible playback must
 release the input decoder first on the LF6300; after Stop, end or a media error, the
 audio source is removed and the same recorded input is reloaded inside the app.
-Master TV volume is never changed. The app-level audio setting scales only its audio.
+Installed 0.2.8 never changes master TV volume. Its media-element volume setting
+is ineffective on this old webOS 2.2 decoder: the owner reports loud playback with
+a correctly saved 15% setting. LG documents media-element volume control from
+[webOS 4.0](https://forum.webostv.developer.lge.com/t/send-key-messages-by-web-apps/397).
+Use the TV remote for the installed build until the replacement is hardware-verified.
 Spoken Arabic clips are the same clips as Android, including Friday's Jumuah line.
+
+The 0.2.9 source removes the adhan screen's outer dim layer and hides its
+originating page while the central mihrab is visible. Dismissal restores the page
+and its focus. This does not establish live HDMI behind local audio; the LF6300
+still releases its input decoder for that playback. Silent banners are unchanged.
 
 Scheduled alerts are **off by default**; upgrades preserve your saved choice. Turn them on in Adhan & reminders
 after checking the timetable and the audible test. They use a separate persistent

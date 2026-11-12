@@ -559,7 +559,7 @@
   function mediaReport(event, detail) {
     if (media) { request('media', {kind: media.kind, event: event, time: isFinite(media.audio.currentTime) ? media.audio.currentTime : 0, detail: detail || ''}); }
   }
-  function dismissOverlay() { clearTimeout(overlayTimer); overlay.innerHTML = ''; overlay.className = ''; }
+  function dismissOverlay() { clearTimeout(overlayTimer); overlay.innerHTML = ''; overlay.className = ''; screen.style.visibility = ''; }
   function stopAudio(reason, restore, detail) {
     if (!media) { if (restore) { finishOverlay(); } return; }
     mediaReport(reason || 'stopped', detail);
@@ -656,6 +656,7 @@
     }
     overlay.className = audible ? 'audio-overlay' : alert.mode === 'card' ? 'card-overlay' : 'banner-overlay';
     if (alert.mode === 'adhan') {
+      overlay.className += ' adhan-overlay'; screen.style.visibility = 'hidden';
       overlay.innerHTML = '<svg class="call-frame" width="720" height="1080" viewBox="0 0 600 900" aria-hidden="true"><path class="outer" d="M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z"/>' +
         '<path class="inner" d="M18 900 L18 334 C18 184 150 92 300 22 C450 92 582 184 582 334 L582 900"/></svg><section class="call-column">' +
         '<div class="call-verse" lang="ar" dir="rtl">' + escape(D.sacred.adhanCall) + '</div><p class="call-label">' + (alert.test ? t('اختبار الأذان', 'Adhan test') : t('حان وقت الصلاة', 'Time for prayer')) +

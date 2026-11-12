@@ -99,7 +99,20 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 Execution resumed on 2026-11-12: owner reports the LG is available now. Scope and
 acceptance criteria are unchanged; continue Q09.5d with the refreshed baseline.
 
-Next: Q09.5g optional online comparison
+Next: Q09.5i LG adhan volume diagnosis, prioritized by the owner's new defect
+report. Saved app volume 15% reportedly still plays very loudly. Do not start an
+audible repro without a watcher; establish a real host/device feedback loop before
+changing playback. Owner also requests a transparent adhan-screen background with
+only the centered mihrab visible, confirmed on LG while adhan plays (not the silent
+banner). Investigate decoder/background limitations and preserve restoration;
+do not promise live HDMI under local audio if the tested hardware cannot do it.
+Owner selected temporary native TV-volume adjustment with restoration on the old
+LG. Apply the saved app percentage relative to the captured current level; never
+raise it to achieve attenuation or change mute. Restore only while still owning
+the applied level; respect subsequent remote changes. Cover failure/cancellation,
+overlap, suspend/closure and crash recovery, and verify a bounded watched adhan.
+Do not ship the costly whole-recording Web Audio prototype.
+Then resume Q09.5g optional online comparison
 for every supported location/method, not just Egypt. First implementation is a
 manual Check online action; offline calculations remain the schedule source and
 online results are advisory. No account/cloud or automatic schedule replacement.
@@ -2017,3 +2030,58 @@ unrelated renderer redesign, transport or future shell.
   current size. Include this in the shared contract and native renderers/preview;
   do not zoom HDMI content. Select a safe bounded range after inspecting layouts
   and prove clipping/focus in both languages and on the available old LG.
+
+### Q09.5i LG audible adhan report and bounded diagnosis (2026-11-12)
+
+- Owner confirms the issue is LG's audible adhan screen; the silent prayer banner
+  works well and must retain its behavior. Requested only the centered mihrab over
+  a transparent outer area. Prioritized this defect/visual correction before
+  online comparison and global UI sizing; those remain queued, without new scope.
+- Read-only installed 0.2.8 evidence: all 30 preferences present, volume correctly
+  saved at 15, current view Settings, no audio element/active overlay, master TV
+  volume 50 and unmuted. A detached HTML audio element reports 0.15 when set; that
+  getter cannot prove hardware attenuation. LG's standard Web API table marks
+  volume unsupported on old hosts; official developer guidance places support at
+  webOS 4.0+. Existing README's claim of effective app attenuation was incorrect
+  and is corrected. No volume fix has been installed or claimed.
+- Pure offline gain rendering on actual WebKit 538.2 produces RMS 0.015 from
+  input 0.1 at gain 0.15. Owner then explicitly watched a bounded two-second quiet
+  tone; reported hearing a low-volume tone. Do not claim the second-half reduction
+  was human-confirmed. The source stopped, no audio element/overlay remained and
+  HDMI decoder stayed ready=4 without error. Master volume was not changed.
+- A silent full-file decode of the largest installed adhan succeeds but takes
+  16.334 seconds and 94,095,360 PCM bytes (266.71 s stereo at 44.1 kHz), before other
+  overhead. Do not ship a whole-recording Web Audio replacement as a quick fix.
+- The app itself can read the old TV's native volume. A fresh-bridge, same-level
+  setVolume capability test succeeds: before/after both volume 50, unmuted. An
+  earlier reused-bridge probe failed its read guard before issuing a setter;
+  preserve its result rather than treating it as API absence. No level reduction,
+  mute change, new audible alert, package upgrade or preference edit was performed.
+  Owner explicitly selected temporary native TV-volume adjustment and restoration.
+  Apply the saved percentage relative to the captured current volume, never raise
+  it or change mute, and retain remote changes. Implement this as an old-host
+  adapter, with verified preparation before playback, serialized overlap,
+  stop/end/error/suspend cleanup and bounded persisted crash recovery. Determine
+  host support from documented sdkVersion; newer LG should use media attenuation
+  rather than receiving two independent reductions. Do not add accounts or a PC
+  dependency, and do not silently fall back to full-volume playback on failure.
+- Adhan background regression failed on the exact full-screen rgba(8,18,36,0.94)
+  scrim before source changes. A distinct adhan overlay now has transparent outer
+  background and temporarily hides the originating page. Dismissal restores it;
+  spoken alerts and silent banners retain existing paths. Full LG ES5/service and
+  browser suite passes; new Arabic/English outer-background/page-hide assertions
+  pass with decoder/audio mocked. This is source 0.2.9, not installed-TV proof.
+- Evidence: ignored lg-audio-readonly-private.json, volume-dom-*-params/result.json,
+  adhan-background-{red,test,browser,bilingual}.log. The owned read-only inspector
+  uses running:true, so it does not launch/relaunch the app; close it after the
+  current bounded diagnostics and record cleanup. Native volume methods here are
+  actual old-host observations, not a claim of support on every LG firmware.
+
+- Final Q09.5i probe cleanup: actual documented sdkVersion is 2.2.0. Before/after
+  snapshots prove every preference, input, complete startup state and master
+  volume/mute unchanged (50/unmuted); decoder ready=4, no error, no audio element.
+  Owner's current view is input, after their own navigation; no diagnostic route
+  navigated the app. Probe globals removed. Owned inspector identity checked and
+  closed, endpoint unreachable; closure evidence volume-inspector-closure.json.
+  Commit the separately verified transparent-mihrab change, then continue the
+  approved old-LG temporary-volume adapter. No audible alert/new build installed.

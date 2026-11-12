@@ -10,6 +10,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   methods: 17:00:30 becomes 17:00. Displays and scheduled alerts use the same rule;
   existing method corrections and saved manual offsets remain intact.
 
+- LG's adhan screen shows only the central mihrab over a transparent outer area,
+  hiding its originating page until dismissal. Silent prayer banners keep their
+  existing appearance and input playback behavior.
+
 - Settings controls now have shared semantic IDs, canonical bilingual labels and
   explicit platform gaps. Native Android rows and LG rows/carousels are checked
   against the portable contract so omitted controls cannot silently pass as parity.

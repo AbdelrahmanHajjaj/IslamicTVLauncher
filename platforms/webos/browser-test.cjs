@@ -480,6 +480,8 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#input-video source').count(), 0, 'HDMI decoder released before MP3');
     await page.screenshot({path: path.join(shots, 'adhan-test-en.png')});
     assert.equal(await page.locator('.call-frame').count(), 1, 'adhan uses the Android mihrab layout');
+    assert.equal(await page.locator('#overlay').evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)', 'only the adhan mihrab has a background');
+    assert.equal(await page.locator('#screen').evaluate(el => getComputedStyle(el).visibility), 'hidden', 'adhan hides the originating page outside its mihrab');
     assert.equal(await page.locator('.call-verse').innerText(), 'حَيَّ عَلَى الصَّلَاةِ');
     await page.locator('[data-action=toggle-adhan]').click();
     assert.equal(await page.locator('[data-action=toggle-adhan]').innerText(), 'Play');
@@ -489,6 +491,7 @@ const server = http.createServer((req, res) => {
     await page.keyboard.press('Escape');
     await page.waitForSelector('#input-video source', {state: 'attached'});
     assert.equal(await page.locator(':focus').getAttribute('data-action'), 'test-adhan', 'adhan returns to the original test row');
+    assert.equal(await page.locator('#screen').evaluate(el => getComputedStyle(el).visibility), 'visible', 'dismissing adhan restores the originating page');
     assert.equal(await page.locator('audio').count(), 0, 'audio source removed before input returns');
     assert.equal(await page.locator('#input-video source').getAttribute('src'), 'ext://hdmi:2');
     await tests();
@@ -577,6 +580,8 @@ const server = http.createServer((req, res) => {
     await page.locator('[data-action=section][data-value=tests]').click();
     await page.locator('[data-action=test-adhan]').click();
     await page.waitForFunction(() => document.querySelector('audio') && document.querySelector('audio').getAttribute('src'));
+    assert.equal(await page.locator('#overlay').evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)', 'Arabic adhan keeps the same transparent outer area');
+    assert.equal(await page.locator('#screen').evaluate(el => getComputedStyle(el).visibility), 'hidden', 'Arabic adhan hides the originating page');
     await page.screenshot({path: path.join(shots, 'adhan-test-ar.png')});
     await page.keyboard.press('Escape');
     await page.waitForSelector('#input-video source', {state: 'attached'});
