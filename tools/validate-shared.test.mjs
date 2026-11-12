@@ -36,6 +36,17 @@ try {
   assert.match(stale.stderr, /UiCatalog is stale/);
   assert.equal(checkUi('--write').status, 0);
   assert.equal(checkUi().status, 0, 'UI core generation works without platform/preview trees');
+  const referencePath = 'shared/core/src/commonMain/kotlin/tv/afnon/core/ReferenceMethods.kt';
+  copyFileSync(join(root, referencePath), join(fixture, referencePath));
+  const checkReference = () => spawnSync(process.execPath, [join(fixture, 'tools/catalogs.mjs'), '--check-reference'], {encoding: 'utf8'});
+  assert.equal(checkReference().status, 0, 'reference check needs no platform tree');
+  const methodPath = join(fixture, 'shared/data/methods.json');
+  const referenceMethods = JSON.parse(readFileSync(methodPath, 'utf8'));
+  referenceMethods[0].aladhanId = 23;
+  writeFileSync(methodPath, JSON.stringify(referenceMethods));
+  const staleReference = checkReference();
+  assert.notEqual(staleReference.status, 0);
+  assert.match(staleReference.stderr, /ReferenceMethods is stale/);
   const iconsPath = join(fixture, 'shared/design/icons.json');
   const icons = JSON.parse(readFileSync(iconsPath, 'utf8'));
   icons[Object.keys(icons)[0]] = '<script>alert(1)</script>';
@@ -43,7 +54,7 @@ try {
   const invalid = check();
   assert.notEqual(invalid.status, 0);
   assert.match(invalid.stderr, /Unsupported icon markup/);
-  console.log('PASS: isolated shared validation rejects active SVG; portable UI generation/check rejects stale metadata without platform/preview trees.');
+  console.log('PASS: isolated shared validation rejects active SVG; portable UI/reference checks reject stale metadata without platform/preview trees.');
 } finally {
   assert.equal(dirname(realpathSync(fixture)), scratch);
   rmSync(fixture, {recursive: true, force: true});

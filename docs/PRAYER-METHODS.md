@@ -8,6 +8,11 @@ adapter template. The preview and LG consume the same definitions. Built-in
 library factories retain their angles and method corrections; custom corrections are
 separate from saved user offsets.
 
+Each definition also records its named `aladhanId` for advisory online comparison.
+The generator emits the portable lookup; this metadata does not change any
+offline parameters or enable network requests by itself. Named authorities can
+still use different rounding/correction conventions between calculation engines.
+
 Calculated times round down to the start of their minute across all presets,
 including presets whose library default rounds upward. For example, 17:00:30
 becomes 17:00. The core rule applies to displayed times, tomorrow's Fajr and alert

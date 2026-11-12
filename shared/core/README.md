@@ -17,6 +17,12 @@ including before the epoch. JS adapters request unrounded astronomy first; the
 native Adhan minute adapter delegates to this same rule before seconds are lost.
 All methods preserve their angle/interval corrections and the user's saved offsets.
 
+`PrayerComparison` reports six signed whole-minute differences (online minus
+calculated), without changing either schedule. Both inputs use epoch milliseconds;
+shells must validate the reference's date/location/method/school before comparing.
+Its named AlAdhan method lookup is generated from `shared/data/methods.json`.
+Network requests, ISO parsing, source labels and advisory UI remain in the shells.
+
 Android, LG and the preview consume those rules. `ReminderRules` owns native
 eligibility/rounding, LG future-event selection and inclusive delivery classification.
 The shells retain their different windows, stored keys, claims and lifecycle.

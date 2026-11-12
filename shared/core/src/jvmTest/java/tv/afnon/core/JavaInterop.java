@@ -2,6 +2,12 @@ package tv.afnon.core;
 
 final class JavaInterop {
     static void check() {
+        int[] differences = PrayerComparison.INSTANCE.minutes(
+            new double[] {30000, 60000, 120000, 180000, 240000, 300000},
+            new double[] {59999, 0, 180000, 180000, 240000, 300000});
+        if (differences[0] != 0 || differences[1] != -1 || differences[2] != 1
+            || PrayerComparison.INSTANCE.aladhanMethod("EGYPTIAN") != 5)
+            throw new AssertionError("Java online comparison contract");
         if (HomeNavigation.INSTANCE.initial(3, 0) != HomeNavigation.FIRST_APP
             || HomeNavigation.INSTANCE.move(HomeNavigation.FIRST_APP, 3, 0, 3, HomeNavigation.FIRST_APP, 0, 1, false) != HomeNavigation.ALL_APPS)
             throw new AssertionError("Java Home input contract");

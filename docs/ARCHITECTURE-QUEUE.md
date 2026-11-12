@@ -101,7 +101,9 @@ prayer times remain the offline schedule source. Add a manual Check online actio
 for all supported locations/methods; reference results are advisory. Public-provider
 requests are explicitly authorized; no account, project-hosted backend, background
 polling or automatic schedule replacement. Keep network I/O in platform adapters.
-First establish provider/date/method compatibility and secure old-LG feasibility.
+Canonical method mapping and pure comparison rules are implemented and software-
+verified. Next wire the shared Check online action, bounded HTTPS and date/metadata
+validation into Android, LG and preview. Old-LG secure TLS remains unverified.
 
 Owner explicitly deferred further TV changes: Later; leave the TV unchanged. Do not
 run the prepared 20-second video-only probe, another update or audio/power/UI test
@@ -2159,3 +2161,53 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
   not a companion/cloud-account project. Keep all I/O in platform adapters and
   calculations the offline schedule source. Do not add speculative alternate
   audio backends before the native video-only result is actually observed.
+
+### Q09.5g provider feasibility and first implementation slice (2026-11-12)
+
+- Selected public AlAdhan API as an advisory calculation reference. Official API
+  specification: https://api.aladhan.com/v1/documentation/openapi/prayer-times/yaml;
+  named-method caveats: https://aladhan.com/calculation-methods. Context7 has no
+  suitable official AlAdhan source, so use these primary sources. Do not describe
+  it as an official local timetable or silently replace the offline calculation.
+- Computer-only HTTPS checks cover Cairo, Melbourne DST, Kathmandu +05:45 and
+  Honolulu -10:00, preserving ISO dates/offsets and matching request coordinates,
+  method and school. All 19 catalog authorities have named API equivalents.
+  Explicit middle-of-night high-latitude selection matches the Adhan default;
+  Moonsighting uses its own rule and reports NONE even with that parameter.
+  Request general shafaq for Moonsighting; do not reject its intentional metadata.
+  Evidence: ignored state/platform-core/online-reference/{openapi.yaml,*.json}.
+- Implementation: canonical method IDs feed one generated portable lookup; core
+  compares six epoch times in signed whole minutes (online minus calculated),
+  retaining global downward rounding. Shells validate date/coordinates/method/
+  school, parse ISO offsets and own bounded secure HTTPS, cancellation and errors.
+  Compare the actual calculated schedule including saved offsets against provider
+  values without local offsets; label that distinction. Preserve every setting,
+  astronomy parameter and reminder path. Use the raw civil day's six times,
+  including today's Fajr after Isha, not Android's tomorrow-Fajr display slot.
+- First verified increment is canonical mapping and pure comparison rules/tests;
+  then wire the shared action and real platform renderers. No TV mutation is
+  authorized during the watched-check deferral. Old-LG TLS and actual UI remain an
+  acceptance gate; never disable certificate verification or fall back to HTTP.
+
+- First source increment is implemented: shared/data/methods.json adds 19 canonical
+  AlAdhan identifiers; catalogs.mjs generates ReferenceMethods.kt and rejects
+  missing/fractional/duplicate/out-of-range IDs. PrayerComparison validates six
+  finite Date-range epochs, floors both schedules, reports signed integer minutes
+  and rejects unsafe differences without mutation or a method fallback. Shells
+  still own response/date validation; no request/action is enabled by this slice.
+- PASS: core 29 JVM / 28 JS tests, including native Java interop; 77 ES5 assertions
+  with modern APIs removed, in browser and CommonJS contexts. Runtime JS 85,033
+  bytes (+3,438 versus the prior 81,595); no performance improvement is claimed.
+  Catalog and isolated stale-reference checks pass without platform trees.
+  Consumer helper checks shared projections before compilation; preview generates
+  canonical projections first. LG keeps its independent build boundary.
+- PASS: preview tests and 18-page build; LG complete build/ES5/service/volume suite
+  and Arabic/English mocked browser checks; Android standalone build/size/lint,
+  APK 20,978,633 bytes (<25,000,000), 0 lint errors and 55 existing warnings.
+  Evidence: ignored online-reference/{core-verified,preview-check,preview-build,
+  lg-check,lg-browser-check,android-check,source-freshness-check}.log. No TV or
+  emulator was contacted, opened, installed, changed or used as a substitute for
+  hardware acceptance. Current TV remains at owner app audio 30% / master 75.
+- Continue g with actual renderer action/bindings and network adapters; do not mark
+  the online check complete or advance to global size h yet. Transparency and
+  physical remote checks remain deferred. No running tool jobs remain after checks.

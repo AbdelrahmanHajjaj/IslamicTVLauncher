@@ -2,52 +2,62 @@
   {
     "id": "EGYPTIAN",
     "ar": "الهيئة المصرية العامة للمساحة",
-    "en": "Egyptian General Authority of Survey"
+    "en": "Egyptian General Authority of Survey",
+    "aladhanId": 5
   },
   {
     "id": "UMM_AL_QURA",
     "ar": "أم القرى، مكة المكرمة",
-    "en": "Umm al-Qura, Makkah"
+    "en": "Umm al-Qura, Makkah",
+    "aladhanId": 4
   },
   {
     "id": "MUSLIM_WORLD_LEAGUE",
     "ar": "رابطة العالم الإسلامي",
-    "en": "Muslim World League"
+    "en": "Muslim World League",
+    "aladhanId": 3
   },
   {
     "id": "KARACHI",
     "ar": "جامعة العلوم الإسلامية، كراتشي",
-    "en": "University of Islamic Sciences, Karachi"
+    "en": "University of Islamic Sciences, Karachi",
+    "aladhanId": 1
   },
   {
     "id": "DUBAI",
     "ar": "دبي",
-    "en": "Dubai"
+    "en": "Dubai",
+    "aladhanId": 16
   },
   {
     "id": "KUWAIT",
     "ar": "الكويت",
-    "en": "Kuwait"
+    "en": "Kuwait",
+    "aladhanId": 9
   },
   {
     "id": "QATAR",
     "ar": "قطر",
-    "en": "Qatar"
+    "en": "Qatar",
+    "aladhanId": 10
   },
   {
     "id": "NORTH_AMERICA",
     "ar": "الجمعية الإسلامية لأمريكا الشمالية",
-    "en": "ISNA, North America"
+    "en": "ISNA, North America",
+    "aladhanId": 2
   },
   {
     "id": "MOON_SIGHTING_COMMITTEE",
     "ar": "لجنة رؤية الهلال",
-    "en": "Moonsighting Committee"
+    "en": "Moonsighting Committee",
+    "aladhanId": 15
   },
   {
     "id": "SINGAPORE",
     "ar": "سنغافورة",
-    "en": "Singapore"
+    "en": "Singapore",
+    "aladhanId": 11
   },
   {
     "id": "FRANCE",
@@ -57,7 +67,8 @@
       "fajr": 12,
       "isha": 12,
       "interval": 0
-    }
+    },
+    "aladhanId": 12
   },
   {
     "id": "TURKEY",
@@ -75,7 +86,8 @@
       4,
       7,
       0
-    ]
+    ],
+    "aladhanId": 13
   },
   {
     "id": "RUSSIA",
@@ -85,7 +97,8 @@
       "fajr": 16,
       "isha": 15,
       "interval": 0
-    }
+    },
+    "aladhanId": 14
   },
   {
     "id": "JAKIM",
@@ -95,7 +108,8 @@
       "fajr": 20,
       "isha": 18,
       "interval": 0
-    }
+    },
+    "aladhanId": 17
   },
   {
     "id": "KEMENAG",
@@ -105,7 +119,8 @@
       "fajr": 20,
       "isha": 18,
       "interval": 0
-    }
+    },
+    "aladhanId": 20
   },
   {
     "id": "TUNISIA",
@@ -115,7 +130,8 @@
       "fajr": 18,
       "isha": 18,
       "interval": 0
-    }
+    },
+    "aladhanId": 18
   },
   {
     "id": "ALGERIA",
@@ -125,7 +141,8 @@
       "fajr": 18,
       "isha": 17,
       "interval": 0
-    }
+    },
+    "aladhanId": 19
   },
   {
     "id": "MOROCCO",
@@ -135,7 +152,8 @@
       "fajr": 19,
       "isha": 17,
       "interval": 0
-    }
+    },
+    "aladhanId": 21
   },
   {
     "id": "GULF",
@@ -145,6 +163,7 @@
       "fajr": 19.5,
       "isha": 0,
       "interval": 90
-    }
+    },
+    "aladhanId": 8
   }
 ]

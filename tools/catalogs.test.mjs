@@ -13,6 +13,10 @@ validateMethods(methods);
 for (const change of [
   method => { method.id = '../METHOD'; },
   method => { method.ar = ''; },
+  method => { delete method.aladhanId; },
+  method => { method.aladhanId = 99; },
+  method => { method.aladhanId = 1.5; },
+  method => { method.aladhanId = methods[0].aladhanId; },
   method => { method.preset = null; },
   method => { method.preset = {fajr: NaN, isha: 12, interval: 0}; },
   method => { method.preset = {fajr: 12, isha: 0, interval: 0}; },

@@ -109,5 +109,18 @@ function verifyIslamicTVCore(core) {
   check(apps.move(4, 16, 0, 0, -1) === apps.BACK, 'all first-row columns reach Back');
   check(apps.move(apps.BACK, 16, 0, 1, 0) === apps.PRAYER && apps.move(apps.BACK, 16, 0, -1, 0) === apps.SETTINGS, 'circular Apps header');
   check(apps.move(14, 16, 0, 0, 1) === 15 && apps.move(15, 16, 0, 0, -1) === 10, 'partial Apps row');
+  var comparison = core.tv.afnon.core.PrayerComparison;
+  var referenceIds = [5, 4, 3, 1, 16, 9, 10, 2, 15, 11, 12, 13, 14, 17, 20, 18, 19, 21, 8];
+  check(ui.choices('prayer.method').filter(function (name) { return name !== 'city-default'; }).every(function (name, i) { return comparison.aladhanMethod(name) === referenceIds[i]; }), 'all online authority IDs');
+  var calculated = new Float64Array([30000, 60000, 120000, 180000, 240000, 300000]);
+  var reference = new Float64Array([59999, 0, 180000, 179999, 300000, 300000]);
+  check(Array.prototype.join.call(comparison.minutes(calculated, reference)) === '0,-1,1,-1,1,0', 'signed online differences round down');
+  check(calculated[0] === 30000 && reference[0] === 59999, 'comparison preserves both schedules');
+  rejected = false;
+  try { comparison.minutes(calculated, new Float64Array([NaN, 0, 0, 0, 0, 0])); } catch (badReference) { rejected = true; }
+  check(rejected, 'unavailable online times rejected');
+  rejected = false;
+  try { comparison.aladhanMethod('UNKNOWN'); } catch (badMethod) { rejected = true; }
+  check(rejected, 'no fallback for unknown online authority');
   return {checks: checks};
 }
