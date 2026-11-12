@@ -8,11 +8,15 @@ final class HomeLayout {
     final float x, width, panelX, panelY, quickY, tableY, labelY, favouritesY, tileWidth, tileHeight, recentLabelY, recentY;
 
     HomeLayout(int mode, int side, int bar, int table, int count, boolean classic, boolean rtl, boolean quickLabels) {
+        this(mode, side, bar, table, count, classic, rtl, quickLabels, Tokens.SPACE_SAFE_INLINE);
+    }
+
+    HomeLayout(int mode, int side, int bar, int table, int count, boolean classic, boolean rtl, boolean quickLabels, float margin) {
         this.mode = clamp(mode, HIDDEN); this.table = clamp(table, NONE);
         this.count = FavouriteChoice.visibleCount(count, classic);
         columns = FavouriteChoice.columns(this.count, classic, this.mode != MIHRAB);
         rows = this.count == 0 ? 0 : (this.count + columns - 1) / columns;
-        float margin = Tokens.SPACE_SAFE_INLINE, gap = Tokens.LAYOUT_HOME_GAP;
+        float gap = Tokens.LAYOUT_HOME_GAP;
         float full = Tokens.LAYOUT_HOME_WIDTH - 2 * margin;
         boolean panelAtStart = side == 0 || (side == 1) != rtl;
         width = this.mode == MIHRAB ? full - Tokens.LAYOUT_HOME_MIHRAB_WIDTH - Tokens.LAYOUT_HOME_PANEL_GAP : full;

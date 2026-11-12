@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.graphics.Typeface;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -41,6 +42,7 @@ abstract class Screen extends Activity {
     boolean h24;
     Typeface ui400, ui500, ui600, display, displayBold, sacred;
     FrameLayout root;
+    private FrameLayout viewport;
     ArchView arch;
     TextView archLabel, archName, archCount, archSub, archSub2;
     /** {@link Prefs#key} when the screen was last built. */
@@ -52,7 +54,7 @@ abstract class Screen extends Activity {
         public void run() {
             String key = Appearance.backgroundKey(Screen.this);
             if (root != null && !key.equals(backgroundKey)) {
-                root.setBackground(Appearance.background(Screen.this));
+                (viewport == null ? root : viewport).setBackground(Appearance.background(Screen.this));
                 backgroundKey = key;
             }
             onTick();
@@ -184,6 +186,7 @@ abstract class Screen extends Activity {
 
     /** Fonts for the current language, and an empty root laid out in its direction over the star lattice. */
     void newRoot() {
+        viewport = null;
         ui400 = getResources().getFont(R.font.alexandria_regular);
         ui500 = getResources().getFont(R.font.alexandria_medium);
         ui600 = getResources().getFont(R.font.alexandria_semibold);
@@ -196,6 +199,74 @@ abstract class Screen extends Activity {
         root.setBackground(Appearance.background(this));
         backgroundKey = Appearance.backgroundKey(this);
         root.setClipChildren(false);
+    }
+
+    @Override public void setContentView(View view) {
+        if (view != root) { super.setContentView(view); return; }
+        viewport = root;
+        float factor = Ui.factor(this);
+        if (factor != 1f) {
+            viewport = new FrameLayout(this) {
+                @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+                    super.onLayout(changed, left, top, right, bottom);
+                    root.setPivotX(root.getWidth() / 2f); root.setPivotY(root.getHeight() / 2f);
+                    if (factor > 1f) fitPage(factor);
+                }
+            };
+            viewport.setLayoutDirection(root.getLayoutDirection());
+            android.graphics.drawable.Drawable background = root.getBackground();
+            root.setBackground(null);
+            viewport.setBackground(background);
+            root.setScaleX(factor); root.setScaleY(factor);
+            viewport.addView(root, new FrameLayout.LayoutParams(-1, -1));
+        }
+        super.setContentView(viewport);
+    }
+
+    /** Modal backdrops cover the viewport while their contents retain the global UI scale. */
+    void fullOverlay(FrameLayout overlay) {
+        float factor = Ui.factor(this);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -1, Gravity.CENTER);
+        if (factor != 1f) {
+            int width = root.getWidth() > 0 ? root.getWidth() : Ui.ipx(1920);
+            int height = root.getHeight() > 0 ? root.getHeight() : getResources().getDisplayMetrics().heightPixels;
+            lp.width = Math.round(width / factor); lp.height = Math.round(height / factor);
+        }
+        root.addView(overlay, lp);
+    }
+
+    /** Fit native root groups after measurement, preserving their internal spacing and maximum focus rings. */
+    private void fitPage(float factor) {
+        float edge = Ui.px(Tokens.SPACE_2) / factor;
+        RectF available = new RectF(root.getWidth() * (1 - 1 / factor) / 2 + edge,
+            root.getHeight() * (1 - 1 / factor) / 2 + edge, root.getWidth(), root.getHeight());
+        available.right -= available.left; available.bottom -= available.top;
+        for (int i = 0; i < root.getChildCount(); i++) {
+            View child = root.getChildAt(i);
+            if (child.getVisibility() == View.GONE || !(child instanceof ViewGroup || child instanceof TextView || child instanceof ArchView)) continue;
+            RectF bounds = focusBounds(child);
+            bounds.offset(child.getLeft() + child.getTranslationX(), child.getTop() + child.getTranslationY());
+            if (bounds.width() <= available.width()) child.offsetLeftAndRight(Math.round(Math.max(available.left - bounds.left, Math.min(0, available.right - bounds.right))));
+            if (bounds.height() <= available.height()) child.offsetTopAndBottom(Math.round(Math.max(available.top - bounds.top, Math.min(0, available.bottom - bounds.bottom))));
+        }
+    }
+
+    private RectF focusBounds(View view) {
+        RectF bounds = new RectF(0, 0, view.getWidth(), view.getHeight());
+        if (view instanceof FocusTile) {
+            float growth = (((FocusTile) view).focusedScale() - 1) / 2;
+            bounds.inset(-view.getWidth() * growth, -view.getHeight() * growth);
+        } else if (view instanceof ViewGroup && !(view instanceof android.widget.ScrollView)) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View child = group.getChildAt(i);
+                if (child.getVisibility() == View.GONE) continue;
+                RectF inner = focusBounds(child);
+                inner.offset(child.getLeft() + child.getTranslationX() - group.getScrollX(), child.getTop() + child.getTranslationY() - group.getScrollY());
+                bounds.union(inner);
+            }
+        }
+        return bounds;
     }
 
     /**

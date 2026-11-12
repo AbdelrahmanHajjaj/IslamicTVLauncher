@@ -48,7 +48,7 @@ final class SystemScreens {
             labels.add(info.loadLabel(a.getPackageManager()).toString() + (current != null && component.equals(current.flattenToString()) ? " ✓" : ""));
         }
         labels.add(t.saverSystem());
-        new AlertDialog.Builder(a).setTitle(t.screensaver()).setItems(labels.toArray(new String[0]), (d, index) -> {
+        new AlertDialog.Builder(Ui.dialogContext(a)).setTitle(t.screensaver()).setItems(labels.toArray(new String[0]), (d, index) -> {
             if (index == components.size()) { open(a, Settings.ACTION_DREAM_SETTINGS); return; }
             try {
                 if (!Settings.Secure.putString(a.getContentResolver(), "screensaver_components", components.get(index))

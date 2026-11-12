@@ -10,7 +10,6 @@ Migration acceptance and evidence live only in ARCHITECTURE-QUEUE.md.
 
 | Control | State | Reason |
 | --- | --- | --- |
-| `display.size` | unimplemented | Global size contract is defined; native renderer and picker integration follow in Q09.5h. |
 | `prayer.zone` | unimplemented | Uses the TV time zone; no app-local override editor. |
 | `prayer.today` | unimplemented | Today/Qibla is available from Home; no second Settings shortcut. |
 | `reminders.enabled` | unimplemented | Native reminder and adhan switches are independent; no master scheduled-alert switch. |

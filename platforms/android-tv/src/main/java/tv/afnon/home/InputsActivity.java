@@ -13,11 +13,11 @@ public final class InputsActivity extends Activity {
         if (RemoteKeys.showInputs()) { finish(); return; }
         Ui.init(this);
         View menu = QuickMenus.inputs(this, this::finish);
-        setContentView(menu);
+        setContentView(Ui.sizedPanel(menu));
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.gravity = Gravity.TOP | Gravity.getAbsoluteGravity(Gravity.END, Screen.loadText(this).ar ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         lp.x = Ui.ipx(96); lp.y = Ui.ipx(152);
-        lp.width = Ui.ipx(640); lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.width = Math.round(Ui.ipx(640) * Ui.factor(this)); lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         getWindow().setAttributes(lp);
         QuickMenus.focusFirst(menu);
     }

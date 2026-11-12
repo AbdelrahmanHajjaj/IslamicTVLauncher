@@ -262,7 +262,7 @@ public class PrayerDayActivity extends Screen {
 
         FrameLayout.LayoutParams clp = new FrameLayout.LayoutParams(Ui.ipx(1100), -2, Gravity.CENTER);
         picker.addView(card, clp);
-        root.addView(picker, new FrameLayout.LayoutParams(-1, -1));
+        fullOverlay(picker);
         renderPicker();
     }
 

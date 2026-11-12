@@ -16,14 +16,17 @@ public final class AppearanceCycleDeviceCheck extends Instrumentation {
     private boolean prayerCheck;
     private boolean uiCheck;
     private boolean onlineCheck, onlineNetwork;
+    private boolean sizeCheck, sizeWindows;
 
     @Override public void onCreate(Bundle arguments) {
         String requested = arguments == null ? null : arguments.getString("check");
-        if (requested != null && !requested.equals("prayer") && !requested.equals("ui") && !requested.equals("online") && !requested.equals("online-network")) throw new IllegalArgumentException("Unknown device check: " + requested);
+        if (requested != null && !requested.equals("prayer") && !requested.equals("ui") && !requested.equals("online") && !requested.equals("online-network") && !requested.equals("size") && !requested.equals("size-windows")) throw new IllegalArgumentException("Unknown device check: " + requested);
         prayerCheck = "prayer".equals(requested);
         uiCheck = "ui".equals(requested);
         onlineCheck = "online".equals(requested) || "online-network".equals(requested);
         onlineNetwork = "online-network".equals(requested);
+        sizeCheck = "size".equals(requested);
+        sizeWindows = "size-windows".equals(requested);
         super.onCreate(arguments);
         start();
     }
@@ -32,6 +35,8 @@ public final class AppearanceCycleDeviceCheck extends Instrumentation {
         if (prayerCheck) { PrayerRuntimeDeviceCheck.run(this); return; }
         if (uiCheck) { UiContractDeviceCheck.run(this); return; }
         if (onlineCheck) { OnlinePrayerDeviceCheck.run(this, onlineNetwork); return; }
+        if (sizeCheck) { UiScaleDeviceCheck.run(this); return; }
+        if (sizeWindows) { UiScaleWindowDeviceCheck.run(this); return; }
         SharedPreferences prefs = Prefs.of(getTargetContext());
         Map<String, ?> saved = prefs.getAll();
         Bundle result = new Bundle();

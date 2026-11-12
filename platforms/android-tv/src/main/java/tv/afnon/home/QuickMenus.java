@@ -106,10 +106,11 @@ final class QuickMenus {
 
     static PopupWindow show(Activity a, View anchor) {
         PopupWindow popup = new PopupWindow();
-        View content = inputs(a, popup::dismiss);
-        content.measure(View.MeasureSpec.makeMeasureSpec(Ui.ipx(Tokens.LAYOUT_QUICK_MENU_WIDTH), View.MeasureSpec.EXACTLY),
+        View content = Ui.sizedPanel(inputs(a, popup::dismiss));
+        int width = Math.round(Ui.ipx(Tokens.LAYOUT_QUICK_MENU_WIDTH) * Ui.factor(a));
+        content.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        popup.setContentView(content); popup.setWidth(Ui.ipx(Tokens.LAYOUT_QUICK_MENU_WIDTH));
+        popup.setContentView(content); popup.setWidth(width);
         popup.setHeight(Math.min(content.getMeasuredHeight(), Ui.ipx(Tokens.LAYOUT_QUICK_MENU_MAX_HEIGHT)));
         popup.setFocusable(true); popup.setOutsideTouchable(true);
         popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

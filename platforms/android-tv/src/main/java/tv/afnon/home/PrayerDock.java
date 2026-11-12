@@ -23,7 +23,11 @@ final class PrayerDock {
     private long shownMinute = -1;
     private String shownPrefs = "";
     private final SharedPreferences.OnSharedPreferenceChangeListener changed = (p, key) -> {
-        if ("dock_mode".equals(key) || "dock_position".equals(key)) collapse();
+        if ("ui_scale".equals(key)) {
+            if (page.isEmpty()) { remove(); update(new Date(), asleep()); }
+            else open(page, returnToDock);
+        }
+        else if ("dock_mode".equals(key) || "dock_position".equals(key)) collapse();
         else if ("quick_labels".equals(key) && "dock".equals(page)) open("dock", true);
     };
     private final BroadcastReceiver power = new BroadcastReceiver() {
@@ -98,8 +102,9 @@ final class PrayerDock {
         View content = "inputs".equals(which) ? QuickMenus.inputs(service, this::hide)
             : content();
         root.setClipChildren(false); root.setClipToPadding(false);
-        root.addView(content);
-        int width = Ui.ipx("dock".equals(which) ? Tokens.LAYOUT_PRAYER_DOCK_WIDTH : Tokens.LAYOUT_QUICK_MENU_WIDTH);
+        root.addView(Ui.sizedPanel(content));
+        int width = "dock".equals(which) ? Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_WIDTH)
+            : Math.round(Ui.ipx(Tokens.LAYOUT_QUICK_MENU_WIDTH) * Ui.factor(service));
         root.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         attach(root, width, Math.min(root.getMeasuredHeight(), Ui.ipx(Tokens.LAYOUT_QUICK_MENU_MAX_HEIGHT)), true, fromDock);
         QuickMenus.focusFirst(content);
@@ -162,7 +167,7 @@ final class PrayerDock {
                 LinearLayout tab = QuickMenus.panel(service, null);
                 tab.setPadding(Ui.ipx(Tokens.SPACE_4), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_CELL_PADDING_BLOCK), Ui.ipx(Tokens.SPACE_4), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_CELL_PADDING_BLOCK));
                 next = QuickMenus.text(service, "", Tokens.FONT_SIZE_COMPACT_LABEL, Palette.PLASTER_100); next.setGravity(Gravity.CENTER); tab.addView(next);
-                attach(tab, Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_WIDTH), WindowManager.LayoutParams.WRAP_CONTENT, false, true);
+                attach(Ui.sizedPanel(tab), Ui.ipx(Tokens.LAYOUT_PRAYER_DOCK_WIDTH), WindowManager.LayoutParams.WRAP_CONTENT, false, true);
             }
         }
         if (next == null && times[0] == null) return;

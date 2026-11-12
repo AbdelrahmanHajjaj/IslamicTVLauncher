@@ -111,8 +111,8 @@ public class SettingsActivity extends Screen {
     private int rowIndex;
     private boolean prayerOffsetsPage;
     private final int[] homeDraft = new int[5];
-    private ScrollView appearanceRows;
-    private LinearLayout appearanceRowList;
+    private ScrollView rowScroll;
+    private LinearLayout rowList;
     private HomeLayout homePreviewLayout;
     private int homePreviewSlots;
     private int offsetsParentRow;
@@ -239,8 +239,8 @@ public class SettingsActivity extends Screen {
         for (int i = 0; i < SECTIONS; i++) styleNav(i);
         if (appearancePreview != null) root.removeView(appearancePreview);
         appearancePreview = null;
-        if (appearanceRows != null) root.removeView(appearanceRows);
-        appearanceRows = null;
+        if (rowScroll != null) root.removeView(rowScroll);
+        rowScroll = null;
         if (section == APPEARANCE) {
             homeDraft[0] = Prefs.homeCountdown(this); homeDraft[1] = Prefs.homeSide(this);
             homeDraft[2] = Prefs.homeBar(this); homeDraft[3] = Prefs.homePrayers(this);
@@ -253,20 +253,25 @@ public class SettingsActivity extends Screen {
             focusChoice = prefs().getBoolean("focus_lighting", false);
             motionChoice = Appearance.reduced(this);
             showAppearancePreview();
-            appearanceRows = new ScrollView(this);
-            appearanceRows.setClipToPadding(true);
+        }
+        if (section == APPEARANCE || Ui.factor(this) > 1f) {
+            rowScroll = new ScrollView(this);
+            rowScroll.setClipToPadding(true);
             int padding = Ui.ipx(Tokens.LAYOUT_SETTINGS_SCROLL_PADDING);
             int edge = Ui.ipx(Tokens.SPACE_1);
-            appearanceRows.setPadding(edge, edge, edge, edge);
-            appearanceRowList = new LinearLayout(this);
-            appearanceRowList.setOrientation(LinearLayout.VERTICAL);
-            appearanceRowList.setClipChildren(false);
-            appearanceRowList.setClipToPadding(false);
-            appearanceRowList.setPadding(padding - edge, padding - edge, padding - edge, padding - edge);
-            appearanceRows.addView(appearanceRowList);
+            rowScroll.setPadding(edge, edge, edge, edge);
+            rowList = new LinearLayout(this);
+            rowList.setOrientation(LinearLayout.VERTICAL);
+            rowList.setClipChildren(false);
+            rowList.setClipToPadding(false);
+            rowList.setPadding(padding - edge, padding - edge, padding - edge, padding - edge);
+            rowScroll.addView(rowList);
             float outside = Tokens.LAYOUT_SETTINGS_SCROLL_PADDING + FocusTile.REACH;
-            place(appearanceRows, Tokens.LAYOUT_SETTINGS_CONTENT_START - outside, Tokens.LAYOUT_SETTINGS_APPEARANCE_TOP - outside,
-                Tokens.LAYOUT_SETTINGS_ROW_WIDTH + 2 * outside, Tokens.LAYOUT_SETTINGS_APPEARANCE_ROWS_HEIGHT);
+            float top = section == APPEARANCE ? Tokens.LAYOUT_SETTINGS_APPEARANCE_TOP : ROWS_TOP;
+            float height = section == APPEARANCE ? Tokens.LAYOUT_SETTINGS_APPEARANCE_ROWS_HEIGHT
+                : getResources().getDisplayMetrics().heightPixels / Ui.scale / Ui.factor(this) - top - Tokens.SPACE_SAFE_BLOCK;
+            place(rowScroll, Tokens.LAYOUT_SETTINGS_CONTENT_START - outside, top - outside,
+                Tokens.LAYOUT_SETTINGS_ROW_WIDTH + 2 * outside, height);
         }
         rows.addAll(prayerOffsetsPage ? offsetRows() : rowsFor(section));
         for (int i = 0; i < rows.size(); i++) addRow(rows.get(i), i);
@@ -548,6 +553,15 @@ public class SettingsActivity extends Screen {
                     int selected() { return Math.max(0, Arrays.asList(values).indexOf(Prefs.clock(c))); }
                     void select(int i) { prefs().edit().putString("clock", values[i]).apply(); readClockFormat(); }
                 },
+                new Row("display.size", SEG) {
+                    final String[] values = UiContract.INSTANCE.choices("display.size");
+                    String[] keys() { return values.clone(); }
+                    String label() { return t.uiSize(); }
+                    String help() { return t.uiSizeHelp(); }
+                    String[] segs() { return digits(Arrays.stream(values).map(value -> value + "%").toArray(String[]::new)); }
+                    int selected() { return Arrays.asList(values).indexOf(String.valueOf(Prefs.uiScale(c))); }
+                    void select(int i) { Prefs.setUiScale(c, Integer.parseInt(values[i])); relaunch(); }
+                },
                 new Row("display.hide-system-apps", TOGGLE) {
                     String label() { return t.hideSystemApps(); }
                     String help() { return t.hideSystemAppsHelp(); }
@@ -792,10 +806,10 @@ public class SettingsActivity extends Screen {
             r.tile.addView(r.help, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_OFFSET_TIME_WIDTH), -2, Gravity.CENTER));
         }
         r.tile.setLook(f -> render(r, f));
-        if (appearanceRows != null) {
+        if (rowScroll != null) {
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, Ui.ipx(ROW_H + 2 * FocusTile.REACH));
             if (i > 0) lp.topMargin = Ui.ipx(ROW_GAP - 2 * FocusTile.REACH);
-            appearanceRowList.addView(r.tile, lp);
+            rowList.addView(r.tile, lp);
         } else placeTile(r.tile, Tokens.LAYOUT_SETTINGS_CONTENT_START, ROWS_TOP + i * (ROW_H + ROW_GAP), Tokens.LAYOUT_SETTINGS_ROW_WIDTH, ROW_H);
     }
 
@@ -803,7 +817,7 @@ public class SettingsActivity extends Screen {
     private void refresh() {
         if (appearancePreview != null) updateAppearancePreview();
         if (appearancePreview != null) {
-            homePreviewLayout = new HomeLayout(homeDraft[0], homeDraft[1], homeDraft[2], homeDraft[3], Apps.slots(this, t).size(), homeDraft[4] == 1, rtl, Prefs.quickLabels(this));
+            homePreviewLayout = new HomeLayout(homeDraft[0], homeDraft[1], homeDraft[2], homeDraft[3], Apps.slots(this, t).size(), homeDraft[4] == 1, rtl, Prefs.quickLabels(this), Ui.safeInline(this));
             homePreviewSlots = HomeLayout.prayers(homePreviewLayout.table, -1, 0).length;
             appearancePreview.getChildAt(0).invalidate();
         }
@@ -929,14 +943,14 @@ public class SettingsActivity extends Screen {
         rowIndex = i;
         Row r = rows.get(i);
         r.tile.requestFocus();
-        if (appearanceRows != null) r.tile.post(() -> {
-            if (appearanceRows == null || !r.tile.isFocused()) return;
+        if (rowScroll != null) r.tile.post(() -> {
+            if (rowScroll == null || !r.tile.isFocused()) return;
             int padding = Ui.ipx(Tokens.LAYOUT_SETTINGS_SCROLL_PADDING);
             int top = r.tile.getTop() - padding, bottom = r.tile.getBottom() + padding;
-            int y = appearanceRows.getScrollY(), height = appearanceRows.getHeight()
-                - appearanceRows.getPaddingTop() - appearanceRows.getPaddingBottom();
-            if (top < y) appearanceRows.scrollTo(0, top);
-            else if (bottom > y + height) appearanceRows.scrollTo(0, bottom - height);
+            int y = rowScroll.getScrollY(), height = rowScroll.getHeight()
+                - rowScroll.getPaddingTop() - rowScroll.getPaddingBottom();
+            if (top < y) rowScroll.scrollTo(0, top);
+            else if (bottom > y + height) rowScroll.scrollTo(0, bottom - height);
         });
         styleNav(section);
     }
@@ -1274,7 +1288,7 @@ public class SettingsActivity extends Screen {
 
         chooser.addView(card, new FrameLayout.LayoutParams(Ui.ipx(900), -2, Gravity.CENTER));
         setRowsFocusable(false);
-        root.addView(chooser, new FrameLayout.LayoutParams(-1, -1));
+        fullOverlay(chooser);
         FocusTile start = first;
         if (start != null) root.post(start::requestFocus);
     }

@@ -75,6 +75,8 @@ class FocusTile extends FrameLayout {
         return this;
     }
 
+    float focusedScale() { return focusScale; }
+
     FocusTile setLook(Look l) {
         look = l;
         l.apply(isFocused());

@@ -7,6 +7,7 @@ import android.text.format.DateFormat;
 import com.batoulapps.adhan.Coordinates;
 import com.batoulapps.adhan.Madhab;
 import tv.afnon.core.PrayerRules;
+import tv.afnon.core.UiScale;
 
 /**
  * Afnon's own settings (SharedPreferences "afnon"), read by every screen and the screensaver. Language and digits
@@ -231,6 +232,16 @@ final class Prefs {
     /** Everything a built screen depends on; a screen whose key changed while it was away rebuilds. */
     static boolean quickLabels(Context c) { return of(c).getBoolean("quick_labels", false); }
 
+    static int uiScale(Context c) {
+        try { return UiScale.INSTANCE.percent(of(c).getInt("ui_scale", UiScale.DEFAULT_PERCENT)); }
+        catch (ClassCastException ignored) { return UiScale.DEFAULT_PERCENT; }
+    }
+
+    static void setUiScale(Context c, int value) {
+        if (UiScale.INSTANCE.percent(value) != value) throw new IllegalArgumentException("Invalid UI size");
+        of(c).edit().putInt("ui_scale", value).apply();
+    }
+
     static boolean classicHome(Context c) { return "classic".equals(of(c).getString("home_layout", "two_rows")); }
 
     static int homeCountdown(Context c) { return HomeLayout.clamp(of(c).getInt("home_countdown", 0), HomeLayout.HIDDEN); }
@@ -242,6 +253,6 @@ final class Prefs {
         SharedPreferences p = of(c);
         return p.getString("locale", "") + "|" + p.getString("digits", "") + "|" + clock24(c) + "|" + cityIndex(c)
             + "|" + method(c) + "|" + madhab(c) + "|" + java.util.Arrays.toString(prayerOffsets(c)) + "|" + hijriOffset(c) + "|" + p.getInt("facing", -1) + "|" + Appearance.key(c) + "|" + Appearance.reduced(c) + "|" + p.getBoolean("hide_system_apps", false) + "|" + p.getString("dock_mode", "hidden") + "|" + p.getString("dock_position", "bottom") + "|" + quickLabels(c) + "|" + classicHome(c)
-            + "|" + homeCountdown(c) + "|" + homeSide(c) + "|" + homeBar(c) + "|" + homePrayers(c) + "|" + Appearance.cycleMinutes(c);
+            + "|" + homeCountdown(c) + "|" + homeSide(c) + "|" + homeBar(c) + "|" + homePrayers(c) + "|" + Appearance.cycleMinutes(c) + "|" + uiScale(c);
     }
 }

@@ -54,9 +54,9 @@ final class OnlinePrayerDeviceCheck {
         test.finish(code, result);
     }
 
-    private static OnlinePrayer request() { return new OnlinePrayer(CAIRO, PrayerMethod.EGYPTIAN, Madhab.SHAFI, new int[6], DATE); }
+    static OnlinePrayer request() { return new OnlinePrayer(CAIRO, PrayerMethod.EGYPTIAN, Madhab.SHAFI, new int[6], DATE); }
 
-    private static JSONObject fixture() throws Exception {
+    static JSONObject fixture() throws Exception {
         JSONObject times = new JSONObject();
         String[] clock = {"04:48", "06:18", "11:39", "14:40", "17:00", "18:20"};
         for (int i = 0; i < 6; i++) times.put(NAMES[i], "2026-11-12T" + clock[i] + ":00+02:00");
@@ -265,11 +265,11 @@ final class OnlinePrayerDeviceCheck {
         if (view instanceof ViewGroup) for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) bounds(((ViewGroup) view).getChildAt(i));
     }
 
-    private static void set(Object target, String name, Object value) {
+    static void set(Object target, String name, Object value) {
         try { java.lang.reflect.Field field = target.getClass().getDeclaredField(name); field.setAccessible(true); field.set(target, value); }
         catch (Exception error) { throw new AssertionError(error); }
     }
-    private static void deliver(OnlinePrayerActivity target, OnlinePrayer request, OnlinePrayer.Result value) {
+    static void deliver(OnlinePrayerActivity target, OnlinePrayer request, OnlinePrayer.Result value) {
         try {
             java.lang.reflect.Method method = OnlinePrayerActivity.class.getDeclaredMethod("complete", OnlinePrayer.class, OnlinePrayer.Result.class);
             method.setAccessible(true); method.invoke(target, request, value);

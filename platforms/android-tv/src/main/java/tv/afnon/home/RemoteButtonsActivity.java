@@ -41,7 +41,7 @@ public final class RemoteButtonsActivity extends Activity {
         for (int key : keys) labels.add(buttonName(key) + " · " + label(enabled ? mappings.get(key) : "@default"));
         labels.add(t.restoreButtons());
         if (RemoteKeys.watch == null) labels.add(t.enableButtons());
-        show(new AlertDialog.Builder(this).setTitle(t.remoteButtons()).setItems(labels.toArray(new String[0]), (d, index) -> {
+        show(new AlertDialog.Builder(Ui.dialogContext(this)).setTitle(t.remoteButtons()).setItems(labels.toArray(new String[0]), (d, index) -> {
             if (index == 0) listen();
             else if (index <= keys.size()) choose(keys.get(index - 1));
             else if (index == keys.size() + 1) {
@@ -90,7 +90,7 @@ public final class RemoteButtonsActivity extends Activity {
         String current = Prefs.of(this).getBoolean("remote_enabled", true) ? mappings.getOrDefault(key, "@default") : "@default";
         String[] labels = new String[values.size()];
         for (int i = 0; i < labels.length; i++) labels[i] = label(values.get(i)) + (values.get(i).equals(current) ? " ✓" : "");
-        show(new AlertDialog.Builder(this).setTitle(buttonName(key)).setItems(labels, (d, index) -> {
+        show(new AlertDialog.Builder(Ui.dialogContext(this)).setTitle(buttonName(key)).setItems(labels, (d, index) -> {
             String value = values.get(index);
             if (!value.startsWith("@") && Apps.launchIntent(this, value) == null) {
                 Toast.makeText(this, t.buttonAppMissing(), Toast.LENGTH_LONG).show(); choose(key); return;
@@ -125,7 +125,7 @@ public final class RemoteButtonsActivity extends Activity {
 
     private void listen() {
         press = new ButtonPress();
-        captureDialog = new AlertDialog.Builder(this).setTitle(t.pressButton()).setMessage(t.pressButtonHelp())
+        captureDialog = new AlertDialog.Builder(Ui.dialogContext(this)).setTitle(t.pressButton()).setMessage(t.pressButtonHelp())
             .setNegativeButton(t.back(), (d, w) -> showKeys()).setOnCancelListener(d -> showKeys()).create();
         captureDialog.setOnKeyListener((d, key, event) -> captureKey(event));
         captureDialog.setOnDismissListener(d -> { if (capturing == this) capturing = null; captureDialog = null; });

@@ -193,8 +193,9 @@ final class PrayerWatch {
         tlp.setMarginEnd(-Ui.ipx(28));
         card.addView(track, tlp);
 
+        View content = Ui.sizedPanel(card);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-            Ui.ipx(640), WindowManager.LayoutParams.WRAP_CONTENT,
+            Math.round(Ui.ipx(640) * Ui.factor(service)), WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                 | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
@@ -205,11 +206,11 @@ final class PrayerWatch {
         lp.y = Ui.ipx(56);
         WindowManager wm = service.getSystemService(WindowManager.class);
         try {
-            wm.addView(card, lp);
+            wm.addView(content, lp);
         } catch (RuntimeException e) {
             return;
         }
-        banner = card;
+        banner = content;
         fill.post(() -> {
             fill.setPivotX(t.ar ? fill.getWidth() : 0);
             fill.animate().scaleX(0f).setDuration(BANNER_SECONDS * 1000L).setInterpolator(null).start();

@@ -92,17 +92,19 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Active priority | Shared controls/input and global online comparison are source-complete. Global sizing policy and LG renderer are software-verified; continue native Android then preview sizing. LG live HDMI background and physical All apps/sizing/online checks await a watcher; Android hardware remains open. |
+| Q09.5 | Active priority | Shared controls/input and global online comparison are source-complete. Global sizing policy, LG and native Android renderers are software-verified; continue preview sizing. LG live HDMI background and physical All apps/sizing/online checks await a watcher; Android hardware remains open. |
 
 ## Current cursor
 
-Next actionable software item: Q09.5h native Android global sizing, then preview.
+Next actionable software item: Q09.5h preview global sizing.
 The shared display.size / UiScale policy and LG picker/rendering are implemented
 and software-verified: 80/90/100/110%, default 100, all app-owned screens/alerts/bar,
 unchanged video dimensions, bounded focus/clipping and preserved preferences.
-Native still declares the control unimplemented; port its actual preference/picker
-and all app-owned UI entries (Screen, overlay/quick menus, dialogs, dream and
-screen-off), then remove that gap only after rendered coverage and sizing checks.
+Native preference/picker and all app-owned UI entries are now integrated and
+software-verified, including centered modals, separate windows/dialogs and dream.
+Its temporary gap is removed; build/contract checks and owned-emulator cleanup
+passed. Port the preview's actual preference/picker and all UI entries next, using
+the shared policy. Physical acceptance remains open.
 Ui currently converts design pixels from display width; avoid a shared static
 scale leaking between activities/services. Keep rendering native and do not add
 separate font/bar settings or a generic UI engine. Physical acceptance stays open.
@@ -144,7 +146,8 @@ acceptance remains open. Home's existing shared navigation is physically accepte
 
 Q09.5h scales text and controls together, including the prayer bar, with the
 current size by default and a bounded range. LG source is verified in browser
-mocks, not installed. Native and preview sizing remain open. HDMI/video stays
+mocks, not installed. Native is verified on the owned emulator; preview sizing
+remains open. HDMI/video stays
 unscaled. No separate bar/font controls or generic renderer engine.
 
 Q00–Q08 and Q09.5's initial semantic UI/binding work are complete; see evidence and
@@ -2482,3 +2485,56 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
   0.2.9 and owner's app audio 30% / TV master 75 remain untouched. New LG sizing,
   online TLS/UI, All apps and adhan live background require the deferred watched
   checks. Continue native Android sizing, then preview, without closing these gates.
+
+### Q09.5h native sizing integration (2026-11-12)
+
+- Android binds the shared four-choice display.size control to ui_scale, default
+  100. Native inline editing preserves save/cancel and return focus; invalid saved
+  values use 100 and invalid writes are rejected. No separate font/bar setting,
+  new dependency, schedule/media change, identity change or global density mutation.
+- Ui.scale remains display-pixel conversion. Screen scales native content over an
+  unscaled background, fits enlarged groups/focus bounds and scrolls Settings.
+  Home/All apps keep grid spacing with a bounded enlarged safe margin. City,
+  favourite and room-direction modal backdrops cover the viewport at every size.
+- Native popup/input, prayer-bar/tab and reminder windows measure their scaled
+  content; full-width bars reflow and stay anchored. A visible bar rebuilds when
+  size changes. Dialog resource overrides are local themed Activity wrappers,
+  preserving system font scale/token. Dream content and drift bounds scale;
+  screen-off keeps its black background. External OS settings stay OS-owned.
+- Context7 Android references were used; official ContextThemeWrapper/View and
+  WindowInspector references filled retrieval gaps. WindowInspector's public
+  process-window inspection is API 29+ and used only by emulator instrumentation.
+  Production APIs remain within min 26. No root was attempted; API 37's root-only
+  dream shell command was replaced by the observed system Settings preview flow.
+- PASS: ui-size/verified-size.log: all eight Arabic/English x 80/90/100/110 cases,
+  actual picker save/cancel/reopening/return focus, six main screens, all seven
+  Settings sections and real city/favourite/room-direction modals. PASS:
+  complete-size-windows.log: actual popup and fallback/service input windows,
+  top/bottom bars with/without labels, live size rebuild, reminder, screen-off and
+  real dream previews with 40 bounded drift samples per case. Passive tab uses an
+  isolated production PrayerDock, a synthetic foreground event and a real native
+  accessibility window; external-app remote interception is not thereby proven.
+- PASS: complete-ui.log: existing native semantic/choice coverage, canonical
+  Arabic/English labels, offsets/prayer switches/room direction and favourite
+  add/reorder/replace/save/cancel/return. Native display.size gap removed; generated
+  report/freshness pass (90 controls; native 24 / LG 22 whole-control gaps).
+- PASS: 14 Java/Python checks including 28,800 Home geometry combinations at both
+  margins, plus two bilingual text regressions. Standalone Android build/lint/size
+  passes: 21,155,118-byte APK, 0 errors / existing 55 warnings. Final build evidence:
+  ui-size/native-verified-build.log. Centered modal gravity removes the two new RTL
+  warnings without suppression. No physical-performance improvement is claimed.
+- Enlarged main pages, both-language labelled bars and native dialog captures were
+  reviewed; controls are readable and joined Arabic is retained. Actual dream
+  previews are dim/soft in this phone emulator: geometry is verified, TV sharpness
+  remains a physical check. Final pages/window captures are ignored in
+  ui-size/pages-final and windows-final, not TV screenshots.
+- Earlier ignored logs retain rejected clipping/overlap and harness failures;
+  a command-quoting cleanup error was corrected and original emulator state was
+  recovered before final runs. Final cleanup independently verified original
+  preference values/types, secure settings and display, removed 80 known cache
+  captures, then closed only the owned emulator. Its serial is offline, launcher
+  process exited and existing AVD configuration hashes are unchanged.
+- LG was not contacted or changed. Owner reconfirmed app audio 30%, preserving TV
+  master 75. Native sizing is software-complete; continue preview sizing next.
+  Physical Android TV, old-LG sizing/online/All apps and adhan live-background gates
+  remain open. Overall goal remains active; no release, push, merge or detachment.

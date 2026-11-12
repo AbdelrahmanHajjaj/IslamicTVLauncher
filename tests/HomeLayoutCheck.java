@@ -6,12 +6,14 @@ public final class HomeLayoutCheck {
     private static void check(boolean ok, String message) { if (!ok) throw new AssertionError(message); }
     public static void main(String[] args) {
         int cases = 0;
+        for (float margin : new float[] {96, 128})
         for (int mode = 0; mode < 3; mode++) for (int side = 0; side < 3; side++)
         for (int bar = 0; bar < 2; bar++) for (int table = 0; table < 5; table++)
         for (int count = 0; count <= 9; count++) for (boolean classic : new boolean[] {false, true})
         for (boolean rtl : new boolean[] {false, true}) for (boolean labels : new boolean[] {false, true}) {
-            HomeLayout h = new HomeLayout(mode, side, bar, table, count, classic, rtl, labels);
-            check(h.x >= 96 && h.x + h.width <= 1824, "safe horizontal bounds");
+            HomeLayout h = margin == 96 ? new HomeLayout(mode, side, bar, table, count, classic, rtl, labels)
+                : new HomeLayout(mode, side, bar, table, count, classic, rtl, labels, margin);
+            check(h.x >= margin && h.x + h.width <= 1920 - margin, "safe horizontal bounds");
             check(h.recentY + 94 <= 1024, "recent apps fit");
             check(h.count == 0 || h.tileHeight >= 120, "readable app tiles");
             check(h.tileWidth > 0 && h.tileWidth <= 640, "bounded tile width");
@@ -20,8 +22,8 @@ public final class HomeLayoutCheck {
             if (mode == 0) {
                 check(h.panelX + 600 < h.x || h.x + h.width < h.panelX, "mihrab does not overlap content");
                 float physical = rtl ? 1920 - h.panelX - 600 : h.panelX;
-                if (side == 1) check(physical == 96, "explicit left is physical left in either language");
-                if (side == 2) check(physical == 1224, "explicit right is physical right in either language");
+                if (side == 1) check(physical == margin, "explicit left is physical left in either language");
+                if (side == 2) check(physical == 1920 - margin - 600, "explicit right is physical right in either language");
             }
             if (mode == 1 && bar == 0) check(h.panelY + 100 < h.tableY, "top bar separated");
             if (mode == 1 && bar == 1) check(h.recentY + 94 < h.panelY, "bottom bar separated");

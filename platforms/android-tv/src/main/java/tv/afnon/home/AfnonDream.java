@@ -77,6 +77,8 @@ public class AfnonDream extends DreamService {
         root.setLayoutDirection(t.ar ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
 
         group = new FrameLayout(this);
+        group.setPivotX(0); group.setPivotY(0);
+        group.setScaleX(Ui.factor(this)); group.setScaleY(Ui.factor(this));
         group.addView(new Outline(this), new FrameLayout.LayoutParams(-1, -1));
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
@@ -210,8 +212,8 @@ public class AfnonDream extends DreamService {
     /** Fades the group out, moves it to a random spot inside the safe area (96 inline, 56 block), fades it in. */
     private void drift(boolean animate) {
         lastDrift = System.currentTimeMillis();
-        float x = 96 + random.nextFloat() * (1920 - 2 * 96 - W);
-        float y = 56 + random.nextFloat() * (1080 - 2 * 56 - H);
+        float x = 96 + random.nextFloat() * (1920 - 2 * 96 - W * Ui.factor(this));
+        float y = 56 + random.nextFloat() * (1080 - 2 * 56 - H * Ui.factor(this));
         if (!animate) {
             place(x, y);
             return;

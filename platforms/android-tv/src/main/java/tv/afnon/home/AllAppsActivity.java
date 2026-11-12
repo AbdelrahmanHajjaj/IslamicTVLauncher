@@ -293,8 +293,8 @@ public class AllAppsActivity extends Screen {
                 tile = appTile(apps.get(j));
                 pendingIcons.add(apps.get(j));
                 tiles.set(j, tile);
-                float w = (1728 - (COLS - 1) * GAP) / COLS;
-                placeTile(tile, 96 + (j % COLS) * (w + GAP), GRID_TOP + r * (TILE_H + GAP), w, TILE_H);
+                float margin = Ui.safeInline(this), w = (1920 - 2 * margin - (COLS - 1) * GAP) / COLS;
+                placeTile(tile, margin + (j % COLS) * (w + GAP), GRID_TOP + r * (TILE_H + GAP), w, TILE_H);
             }
             if (tile != null) {
                 tile.setTranslationY(shift);
@@ -443,7 +443,7 @@ public class AllAppsActivity extends Screen {
             menuItems.add(item);
         }
         menu.addView(card, new FrameLayout.LayoutParams(Ui.ipx(820), -2, Gravity.CENTER));
-        root.addView(menu, new FrameLayout.LayoutParams(-1, -1));
+        fullOverlay(menu);
         swallowOkUp = true;
         menuItems.get(0).requestFocus();
     }

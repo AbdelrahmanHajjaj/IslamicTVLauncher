@@ -206,7 +206,7 @@ public class MainActivity extends Screen {
         List<String> favs = Apps.slots(this, t);
         classicHome = Prefs.classicHome(this);
         home = new HomeLayout(Prefs.homeCountdown(this), Prefs.homeSide(this), Prefs.homeBar(this),
-            Prefs.homePrayers(this), favs.size(), classicHome, rtl, Prefs.quickLabels(this));
+            Prefs.homePrayers(this), favs.size(), classicHome, rtl, Prefs.quickLabels(this), Ui.safeInline(this));
         favouriteCount = home.count;
         buildCountdown();
         nodes[QIBLA] = quickPill(t.today(), Icon.COMPASS, () -> startActivity(new Intent(this, PrayerDayActivity.class)));
