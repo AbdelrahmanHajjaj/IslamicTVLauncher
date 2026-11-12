@@ -99,7 +99,13 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 Execution resumed on 2026-11-12: owner reports the LG is available now. Scope and
 acceptance criteria are unchanged; continue Q09.5d with the refreshed baseline.
 
-Next: Q09.5i LG adhan volume diagnosis, prioritized by the owner's new defect
+Next: Q09.5i implement the approved old-LG temporary-volume adapter. The exact
+client regression is red (volume-client-red.log: master 50 != expected 7 at 15%).
+Owned uncommitted browser-test.cjs changes add that test and native-boundary mocks;
+retain and finish them. Transparency is separately verified/committed at 9e10bed;
+All apps navigation is committed at d6d039c. No TV package has changed.
+
+Q09.5i LG adhan volume diagnosis was prioritized by the owner's new defect
 report. Saved app volume 15% reportedly still plays very loudly. Do not start an
 audible repro without a watcher; establish a real host/device feedback loop before
 changing playback. Owner also requests a transparent adhan-screen background with
@@ -2085,3 +2091,36 @@ unrelated renderer redesign, transport or future shell.
   closed, endpoint unreachable; closure evidence volume-inspector-closure.json.
   Commit the separately verified transparent-mihrab change, then continue the
   approved old-LG temporary-volume adapter. No audible alert/new build installed.
+
+### Q09.5i volume implementation cursor (2026-11-12)
+
+- Owner approved temporary native TV-volume adjustment and restoration. No answer
+  remains pending. Implement the old-host adapter next, preserving the default
+  mode on documented sdkVersion >=4 (element attenuation, no double reduction).
+  The actual old host is sdkVersion 2.2.0. Keep shell I/O outside portable core.
+- First red adapter regression now exists in browser-test.cjs: normal media and
+  all earlier conformance checks pass, then the explicit old-LG/15% case fails
+  because playback starts with master 50 instead of floor(50*0.15)=7. Command:
+  Node 24 `node platforms/webos/browser-test.cjs`; evidence volume-client-red.log.
+  Added mocks for the intended audioVolume prepare/release protocol; production
+  has not called/implemented it yet. This test remains intentionally uncommitted
+  until the volume slice is green. Do not discard it as unrelated work.
+- Keep the implementation proportionate: serialize prepare/release so overlapping
+  previews/alerts cannot compound attenuation or restore an old session over a
+  new one; verify preparation before playing; persist the captured baseline before
+  changing native volume. Stop/remove audio before raising/restoring TV volume.
+  Stop/replay on the call screen must release/reacquire the level as well as
+  end/error/Back/suspend. Restore only if current level still matches the owned
+  applied value, preserving manual remote changes; never alter mute.
+- Crash recovery must first establish that audio has stopped. Do not add an expiry
+  which raises master volume while a frozen app may still be playing at element
+  volume 1. Prefer existing lifecycle/service facilities and a safe persisted
+  recovery point; do not build a generic lease/timer framework or require a PC.
+  If absolute level/mode cannot be established, fail before sound rather than
+  falling back to loud playback. Test asynchronous failure, overlap, cancellation,
+  manual override and interrupted cleanup at the actual shell boundary.
+- Context7's CLI close lookup did not provide a public app-close guarantee. The
+  installed CLI uses com.webos.applicationManager/dev/closeByAppId, which is a
+  developer operation; do not assume an ordinary JS service can use it for
+  recovery. It has not been called/tested as part of this diagnosis. Current
+  inspector and owned emulator are both verified closed; no running tool jobs.
