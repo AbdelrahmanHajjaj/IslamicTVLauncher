@@ -92,15 +92,19 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are implemented and software-verified across their consumers. Prepare the next LG upgrade locally; keep the TV unchanged. LG live HDMI background and physical All apps/sizing/online checks await a watcher; Android hardware remains open. |
+| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are implemented and software-verified across their consumers. LG 0.2.10 is locally packaged and verified, not installed. Keep the TV unchanged until watched acceptance resumes. LG live HDMI background and physical All apps/sizing/online checks await a watcher; Android hardware remains open. |
 
 ## Current cursor
 
-Next safe action: Q09/Q09.5 LG upgrade preparation locally. Inspect current LG
-version, packaging/media prerequisites and upgrade evidence; prepare a fresh
-reviewable package containing the verified source changes, preserving installed
-IDs/settings and notices. Do not install, launch, probe or change the TV while the
-owner's watcher deferral remains. Preparation does not close any hardware gate.
+Next action requires hardware availability: Q09/Q09.5 watched LG upgrade from 0.2.9
+to the locally verified 0.2.10 candidate, or Android TV acceptance when that device
+returns. No independent implementation or package-preparation item remains. Do not
+install, launch, probe or change the LG while the owner's watcher deferral remains.
+The private candidate is state/platform-core/lg-0210-candidate/
+tv.afnon.webos_0.2.10_all.ipk; its manifest records every payload hash. Reconfirm the
+candidate hash and source freshness before any authorized upgrade, capture current
+preferences/input/startup then, and install over the existing app without uninstalling.
+Preparation does not close any hardware gate.
 
 Q09.5h source sizing is software-complete across core, LG, native Android and
 preview: 80/90/100/110%, default 100, all existing app-owned screens/alerts/menus,
@@ -2589,3 +2593,48 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
   installed LG remains 0.2.9 and new source features await an upgrade and watcher.
   Android TV hardware, old-LG new UI/secure online checks and adhan live-background
   investigation remain open. Overall goal remains active and incomplete.
+
+
+### Q09/Q09.5 LG 0.2.10 local upgrade preparation (2026-11-13)
+
+- Previous goal turn was progress: efc8881 completed preview sizing and closed its
+  local sessions. This turn completes the first actionable package-preparation
+  item; no hardware action or LG connection was made. The owner's latest explicit
+  watcher choice remains Later; leave the TV unchanged. App audio 30% / TV master
+  75 remain the latest confirmed preferences, not the older quiet-test baselines.
+- Bumped the four aligned version sources and the lockfile root package to 0.2.10.
+  The existing build regression now checks their agreement before rebuilding.
+  App/service IDs, visible title, permissions and stored-state paths are unchanged.
+  No application behavior, dependency or generated source changed in this slice.
+- PASS: Node 24 / JDK 17 local LG suite, ui-size/lg-0210-tests.log: shared-source
+  validation, clean rebuild, shipped ES5 parsing, legacy calculations/preferences,
+  atomic state, startup/scheduling/overlap/expiry/cancellation, volume restoration
+  and guarded manual HTTPS comparison. No unrelated native/preview build was repeated.
+- PASS: ui-size/lg-0210-browser.log, all eight Arabic/English x 80/90/100/110 cases:
+  real picker/save/cancel/reopen, preserved fixture preferences, Home/All apps/header,
+  Today/online/settings/appearance/voices/clock/inputs/radio/alerts, both bar positions
+  and unchanged simulated HDMI bounds. Luna, decoder and audio remain mocked.
+  The owned headless browser and local server closed normally.
+- Packaged with existing LG CLI 3.2.6 --no-minify, independently checked with its
+  package-info reader and a private archive/hash verifier adapted from the accepted
+  0.2.9 checker. CLI documentation was checked through Context7 and local --help.
+  Existing missing-requiredACG and host/target-Node warnings remain; no modern LG
+  Store eligibility or newer-device compatibility is claimed.
+- Candidate: state/platform-core/lg-0210-candidate/tv.afnon.webos_0.2.10_all.ipk,
+  18,655,816 bytes; SHA-256
+  41896064c176a000dc291181f7a33e22e1d9bdcede1dd53ba577a50eccb1dffc.
+  All 101 app/service files match the tested build byte-for-byte; control/package/
+  app/service metadata agree on identities/version. Only generated package metadata
+  is additional; no source payload files were removed. online-prayer.js in the
+  service is the single added payload path relative to accepted 0.2.9.
+- All 53 media/font/notice files match accepted 0.2.9, including 14 adhan and 12
+  spoken recordings. The private candidate manifest contains every payload hash;
+  ui-size/lg-0210-package.log and lg-0210-package-check.log retain local evidence.
+  The accepted 0.2.9 candidate remains intact. Binaries/media/manifests/logs stay
+  ignored; only version metadata, build check and owning documentation are committed.
+- No independent queue work remains before hardware acceptance. Next: watched
+  in-place LG upgrade, current-state preservation and physical new routes/sizing/
+  secure-online checks; unresolved live HDMI requires its separately watched probe.
+  Android TV hardware is still unavailable. Do not run any of these while deferred.
+  This turn made progress; the overall goal remains active and incomplete, with
+  hardware gates open. No release, push, PR, merge, detachment or firmware action.

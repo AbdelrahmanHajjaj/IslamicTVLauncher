@@ -8,9 +8,9 @@ the LG LF6300 running webOS 2.2 / WebKit 538.2, with a Node 0.10 service runtime
 The visible name is **Islamic TV Launcher**. The existing package/service ID is kept
 so upgrades preserve settings and the installed startup activity.
 
-The Android launcher and Astro preview have separate renderers. Version 0.2.5 shares their
+The Android launcher and Astro preview have separate renderers. The LG port shares their
 cities, prayer methods, translations, fonts, color palettes, audio recordings, radio
-stations and adhan-js calculation library. Native streaming apps cannot be embedded
+stations. LG uses adhan-js for calculation. Native streaming apps cannot be embedded
 as HDMI sources. Home now follows Android's compact top icon row: Today & Qibla,
 Inputs, Radio, LG TV/network settings and launcher Settings. Large tiles open Netflix,
 Prime Video and YouTube; All apps opens a remote/pointer-navigable grid of 16 links.
@@ -67,10 +67,10 @@ the catalog, with explicit unimplemented gaps: this shell keeps its fixed shortc
 and hides those actions. This is an implementation gap, without a claim that every
 LG model forbids editing.
 
-The 0.2.9 source adds shared All apps navigation: Up from every first-row column
+Version 0.2.10 adds shared All apps navigation: Up from every first-row column
 selects Back, and Left/Right cycles through Back, Prayer and Settings. Down returns
 to the app grid; lower rows keep their column where possible. Installed-device
-acceptance below still describes 0.2.8 until the next in-place upgrade is verified.
+acceptance below still describes 0.2.9 until the next in-place upgrade is verified.
 
 Home & appearance has a schematic layout preview and palette swatches, matching
 Android's draft/apply workflow. Theme, background, countdown, placement and prayer
@@ -116,7 +116,7 @@ for a new silent app instance: volume may stay reduced until the launcher reopen
 There is no timer that could raise TV volume over frozen audio. Restoring a record
 is conditional on the TV still having the level applied by that record.
 
-The 0.2.9 source removes the adhan screen's outer dim layer and hides its
+Version 0.2.9 removes the adhan screen's outer dim layer and hides its
 originating page while the central mihrab is visible. Dismissal restores the page
 and its focus. This does not establish live HDMI behind local audio; the LF6300
 still releases its input decoder for that playback. Silent banners are unchanged.
@@ -228,7 +228,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.9_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.10_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -280,6 +280,15 @@ These actions cancel only this package's own activities; they do not touch other
 native input settings or Developer Mode.
 
 ## Hardware validation
+
+Version 0.2.10 is prepared locally, not installed. It packages the shared All apps
+routes, manual online comparison and global Interface size control. All 101 packed
+app/service files match the tested build byte-for-byte; the 14 adhan and 12 spoken
+recordings, fonts and notices are unchanged from accepted 0.2.9. ES5/service tests
+and all eight Arabic/English size cases pass in browser mocks. The watched upgrade,
+physical navigation/sizing and old-LG secure HTTPS checks remain pending. Live HDMI
+behind audible adhan remains unresolved. The TV stays on 0.2.9 while checks are
+deferred; preserve the owner's current app audio 30% and TV master volume 75.
 
 The source adds **Prayer & Qibla → Check online**, a manual AlAdhan comparison for
 all catalog cities and 19 named methods. The read-only view shows the requested

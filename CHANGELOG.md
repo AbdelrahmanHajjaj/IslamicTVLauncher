@@ -6,6 +6,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- LG 0.2.10 packages the shared All apps routes, online comparison and global sizing
+  for the next watched upgrade. Local package checks pass; it is not installed yet.
+
 - A shared Interface size contract offers 80%, 90%, 100% and 110%, defaulting to the
   current size. Android and LG source add their global picker and scale screens,
   controls, alerts and the prayer bar together; HDMI video stays unchanged. Native
