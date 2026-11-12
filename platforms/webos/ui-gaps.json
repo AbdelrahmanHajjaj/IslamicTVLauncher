@@ -1,10 +1,5 @@
 [
   {
-    "id": "display.size",
-    "state": "unimplemented",
-    "reason": "Global size contract is defined; LG renderer and picker integration follow in Q09.5h."
-  },
-  {
     "id": "prayer.facing",
     "state": "unimplemented",
     "reason": "Qibla shows true north; manual screen-facing calibration is not ported."

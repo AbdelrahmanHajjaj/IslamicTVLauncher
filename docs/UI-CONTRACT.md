@@ -27,6 +27,13 @@ retry and Back with return focus. Leaving or interrupting it cancels pending wor
 It never writes preferences or replaces calculated schedules/reminders. Shells
 which have not implemented it must declare a gap and hide the action.
 
+`display.size` is one immediate global choice: 80/90/100/110 percent, default 100.
+It scales app-owned text and controls together on every screen, including prayer
+bars, alerts and pickers. Video content stays unscaled. Bars retain their screen
+edge and fit the available width; larger sizes must keep controls and focus rings
+on screen in both languages. There are no separate font or prayer-bar size settings.
+`UiScale` owns the preference policy; rendering, fitting and persistence stay native.
+
 ## Home focus
 
 Directions below use logical start/end. A shell translates physical Left/Right

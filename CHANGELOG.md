@@ -6,6 +6,12 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- A shared Interface size contract offers 80%, 90%, 100% and 110%, defaulting to the
+  current size. LG source adds its global picker and scales screens, controls,
+  alerts and the prayer bar together; HDMI video stays unchanged. Back and pointer
+  cancellation restore the originating picker row. Native/preview integration and
+  physical-LG acceptance remain pending.
+
 - Android, LG and the browser preview add a manual **Check online** comparison with AlAdhan for all catalog
   locations and methods. It shows six calculated/reference times and signed minute
   differences, with cancellation and retry. Calculations and reminders stay offline;

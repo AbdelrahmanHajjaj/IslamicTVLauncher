@@ -215,6 +215,7 @@
       result = row('display.language', 'language', t('العربية', 'English'), 'choice') +
         row('display.digits', 'digits', prefs.digits === 'auto' ? t('حسب اللغة', 'Follow language') : prefs.digits === 'eastern' ? '٠١٢٣' : '0123', 'choice') +
         row('display.clock', 'clock', digits(prefs.clock), 'choice') +
+        row('display.size', 'uiScale', digits(prefs.uiScale) + '%', 'choice') +
         row('display.quick-labels', 'quickLabels', onOff(prefs.quickLabels), 'toggle') +
         row('display.bar-position', 'dockPosition', prefs.dockPosition === 'top' ? t('أعلى', 'Top') : t('أسفل', 'Bottom'), 'choice') +
         row('display.bar-timeout', 'dockAutoHide', prefs.dockAutoHide ? digits(prefs.dockAutoHide) + t(' ثانية', ' sec') : t('يدويًا', 'Manually'), 'choice') +
@@ -422,6 +423,7 @@
       }
     } catch (error) { html = '<section class="page">' + header(t('تعذر عرض الصفحة', 'Page unavailable')) + actions(false) + '</section>'; lastError = error.message; }
     screen.innerHTML = html;
+    sizeUi();
     if (view === 'home') { bindHomeFocus(); }
     if (view === 'apps') { bindAppsFocus(); }
     if (view !== 'input') {
@@ -433,6 +435,36 @@
     updateClock(); report();
   }
   function armDock() { clearTimeout(dockTimer); if (view === 'bar' && prefs.dockAutoHide) { dockTimer = setTimeout(function () { show('input'); }, prefs.dockAutoHide * 1000); } }
+  function zoomUi(el, factor, origin) {
+    if (!el) { return; }
+    el.style.webkitTransformOrigin = el.style.transformOrigin = origin || '50% 50%';
+    el.style.webkitTransform = el.style.transform = 'scale(' + factor + ')';
+  }
+  function sizeUi() {
+    var factor = window['tv.afnon:core'].tv.afnon.core.UiScale.percent(prefs.uiScale) / 100;
+    var content = screen.firstElementChild, width = 1920 / factor;
+    screen.setAttribute('data-page', String(view !== 'input' && view !== 'bar'));
+    zoomUi(content, factor, view === 'bar' ? '50% ' + (prefs.dockPosition === 'bottom' ? '100%' : '0') : null);
+    // Reserve a focus-ring edge when enlarged pages consume the top overscan margin.
+    if (content && view !== 'bar') { content.style.top = Math.max(0, (1080 - 1080 / factor) / 2 + 12 / factor - 56) + 'px'; }
+    var nav = content && content.querySelector('.settings-nav'), rows = content && content.querySelector('.settings-rows');
+    var inset = Math.max(72, (1920 - width) / 2 + 12 / factor);
+    // Keep both Settings columns and their focus rings inside the scaled viewport.
+    if (nav) { nav.style[prefs.lang === 'ar' ? 'right' : 'left'] = inset + 'px'; }
+    if (rows) { rows.style.left = (prefs.lang === 'ar' ? inset : 1920 - rows.offsetWidth - inset) + 'px'; }
+    if (view === 'bar' && content) {
+      content.style.width = width + 'px'; content.style.left = (1920 - width) / 2 + 'px';
+      content.querySelector('.dock-prayers').style.width = (width - 432) + 'px';
+    }
+    zoomUi(overlay.querySelector('.alert-content'), factor);
+    var banner = overlay.querySelector('.banner-box');
+    if (banner) {
+      banner.style.width = 1792 / factor + 'px'; banner.style.right = 'auto';
+      banner.style.left = (1920 - 1792 / factor) / 2 + 'px';
+      banner.style.top = ((1080 - 1080 / factor) / 2 + 36 / factor) + 'px';
+    }
+    zoomUi(document.getElementById('notice'), factor, '50% 0');
+  }
   function show(nextView, focusAction) {
     if (nextView !== 'online-prayer') { cancelOnline(); }
     clearTimeout(noticeTimer); document.getElementById('notice').style.display = 'none';
@@ -482,6 +514,7 @@
     if (key === 'station') { return D.stations.map(function (v) { return {value: v.id, label: v[prefs.lang] + ' · ' + (v[prefs.lang === 'ar' ? 'whereAr' : 'whereEn'] || '')}; }); }
     if (key === 'theme') { return D.themes.map(function (id, i) { return {value: id, label: s('themeNames')[i]}; }); }
     if (key === 'testPrayer') { return [0, 2, 3, 4, 5].map(function (i) { return {value: i, label: s('prayerNames')[i]}; }); }
+    if (key === 'uiScale') { return uiContract.choices('display.size').map(function (value) { return {value: Number(value), label: digits(value) + '%'}; }); }
     var options = {
       language: [['ar', 'العربية'], ['en', 'English']],
       hanafi: [[false, t('شافعي / قياسي', 'Shafi / Standard')], [true, t('حنفي', 'Hanafi')]],
@@ -510,6 +543,7 @@
     if (picker === 'city') { return t('المدينة', 'City'); }
     if (picker === 'method') { return t('طريقة الحساب', 'Calculation method'); }
     if (picker === 'zone') { return t('التوقيت', 'Time zone'); }
+    if (picker === 'uiScale') { return s('uiSize'); }
     if (/^offset-/.test(picker)) { return s('prayerNames')[Number(picker.slice(7))]; }
     return sectionName(section) || t('اختر', 'Choose');
   }
@@ -721,18 +755,19 @@
     overlay.className = audible ? 'audio-overlay' : alert.mode === 'card' ? 'card-overlay' : 'banner-overlay';
     if (alert.mode === 'adhan') {
       overlay.className += ' adhan-overlay'; screen.style.visibility = 'hidden';
-      overlay.innerHTML = '<svg class="call-frame" width="720" height="1080" viewBox="0 0 600 900" aria-hidden="true"><path class="outer" d="M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z"/>' +
+      overlay.innerHTML = '<div class="alert-content"><svg class="call-frame" width="720" height="1080" viewBox="0 0 600 900" aria-hidden="true"><path class="outer" d="M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z"/>' +
         '<path class="inner" d="M18 900 L18 334 C18 184 150 92 300 22 C450 92 582 184 582 334 L582 900"/></svg><section class="call-column">' +
         '<div class="call-verse" lang="ar" dir="rtl">' + escape(D.sacred.adhanCall) + '</div><p class="call-label">' + (alert.test ? t('اختبار الأذان', 'Adhan test') : t('حان وقت الصلاة', 'Time for prayer')) +
         '</p><div class="call-name">' + escape(label) + '</div><div class="call-time">' + digits(A.clock(alert.prayerTime || new Date(), prefs)) + '</div>' +
         button('toggle-adhan', t('إيقاف', 'Stop'), '', 'call-play') + button('dismiss-alert', t('إغلاق', 'Dismiss'), '', 'call-dismiss') +
-        '<p class="call-status" data-audio-status>' + t('جارٍ تحميل الصوت…', 'Loading audio…') + '</p></section>';
+        '<p class="call-status" data-audio-status>' + t('جارٍ تحميل الصوت…', 'Loading audio…') + '</p></section></div>';
     } else {
-      overlay.innerHTML = '<section class="alert-box"><p class="eyebrow">' + (alert.test ? t('اختبار · واجهة التلفاز الإسلامي', 'Test · Islamic TV Launcher') : t('تذكير بالصلاة', 'Prayer reminder')) +
+      overlay.innerHTML = '<div class="alert-content"><section class="alert-box' + (alert.mode === 'banner' ? ' banner-box' : '') + '"><p class="eyebrow">' + (alert.test ? t('اختبار · واجهة التلفاز الإسلامي', 'Test · Islamic TV Launcher') : t('تذكير بالصلاة', 'Prayer reminder')) +
       '</p><h1>' + title + escape(label) + '</h1><p>' + escape(A.city(prefs.city)[prefs.lang]) + ' · ' + digits(A.clock(alert.prayerTime || new Date(), prefs)) +
       '</p>' + (audible ? '<p data-audio-status>' + t('جارٍ تحميل الصوت…', 'Loading audio…') + '</p>' : '') +
-      button('dismiss-alert', audible ? t('إيقاف والعودة', 'Stop & return') : t('إغلاق', 'Dismiss')) + '</section>';
+      button('dismiss-alert', audible ? t('إيقاف والعودة', 'Stop & return') : t('إغلاق', 'Dismiss')) + '</section></div>';
     }
+    sizeUi();
     overlay.querySelector('button').focus();
     if (!audible) { overlayTimer = setTimeout(finishOverlay, alert.test ? 16000 : 20000); }
   }
@@ -796,7 +831,8 @@
       if (action === 'input' && media) { radioBeforeCall = false; stopAudio('stopped', true); return; }
       if (action === 'settings' && view !== 'picker' && view !== 'settings') { settingsParent = view === 'apps' ? 'apps' : 'home'; }
       if (action === 'prayer-day') { dayParent = view === 'apps' || view === 'settings' ? view : 'home'; }
-      show(action); if (action === 'inputs') { discover(false); } return;
+      show(action, action === 'settings' && view === 'picker' ? picker === 'country' ? 'city' : picker : null);
+      if (action === 'inputs') { discover(false); } return;
     }
     var next = A.prefs(prefs);
     if (action === 'section') { if (section !== value) { appearanceDraft = null; } section = value; render('[data-action=section][data-value=' + value + ']'); return; }
@@ -809,7 +845,7 @@
     if (action === 'hanafi') { next.hanafi = !next.hanafi; savePrefs(next, action); }
     if (action === 'city') { openPicker('country'); }
     if (['method', 'zone', 'voice', 'fajrVoice', 'station', 'testPrayer', 'remind', 'callClose', 'digits', 'clock', 'dockPosition',
-      'dockAutoHide', 'volume', 'hijriOffset'].indexOf(action) >= 0 || /^offset-[0-5]$/.test(action)) { openPicker(action); }
+      'dockAutoHide', 'uiScale', 'volume', 'hijriOffset'].indexOf(action) >= 0 || /^offset-[0-5]$/.test(action)) { openPicker(action); }
     if (action === 'step-down' || action === 'step-up') { changeStep(action === 'step-down' ? -1 : 1); }
     if (action === 'save-step') {
       if (/^offset-/.test(picker)) { next.offsets[Number(picker.slice(7))] = editValue; } else { next[picker] = editValue; }
@@ -943,6 +979,7 @@
     if (key === 461 || key === 27) {
       if (voicePreview) { stopAudio('stopped', true); }
       if (view === 'picker' && picker === 'city') { openPicker('country'); }
+      else if (view === 'picker') { activate('settings'); }
       else if (view === 'settings' && section === 'offsets') { section = 'prayer'; render('offsets'); }
       else if (view === 'settings' && document.activeElement && ['section', 'settings-back'].indexOf(document.activeElement.getAttribute('data-action')) < 0) { appearanceDraft = null; render('[data-action=section][data-value=' + section + ']'); }
       else if (view === 'apps') { show('home', 'apps'); }
@@ -950,7 +987,7 @@
       else if (view === 'prayer-day') { show(dayParent, 'prayer-day'); }
       else if (view === 'online-prayer') { show('settings', 'online-prayer'); }
       else {
-        var backView = view === 'picker' ? 'settings' : ['settings', 'inputs', 'prayer-day', 'radio', 'apps'].indexOf(view) >= 0 ? 'home' : view === 'input' ? 'bar' : 'input';
+        var backView = ['settings', 'inputs', 'prayer-day', 'radio', 'apps'].indexOf(view) >= 0 ? 'home' : view === 'input' ? 'bar' : 'input';
         if (backView === 'input' && media) { radioBeforeCall = false; stopAudio('stopped', true); } else { show(backView); }
       }
     }

@@ -8,7 +8,7 @@
   var defaults = {lang: 'ar', city: 'cairo', method: null, hanafi: false, utcOffset: null,
     automatic: false, adhan: true, remind: 15, remindVoice: false, announce: true, callClose: 0,
     voice: 'alafasy', fajrVoice: 'chebae_fajr', volume: 60, bells: [true, false, true, true, true, true],
-    offsets: [0, 0, 0, 0, 0, 0], hijriOffset: 0, digits: 'auto', clock: '24',
+    offsets: [0, 0, 0, 0, 0, 0], hijriOffset: 0, digits: 'auto', clock: '24', uiScale: portable.tv.afnon.core.UiScale.DEFAULT_PERCENT,
     dockPosition: 'top', dockAutoHide: 20, theme: 'mihrab', background: 'plain',
     homeLayout: 'mihrab', archSide: 'auto', homeBar: 'top', prayerMode: 'all', quickLabels: false,
     station: 'cairo', radioResume: true};
@@ -36,6 +36,7 @@
     ['automatic', 'adhan', 'remindVoice', 'announce', 'radioResume', 'quickLabels'].forEach(function (k) { invalid(typeof result[k] !== 'boolean'); });
     invalid([0, 5, 10, 15, 20, 30].indexOf(result.remind) < 0 || [0, 1, 5, 10].indexOf(result.callClose) < 0);
     invalid(!integer(result.volume, 0, 100) || !integer(result.hijriOffset, -rules.MAX_HIJRI_OFFSET_DAYS, rules.MAX_HIJRI_OFFSET_DAYS));
+    invalid(typeof result.uiScale !== 'number' || portable.tv.afnon.core.UiScale.percent(result.uiScale) !== result.uiScale);
     invalid(!Array.isArray(result.bells) || result.bells.length !== 6 || result.bells.some(function (v) { return typeof v !== 'boolean'; }) || result.bells[1]);
     invalid(!Array.isArray(result.offsets) || result.offsets.length !== 6);
     for (var i = 0; i < 6; i++) { invalid(!integer(result.offsets[i], -2147483648, 2147483647)); }

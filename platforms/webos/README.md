@@ -44,6 +44,10 @@ to the Prayer section. Unsaved appearance changes are discarded when leaving.
   level, spoken reminders/announcements, reminder lead time and call-screen duration.
 - Display: Arabic/English, independent digit style, 12/24-hour clock, quick-control
   labels, top/bottom prayer bar, automatic/manual bar dismissal and a manual clock screen.
+  Current source also adds one Interface size control (80/90/100/110%, default 100%)
+  for screens, controls, alerts and the prayer bar. Video keeps its original size;
+  the bar stays full width and attached to its chosen edge. This sizing change is
+  not installed or verified on the physical old LG yet.
 - Home: mihrab/compact/hidden countdown, mihrab side, compact countdown top/bottom,
   all/current/next/current-and-next/hidden prayer times, the 20 existing color palettes
   and all eight bundled SVG patterns. Android's animated

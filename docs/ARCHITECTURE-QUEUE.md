@@ -92,16 +92,20 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Active priority | Shared controls/bindings/bounds and Home/All apps rules are implemented. LG 0.2.9 volume is accepted; live HDMI background and physical All apps checks await a watcher. Continue approved global online comparison and one global UI size control; Android hardware remains open. |
+| Q09.5 | Active priority | Shared controls/input and global online comparison are source-complete. Global sizing policy and LG renderer are software-verified; continue native Android then preview sizing. LG live HDMI background and physical All apps/sizing/online checks await a watcher; Android hardware remains open. |
 
 ## Current cursor
 
-Next actionable software item: Q09.5h one global UI size control, including every
-screen and the prayer bar. Scale text and controls together; current size by
-default, bounded range, preserved preferences and both languages/focus/clipping.
-Keep HDMI/video unscaled. Inspect each renderer's existing canvas/density/layout
-entry points before choosing the smallest complete per-platform implementation;
-share the semantic setting/range in core, not rendering or a generic UI engine.
+Next actionable software item: Q09.5h native Android global sizing, then preview.
+The shared display.size / UiScale policy and LG picker/rendering are implemented
+and software-verified: 80/90/100/110%, default 100, all app-owned screens/alerts/bar,
+unchanged video dimensions, bounded focus/clipping and preserved preferences.
+Native still declares the control unimplemented; port its actual preference/picker
+and all app-owned UI entries (Screen, overlay/quick menus, dialogs, dream and
+screen-off), then remove that gap only after rendered coverage and sizing checks.
+Ui currently converts design pixels from display width; avoid a shared static
+scale leaking between activities/services. Keep rendering native and do not add
+separate font/bar settings or a generic UI engine. Physical acceptance stays open.
 
 Q09.5g manual online comparison is source-complete and software-verified across
 LG, native Android and preview: fixed HTTPS, bounded/cancellable requests, validated
@@ -138,9 +142,9 @@ verified: Up from any first-row column reaches Back; horizontal movement stays i
 the circular Back/Prayer/Settings row, with one RTL translation. Physical LG
 acceptance remains open. Home's existing shared navigation is physically accepted.
 
-After g, Q09.5h adds one global UI size control, including the prayer bar. Scale
-text and controls together; keep current size by default, bound the range, preserve
-settings and verify both languages/focus/clipping. HDMI/video is content to leave
+Q09.5h scales text and controls together, including the prayer bar, with the
+current size by default and a bounded range. LG source is verified in browser
+mocks, not installed. Native and preview sizing remain open. HDMI/video stays
 unscaled. No separate bar/font controls or generic renderer engine.
 
 Q00–Q08 and Q09.5's initial semantic UI/binding work are complete; see evidence and
@@ -2436,3 +2440,45 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
   preview-build,lg-tests,lg-browser,native-text,android-check}.log. Owned browser
   completed and closed; no background check remains. Renderer work is still open;
   do not mistake the tested policy for a working global-size setting.
+
+### Q09.5h LG renderer slice (2026-11-12)
+
+- f69fb58 commits the shared sizing policy and explicit temporary gaps. This slice
+  binds LG display.size to the existing choice picker and saved uiScale preference.
+  Missing old preferences gain 100%; valid choices are shared, invalid/type-confused
+  inputs are rejected before saving. Existing settings, offsets, volume, input and
+  startup are preserved. No separate text/prayer-bar control or new dependency.
+- Pages, pickers, notices and alert contents scale together. Unscaled UI containers
+  keep full-screen backgrounds and scrims; input video remains a separate sibling.
+  The bar fits inverse logical width and stays top/bottom anchored, with fitted
+  prayer cells/actions. Settings columns and top focus rings retain usable insets
+  at 110%. Existing 100% geometry is retained; actual TV overscan still needs proof.
+- New checks exposed picker Back returning to its section. Remote and pointer Back
+  now share the originating-row return path; city/country's two-stage Back remains.
+  Source review retained the original mihrab paths and exact Arabic call text.
+- Red feedback retained in size-lg-first-ui/focused-{first..fourth}.log: return focus,
+  an input-discovery synchronization error in the harness, and enlarged sidebar/
+  rows clipping were corrected. An initial green bounds pass was rejected during
+  screenshot review: transformed RTL overflow enlarged the root to 2016px and
+  shifted captures. Containing overflow only in UI layers fixed it. Context7 MDN
+  overflow documentation confirmed clipping and focus-scroll behavior; assertions
+  now cover root extent/scroll offsets and focused outlines, not just button boxes.
+- PASS: full LG build/ES5/service/preference/scheduling/volume/online checks and
+  complete bilingual browser regressions. All eight language/size cases exercise
+  actual picker save/cancel/return focus, Home/All apps/header navigation, Today,
+  online report, Settings/appearance, choice/number/voice pickers, clock, inputs,
+  radio, silent banner/card and mocked adhan; top/bottom full-width bar, root viewport,
+  focus-ring bounds, unchanged 1920x1080 video, saved-size reopening and other prefs.
+  Existing media/HDMI recovery and rendered semantic/choice coverage also pass.
+- Final screenshots size-{ar,en}-{80,110}-{home,settings,call,top-bar,bottom-bar}.png
+  are under ignored state/webos-port. Representative extremes were visually
+  inspected after the overflow fix; the white area behind mock input/adhan is
+  absent video, not physical-TV transparency proof. These are desktop captures.
+- Final evidence: ignored online-reference/size-lg-complete-{tests,browser}.log;
+  viewport-verified.log records the focused matrix. Canonical freshness and UI
+  catalog/gap validation pass. Contract: 90 controls, native 25 / LG 22 whole gaps.
+  Source build remains 101 files; no new package/version was installed or published.
+- Owned browser/server closed normally. No LG or emulator was contacted; installed
+  0.2.9 and owner's app audio 30% / TV master 75 remain untouched. New LG sizing,
+  online TLS/UI, All apps and adhan live background require the deferred watched
+  checks. Continue native Android sizing, then preview, without closing these gates.

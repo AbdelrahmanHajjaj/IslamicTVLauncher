@@ -43,6 +43,12 @@ assert.throws(() => A.prefs({voice: '../settings.json'}), /Invalid/);
 assert.throws(() => A.prefs({station: 'https://untrusted.example'}), /Invalid/);
 assert.equal(A.prefs({theme: 'aurora'}).homeBar, 'top', 'old preferences gain safe layout defaults');
 assert.equal(A.prefs().quickLabels, false);
+assert.equal(A.prefs({volume: 30}).uiScale, 100, 'old preferences keep the original UI size');
+for (const uiScale of [80, 90, 100, 110]) {
+  assert.equal(A.prefs({uiScale, volume: 30}).uiScale, uiScale);
+  assert.equal(A.prefs({uiScale, volume: 30}).volume, 30, 'size changes preserve audio preferences');
+}
+for (const uiScale of [null, '90', 0, 85, 111, NaN, Infinity]) assert.throws(() => A.prefs({uiScale}), /Invalid/);
 for (const mode of ['all', 'current', 'next', 'both', 'none']) assert.equal(A.prefs({prayerMode: mode}).prayerMode, mode);
 for (const pattern of data.patterns) assert.equal(A.prefs({background: pattern}).background, pattern);
 assert.equal(data.patterns.length, 8);

@@ -47,7 +47,6 @@ Migration acceptance and evidence live only in ARCHITECTURE-QUEUE.md.
 
 | Control | State | Reason |
 | --- | --- | --- |
-| `display.size` | unimplemented | Global size contract is defined; LG renderer and picker integration follow in Q09.5h. |
 | `prayer.facing` | unimplemented | Qibla shows true north; manual screen-facing calibration is not ported. |
 | `radio.playback` | unimplemented | Uses separate Play/Stop actions instead of a station-row toggle. |
 | `radio.screen-off` | os-unsupported | No supported production panel-off integration on the tested old LG. |
