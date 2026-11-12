@@ -2538,3 +2538,27 @@ remote detachment or unrelated work; keep the overall goal active and incomplete
   master 75. Native sizing is software-complete; continue preview sizing next.
   Physical Android TV, old-LG sizing/online/All apps and adhan live-background gates
   remain open. Overall goal remains active; no release, push, merge or detachment.
+
+### Q09.5h preview entry audit (2026-11-12)
+
+- 593c1a1 commits verified native sizing and cleanup; working tree was clean.
+  Preview is the first actionable item. No preview implementation or browser
+  session has started, and no device is connected by this work.
+- Preview uses one 1920x1080 Tv.astro stage with --k fitting the website frame;
+  retain that distinction from the saved app-size choice and keep its lattice/
+  background unscaled. Prefs/load/save/live updates are in lib/data.ts and
+  scripts/live.ts. Settings rows/edit commits are settings.ts/Settings.astro;
+  neither currently implements display.size. Reuse core UiScale and native-like
+  inline save/cancel; preserve other localStorage values.
+- Check every existing page and overlay: Home and its quick/reminder/radio/
+  screen-off UI, Apps/menu, PrayerDay/room picker, Settings/chooser/online report,
+  Call and Screensaver/drift. Home geometry also feeds the miniature preview.
+  Keep native renderers and existing semantic input routes; do not scale the
+  whole website/frame or introduce a generic UI engine or new dependency.
+- Existing site/scripts/test.mjs loads TypeScript fixtures through Vite; extend
+  that harness for meaningful preference/policy/layout checks. Existing ignored
+  online-reference/check-preview-browser.cjs uses installed Playwright/Edge and a
+  bounded local static server against site/dist; reuse the established browser
+  workflow for actual picker/navigation/geometry and reviewed bilingual extremes.
+  Playwright skill reread; npx is available. Avoid dumping whole Astro components:
+  Settings.astro includes a large controller/style block; read bounded portions.
