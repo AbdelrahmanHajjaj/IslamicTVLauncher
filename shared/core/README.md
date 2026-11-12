@@ -28,6 +28,10 @@ physical horizontal keys for RTL once and applies the returned focus target.
 Counts/columns describe visible primary/recent app rows; no pixel positions or
 platform key codes enter the core. See the [UI/input contract](../../docs/UI-CONTRACT.md).
 
+`AllAppsNavigation` shares the five-column app-grid transitions and circular
+Back/Prayer/Settings header. Any first-row column moves Up to Back; native shells
+retain paging and pass the first visible row for the header's Down targets.
+
 `UiContract` exposes the generated semantic settings/action catalog, validates
 binding kinds and checks actual binding IDs plus explicitly declared gaps for
 complete, nonduplicated coverage. Source definitions and label references live in

@@ -51,6 +51,21 @@ Home Back behavior must respect the shell's OS role: Android is a system HOME
 launcher; LG is an app over an embedded input. Preserve that declared lifecycle
 difference rather than treating it as an accidental focus-map difference.
 
+## All apps focus
+
+`AllAppsNavigation` owns the five-column grid and Back → Prayer → Settings header.
+Up from every column of the first app row selects Back. Logical start/end cycles
+through the header in either direction, including Back to Settings; horizontal
+keys never descend to apps. Header Up stays put. Down from Back enters the first
+visible app; Down from Prayer/Settings enters the final column of that visible row,
+clamped to an existing app. Empty grids leave header focus intact.
+
+Grid horizontal movement stops at row edges. Up/Down enters the adjacent row,
+clamping a partial final row, and stays at the final row's bottom edge. Shells
+retain native scrolling, activation, hold-OK menus and Back/return behavior. The
+current scroll row is an explicit input; pixels and platform keys stay outside core.
+Android, LG and the browser preview bind this rule and translate RTL once.
+
 ## Settings coverage
 
 Common product concepts include location/calculation, six prayer adjustments,

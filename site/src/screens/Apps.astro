@@ -5,6 +5,7 @@ import Icon from '../components/Icon.astro';
 import type { Ctx } from '../lib/ctx';
 import { href } from '../lib/site';
 import { APPS, FAVS, appsModel, favNote } from './apps';
+import portable from '@islamic-tv/core';
 
 interface Props { ctx: Ctx }
 const { ctx } = Astro.props;
@@ -13,6 +14,12 @@ const m = appsModel(ctx);
 const COLS = 5, GAP = 32, TILE_H = 168, TOP = 200;
 const W = (1728 - (COLS - 1) * GAP) / COLS;
 const apps = APPS.map((a, i) => ({ name: a[lang], icon: a.icon, fav: i < FAVS ? i + 1 : 0 }));
+const navigation = portable.tv.afnon.core.AllAppsNavigation;
+const nav = (node: number) => Object.fromEntries([
+  ['data-app-node', String(node)],
+  ...Object.entries({ left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] }).map(([key, [dx, dy]]) =>
+    [`data-nav-${key}`, `[data-app-node="${navigation.move(node, apps.length, 0, t.ar ? -dx : dx, dy)}"]`]),
+]);
 const favNames = apps.slice(0, FAVS).map((a) => a.name);
 const site = t.ar ? 'على التلفاز يفتح هذا' : 'On the TV this opens';
 const menuText = {
@@ -21,22 +28,22 @@ const menuText = {
   done: t.ar ? 'على التلفاز يُحفظ هذا الترتيب' : 'On the TV this arranges your favourites',
 };
 ---
-<a class="ft back" href={href('', lang) + '#tv'} aria-label={t.s('back')} data-home data-name={t.s('back')}>
+<a class="ft back" {...nav(navigation.BACK)} href={href('', lang) + '#tv'} aria-label={t.s('back')} data-home data-name={t.s('back')}>
   <Icon name="back" size={32} stroke={2} />
 </a>
 <div class="head">
   <h2 class="title display-bold">{t.s('allTitle')}</h2>
   <span class="count">{t.d(apps.length)}</span>
 </div>
-<a class="ft chip" href={href('prayer-day', lang) + '#tv'} data-name={t.s('today')} data-note={t.hintOk(t.s('today'))}>
+<a class="ft chip" {...nav(navigation.PRAYER)} href={href('prayer-day', lang) + '#tv'} data-name={t.s('today')} data-note={t.hintOk(t.s('today'))}>
   <span class="chip-label" data-k="chipLabel" set:html={m.html.chipLabel} />
   <span class="chip-time display num" dir="ltr" data-k="chipTime" set:html={m.html.chipTime} />
 </a>
 
-<a class="ft settings" href={href('settings', lang) + '#tv'} aria-label={t.s('settings')}><Icon name="gear" size={34}/></a>
+<a class="ft settings" {...nav(navigation.SETTINGS)} href={href('settings', lang) + '#tv'} aria-label={t.s('settings')}><Icon name="gear" size={34}/></a>
 
 {apps.map((a, i) => (
-  <button class="ft tile" data-app={i} data-fav={a.fav} data-name={a.name} data-note={a.fav ? favNote(t, a.fav) : t.s('notFav')}
+  <button class="ft tile" {...nav(i)} data-app={i} data-fav={a.fav} data-name={a.name} data-note={a.fav ? favNote(t, a.fav) : t.s('notFav')}
     {...(i === 0 ? { 'data-focus-start': '' } : {})} data-toast={`${site} ${a.name}`}
     style={`inset-inline-start:${96 + (i % COLS) * (W + GAP)}px;top:${TOP + Math.floor(i / COLS) * (TILE_H + GAP)}px;width:${W}px`}>
     <span class="top">

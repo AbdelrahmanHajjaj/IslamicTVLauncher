@@ -117,10 +117,53 @@ const server = http.createServer((req, res) => {
       await page.keyboard.press('ArrowDown');
       await page.keyboard.press('Enter');
       await page.waitForSelector('.app-grid');
+      await appsNavigation();
       await page.keyboard.press('Escape');
       await page.waitForSelector('.home');
       assert.equal(await page.locator(':focus').getAttribute('data-action'), 'apps', 'Back from All apps restores its Home focus');
       await apps.first().focus();
+    }
+    async function appsNavigation() {
+      const tiles = page.locator('.app-grid .app-tile');
+      const rtl = await page.locator('html').getAttribute('dir') === 'rtl';
+      const end = rtl ? 'ArrowLeft' : 'ArrowRight', start = rtl ? 'ArrowRight' : 'ArrowLeft';
+      await page.evaluate(() => {
+        const api = window['tv.afnon:core'].tv.afnon.core.AllAppsNavigation;
+        const hook = window.appsContractHook = {api, original: api.move, calls: 0};
+        api.move = function (...args) { hook.calls++; return hook.original.apply(api, args); };
+      });
+      for (let i = 0; i < Math.min(5, await tiles.count()); i++) {
+        await tiles.nth(i).focus();
+        await page.keyboard.press('ArrowUp');
+        assert.equal(await page.locator(':focus').getAttribute('data-action'), 'apps-back', 'Up from every first-row column selects Back');
+      }
+      for (const [key, actions] of [[end, ['prayer-day', 'settings', 'apps-back']], [start, ['settings', 'prayer-day', 'apps-back']]]) {
+        for (const action of actions) {
+          await page.keyboard.press(key);
+          assert.equal(await page.locator(':focus').getAttribute('data-action'), action, 'horizontal movement stays in the circular Apps header');
+        }
+      }
+      for (const [action, index] of [['apps-back', 0], ['prayer-day', 4], ['settings', 4]]) {
+        await page.locator(`[data-action=${action}]`).focus();
+        await page.keyboard.press('ArrowDown');
+        assert.ok(await tiles.nth(index).evaluate(el => el === document.activeElement), 'header Down returns to the grid');
+      }
+      await tiles.nth(5).focus();
+      await page.keyboard.press('ArrowUp');
+      assert.ok(await tiles.first().evaluate(el => el === document.activeElement), 'Up from a lower row stays in app content');
+      await tiles.nth(14).focus();
+      await page.keyboard.press('ArrowDown');
+      assert.ok(await tiles.nth(15).evaluate(el => el === document.activeElement), 'Down clamps to the partial final row');
+      await page.keyboard.press('ArrowDown');
+      assert.ok(await tiles.nth(15).evaluate(el => el === document.activeElement), 'Down stays at the final row');
+      await page.keyboard.press(start);
+      assert.ok(await tiles.nth(15).evaluate(el => el === document.activeElement), 'horizontal grid movement stays within its row');
+      const calls = await page.evaluate(() => {
+        const hook = window.appsContractHook;
+        hook.api.move = hook.original; delete window.appsContractHook;
+        return hook.calls;
+      });
+      assert.equal(calls, Math.min(5, await tiles.count()) + 13, 'every All apps arrow uses the shared contract exactly once');
     }
     assert.equal(await page.locator(':focus').getAttribute('data-action'), 'native-app', 'Home starts in app content');
     await homeControls();

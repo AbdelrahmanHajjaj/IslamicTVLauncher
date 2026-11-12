@@ -63,6 +63,11 @@ the catalog, with explicit unimplemented gaps: this shell keeps its fixed shortc
 and hides those actions. This is an implementation gap, without a claim that every
 LG model forbids editing.
 
+The 0.2.9 source adds shared All apps navigation: Up from every first-row column
+selects Back, and Left/Right cycles through Back, Prayer and Settings. Down returns
+to the app grid; lower rows keep their column where possible. Installed-device
+acceptance below still describes 0.2.8 until the next in-place upgrade is verified.
+
 Home & appearance has a schematic layout preview and palette swatches, matching
 Android's draft/apply workflow. Theme, background, countdown, placement and prayer
 information use inline carousels: Left/Right previews, Up/Down changes rows, and

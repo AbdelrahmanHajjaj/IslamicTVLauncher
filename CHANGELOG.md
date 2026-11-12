@@ -26,6 +26,8 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 - Android and LG share deterministic Home focus rules. LG starts on its app
   content, moves Up to the top controls and Down beyond the final app row to All
   apps, with consistent RTL/LTR behavior and return focus.
+  All apps also shares its focus rule with the preview: Up from any first-row
+  column selects Back, and Left/Right stays in the Back, Prayer and Settings header.
 
 - Patch build/test dependency selections separately from the pinned compiler and
   TV runtime, preserving the generated Java/XML/CSS and runtime artifact bytes.

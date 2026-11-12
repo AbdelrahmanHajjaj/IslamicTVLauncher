@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import tv.afnon.core.UiContract;
 import tv.afnon.core.UiControl;
+import tv.afnon.core.AllAppsNavigation;
 
 /**
  * All apps (design/AllApps.dc.html): five columns, four rows in view, paging a row at a time.
@@ -31,9 +32,10 @@ import tv.afnon.core.UiControl;
  */
 public class AllAppsActivity extends Screen {
 
-    private static final int COLS = 5, VISIBLE_ROWS = 4;
+    private static final int COLS = AllAppsNavigation.COLUMNS, VISIBLE_ROWS = 4;
     private static final float GRID_TOP = 200, TILE_H = 168, GAP = 32;
-    private static final int BACK_BTN = -2, CHIP = -3, SETTINGS = -4, NONE = -1;
+    private static final int BACK_BTN = AllAppsNavigation.BACK, CHIP = AllAppsNavigation.PRAYER,
+        SETTINGS = AllAppsNavigation.SETTINGS, NONE = AllAppsNavigation.NONE;
 
     private final List<FocusTile> tiles = new ArrayList<>();
     private List<String> apps = new ArrayList<>();
@@ -329,28 +331,13 @@ public class AllAppsActivity extends Screen {
         // Written for LTR; in Arabic Left/Right swap.
         if (rtl && k == KeyEvent.KEYCODE_DPAD_LEFT) k = KeyEvent.KEYCODE_DPAD_RIGHT;
         else if (rtl && k == KeyEvent.KEYCODE_DPAD_RIGHT) k = KeyEvent.KEYCODE_DPAD_LEFT;
-        int from = current();
-        if (from == BACK_BTN) {
-            if (k == KeyEvent.KEYCODE_DPAD_RIGHT) chip.requestFocus();
-            else if (k == KeyEvent.KEYCODE_DPAD_DOWN) focusTile(topRow * COLS);
-        } else if (from == CHIP) {
-            if (k == KeyEvent.KEYCODE_DPAD_LEFT) backButton.requestFocus();
-            else if (k == KeyEvent.KEYCODE_DPAD_RIGHT) settingsButton.requestFocus();
-            else if (k == KeyEvent.KEYCODE_DPAD_DOWN) focusTile(Math.min(tiles.size() - 1, topRow * COLS + COLS - 1));
-        } else if (from == SETTINGS) {
-            if (k == KeyEvent.KEYCODE_DPAD_LEFT) chip.requestFocus();
-            else if (k == KeyEvent.KEYCODE_DPAD_DOWN) focusTile(Math.min(tiles.size() - 1, topRow * COLS + COLS - 1));
-        } else if (from == NONE) {
-            focusTile(0);
-        } else {
-            int col = from % COLS;
-            if (k == KeyEvent.KEYCODE_DPAD_LEFT && col > 0) focusTile(from - 1);
-            else if (k == KeyEvent.KEYCODE_DPAD_RIGHT && col < COLS - 1 && from + 1 < tiles.size()) focusTile(from + 1);
-            else if (k == KeyEvent.KEYCODE_DPAD_DOWN && from + COLS < tiles.size()) focusTile(from + COLS);
-            else if (k == KeyEvent.KEYCODE_DPAD_DOWN && from / COLS < (tiles.size() - 1) / COLS) focusTile(tiles.size() - 1);
-            else if (k == KeyEvent.KEYCODE_DPAD_UP && from >= COLS) focusTile(from - COLS);
-            else if (k == KeyEvent.KEYCODE_DPAD_UP) (col < 3 ? backButton : col == COLS - 1 ? settingsButton : chip).requestFocus();
-        }
+        int dx = k == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : k == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0;
+        int dy = k == KeyEvent.KEYCODE_DPAD_UP ? -1 : k == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0;
+        int target = AllAppsNavigation.INSTANCE.move(current(), tiles.size(), tiles.isEmpty() ? 0 : topRow * COLS, dx, dy);
+        if (target == BACK_BTN) backButton.requestFocus();
+        else if (target == CHIP) chip.requestFocus();
+        else if (target == SETTINGS) settingsButton.requestFocus();
+        else focusTile(target);
         return true;
     }
 

@@ -2,6 +2,7 @@
   'use strict';
   var A = window.Afnon, D = window.AfnonData;
   var homeNavigation = window['tv.afnon:core'].tv.afnon.core.HomeNavigation;
+  var allAppsNavigation = window['tv.afnon:core'].tv.afnon.core.AllAppsNavigation;
   var uiContract = window['tv.afnon:core'].tv.afnon.core.UiContract;
   var prayerRules = window['tv.afnon:core'].tv.afnon.core.PrayerRules;
   var tv = typeof window.PalmServiceBridge !== 'undefined';
@@ -15,6 +16,7 @@
   var returnContext = null, voicePreview = null, coldAlert = false;
   var appearanceDraft = null, settingsParent = 'home', dayParent = 'home';
   var homeNodes = [], homeAppCount = 0, lastHomeApp = homeNavigation.FIRST_APP;
+  var appNodes = [];
   var pickerControl = null;
   var appearanceKeys = ['theme', 'background', 'homeLayout', 'archSide', 'homeBar', 'prayerMode'];
   var overlay = document.getElementById('overlay');
@@ -296,6 +298,13 @@
     for (var i = 0; i < apps.length; i++) { homeNodes[homeNavigation.FIRST_APP + i] = apps[i]; }
     homeNodes.forEach(function (node, id) { if (node) { node.setAttribute('data-home-focus', String(id)); } });
   }
+  function bindAppsFocus() {
+    appNodes = Array.prototype.slice.call(screen.querySelectorAll('.app-grid .app-tile'));
+    appNodes[allAppsNavigation.BACK] = screen.querySelector('[data-action=apps-back]');
+    appNodes[allAppsNavigation.PRAYER] = screen.querySelector('[data-action=prayer-day]');
+    appNodes[allAppsNavigation.SETTINGS] = screen.querySelector('[data-action=settings]');
+    Object.keys(appNodes).forEach(function (id) { appNodes[id].setAttribute('data-app-focus', id); });
+  }
   function render(focusAction) {
     document.documentElement.lang = prefs.lang; document.documentElement.dir = prefs.lang === 'ar' ? 'rtl' : 'ltr';
     var stage = document.getElementById('stage'), sheet = prefs.theme === 'mihrab' ? 'style.css' : 'theme-' + prefs.theme + '.css';
@@ -376,6 +385,7 @@
     } catch (error) { html = '<section class="page">' + header(t('تعذر عرض الصفحة', 'Page unavailable')) + actions(false) + '</section>'; lastError = error.message; }
     screen.innerHTML = html;
     if (view === 'home') { bindHomeFocus(); }
+    if (view === 'apps') { bindAppsFocus(); }
     if (view !== 'input') {
       var target = focusAction && screen.querySelector(focusAction.charAt(0) === '[' ? focusAction : '[data-action="' + focusAction + '"]');
       target = target || (view === 'settings' ? screen.querySelector('.settings-nav .selected') :
@@ -818,9 +828,15 @@
   }, true);
   function move(key) {
     var current = document.activeElement;
-    if (view === 'home') {
+    if (view === 'home' || view === 'apps') {
       var dx = key === 37 ? -1 : key === 39 ? 1 : 0, dy = key === 38 ? -1 : key === 40 ? 1 : 0;
       if (prefs.lang === 'ar') { dx = -dx; }
+      if (view === 'apps') {
+        var from = current && current.getAttribute('data-app-focus');
+        var appTarget = allAppsNavigation.move(from === null ? allAppsNavigation.NONE : Number(from), appNodes.length, 0, dx, dy);
+        if (appNodes[appTarget]) { appNodes[appTarget].focus(); }
+        return;
+      }
       var target = homeNavigation.move(homeNodes.indexOf(current), homeAppCount, 0, Math.max(1, homeAppCount), lastHomeApp, dx, dy, !!homeNodes[homeNavigation.WATCH_INPUT]);
       if (homeNodes[target] && !homeNodes[target].disabled) { homeNodes[target].focus(); }
       return;

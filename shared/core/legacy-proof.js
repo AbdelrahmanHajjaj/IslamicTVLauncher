@@ -105,5 +105,9 @@ function verifyIslamicTVCore(core) {
   rejected = false;
   try { rules.floorToMinute(NaN); } catch (badTime) { rejected = true; }
   check(rejected, 'invalid rounding input rejected');
+  var apps = core.tv.afnon.core.AllAppsNavigation;
+  check(apps.move(4, 16, 0, 0, -1) === apps.BACK, 'all first-row columns reach Back');
+  check(apps.move(apps.BACK, 16, 0, 1, 0) === apps.PRAYER && apps.move(apps.BACK, 16, 0, -1, 0) === apps.SETTINGS, 'circular Apps header');
+  check(apps.move(14, 16, 0, 0, 1) === 15 && apps.move(15, 16, 0, 0, -1) === 10, 'partial Apps row');
   return {checks: checks};
 }

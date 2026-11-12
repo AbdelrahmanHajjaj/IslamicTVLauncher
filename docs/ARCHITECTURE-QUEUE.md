@@ -99,15 +99,17 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 Execution resumed on 2026-11-12: owner reports the LG is available now. Scope and
 acceptance criteria are unchanged; continue Q09.5d with the refreshed baseline.
 
-Next: Q09.5e All apps header navigation. Q09.5f global downward minute rounding is
-implemented/software-verified and committed as the next source increment; retain
-it for the upcoming LG patch. The installed LG remains accepted 0.2.8. Source
-versions are aligned to uninstalled 0.2.9, with 69 legacy assertions. Do not claim
-new rounding is live until the next verified in-place package/host check. Preserve
-all parameters, built-in corrections and saved offsets. Then Q09.5g optional online comparison
+Next: Q09.5g optional online comparison
 for every supported location/method, not just Egypt. First implementation is a
 manual Check online action; offline calculations remain the schedule source and
 online results are advisory. No account/cloud or automatic schedule replacement.
+Then Q09.5h: add one global UI size control for the entire app, including the
+prayer bar. Owner expanded the initial bar request and explicitly chose one global
+control; do not add separate font/bar controls. Scale text and controls together,
+retain the current size by default, preserve bar behavior and preferences, and
+bind both renderers and preview through the universal contract. Choose a bounded
+range supported by their layouts; verify Arabic/English, readable text, reachable
+focus, clipping and actual old-LG rendering. HDMI/video is content, not UI to zoom.
 Q09.5e is the owner-requested All apps header navigation refinement, shared by
 Android/LG: Up from any column of the first app row reaches Back; logical horizontal
 movement stays in the Back → Prayer → Settings header row. Keep lower-row paging,
@@ -115,6 +117,13 @@ activation/Back behavior and all stored preferences intact. Add actual adapter
 checks and verify the resulting LG patch while the owner is available; physical
 Android acceptance remains separate. LG 0.2.8 is installed and
 its payload, live legacy hosts, bilingual bindings and preserved state are verified.
+The header is circular in both logical directions, so either horizontal key from
+Back reaches Prayer or Settings, matching the owner's request. Translate RTL once.
+Q09.5e is now implemented and software-verified along with Q09.5f global downward
+rounding (committed da2fbd2). Retain both for the upcoming LG patch. Installed LG
+remains accepted 0.2.8; source versions align to uninstalled 0.2.9, with 72 legacy
+assertions. Do not claim these source changes are live before the next verified
+in-place package/host check. Preserve all calculation parameters and saved offsets.
 The bounded
 UI contract work is software-verified: 88 semantic controls, actual native/LG
 bindings, canonical labels, choice values/bounds, five per-prayer switches, room
@@ -1971,3 +1980,40 @@ unrelated renderer redesign, transport or future shell.
   source-scope,node24-core,node24-lg,node24-lg-browser,node24-preview,
   lg-0.2.9,emulator-closure}.log/json, cairo-local-green.log and private emulator
   rounding-prayer records. The TV remains on the accepted 0.2.8 state.
+
+### Q09.5e All apps header: software verified (2026-11-12)
+
+- Reproduced the reported first-row Up failure before adapter changes in both the
+  actual native AllAppsActivity views and the LG browser renderer. Android's
+  column-dependent header selection and LG's spatial search caused the mismatch.
+- Added pure AllAppsNavigation: every first-row column Up reaches Back; logical
+  start/end cycles Back/Prayer/Settings in either direction. Header Down retains
+  native visible-row targets, lower rows keep five-column movement and clamp a
+  partial final row. Empty/loading catalogs keep usable header focus. Native
+  paging/menu/activation code and all preferences remain intact; RTL swaps once.
+  Android, LG and preview bind the same rule without a generic widget engine.
+- PASS: 25 JVM/24 JS tests, 72 stripped ES5 assertions in browser/CommonJS hosts;
+  production runtime JS totals 81,595 bytes. Native build/lint/test APK passes,
+  launcher APK 20,957,070 bytes below budget; lint 0 errors/55 existing warnings.
+  Actual private API 37 native views pass both languages, new header routes and
+  the existing favourite/save/cancel/return checks, with exact preference restore
+  and unchanged system timezone. This phone emulator is not Android TV acceptance.
+- PASS: required LG ES5/build/service/async and full Arabic/English mocked browser
+  suite. Every Apps arrow is checked to invoke the portable map exactly once.
+  Preview tests and 18-page build pass; built Arabic/English pages pass actual
+  keyboard first-row Up, both header cycles, Down and modal focus containment.
+- Owned emulator is closed: serial offline, owned launcher exited, original AVD
+  descriptor/config hashes unchanged. The seventh prior closed-session snapshot
+  is preserved. TV remains on 0.2.8, without an audible test or new installation.
+- Evidence: ignored apps-{browser-red,native-red,core-check,native-build,
+  native-green,lg-test,lg-browser,preview-test,preview-build,preview-browser}.log
+  and apps-emulator-closure.json. Next is Q09.5g's global online comparison.
+
+### Q09.5h global UI size decision (2026-11-12)
+
+- Owner first requested prayer-bar font/size adjustment, then expanded it to the
+  entire app. Explicit final choice: one global size control covering every screen
+  and the prayer bar; no separate text-size or bar-size settings. Default preserves
+  current size. Include this in the shared contract and native renderers/preview;
+  do not zoom HDMI content. Select a safe bounded range after inspecting layouts
+  and prove clipping/focus in both languages and on the available old LG.

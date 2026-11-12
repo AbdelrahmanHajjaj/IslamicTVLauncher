@@ -41,6 +41,8 @@ final class FavouriteUiDeviceCheck {
             Apps.saveFavourites(test.getTargetContext(), original);
             apps[0] = start(test);
 
+            headerNavigation(test, apps[0]);
+
             Set<String> menu = open(test, apps[0], original.get(0), bound);
             check(!menu.contains("favourites.remove") && !menu.contains("favourites.move-earlier"), "Minimum and first-slot boundaries");
             key(test, apps[0], KeyEvent.KEYCODE_BACK);
@@ -117,6 +119,36 @@ final class FavouriteUiDeviceCheck {
         test.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_UP); test.waitForIdleSync();
         until(test, () -> !packages(activity).isEmpty(), "Actual app catalog loaded");
         return activity;
+    }
+
+    private static void headerNavigation(Instrumentation test, AllAppsActivity apps) {
+        View back = (View) field(apps, "backButton");
+        View prayer = (View) field(apps, "chip");
+        View settings = (View) field(apps, "settingsButton");
+        List<?> tiles = (List<?>) field(apps, "tiles");
+        for (int i = 0; i < Math.min(5, tiles.size()); i++) {
+            View tile = (View) tiles.get(i);
+            onMain(test, tile::requestFocus);
+            key(test, apps, KeyEvent.KEYCODE_DPAD_UP);
+            onMain(test, () -> check(apps.getCurrentFocus() == back, "Every first-row column moves Up to Back"));
+        }
+        int end = apps.rtl ? KeyEvent.KEYCODE_DPAD_LEFT : KeyEvent.KEYCODE_DPAD_RIGHT;
+        int start = apps.rtl ? KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT;
+        for (View target : new View[] {prayer, settings, back}) {
+            key(test, apps, end);
+            onMain(test, () -> check(apps.getCurrentFocus() == target, "Logical end stays within the Apps header"));
+        }
+        for (View target : new View[] {settings, prayer, back}) {
+            key(test, apps, start);
+            onMain(test, () -> check(apps.getCurrentFocus() == target, "Logical start stays within the Apps header"));
+        }
+        key(test, apps, KeyEvent.KEYCODE_DPAD_DOWN);
+        onMain(test, () -> check(apps.getCurrentFocus() == tiles.get(0), "Back Down returns to the first app"));
+        if (tiles.size() > 5) {
+            onMain(test, () -> ((View) tiles.get(5)).requestFocus());
+            key(test, apps, KeyEvent.KEYCODE_DPAD_UP);
+            onMain(test, () -> check(apps.getCurrentFocus() == tiles.get(0), "Lower-row Up stays in app content"));
+        }
     }
 
     @SuppressWarnings("unchecked")
