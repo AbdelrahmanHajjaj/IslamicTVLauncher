@@ -96,44 +96,34 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Finish the LG Home customization preview correction as 0.2.15. With Hidden or
-Compact plus a pattern, the old TV paints controls cut off within the miniature;
-plain is correct. Desktop and live SVG bounds are correct, so geometry alone did
-not detect it. Owner's photo confirms clipping. Changing the pattern ID did not
-help. Replacing embedded SVG pattern/image with CSS background worked; owner
-initially said no, then clarified it worked until another control redrew the old
-source. Persist the CSS background on every appearancePreview render. Preserve
-all draft/save/cancel behavior; no shared-core/native/website change is needed.
+Continue manual LG secure-online/TLS acceptance, then the separately announced
+20-second watched video-only HDMI probe. The Home/appearance correction is complete.
+Installed 0.2.15 (source6cdca6f) is physically accepted: picture/sound match, and
+Compact/Hidden previews remain complete after remote control/background changes.
+CSS draws the pattern behind SVG controls on every redraw; no SVG image paint
+server, pattern-ID counter, geometry change or new dependency. Actual WebKit shows
+all three552px app tiles inside the miniature; human confirms actual painting.
 
-Source fix and aligned 0.2.15 versions are prepared. New regression fails the old
-SVG image paint-server path, then passes all three layouts/plain+pattern in both
-languages at 110% (appearance-pattern-red.log, appearance-pattern-green-ar/en.log).
-LG ES5/service suite and full browser suite pass (lg-0215-tests-final.log,
-lg-0215-browser.log).
-One initial version check correctly rejected an incomplete metadata bump; all four
-sources and lock root are now aligned. Do not count lg-0215-tests.log as a pass.
-Captures and scoped diff reviewed. Fresh candidate 0.2.15:18,658,918 bytes,
-SHA-256 f4a13747a5da01a425ca5e57747716d77cef87d005f5c4364df9c5822a7e61b8.
-Archive/CLI metadata, all101 payloads and53 media/font/notices pass. Next: commit,
-refresh provenance and perform the guarded watched in-place upgrade.
+0.2.15 was installed over0.2.14 after fresh current-state backup. All31 preferences,
+selected/current HDMI_1, full startup, boot and master/mute compare unchanged both
+after upgrade and after unsaved trial cancellation. No test/audio owner. Actual
+Node0.10.25 passes88+adapter30, WebKit538.2 passes88, all101 installed hashes match;
+video remains1920x1080. Final UI is saved Home. No Apply/save during trials.
+Owned inspector is v0215-inspector-owner.json; v0214 was identity-checked/closed
+before upgrade. Keep only while actively testing; close before yielding.
 
-Installed 0.2.14 margin correction is physically accepted: outline and prayer text
-fully visible at 110%, unchanged HDMI picture/sound and no error. Actual outline
-left1288.006/top57.989/right1888.005/bottom1047.989 gives 31.995px clearance.
-All 31 preferences, current/selected HDMI_1, full startup, boot and master/mute
-survived unchanged; actual Node 0.10.25 passes 88+adapter30, WebKit538.2 passes88,
-all 101 installed files match. Source7759803/candidate provenance agree; installed
-acceptance is committed in5d9123e. Intermediate0.2.12 was never installed.
+Verified0.2.15 candidate18,658,918 bytes, SHA-256
+f4a13747a5da01a425ca5e57747716d77cef87d005f5c4364df9c5822a7e61b8.
+All101 archive files/IDs/versions and53 retained media/font/notices pass; provenance
+matches source6cdca6f. ES5/service/full8x2 browser and targeted bilingual110
+plain/pattern x3layouts checks pass. Regression fails old SVG paint-server path.
+Actual TV painting uses the human feedback loop, not desktop geometry as proof.
 
-Existing watcher/update authorization continues for this necessary final correction.
-Take fresh before-state and preserve any new owner choices, not old snapshots.
-Close only identity-checked v0214-inspector-owner.json before guarded close/install-
-over/launch; compare all prefs/input/full startup/boot/master/mute afterward. Run
-installed hash/Node88+30/WebKit88 proofs. Obtain human picture/sound and permanent
-patterned preview acceptance after real redraws in Compact/Hidden. Cancel only our
-unsaved draft through the actual control; no Apply/save during diagnostic trials.
-No test alert/audio/power change belongs to this preview check. Current inspector
-remains owned/open for the watched work; close replacement before yielding.
+Earlier installed0.2.14 Home margin fix remains accepted: full outline/prayer text
+at110, actual31.995px clearance, normal picture/sound and preserved settings.
+Owner photo clarified preview clipping, ID-only trial failed, CSS trial worked;
+owner corrected initial no after another control had replaced temporary styling.
+Permanent installed redraw checks now pass. Intermediate0.2.12 was never installed.
 
 Shared inline sizing80–150%/10% and narrower mihrab are6545506; RTL clipping viewport
 fix isbb727a7; shared taller Home prayer cells/header layout isb6b49ba. Universal
@@ -2835,3 +2825,22 @@ unrelated work. Resume this cursor only, not historical pending notes below.
   f4a13747a5da01a425ca5e57747716d77cef87d005f5c4364df9c5822a7e61b8.
   CLI package reader, archive/IDs/version/101 payloads and53 unchanged media/font/
   notices pass. Commit source, refresh provenance, then guarded watched update.
+
+
+### Q09.5j installed 0.2.15 preview acceptance (2026-11-13)
+
+- Verified source6cdca6f package provenance, fresh0.2.14 state backup, identity-
+  checked v0214 inspector cleanup, guarded one-time close/install-over/launch.
+  All phases succeed; no uninstall/reset, test creation/cancellation, audio/power
+  test or master-volume mutation. IDs,31 prefs, input/startup/storage preserved.
+- All101 installed files match, actual Node88+adapter30 and WebKit538.2 common88
+  pass; HDMI remains1920x1080. Independent before/after snapshots match all31
+  prefs, current/selected HDMI_1, fullstartup, boot and master/mute. Owner confirms
+  unchanged picture/sound and no error.
+- Opened real unsaved Hidden+stars preview: CSS pattern present, zero SVG image/
+  pattern paint servers, all three552px tiles inside SVG. Owner physically switched
+  Hidden/Compact and background; confirms all previews complete after redraws.
+  Cancelled only unsaved draft via actual Cancel, returned Home, final snapshot
+  again proves all31 prefs/input/fullstartup/boot/master/mute unchanged; no test/
+  audio owner. Temporary trial state is gone. Current inspectorv0215 remains owned
+  for next online hardware check; close it before yielding.

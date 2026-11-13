@@ -296,7 +296,7 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
-Version 0.2.14 was installed over 0.2.13 on 13 November 2026. All 101 installed
+Version 0.2.15 was installed over 0.2.14 on 13 November 2026. All 101 installed
 app/service files match the verified candidate; Node 0.10.25 passes 88 current
 common checks and 30 adapter checks; WebKit 538.2 passes the same 88 checks.
 All 31 saved preferences, HDMI selection,
@@ -314,10 +314,11 @@ in a bounded live trial; the owner confirms the complete outline. Version 0.2.14
 persists that safe-margin correction; the owner confirms the installed outline
 and prayer text are fully visible at 110%. Live DOM measures 32px clearance.
 
-Source 0.2.15 fixes old-WebKit clipping inside patterned Home customization
+Version 0.2.15 fixes old-WebKit clipping inside patterned Home customization
 previews. It draws the background through CSS, preserving the SVG controls and
-draft/save/cancel behavior. A bounded live trial is accepted; permanent package
-installation and redraw checks are pending.
+draft/save/cancel behavior. The owner confirms installed Compact/Hidden previews
+remain complete after changing controls and backgrounds. Cancelling the unsaved
+test returns Home with all 31 preferences and input/startup/volume unchanged.
 
 Old-LG secure HTTPS and live HDMI behind audible adhan remain unverified.
 Media/fonts/notices are unchanged. Browser simulations and Android emulator
