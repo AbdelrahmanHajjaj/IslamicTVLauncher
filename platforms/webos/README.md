@@ -559,3 +559,10 @@ and matches [Sectigo's published USERTrust root](https://support.sectigo.com/Com
 If the provider changes CA chains or this root expires, review the official public
 CA and update the app's certificate/provenance/tests. Never use an unverified
 network certificate or disable validation to suppress a connection failure.
+
+On13 November2026, a separately watched20-second HDMI_1 `video_only` probe kept
+picture moving, suppressed programme sound and restored picture/sound normally.
+Original input source, all31 preferences, startup, boot and master/mute were
+unchanged; no adhan played. This establishes the native video-only request on
+this TV, not concurrent adhan playback. A separate quiet coexistence check is
+still required before changing the production decoder handoff.

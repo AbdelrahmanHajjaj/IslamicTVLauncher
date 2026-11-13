@@ -96,11 +96,21 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Continue the separately announced20-second watched video-only HDMI probe only
-if the owner answers the pending readiness question Ready. Earlier deferral still
-requires this clear watcher step. No adhan or TV master-volume change. Prepare
-bounded restore/error handling and fresh no-alert/current-source guards before
-starting; if Later, leave TV unchanged and close the owned inspector.
+Next: prepare a bounded quiet local-audio + HDMI-video-only coexistence test,
+then obtain fresh explicit audible-test readiness before playing anything. The
+owner watched20s native video_only probe and confirms picture kept moving, programme
+sound stopped and both restored. This proves the video-only path, not coexistence
+with adhan. Do not change production playback or claim live adhan transparency
+until a separate quiet concurrent-audio test and safe restoration succeed.
+
+Probe source/visibility restored automatically after20s, ready4/noerror at3s/9s
+and after, zero audio elements; completed probe variable removed. Independent
+before/after snapshot proves all31 prefs/input/fullstartup/boot/master/mute
+unchanged, no test/audio-volume owner. No adhan/master-volume change occurred.
+Current owned inspector remains v0216; close before yielding. Do not rerun the
+completed video-only probe. Read only the source needed for this bounded audio
+coexistence check; use existing verified audioVolume prepare/release to preserve
+native volume ownership, never play at unchecked old-LG element volume.
 
 Installed0.2.16 online correction is fully accepted: actual verified network returns
 six validated Cairo/Egyptian13-11-2026 references, differences[1,0,-1,2,1,0]. Owner
@@ -2956,3 +2966,23 @@ unrelated work. Resume this cursor only, not historical pending notes below.
   complete on this old LG; generic offline failure remains supported. Asked fresh
   clear readiness for separately deferred20-second video-only HDMI probe. Do not
   start until Ready; no adhan or master-volume mutation.
+
+
+### Q09.5i watched native video-only capability (2026-11-13)
+
+- Owner explicitly Ready for separately deferred20s observation. Fresh idle HDMI_1
+  baseline, no test/audio owner or imminent prayer. Rechecked official LG mediaOption
+  reference via Context7: encodeURI(JSON.stringify(...)), option.mediaFormat.type
+  video_only. Documentation alone does not establish old external-input support.
+- Bounded private ES5 probe arms restore timer before source change, hides only UI,
+  requests service/webos-external HDMI_1 with encoded video_only and restores exact
+  original source/visibility automatically at20s. Native ready4/noerror at3s/9s and
+  after. No audio element, adhan, saved-pref or master-volume change.
+- Owner confirms moving picture, programme sound stopped, then normal restoration.
+  Removed completed probe state only after exact-source/ready4/noerror assertions.
+  Fresh before/after snapshot confirms all31 prefs/input/fullstartup/boot/master/
+  mute unchanged, no test/audio owner. Actual video-only route is now accepted.
+- Next separate quiet concurrent local-audio test is required before changing
+  production media or claiming live HDMI during adhan; watcher readiness for
+  video-only is not permission to start audio. Prepare concrete bounded test then
+  ask; retain current v0216 inspector only while actively working.
