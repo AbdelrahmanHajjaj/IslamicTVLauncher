@@ -1,0 +1,31 @@
+USERTrust RSA Certification Authority
+
+Public CA trust anchor used only by the LG AlAdhan HTTPS client.
+Publisher: https://support.sectigo.com/Com_KnowledgeDetailPage?Id=kA03l000000c4KV
+Certificate: https://crt.sectigo.com/USERTrustRSACertificationAuthority.crt
+Extracted from: https://raw.githubusercontent.com/nodejs/node/v24.14.0/src/node_root_certs.h
+SHA-256: E793C9B02FD8AA13E21C31228ACCB08119643B749C898964B1746D46C3D4CBD2
+Valid until: 2038-01-18 23:59:59 UTC
+
+The certificate matches the root in the independently verified api.aladhan.com
+chain. It contains no private key. Review the official CA source if the provider
+changes its certificate chain. This file does not change TV system trust.
+
+Node.js source notice (https://github.com/nodejs/node/blob/v24.14.0/LICENSE):
+
+Copyright Node.js contributors. All rights reserved.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.

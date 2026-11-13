@@ -6,6 +6,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- Old LG can verify the online prayer provider using a bundled public CA root,
+  fixing CERT_UNTRUSTED while keeping HTTPS and hostname checks enabled.
+
 - LG Home customization keeps the complete Compact and Hidden previews visible
   with patterned backgrounds, including after changing controls.
 

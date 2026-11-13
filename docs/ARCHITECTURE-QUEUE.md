@@ -96,8 +96,27 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Continue manual LG secure-online/TLS acceptance, then the separately announced
-20-second watched video-only HDMI probe. The Home/appearance correction is complete.
+Finish the LG online trust correction as0.2.16 before the separately watched
+20-second video-only HDMI probe. Actual service returns CERT_UNTRUSTED despite
+connectivity. Clock and modern verified endpoint chain are valid. Disposable actual
+Node0.10.25 CA-only trial succeeds with TLS authorized and six validated times,
+differences[1,0,-1,2,1,0]. Verified public USERTrustRSA root is extracted from the
+official Node certificate source, matches endpoint root/self-signature/fingerprint.
+Source0.2.16 bundles it per fixed-host request, retains rejectUnauthorized:true,
+hostname/body validation, timeouts and cancellation. No system trust change.
+
+New CA/option regression is red before fix and green after. ES5/service suite
+passes; final notice/build and affected bilingual online UI checks pass. Full
+browser matrix passed0.2.15 and rendering is unchanged in this service-only slice.
+Added public-root provenance/source notice and third-party credit. Package now
+needs103 payloads (+root,+notice); existing app/licenses/media.txt intentionally
+adds the credit, leaving52 previous media/font/notice files unchanged. Verified candidate0.2.16 is18,661,446 bytes, SHA-256
+290674f69d11d9c67ab48e651b6a16a2cddd8ed287e8b1cd8985ad4ee863b435.
+All103 archive files/metadata, public root/notice and52 retained media/font/notices
+pass; the existing app attribution file intentionally adds the new credit. Next:
+commit scoped source and refresh provenance, then watched in-place upgrade,
+actual hash/runtime/TLS/UI and current-state preservation checks.
+
 Installed 0.2.15 (source6cdca6f) is physically accepted: picture/sound match, and
 Compact/Hidden previews remain complete after remote control/background changes.
 CSS draws the pattern behind SVG controls on every redraw; no SVG image paint
@@ -2844,3 +2863,61 @@ unrelated work. Resume this cursor only, not historical pending notes below.
   again proves all31 prefs/input/fullstartup/boot/master/mute unchanged; no test/
   audio owner. Temporary trial state is gone. Current inspectorv0215 remains owned
   for next online hardware check; close it before yielding.
+
+
+### Q09.5g actual LG online-check failure (2026-11-13)
+
+- Started one manual comparison through the real installed0.2.15 row. Actual UI
+  showed Loading then Unavailable/Retry, focus stayed Back. No schedule/preference
+  write. Owner independently reports Unavailable although TV is connected.
+- Internet connectivity alone does not identify the failure. Next read exact
+  installed service reply through bounded onlinePrayer check, retain verified
+  HTTPS/default validation. Do not disable TLS checks or infer certificate failure
+  without the actual error. Diagnose this current queued acceptance item before
+  the separate video-only probe.
+
+- Exact installed service failure is CERT_UNTRUSTED (lg-online-error.log); red
+  command is node state/platform-core/lg-online-error.cjs. Actual TV UTC is correct,
+  Node0.10.25/OpenSSL1.0.1h. Modern verified TLS gets valid api.aladhan.com -> ZeroSSL
+  RSA DV SSL CA2 -> SectigoR46 cross-sign -> USERTrustRSA root, expires2038.
+- Context7 returned modern-only TLS material; used official0.10.25 docs/source
+  instead to confirm ca/agent:false/rejectUnauthorized and built-in hostname check.
+  Download from crt.sectigo.com over HTTPS failed; did not use an insecure download.
+  Extracted the same root from official Node v24.14.0 Mozilla-derived source over
+  verified HTTPS, checked CA/self-signature/SHA256 E793C9B02FD8AA13E21C31228ACCB081
+  19643B749C898964B1746D46C3D4CBD2 against the modern verified endpoint chain.
+- Running disposable Node-process CA-only trial against the installed module;
+  no installed/TV trust-store file changes, fixed hostname and verification remain
+  enforced. Need real TLS authorization and six validated results before source
+  adoption. Do not substitute a leaf/intermediate or weaken rejectUnauthorized.
+
+- CA-only trial succeeds on actual Node0.10.25/OpenSSL1.0.1h: TLS authorized=true,
+  no error, six validated references, differences[1,0,-1,2,1,0]. No TV-file or
+  preference write. This isolates the missing modern trust anchor; clock/server
+  chain are valid. Preserve hostname/certificate checks and existing deadlines.
+- Next source slice: bundle the verified public USERTrustRSA root for this fixed
+  AlAdhan request only; read via built-in fs in the LG network adapter, retain
+  rejectUnauthorized:true/agent:false and all validation/cancellation. Add build
+  copy/root-identity/option checks and record provenance. No platform-wide trust-
+  store update, proxy, new library/network dependency or insecure fallback.
+
+- Minimal source adds request-specific ca:[onlineCa] loaded once via built-in fs.
+  All prior host/body/timeout/cancel checks remain intact. Public root identity/CA/
+  self-signature/exact option and generated-build bytes are asserted. Red before
+  fix (lg-online-ca-red), green full suite (lg-0216-tests). Added provenance plus
+  Node source notice; THIRD_PARTY app notice intentionally extends existing text.
+  Final suite and focused bilingual online UI run pending; no native/website
+  rerun for this LG service-only change. Actual installed network remains next.
+
+- PASS final lg-0216-tests-final: clean rebuild/ES5, exact generated CA bytes,
+  service/settings/scheduling/media/volume and online validation/cancellation/TLS
+  errors. PASS focused canonical bilingual110 online UI: result/error/retry/back,
+  late/suspend/alert focus and settings/HDMI preservation. TLS remains mocked in
+  browser; actual positive CA-only host proof above is separate.
+- Source review: two adapter-line changes, public CA/provenance/source notice,
+  targeted trust/build tests, aligned versions and owning docs/credit only. No
+  new package dependency. Candidate18,661,446 bytes, SHA-256
+  290674f69d11d9c67ab48e651b6a16a2cddd8ed287e8b1cd8985ad4ee863b435.
+  Exact103 payloads/IDs/versions/CLI archive metadata pass;52 old media/font/notice
+  files unchanged, app attribution deliberately extended;14 adhan/12 spoken files
+  retained. Commit and refresh provenance before installed acceptance.

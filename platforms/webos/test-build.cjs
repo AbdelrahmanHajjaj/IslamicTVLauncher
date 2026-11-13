@@ -20,4 +20,6 @@ for (const file of sentinels) {
 }
 execFileSync(process.execPath, [path.join(__dirname, 'build.cjs')], {stdio: 'inherit'});
 for (const file of sentinels) assert.ok(!fs.existsSync(file), 'stale generated output must not be packaged');
+assert.deepEqual(fs.readFileSync(path.join(out, 'service/trust/usertrust-rsa.pem')),
+  fs.readFileSync(path.join(__dirname, 'service/trust/usertrust-rsa.pem')), 'package the exact verified public HTTPS root');
 console.log('PASS: rebuild removes stale app/service output.');

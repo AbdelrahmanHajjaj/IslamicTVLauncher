@@ -3,6 +3,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const {EventEmitter} = require('node:events');
+const {X509Certificate} = require('node:crypto');
+const ca = fs.readFileSync(path.join(__dirname, 'service/trust/usertrust-rsa.pem'));
+const root = new X509Certificate(ca);
+assert.equal(root.fingerprint256, 'E7:93:C9:B0:2F:D8:AA:13:E2:1C:31:22:8A:CC:B0:81:19:64:3B:74:9C:89:89:64:B1:74:6D:46:C3:D4:CB:D2');
+assert.ok(root.ca && root.subject === root.issuer && root.verify(root.publicKey), 'bundle the verified public root, not a leaf or intermediate');
 const core = require('./build/service/core');
 const portable = require('./build/service/IslamicTVLauncher-core');
 const source = fs.readFileSync(path.join(__dirname, 'service/online-prayer.js'), 'utf8');
@@ -20,10 +25,10 @@ function start(p = prefs) {
   const req = new EventEmitter();
   req.abort = () => { aborted = true; req.emit('error', new Error('aborted')); };
   const results = [], mod = {exports: {}};
-  vm.runInNewContext(source, {module: mod, Buffer, Float64Array, Date,
+  vm.runInNewContext(source, {module: mod, Buffer, Float64Array, Date, __dirname: path.join(__dirname, 'service'),
     setTimeout: fn => { timeout = fn; return 1; }, clearTimeout: () => { timeout = null; },
     require: name => name === 'https' ? {get: (opts, callback) => { options = opts; respond = callback; calls++; return req; }}
-      : name === './core' ? core : name === './IslamicTVLauncher-core' ? portable : assert.fail(name)});
+      : name === 'fs' ? fs : name === './core' ? core : name === './IslamicTVLauncher-core' ? portable : assert.fail(name)});
   const cancel = mod.exports(p, now, (error, value) => results.push({error, value}));
   function response(body = fixture(), status = 200, type = 'application/json; charset=UTF-8', complete = true) {
     const res = new EventEmitter(); res.statusCode = status; res.headers = {'content-type': type}; res.resume = () => {};
@@ -45,6 +50,7 @@ function start(p = prefs) {
   assert.equal(JSON.stringify(prefs), before);
   assert.equal(t.options.hostname, 'api.aladhan.com'); assert.equal(t.options.port, 443);
   assert.equal(t.options.rejectUnauthorized, true); assert.equal(t.options.agent, false);
+  assert.equal(t.options.ca.length, 1); assert.deepEqual(t.options.ca[0], ca, 'fixed-host HTTPS uses the verified modern trust anchor');
   assert.match(t.options.path, /^\/v1\/timings\/12-11-2026\?latitude=30\.0444&longitude=31\.2357&method=5&school=0&/);
   assert.equal(t.pending(), false); t.cancel(); assert.equal(t.results.length, 1);
 }

@@ -21,6 +21,13 @@ project's code contributions. These parts belong to others.
 | Quran radio stations: إذاعة القرآن الكريم in Cairo, Nablus, Qatar (two channels) and Jordan, and Shabab FM Quran (Nablus) | Played from each station's public stream, never stored | Belongs to each station. Afnon is not affiliated with any of them. |
 | Reciter channels from [mp3quran.net](https://mp3quran.net) (`backup.qurango.net`) | Played from the public stream, never stored | Belongs to mp3quran.net and the reciters. Afnon is not affiliated with it. |
 
+LG's fixed-host AlAdhan HTTPS client bundles the public USERTrust RSA CA root
+from [Node's certificate source](https://github.com/nodejs/node/blob/v24.14.0/src/node_root_certs.h),
+matching [Sectigo's official root](https://support.sectigo.com/Com_KnowledgeDetailPage?Id=kA03l000000c4KV).
+The certificate, fingerprint, provenance and Node source notice ship under
+`service/trust/usertrust-rsa.pem` and `service/licenses/online-ca.txt`. This is a
+public CA certificate, with no private key or change to the TV's system trust store.
+
 The local LG webOS development package also copies the existing adhan and spoken
 announcement assets, with the same source and rights status stated above; it does
 not add them to version control. Both platforms read ignored `state/media/` inputs.

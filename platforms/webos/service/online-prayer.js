@@ -1,5 +1,6 @@
 'use strict';
 var https = require('https');
+var onlineCa = require('fs').readFileSync(__dirname + '/trust/usertrust-rsa.pem');
 var core = require('./core');
 var comparison = require('./IslamicTVLauncher-core').tv.afnon.core.PrayerComparison;
 var names = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
@@ -27,7 +28,7 @@ module.exports = function (prefs, now, callback) {
   }
   timer = setTimeout(function () { finish(new Error('Online check timed out')); }, 12000);
   try {
-    req = https.get({hostname: 'api.aladhan.com', port: 443, agent: false, rejectUnauthorized: true,
+    req = https.get({hostname: 'api.aladhan.com', port: 443, agent: false, rejectUnauthorized: true, ca: [onlineCa],
       path: '/v1/timings/' + date + '?latitude=' + city.lat + '&longitude=' + city.lng + '&method=' + method +
         '&school=' + (p.hanafi ? 1 : 0) + '&latitudeAdjustmentMethod=1&shafaq=general&iso8601=true',
       headers: {Accept: 'application/json', 'Accept-Encoding': 'identity'}}, function (res) {

@@ -243,7 +243,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.15_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.16_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -320,7 +320,14 @@ draft/save/cancel behavior. The owner confirms installed Compact/Hidden previews
 remain complete after changing controls and backgrounds. Cancelling the unsaved
 test returns Home with all 31 preferences and input/startup/volume unchanged.
 
-Old-LG secure HTTPS and live HDMI behind audible adhan remain unverified.
+The installed 0.2.15 online check reports CERT_UNTRUSTED on this old runtime.
+A disposable actual-host trial with the verified public USERTrust RSA root succeeds:
+TLS authorized and six validated references. Source 0.2.16 bundles that root only
+for the fixed AlAdhan request; HTTPS, hostname checks, timeouts and response
+validation remain enabled. No TV system trust-store or firmware change is needed.
+Permanent package/network/UI acceptance is pending; live HDMI during adhan remains
+unresolved.
+
 Media/fonts/notices are unchanged. Browser simulations and Android emulator
 checks establish software geometry, not physical-TV picture/sound behavior.
 
@@ -535,3 +542,19 @@ Sources: [LG Back button](https://webostv.developer.lge.com/develop/guides/back-
 [service storage](https://webostv.developer.lge.com/develop/guides/js-service-usage),
 [community input embedding](https://www.webosbrew.org/develop/guides/web-app/),
 [adhan-js](https://github.com/batoulapps/adhan-js).
+
+## Online HTTPS trust anchor
+
+The legacy service uses `service/trust/usertrust-rsa.pem`, the public USERTrust RSA
+Certification Authority root, through Node's request-specific `ca` option. Its
+SHA-256 fingerprint is `E793C9B02FD8AA13E21C31228ACCB08119643B749C898964B1746D46C3D4CBD2`;
+validity ends 18 January 2038. Publisher, retrieval source and Node source notice
+are recorded in `service/licenses/online-ca.txt`. It matches the root from the
+independently verified provider chain; no leaf certificate is pinned.
+
+[Node 0.10.25 documents the CA and verification options](https://nodejs.org/download/release/v0.10.25/docs/api/https.html).
+The certificate came from [Node's official root source](https://github.com/nodejs/node/blob/v24.14.0/src/node_root_certs.h)
+and matches [Sectigo's published USERTrust root](https://support.sectigo.com/Com_KnowledgeDetailPage?Id=kA03l000000c4KV).
+If the provider changes CA chains or this root expires, review the official public
+CA and update the app's certificate/provenance/tests. Never use an unverified
+network certificate or disable validation to suppress a connection failure.
