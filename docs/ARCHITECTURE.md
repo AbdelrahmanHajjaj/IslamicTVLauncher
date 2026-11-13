@@ -2,8 +2,9 @@
 
 One household product uses separate platform applications over a portable domain
 library and canonical data/design. This describes the implemented structure.
-Active migration scope, decisions and acceptance evidence live only in
-[ARCHITECTURE-QUEUE.md](ARCHITECTURE-QUEUE.md).
+Active migration scope, decisions and status live in
+[ARCHITECTURE-QUEUE.md](ARCHITECTURE-QUEUE.md). Essential verification facts live in
+[ARCHITECTURE-EVIDENCE.md](ARCHITECTURE-EVIDENCE.md); it is not a second queue.
 
 ```mermaid
 flowchart TD

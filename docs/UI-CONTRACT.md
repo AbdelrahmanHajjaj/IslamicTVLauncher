@@ -1,8 +1,8 @@
 # Cross-platform UI and input contract
 
-This specifies product behavior shared by native shells. Implementation status,
-priority, platform gaps and acceptance evidence live only in
-[ARCHITECTURE-QUEUE.md](ARCHITECTURE-QUEUE.md). Android is the initial parity
+This specifies product behavior shared by native shells. Implementation status
+and priority live in [ARCHITECTURE-QUEUE.md](ARCHITECTURE-QUEUE.md); verification
+facts live in [ARCHITECTURE-EVIDENCE.md](ARCHITECTURE-EVIDENCE.md). Android is the initial parity
 reference; platform renderers, OS APIs and saved preference keys remain separate.
 
 ## Shared responsibilities

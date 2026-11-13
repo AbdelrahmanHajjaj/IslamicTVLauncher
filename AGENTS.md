@@ -2,8 +2,9 @@
 
 For the active platform architecture migration, read
 [`docs/ARCHITECTURE-QUEUE.md`](docs/ARCHITECTURE-QUEUE.md) first. It is the
-authoritative approved scope, ordered queue, current cursor and evidence ledger.
-Continue its first actionable item sequentially; companion work is deferred.
+authoritative approved scope, status and next action. Keep it concise; essential
+verification facts belong in [`docs/ARCHITECTURE-EVIDENCE.md`](docs/ARCHITECTURE-EVIDENCE.md),
+not per-tool progress notes. Continue sequentially; companion work is deferred.
 
 Read `README.md` and `CONTRIBUTING.md` before larger changes. This fork contains
 separate Android and LG webOS applications, not interchangeable build targets.

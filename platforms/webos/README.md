@@ -586,5 +586,6 @@ was confirmed; it did not establish a playback defect. Final DOM/state read-back
 shows normal source, no audio/overlay/volume owner and all31 preferences, startup
 and master/mute unchanged. Browser mocks check source types,
 normal-source restoration and lifecycle; they cannot establish actual audio/video.
-Full-length natural adhan completion, other HDMI ports and newer LG hardware
-remain unverified. The physical evidence above covers the normal12s test on HDMI_1.
+The owner confirms full-length adhan was previously tested. The latest installed
+HDMI evidence above covers the normal 12s test on HDMI_1. Other HDMI ports and
+newer LG hardware remain unverified.

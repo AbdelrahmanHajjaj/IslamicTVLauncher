@@ -25,7 +25,8 @@ With JDK 17 and `ANDROID_HOME` set to SDK 34, run
 
 Changes target this project's `main`. Read the [architecture](docs/ARCHITECTURE.md)
 for implemented boundaries and the [durable queue](docs/ARCHITECTURE-QUEUE.md) for the
-active migration scope/evidence. The [upstream contribution plan](docs/CONTRIBUTION-PLAN.md)
+active migration scope/status. Essential verification facts are in
+[architecture evidence](docs/ARCHITECTURE-EVIDENCE.md). The [upstream contribution plan](docs/CONTRIBUTION-PLAN.md)
 is historical; it does not authorize new upstream submissions or publication.
 
 ## 1. Add your city

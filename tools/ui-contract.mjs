@@ -95,7 +95,7 @@ export function renderUiGaps(profiles) {
     'The universal control catalog stays intact. Unimplemented controls are hidden;\n' +
     'an OS restriction has a separate reason. Actual rendered-binding coverage tests\n' +
     'must account for every other ID; this report alone does not prove implementation.\n' +
-    'Migration acceptance and evidence live only in ARCHITECTURE-QUEUE.md.\n\n' +
+    'Migration scope/status live in ARCHITECTURE-QUEUE.md; verification facts live in ARCHITECTURE-EVIDENCE.md.\n\n' +
     profiles.map(([name, gaps, choices = []]) => '## ' + name + '\n\n| Control | State | Reason |\n| --- | --- | --- |\n' +
       gaps.map(gap => '| `' + gap.id + '` | ' + gap.state + ' | ' + gap.reason + ' |').join('\n') + '\n\n' +
       '### Choice values\n\n| Control | Missing values | State | Reason |\n| --- | --- | --- | --- |\n' +
