@@ -33,13 +33,7 @@ const allCount = 14;
 const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this opens' };
 ---
 <div class="home-scroll"><div class="home-canvas" dir={ar ? 'rtl' : 'ltr'}>
-<div class="home-countdown">
-  <Arch ctx={ctx} model={arch} infoTop={340} subSize={20} subGap={0} sub2Color="var(--color-gold-200)" sub2Gap={0}>
-    <div slot="time" class="prayer-time num" data-k="homePrayerTime" set:html={m.html.homePrayerTime} />
-  </Arch>
-</div>
-
-<div class="home-column"><div class="when">
+<div class="home-header"><div class="when">
   <div class="clock display num" data-k="clock" set:html={m.html.clock} />
   <div class="hdate" data-k="hdate" set:html={m.html.hdate} />
   <div class="gdate" data-k="gdate" set:html={m.html.gdate} />
@@ -62,7 +56,14 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   <Icon name="gear" size={34} />
 </a>
 </div>
-<div class="home-countdown-top" />
+</div>
+<div class="home-body"><div class="home-countdown">
+  <Arch ctx={ctx} model={arch} infoTop={340} subSize={20} subGap={0} sub2Color="var(--color-gold-200)" sub2Gap={0}>
+    <div slot="time" class="prayer-time num" data-k="homePrayerTime" set:html={m.html.homePrayerTime} />
+  </Arch>
+</div>
+
+<div class="home-column"><div class="home-countdown-top" />
 
 <div class="cells" data-k="cells" set:html={m.html.cells} />
 
@@ -87,7 +88,7 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 <a class="ft more all" href={href('apps', lang) + '#tv'} style="inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + 5 * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))">{t.all(allCount)}</a>
 </div></div>
 <div class="home-countdown-bottom" />
-</div></div></div>
+</div></div></div></div>
 
 
 <!-- The reminder before a prayer (MainActivity.showReminder). -->
@@ -164,6 +165,9 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
       $('.pills').classList.toggle('icons-only', !c.prefs.quickLabels);
       stage.dataset.homeLayout = c.prefs.homeLayout === 'classic' ? 'classic' : 'two_rows';
       const h = homeLayout(c.prefs, stage.querySelectorAll('.fav').length, c.t.ar);
+      const header = $('.home-header');
+      header.style.marginInlineStart = `${h.margin}px`; header.style.width = `${h.full}px`;
+      header.style.setProperty('--home-meta-width', `${h.full * HOME['header-clock-share']}px`);
       const column = $('.home-column');
       column.style.marginInlineStart = `${h.x}px`; column.style.width = `${h.width}px`;
       $('.home-favourites').style.gridTemplateColumns = `repeat(${h.columns}, minmax(0, 1fr))`;
@@ -290,16 +294,24 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 </script>
 
 <style>
-  .home-scroll, .home-canvas, .home-column, .home-controls, .home-favourites, .home-recent, .recent-strip, .home-countdown-top, .home-countdown-bottom { display:contents; }
+  .home-scroll, .home-canvas, .home-header, .home-body, .home-column, .home-controls, .home-favourites, .home-recent, .recent-strip, .home-countdown-top, .home-countdown-bottom { display:contents; }
   :global(.tv[data-large-ui='true']) .home-scroll { display:block; position:absolute; left:calc(960px - 960px / var(--ui-size)); top:calc(540px - 540px / var(--ui-size)); width:calc(1920px / var(--ui-size)); height:calc(1080px / var(--ui-size)); overflow-y:auto; overflow-x:hidden; direction:ltr; scroll-padding:16px; scrollbar-width:none; }
   :global(.tv[data-large-ui='true']) .home-canvas { display:block; position:relative; left:calc(960px / var(--ui-size) - 960px); width:1920px; min-height:1080px; padding:56px 0; }
   :global(.tv[data-large-ui='true']) .home-column { display:flex; position:relative; flex-direction:column; gap:var(--layout-home-gap); }
-  :global(.tv[data-large-ui='true']) .home-controls { display:flex; order:-1; position:relative; height:96px; padding:12px; gap:var(--layout-home-gap); overflow-x:auto; overflow-y:hidden; scroll-padding:12px; scrollbar-width:none; flex:none; }
-  :global(.tv[data-large-ui='true']) .home-column .pills { display:contents; }
-  :global(.tv[data-large-ui='true']) .home-controls .pill { flex:none; }
-  :global(.tv[data-large-ui='true']) .home-column .gear { position:relative; inset-inline-start:auto !important; top:auto !important; flex:none; }
-  :global(.tv[data-large-ui='true']) .home-column :is(.when,.cells,.label) { position:relative; inset-inline-start:auto !important; top:auto !important; width:100% !important; }
+  :global(.tv[data-large-ui='true']) .home-header { display:flex; position:relative; align-items:center; gap:var(--layout-home-gap); }
+  :global(.tv[data-large-ui='true']) .home-header .when { position:relative; inset-inline-start:auto !important; top:auto !important; width:var(--home-meta-width) !important; flex:none; }
+  :global(.tv[data-large-ui='true']) .home-controls { display:flex; position:relative; align-items:center; min-width:0; padding:12px; gap:var(--layout-home-gap); flex:1; }
+  :global(.tv[data-large-ui='true']) .home-header .pills { display:contents; }
+  :global(.tv[data-large-ui='true']) .home-controls .pill { flex:none; height:72px; }
+  :global(.tv[data-large-ui='true']) .pills:not(.icons-only) .pill { flex:1; min-width:0; padding:8px; flex-direction:column; gap:8px; height:var(--layout-home-quick-label-height); }
+  :global(.tv[data-large-ui='true']) .pill-label { white-space:normal; max-width:100%; text-align:center; line-height:1.2; overflow-wrap:break-word; }
+  :global(.tv[data-large-ui='true']) .home-header .gear { position:relative; inset-inline-start:auto !important; top:auto !important; flex:none; }
+  :global(.tv[data-large-ui='true']) .home-body { display:block; position:relative; width:1920px; margin-top:var(--layout-home-gap); }
+  :global(.tv[data-large-ui='true'][data-countdown='0']) .home-body { min-height:var(--layout-home-mihrab-height); }
+  :global(.tv[data-large-ui='true']) .home-body > .home-countdown { top:0 !important; }
+  :global(.tv[data-large-ui='true']) .home-column :is(.cells,.label) { position:relative; inset-inline-start:auto !important; top:auto !important; width:100% !important; }
   :global(.tv[data-large-ui='true']) .cells { height:auto; grid-auto-rows:var(--layout-home-table-height); gap:12px; }
+  :global(.tv[data-large-ui='true']) .cells:not([hidden]) + .fav-label { margin-top:calc(-1 * var(--layout-home-gap) / 2); }
   :global(.tv[data-large-ui='true']) .home-favourites { display:grid; gap:var(--layout-home-gap); }
   :global(.tv[data-large-ui='true']) .home-favourites .fav { position:relative; inset-inline-start:auto !important; top:auto !important; width:auto !important; }
   :global(.tv[data-large-ui='true']) .home-recent { display:block; overflow-x:auto; padding:24px; margin:-24px; scroll-padding:24px; scrollbar-width:none; }
@@ -361,9 +373,9 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
   .cells :global(.prayer-symbol) { font-size:var(--font-size-caption); line-height:1; }
   .cells :global(.prayer-symbol .prayer-icon) { margin-inline-end:0; }
   .cells :global(.tag) { text-align:end; font-size: var(--font-size-caption); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .cells :global(.name) { white-space:nowrap; font-size: var(--font-size-body); line-height: 1.1; }
-  .cells :global(.time) { font-size: 30px; line-height: 1.1; white-space: nowrap; }
-  :global(:lang(en)) .cells :global(.time) { font-size: 30px; }
+  .cells :global(.name) { white-space:nowrap; font-size: var(--layout-home-cell-name-size); line-height: 1.1; }
+  .cells :global(.time) { font-size: var(--layout-home-cell-time-size); line-height: 1.1; white-space: nowrap; }
+  :global(:lang(en)) .cells :global(.time) { font-size: var(--layout-home-cell-time-size); }
   .cells :global(.cell[data-state='now']) { background: var(--color-plaster-100); color: var(--color-lapis-900); box-shadow:none; }
   .cells :global(.cell[data-state='next']) { background: transparent; color: var(--color-gold-400); box-shadow: inset 0 0 0 var(--border-next-prayer-width) var(--border-next-prayer-color); }
   .cells :global(.cell[data-state='past']) { background: color-mix(in srgb, var(--surface-fill, var(--color-lapis-800)) 60%, transparent); color: var(--color-mist-400); }

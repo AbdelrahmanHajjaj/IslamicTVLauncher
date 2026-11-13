@@ -126,9 +126,11 @@
     return '<div class="prayers">' + indices.map(function (i) {
       var time = times[i];
       var upcoming = i === next.index && time === next.time;
+      var text = digits(A.clock(time, prefs)), period = text.lastIndexOf(' ');
+      var label = view === 'home' && period > 0 ? escape(text.slice(0, period)) + ' <small>' + escape(text.slice(period + 1)) + '</small>' : escape(text);
       return '<div class="prayer' + (upcoming ? ' next' : i === current ? ' current' : time < +now ? ' past' : '') + '">' +
         '<span class="prayer-tag">' + (upcoming ? t('التالية', 'Next') : i === current ? t('الآن', 'Now') : '&nbsp;') + '</span>' + escape(labels[i]) +
-        '<span class="time">' + digits(A.clock(time, prefs)) + '</span></div>';
+        '<span class="time">' + label + '</span></div>';
     }).join('') + '</div>';
   }
   function inputName() { return input ? (input.id === 'DTV' || input.id === 'ATV' ? t('البث التلفزيوني', 'Live TV') : input.label) : t('اختر المدخل', 'Choose an input'); }
@@ -430,7 +432,7 @@
     } catch (error) { html = '<section class="page">' + header(t('تعذر عرض الصفحة', 'Page unavailable')) + actions(false) + '</section>'; lastError = error.message; }
     screen.innerHTML = html;
     sizeUi();
-    if (view === 'home') { bindHomeFocus(); }
+    if (view === 'home') { updateClock(); bindHomeFocus(); }
     if (view === 'apps') { bindAppsFocus(); }
     if (view !== 'input') {
       var target = focusAction && screen.querySelector(focusAction.charAt(0) === '[' ? focusAction : '[data-action="' + focusAction + '"]');
@@ -438,7 +440,7 @@
         view === 'home' ? homeNodes[homeNavigation.initial(homeAppCount, 0)] :
         view === 'apps' ? screen.querySelector('.app-tile') : view === 'picker' && stepper() ? screen.querySelector('[data-action=save-step]') : screen.querySelector('button')); if (target) { focusControl(target); }
     }
-    updateClock(); report();
+    if (view !== 'home') { updateClock(); } report();
   }
   function armDock() { clearTimeout(dockTimer); if (view === 'bar' && prefs.dockAutoHide) { dockTimer = setTimeout(function () { show('input'); }, prefs.dockAutoHide * 1000); } }
   function zoomUi(el, factor, origin) {
@@ -548,6 +550,29 @@
         if (rows[i].getAttribute('data-key') !== key) { rows[i].innerHTML = prayers(now); rows[i].setAttribute('data-key', key); }
       }
     } catch (error) { put('[data-countdown]', '—'); }
+    if (view === 'home' && window['tv.afnon:core'].tv.afnon.core.UiScale.percent(prefs.uiScale) > 110) { layoutLargeHome(); }
+  }
+  function layoutLargeHome() {
+    var page = screen.firstElementChild, clock = page.querySelector('.home-clock'), quick = page.querySelector('.home-quick');
+    var prayers = page.querySelector('.home-prayers'), apps = page.querySelector('.home-actions'), arch = page.querySelector('.arch');
+    var gap = D.homeHeader.gap, full = page.offsetWidth - 192, meta = Math.round(full * D.homeHeader.clockShare);
+    var toolbar = full - meta - gap, rtl = prefs.lang === 'ar';
+    clock.style.left = rtl ? 'auto' : '96px'; clock.style.right = rtl ? '96px' : 'auto'; clock.style.width = meta + 'px';
+    clock.querySelector('.clock').style.width = '100%';
+    quick.style.left = (rtl ? 96 : 96 + meta + gap) + 'px'; quick.style.right = (rtl ? 96 + meta + gap : 96) + 'px';
+    var buttons = quick.querySelectorAll('button');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].style.width = prefs.quickLabels ? (toolbar - (buttons.length - 1) * gap) / buttons.length + 'px' : '64px';
+      buttons[i].style.margin = '0';
+      if (i > 0) { buttons[i].style[rtl ? 'marginRight' : 'marginLeft'] = gap + 'px'; }
+    }
+    quick.style.top = (56 + Math.max(0, (clock.offsetHeight - quick.offsetHeight) / 2)) + 'px';
+    var top = 56 + Math.max(clock.offsetHeight, quick.offsetHeight) + gap;
+    arch.style.top = top + 'px'; arch.style.bottom = 'auto';
+    if (prefs.homeLayout === 'compact' && prefs.homeBar === 'top') { top += arch.offsetHeight + gap; }
+    prayers.style.top = top + 'px';
+    apps.style.top = (top + (prayers.offsetHeight ? prayers.offsetHeight + gap / 2 : 0)) + 'px';
+    if (prefs.homeLayout === 'compact' && prefs.homeBar === 'bottom') { arch.style.top = (parseFloat(apps.style.top) + apps.offsetHeight + gap) + 'px'; }
   }
   function choices(key, allCountries) {
     key = key || picker;

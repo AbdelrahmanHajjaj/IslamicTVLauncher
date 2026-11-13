@@ -55,6 +55,7 @@ for (const app of data.apps) {
 }
 const tokens = json('afnon-mihrab/tokens.json');
 data.homeMihrab = {width: parseFloat(tokens.layout.home['mihrab-width'].$value), minWidth: parseFloat(tokens.layout.home['mihrab-min-width'].$value), gap: parseFloat(tokens.layout.home['panel-gap'].$value)};
+data.homeHeader = {clockShare: tokens.layout.home['header-clock-share'].$value, gap: parseFloat(tokens.layout.home.gap.$value)};
 data.palettes = {};
 for (const theme of data.themes) {
   const colors = theme === 'mihrab' ? {} : json('shared/design/assets/themes/' + theme + '.json').colors;

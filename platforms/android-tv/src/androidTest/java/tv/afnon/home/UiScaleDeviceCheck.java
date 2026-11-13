@@ -40,8 +40,8 @@ final class UiScaleDeviceCheck {
                 try { Prefs.setUiScale(test.getTargetContext(), invalid); } catch (IllegalArgumentException expected) { rejected = true; }
                 check(rejected, "Invalid size must not be saved");
             }
-            for (String language : new String[] {"ar", "en"}) for (int size : new int[] {150, 80, 90, 100, 110, 120, 130, 140}) {
-                prefs.edit().putString("locale", language).putString("clock", "24").putString("digits", "")
+            for (String language : new String[] {"en", "ar"}) for (int size : new int[] {150, 80, 90, 100, 110, 120, 130, 140}) {
+                prefs.edit().putString("locale", language).putString("clock", "12").putString("digits", "")
                     .putInt("ui_scale", 100).putInt("appearance_cycle", 0).putBoolean("reduce_motion", false)
                     .putBoolean("adhan", false).putBoolean("announce", false).putBoolean("remind_voice", false).putInt("remind", 0).commit();
                 SettingsActivity settings = launch(test, SettingsActivity.class); active[0] = settings;
@@ -123,6 +123,17 @@ final class UiScaleDeviceCheck {
                         check(screen.getCurrentFocus() == focused, "App menu returns to its origin");
                     }
                     finish(test, screen); active[0] = null;
+                    if (type == MainActivity.class && size == 150) {
+                        Map<String, ?> beforeHome = prefs.getAll();
+                        for (int[] variant : new int[][] {{0,1,0},{0,2,0},{1,0,0},{1,0,1},{2,0,0}}) {
+                            prefs.edit().putBoolean("quick_labels", true).putInt("home_countdown", variant[0])
+                                .putInt("home_side", variant[1]).putInt("home_bar", variant[2]).putString("clock", "12").commit();
+                            MainActivity sample = launch(test, MainActivity.class); active[0] = sample;
+                            SystemClock.sleep(200); test.waitForIdleSync(); scene(test, sample, language, size);
+                            finish(test, sample); active[0] = null;
+                        }
+                        restore(prefs, beforeHome);
+                    }
                 }
                 check(Prefs.uiScale(test.getTargetContext()) == size, "Size survives activity reopening");
                 Bundle progress = new Bundle(); progress.putString("stream", "PASS: native pages " + language + " " + size + "% save/cancel/focus/geometry.\n"); test.sendStatus(0, progress);
@@ -153,13 +164,7 @@ final class UiScaleDeviceCheck {
     }
 
     private static void scene(Instrumentation test, Screen screen, String language, int size) throws Exception {
-        if (size != 90) {
-            Bitmap image = test.getUiAutomation(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES).takeScreenshot();
-            check(image != null, "Screenshot is available");
-            try (FileOutputStream output = new FileOutputStream(test.getTargetContext().getCacheDir() + "/size-native-" + language + "-" + size + "-" + screen.getClass().getSimpleName() + ".png")) {
-                image.compress(Bitmap.CompressFormat.PNG, 100, output);
-            } finally { image.recycle(); }
-        }
+        capture(test, language, size, screen.getClass().getSimpleName());
         UiContractDeviceCheck.onMain(test, () -> {
             pageBounds(screen, size);
         });
@@ -169,11 +174,24 @@ final class UiScaleDeviceCheck {
             key(test, screen, KeyEvent.KEYCODE_DPAD_UP);
             check(Arrays.asList(FavouriteChoice.QIBLA, FavouriteChoice.WIFI, FavouriteChoice.SETTINGS, FavouriteChoice.RADIO, FavouriteChoice.INPUTS)
                 .contains(Arrays.asList(nodes).indexOf(screen.getCurrentFocus())), "Large Home Up reaches top controls");
+            SystemClock.sleep(200); test.waitForIdleSync();
+            UiContractDeviceCheck.onMain(test, () -> pageBounds(screen, size));
+            capture(test, language, size, "home-header");
             key(test, screen, KeyEvent.KEYCODE_DPAD_DOWN);
             check(screen.getCurrentFocus() == initial, "Large Home returns to its app");
             for (int i = 0; i < 20 && screen.getCurrentFocus() != nodes[FavouriteChoice.ALL]; i++) key(test, screen, KeyEvent.KEYCODE_DPAD_DOWN);
             check(screen.getCurrentFocus() == nodes[FavouriteChoice.ALL], "Large Home Down reaches All apps");
             UiContractDeviceCheck.onMain(test, () -> pageBounds(screen, size));
+        }
+    }
+
+    private static void capture(Instrumentation test, String language, int size, String name) throws Exception {
+        if (size != 90) {
+            Bitmap image = test.getUiAutomation(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES).takeScreenshot();
+            check(image != null, "Screenshot is available");
+            try (FileOutputStream output = new FileOutputStream(test.getTargetContext().getCacheDir() + "/size-native-" + language + "-" + size + "-" + name + ".png")) {
+                image.compress(Bitmap.CompressFormat.PNG, 100, output);
+            } finally { image.recycle(); }
         }
     }
 
@@ -184,9 +202,26 @@ final class UiScaleDeviceCheck {
         int[] at = new int[2]; background.getLocationOnScreen(at);
         bounds(screen.root, false, new Rect(at[0], at[1], at[0] + background.getWidth(), at[1] + background.getHeight()));
         if (screen instanceof MainActivity && size > 110) {
+            View[] nodes = (View[]) UiContractDeviceCheck.field(screen, "nodes");
+            ViewGroup controls = (ViewGroup) nodes[FavouriteChoice.QIBLA].getParent();
+            ViewGroup header = (ViewGroup) controls.getParent();
+            View metadata = header.getChildAt(0);
+            if (Prefs.quickLabels(screen)) for (int id : new int[] {FavouriteChoice.QIBLA, FavouriteChoice.INPUTS, FavouriteChoice.RADIO}) {
+                ViewGroup words = (ViewGroup) ((ViewGroup) nodes[id]).getChildAt(0);
+                android.widget.TextView label = (android.widget.TextView) words.getChildAt(1);
+                check(label.getBottom() <= words.getHeight() - words.getPaddingBottom(), "Canonical toolbar labels fit vertically");
+                for (int line = 0; line < label.getLineCount(); line++) check(label.getLayout().getEllipsisCount(line) == 0, "Canonical toolbar labels remain complete");
+            }
+            check(!Rect.intersects(new Rect(metadata.getLeft(), metadata.getTop(), metadata.getRight(), metadata.getBottom()),
+                new Rect(controls.getLeft(), controls.getTop(), controls.getRight(), controls.getBottom())), "Home toolbar uses the space beside the clock");
+            ViewGroup content = (ViewGroup) header.getParent();
+            check(content.getChildAt(1).getTop() > header.getBottom(), "Home body clears its measured header");
+        }
+        if (screen instanceof MainActivity) {
             for (String field : new String[] {"cellName", "cellTime"}) for (android.widget.TextView label : (android.widget.TextView[]) UiContractDeviceCheck.field(screen, field)) {
                 if (label == null) continue;
                 check(label.getLayout() != null && label.getLayout().getEllipsisCount(0) == 0, "Large Home prayer labels and times must fit");
+                check(label.getLayout().getLineWidth(0) <= label.getWidth() + 1, "Home prayer text must fit: " + label.getText() + " width " + label.getLayout().getLineWidth(0) + "/" + label.getWidth());
             }
         }
         if (screen instanceof SettingsActivity && size > 110) {

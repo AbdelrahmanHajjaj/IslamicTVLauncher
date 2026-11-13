@@ -96,6 +96,57 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
+Home implementation checkpoint: the owner confirms the live 150% prototype is
+clear, toolbar/mihrab are separate and prayer names/times readable. The TV was
+returned to110 through its actual inline control as authorized; the read-only
+size110 snapshot independently confirms all31 original preferences unchanged; permanent app
+remains0.2.11 with temporary CSS trials. No new audio/power test. Source0.2.13
+changes are uncommitted across Android/LG/preview. Shared tokens now define
+Home prayer height128/name28/time36, header clock share0.42 and labelled control
+height152 (allows complete canonical Arabic labels over three lines), with cell
+inset10 for larger English 12-hour times. Passive prayer-to-caption gap is half
+Home gap, preserving readable app tiles. A measured full-width header puts the
+toolbar beside metadata and body below it. The prototype used144px controls; the
+source reserves8px more for full native/preview labels, without reducing fonts.
+
+Current checks: preview domain/editor/geometry tests pass (home-preview-tests-2),
+18-page build passes, and Arabic/English150 browser checks pass including Home
+variants (home-preview-browser-fast-2). LG ES5/service tests and enlarged Home
+geometry/text checks pass; full lg-0213-browser.log passes all16 cases plus the header/mihrab separation
+and larger prayer-text bounds in Home variants. An unused generated data field
+was removed afterwards; rebuild and rerun the focused Home check before packaging. Native first
+Home page/variant matrix passed, but a stronger width assertion caught English80
+text clipping at the original20px cell inset. Canonical inset10 is implemented: an intermediate12px inset still left a
+145px English time in a143px area (pages-3 raw code0). Final build/lint is in
+home-native-build-final-3.log; rerun the native page matrix English first with real text widths, complete labels and a settled Up-to-toolbar check.
+Do not count pages-2.log as pass (raw code0). A valid final run requires -1 and
+all16 progress cases. Larger prayer typography is Home-only; HDMI dock unchanged.
+
+Owned headless emulator is BOOTED: session.json PID40404; fresh original-state
+backup is state/platform-core/ui-size/home-native/native-session.json and original-
+preferences.xml. It is prepared at1920x1080/160dpi. Use in-place APK updates;
+never rerun prepare-home-native.py over this backup. Restore/verify preferences,
+secure/display settings and known cache captures, then identity-check and close
+before yielding. The new test also saves home-header captures; include that exact
+name in bounded cleanup. Native windows/full UI passed in the prior range slice;
+this Home-only slice requires affected page/variant checks, not unrelated reruns.
+
+Final Home package: lg-0213-candidate/tv.afnon.webos_0.2.13_all.ipk,
+18,658,554 bytes, SHA-256 b25c0b9706da1c1c1733728cf56d85c5b6c2ab577e0f64ec85c7cc5a1f90aee1.
+All101 payload files/metadata and53 unchanged media/font/notice files pass.
+Owner explicitly reconfirms readiness for the final watched0.2.13 update. A fresh
+before-snapshot is being captured; use the guarded in-place workflow and preserve
+its current state. Refresh candidate provenance after this source commit.
+
+Next: finish final native matrix, fresh preview full8x2 matrix at12-hour clock,
+LG final browser suite, token/catalog/Java geometry checks and final source review.
+Inspect actual native/browser captures (take header capture after focus settles).
+Then update owning docs/ledger, commit and prepare a fresh0.2.13 package. Verify
+all payloads/provenance, obtain fresh watched readiness only if the watcher has
+left, capture current TV state and update in place. The current inspector remains
+owned by v0211-inspector-owner.json. Actual final UI acceptance and closing that
+inspector are still required. Do not install the intermediate0.2.12 candidate.
+
 Latest owner steering: at 150% Home the toolbar intersects the mihrab and space
 beside the clock is unused. Inspect and correct the actual Home geometry, retaining
 shared design language and native input routes. Owner also clarified that a taller
@@ -123,7 +174,7 @@ preview and LG mocks; native full UI contract; expanded pure-Java geometry;
 preview domain/editor/calendar/text tests; token/catalog freshness; LG ES5/service/
 volume/online tests. Android final APK is 21,158,877 bytes, build/lint pass. Final
 raw native results are -1/pass and independent original preference comparisons
-pass after each matrix. The owned emulator is restored/closed: 150 known captures
+pass after each matrix. The earlier range emulator session was restored/closed: 150 known captures
 saved/removed, original preference values/types and secure/display settings restored,
 serial offline, original AVD hashes unchanged. Evidence: ignored ui-size/range-native.
 

@@ -218,10 +218,13 @@ offset does **not** change for daylight saving: update it when local rules requi
 Selecting another city does not change the time zone. Keep the TV clock correct and
 compare the displayed times with the timetable you follow locally.
 
-Source version 0.2.12 replaces the size picker with an inline − / + draft editor:
+Source version 0.2.13 replaces the size picker with an inline − / + draft editor:
 OK starts/saves, Left/Right step by 10%, and Back cancels. Its shared range is
 80–150%. Above 110%, pages scroll to reveal focused controls; Home's mihrab narrows
 from the canonical 600px width toward the 520px minimum without shrinking text.
+Home now uses shared taller prayer cells/larger base text, and its enlarged
+header places the toolbar beside the clock above the mihrab. Labels wrap within
+taller controls; remote order and return focus are retained.
 Local ES5/service regressions and Arabic/English browser checks cover all eight
 sizes, unchanged settings and simulated HDMI, mihrab text bounds and the labelled
 Home variants. These tests mock Luna and media. The watched 0.2.11 upgrade preserves all 31 settings/input/startup and master
@@ -240,7 +243,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.12_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.13_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 

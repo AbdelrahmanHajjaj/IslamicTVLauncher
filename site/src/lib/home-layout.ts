@@ -2,7 +2,7 @@ import tokens from '../../../afnon-mihrab/tokens.json';
 import type { Prefs } from './data';
 import { safeInline, uiFactor } from './ui-scale';
 
-export const HOME = Object.fromEntries(Object.entries(tokens.layout.home).map(([k, v]) => [k, parseFloat(v.$value)])) as Record<keyof typeof tokens.layout.home, number>;
+export const HOME = Object.fromEntries(Object.entries(tokens.layout.home).map(([k, v]) => [k, parseFloat(String(v.$value))])) as Record<keyof typeof tokens.layout.home, number>;
 export const homeChoice = (n: number | undefined, max: number) => Number.isInteger(n) ? Math.max(0, Math.min(max, n!)) : 0;
 export function homePrayers(table: number | undefined, current: number, next: number): number[] {
   return [[0, 1, 2, 3, 4, 5], [current], [next], [current, next], []][homeChoice(table, 4)];
@@ -24,13 +24,13 @@ export function homeLayout(p: Prefs, count: number, rtl: boolean) {
   const quickY = mode === 0 && p.quickLabels ? HOME['labelled-controls-top'] : 56;
   let top = mode === 0 ? (p.quickLabels ? quickY + parseFloat(tokens.layout['button-height'].$value) + gap : HOME['mihrab-content-top']) : HOME.top, bottom = HOME.bottom;
   if (mode === 1) { if (p.homeBar === 1) bottom = panelY - gap; else top += HOME['bar-height'] + gap; }
-  const tableY = top, labelY = top + (table === 4 ? 0 : HOME['table-height'] + gap);
+  const tableY = top, labelY = top + (table === 4 ? 0 : HOME['table-height'] + gap / 2);
   const favouritesY = labelY + (rows === 0 ? 0 : HOME['label-height']);
   const tileWidth = Math.min(HOME['tile-max-width'], (width - (columns - 1) * gap) / columns);
   const available = bottom - favouritesY - (rows === 0 ? 0 : gap) - HOME['label-height'] - HOME['recent-height'];
   const tileHeight = rows === 0 ? 0 : Math.min(classic ? HOME['tile-classic-height'] : HOME['tile-max-height'], (available - (rows - 1) * gap) / rows);
   const recentLabelY = favouritesY + (rows === 0 ? 0 : rows * tileHeight + (rows - 1) * gap + gap);
-  return { mode, table, count, columns, rows, width, x, panelX, panelY, panelWidth, quickY, tableY, labelY, favouritesY, tileWidth, tileHeight, recentLabelY, recentY: recentLabelY + HOME['label-height'] };
+  return { mode, table, count, columns, rows, margin, full, width, x, panelX, panelY, panelWidth, quickY, tableY, labelY, favouritesY, tileWidth, tileHeight, recentLabelY, recentY: recentLabelY + HOME['label-height'] };
 }
 
 export function homePreview(p: Prefs, rtl: boolean) {

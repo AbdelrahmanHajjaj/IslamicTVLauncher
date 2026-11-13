@@ -57,6 +57,9 @@ External Android settings remain controlled by the OS.
 The numeric editor stays inline in each shell. At larger sizes the Home mihrab
 uses the canonical minimum width, while native flow/scroll containers keep
 content and focus reachable; no renderer or layout engine is added to the core.
+Canonical Home tokens also set prayer-row typography and header proportions.
+Each renderer keeps the toolbar beside metadata and the body below its measured
+header at enlarged sizes; the shared input order remains unchanged.
 The preview keeps website fitting (`--k`) separate from a scaled DOM content
 layer. It fits enlarged groups after model/DOM/font changes, counter-sizes modal
 backdrops and bounds screensaver drift; saved browser preferences stay local.

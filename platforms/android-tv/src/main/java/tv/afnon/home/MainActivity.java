@@ -261,8 +261,8 @@ public class MainActivity extends Screen {
             cellIcon[i] = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.PLASTER_100);
             cellIcon[i].setIncludeFontPadding(false);
             cellIcon[i].setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            cellName[i] = text(ui400, 26, Palette.PLASTER_100);
-            cellTime[i] = text(ui400, Tokens.FONT_SIZE_BODY_L, Palette.PLASTER_100);
+            cellName[i] = text(ui400, Tokens.LAYOUT_HOME_CELL_NAME_SIZE, Palette.PLASTER_100);
+            cellTime[i] = text(ui400, Tokens.LAYOUT_HOME_CELL_TIME_SIZE, Palette.PLASTER_100);
             cellTag[i].setIncludeFontPadding(false);
             cellTag[i].setSingleLine(true);
             cellTag[i].setEllipsize(TextUtils.TruncateAt.END);
@@ -345,7 +345,7 @@ public class MainActivity extends Screen {
     }
 
     /** Large text keeps the existing sections in flow; scrolling replaces clipping. */
-    private void largeHome(View when, View pills, View fav, View recent, int slots) {
+    private void largeHome(View when, LinearLayout pills, View fav, View recent, int slots) {
         float reach = FocusTile.REACH;
         LinearLayout column = new LinearLayout(this);
         column.setOrientation(LinearLayout.VERTICAL);
@@ -353,10 +353,8 @@ public class MainActivity extends Screen {
         when.setPadding(Ui.ipx(reach), 0, Ui.ipx(reach), 0);
         fav.setPadding(Ui.ipx(reach), 0, Ui.ipx(reach), 0);
         recent.setPadding(Ui.ipx(reach), 0, Ui.ipx(reach), 0);
-        appendLarge(column, largeShelf(pills), 0);
-        appendLarge(column, when, Tokens.SPACE_4);
         boolean compact = home.mode == HomeLayout.COMPACT, bottom = Prefs.homeBar(this) == 1;
-        if (compact && !bottom) appendLarge(column, countdownPanel, Tokens.SPACE_4);
+        if (compact && !bottom) appendLarge(column, countdownPanel, 0);
         if (slots > 0) {
             FrameLayout times = new FrameLayout(this);
             int columns = Math.min(slots, 3);
@@ -368,27 +366,72 @@ public class MainActivity extends Screen {
                 lp.topMargin = Ui.ipx(i / columns * (Tokens.LAYOUT_HOME_TABLE_HEIGHT + 12));
                 times.addView(cell[i], lp);
             }
-            appendLarge(column, times, Tokens.SPACE_4);
+            appendLarge(column, times, compact && !bottom ? Tokens.LAYOUT_HOME_GAP : 0);
         }
         if (favouriteCount > 0) {
-            appendLarge(column, fav, Tokens.SPACE_4);
+            appendLarge(column, fav, slots > 0 ? Tokens.LAYOUT_HOME_GAP / 2 : 0);
             appendLarge(column, largeGroup(F0, M0, home.x - reach, home.favouritesY - reach), Tokens.SPACE_2);
         }
         appendLarge(column, recent, Tokens.SPACE_4);
         appendLarge(column, largeShelf(largeGroup(M0, ALL + 1, home.x - reach, home.recentY - reach)), Tokens.SPACE_2);
         if (compact && bottom) appendLarge(column, countdownPanel, Tokens.SPACE_4);
-        place(column, home.x - reach, Tokens.SPACE_SAFE_BLOCK - reach, home.width + 2 * reach, -2);
+        float margin = Ui.safeInline(this), full = 1920 - 2 * margin;
+        FrameLayout header = new FrameLayout(this);
+        header.setClipChildren(false);
+        root.removeView(when); root.removeView(pills);
+        header.addView(when, new FrameLayout.LayoutParams(Ui.ipx(full * Tokens.LAYOUT_HOME_HEADER_CLOCK_SHARE), -2, Gravity.TOP | Gravity.START));
+        pills.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
+        boolean labels = Prefs.quickLabels(this);
+        for (int i = 0; i < pills.getChildCount(); i++) {
+            View node = pills.getChildAt(i);
+            boolean labelled = labels && node != nodes[SETTINGS];
+            if (labelled) {
+                LinearLayout words = (LinearLayout) ((ViewGroup) node).getChildAt(0);
+                words.setOrientation(LinearLayout.VERTICAL); words.setGravity(Gravity.CENTER);
+                words.setPadding(Ui.ipx(8), Ui.ipx(8), Ui.ipx(8), Ui.ipx(8));
+                words.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+                TextView label = (TextView) words.getChildAt(1);
+                label.setSingleLine(false); label.setMaxLines(3); label.setMaxWidth(Integer.MAX_VALUE);
+                label.setIncludeFontPadding(false); lineHeightPixels(label, Math.round(label.getTextSize() * 1.3f));
+                label.setEllipsize(TextUtils.TruncateAt.END); label.setGravity(Gravity.CENTER);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2); lp.topMargin = Ui.ipx(8);
+                label.setLayoutParams(lp);
+            }
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(labelled ? 0 : Ui.ipx(Tokens.LAYOUT_BUTTON_HEIGHT + 2 * reach),
+                Ui.ipx((labelled ? Tokens.LAYOUT_HOME_QUICK_LABEL_HEIGHT : Tokens.LAYOUT_BUTTON_HEIGHT) + 2 * reach), labelled ? 1 : 0);
+            if (i > 0) lp.setMarginStart(Ui.ipx(4));
+            node.setLayoutParams(lp);
+        }
+        FrameLayout.LayoutParams quick = new FrameLayout.LayoutParams(Ui.ipx(full * (1 - Tokens.LAYOUT_HOME_HEADER_CLOCK_SHARE) - Tokens.LAYOUT_HOME_GAP), -2, Gravity.CENTER_VERTICAL | Gravity.END);
+        header.addView(pills, quick);
 
-        FrameLayout canvas = new FrameLayout(this);
-        canvas.setLayoutDirection(root.getLayoutDirection());
-        canvas.setClipChildren(false);
-        canvas.setPadding(0, 0, 0, Ui.ipx(Tokens.SPACE_SAFE_BLOCK));
+        FrameLayout body = new FrameLayout(this), panel = new FrameLayout(this);
+        body.setClipChildren(false); panel.setClipChildren(false);
         for (int i = root.getChildCount() - 1; i >= 0; i--) {
             View child = root.getChildAt(i);
             if (child == focusGlow) continue;
-            ViewGroup.LayoutParams lp = child.getLayoutParams();
-            root.removeView(child); canvas.addView(child, 0, lp);
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) child.getLayoutParams();
+            root.removeView(child);
+            lp.setMarginStart(lp.getMarginStart() - Ui.ipx(home.panelX)); lp.topMargin -= Ui.ipx(home.panelY);
+            panel.addView(child, 0, lp);
         }
+        if (home.mode == HomeLayout.MIHRAB) {
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(Ui.ipx(home.panelWidth), Ui.ipx(Tokens.LAYOUT_HOME_MIHRAB_HEIGHT), Gravity.TOP | Gravity.START);
+            lp.setMarginStart(Ui.ipx(home.panelX - margin)); body.addView(panel, lp);
+        }
+        FrameLayout.LayoutParams columnLp = new FrameLayout.LayoutParams(Ui.ipx(home.width + 2 * reach), -2, Gravity.TOP | Gravity.START);
+        columnLp.setMarginStart(Ui.ipx(home.x - margin - reach)); body.addView(column, columnLp);
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL); content.setClipChildren(false);
+        content.addView(header, new LinearLayout.LayoutParams(-1, -2));
+        LinearLayout.LayoutParams bodyLp = new LinearLayout.LayoutParams(-1, -2); bodyLp.topMargin = Ui.ipx(Tokens.LAYOUT_HOME_GAP);
+        content.addView(body, bodyLp);
+        FrameLayout canvas = new FrameLayout(this);
+        canvas.setLayoutDirection(root.getLayoutDirection()); canvas.setClipChildren(false);
+        canvas.setPadding(0, 0, 0, Ui.ipx(Tokens.SPACE_SAFE_BLOCK));
+        FrameLayout.LayoutParams contentLp = new FrameLayout.LayoutParams(Ui.ipx(full), -2, Gravity.TOP | Gravity.START);
+        contentLp.setMarginStart(Ui.ipx(margin)); contentLp.topMargin = Ui.ipx(Tokens.SPACE_SAFE_BLOCK);
+        canvas.addView(content, contentLp);
         final float factor = Ui.factor(this);
         ScrollView scroll = new ScrollView(this) {
             @Override public boolean requestChildRectangleOnScreen(View child, android.graphics.Rect rectangle, boolean immediate) {

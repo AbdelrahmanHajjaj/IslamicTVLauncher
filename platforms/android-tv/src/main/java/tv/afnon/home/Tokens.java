@@ -161,7 +161,15 @@ final class Tokens {
     /** layout.home.bar-height */
     static final float LAYOUT_HOME_BAR_HEIGHT = 100f;
     /** layout.home.table-height */
-    static final float LAYOUT_HOME_TABLE_HEIGHT = 112f;
+    static final float LAYOUT_HOME_TABLE_HEIGHT = 128f;
+    /** layout.home.cell-name-size */
+    static final float LAYOUT_HOME_CELL_NAME_SIZE = 28f;
+    /** layout.home.cell-time-size */
+    static final float LAYOUT_HOME_CELL_TIME_SIZE = 36f;
+    /** layout.home.header-clock-share */
+    static final float LAYOUT_HOME_HEADER_CLOCK_SHARE = 0.42f;
+    /** layout.home.quick-label-height */
+    static final float LAYOUT_HOME_QUICK_LABEL_HEIGHT = 152f;
     /** layout.home.label-height */
     static final float LAYOUT_HOME_LABEL_HEIGHT = 56f;
     /** layout.home.tile-max-width */
@@ -201,7 +209,7 @@ final class Tokens {
     /** layout.home.info-top */
     static final float LAYOUT_HOME_INFO_TOP = 368f;
     /** layout.home.cell-inset */
-    static final float LAYOUT_HOME_CELL_INSET = 20f;
+    static final float LAYOUT_HOME_CELL_INSET = 10f;
     /** layout.home.cell-padding */
     static final float LAYOUT_HOME_CELL_PADDING = 10f;
     /** layout.arch.width */

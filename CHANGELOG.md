@@ -6,6 +6,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- Home uses shared taller prayer cells and larger names/times at every interface
+  size. Enlarged layouts place the toolbar beside the clock and the mihrab below
+  the measured header; labelled controls wrap without reducing their text size.
+
 - LG keeps the scaling viewport independent of Arabic page direction, correcting
   horizontal sidebar clipping on old WebKit while retaining joined RTL content.
 
@@ -21,7 +25,7 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   scroll to keep every row reachable. Cancellation restores the originating row.
   The browser preview applies the same control to its screens and menus while
   keeping the website frame and backgrounds unchanged. Arabic All apps labels
-  keep their count inside the tile, and labelled Home buttons stay on one line.
+  keep their count inside the tile, and labelled Home buttons remain complete.
   Physical-TV sizing acceptance remains pending.
   At larger sizes, Home reflows and scrolls, and the mihrab narrows toward a shared
   minimum width while preserving its text sizes to leave more room for controls.

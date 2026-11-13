@@ -89,7 +89,9 @@ for completed checks and remaining hardware tests.
   80–150% in 10% steps, using inline − / + controls. One control resizes app text and controls together,
   including the prayer bar, menus, dialogs and screensaver; the default is 100%.
   At larger sizes, Home scrolls and its mihrab narrows to leave more room for
-  prayer times and app controls without reducing their text sizes.
+  prayer times and app controls without reducing their text sizes. Home uses
+  taller prayer cells with larger base text, and the enlarged toolbar shares
+  the header with the clock instead of crossing the mihrab.
 - **App management.** Hold OK in All apps to add, reorder or replace a favourite. Replacement returns
   to Home so you can select its destination. Uninstall opens Android's confirmation for removable apps.
   An optional system-utility filter keeps media apps, games and Play Store visible. The app list reuses

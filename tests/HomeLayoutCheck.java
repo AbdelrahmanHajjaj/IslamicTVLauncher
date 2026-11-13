@@ -17,7 +17,7 @@ public final class HomeLayoutCheck {
             check(h.count == 0 || h.tileHeight >= 120, "readable app tiles");
             check(h.tileWidth > 0 && h.tileWidth <= 640, "bounded tile width");
             check(h.count == 0 || h.favouritesY + h.rows * h.tileHeight + (h.rows - 1) * 24 < h.recentLabelY, "app rows do not overlap");
-            check(table == 4 || h.tableY + 112 < h.labelY, "table does not overlap apps");
+            check(table == 4 || h.tableY + Tokens.LAYOUT_HOME_TABLE_HEIGHT < h.labelY, "table does not overlap apps");
             if (mode == 0) {
                 check(h.panelX + panelWidth < h.x || h.x + h.width < h.panelX, "mihrab does not overlap content");
                 float physical = rtl ? 1920 - h.panelX - panelWidth : h.panelX;

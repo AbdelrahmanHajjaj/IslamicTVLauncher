@@ -1027,6 +1027,15 @@ const server = http.createServer((req, res) => {
       await fits('.home-quick button,.home-apps button,.home-links button');
       const quick = await page.locator('.home-quick').boundingBox(), prayer = await page.locator('.home-prayers').boundingBox();
       const apps = await page.locator('.home-actions').boundingBox();
+      const clock = await page.locator('.home-clock').boundingBox();
+      const intersects = (a,b) => Math.min(a.x+a.width,b.x+b.width)>Math.max(a.x,b.x)+1 && Math.min(a.y+a.height,b.y+b.height)>Math.max(a.y,b.y)+1;
+      assert.ok(!intersects(clock,quick), 'large toolbar uses the space beside the clock');
+      if (variant.homeLayout === 'mihrab') assert.ok(!intersects(await page.locator('.arch').boundingBox(),quick), 'large toolbar clears the mihrab');
+      assert.deepEqual(await page.locator('.home-prayers .prayer').evaluateAll(nodes=>{
+        const bad=[];
+        for(const el of nodes){const box=el.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(el);for(const ink of range.getClientRects())if(ink.left<box.left-1||ink.right>box.right+1||ink.top<box.top-1||ink.bottom>box.bottom+1){bad.push(el.textContent);break;}}
+        return bad;
+      }), [], 'larger Home prayer text fits inside its cells');
       assert.ok(quick.y + quick.height < prayer.y, 'large labelled controls clear prayer times');
       assert.ok(prayer.y + prayer.height < apps.y, 'large prayer times clear apps');
       if (variant.homeLayout === 'compact') {

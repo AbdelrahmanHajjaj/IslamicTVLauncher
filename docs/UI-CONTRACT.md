@@ -38,6 +38,11 @@ on screen in both languages. There are no separate font or prayer-bar size setti
 At sizes above 110%, shells reflow and scroll content rather than shrink its text.
 The Home mihrab narrows from its canonical width to a shared design minimum,
 reclaiming space for prayer times and app controls while preserving text sizes.
+The enlarged Home toolbar shares the header with clock/date metadata and stays
+clear of the mihrab. Labels may wrap within taller controls; their shared order
+and Up/Down return routes remain unchanged. Home prayer-row height/name/time
+typography comes from shared design tokens at every size; this does not alter the
+compact HDMI prayer bar.
 
 ## Home focus
 

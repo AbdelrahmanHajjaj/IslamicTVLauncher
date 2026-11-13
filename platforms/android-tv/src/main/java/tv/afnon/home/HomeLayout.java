@@ -37,7 +37,7 @@ final class HomeLayout {
             else top += Tokens.LAYOUT_HOME_BAR_HEIGHT + gap;
         }
         tableY = top;
-        labelY = top + (this.table == NONE ? 0 : Tokens.LAYOUT_HOME_TABLE_HEIGHT + gap);
+        labelY = top + (this.table == NONE ? 0 : Tokens.LAYOUT_HOME_TABLE_HEIGHT + gap / 2);
         favouritesY = labelY + (rows == 0 ? 0 : Tokens.LAYOUT_HOME_LABEL_HEIGHT);
         tileWidth = Math.min(Tokens.LAYOUT_HOME_TILE_MAX_WIDTH, (width - (columns - 1) * gap) / columns);
         float available = bottom - favouritesY - (rows == 0 ? 0 : gap) - Tokens.LAYOUT_HOME_LABEL_HEIGHT - Tokens.LAYOUT_HOME_RECENT_HEIGHT;
