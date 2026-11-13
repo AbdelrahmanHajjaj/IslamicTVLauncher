@@ -243,7 +243,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.14_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.15_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -313,6 +313,11 @@ row, preserving all other preferences. A slight mihrab crop at 110% was correcte
 in a bounded live trial; the owner confirms the complete outline. Version 0.2.14
 persists that safe-margin correction; the owner confirms the installed outline
 and prayer text are fully visible at 110%. Live DOM measures 32px clearance.
+
+Source 0.2.15 fixes old-WebKit clipping inside patterned Home customization
+previews. It draws the background through CSS, preserving the SVG controls and
+draft/save/cancel behavior. A bounded live trial is accepted; permanent package
+installation and redraw checks are pending.
 
 Old-LG secure HTTPS and live HDMI behind audible adhan remain unverified.
 Media/fonts/notices are unchanged. Browser simulations and Android emulator

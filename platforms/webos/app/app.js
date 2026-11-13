@@ -312,9 +312,10 @@
     function rect(rx, ry, rw, rh, fill, stroke) {
       return '<rect x="' + rx + '" y="' + ry + '" width="' + rw + '" height="' + rh + '" rx="14" fill="' + fill + '"' + (stroke ? ' stroke="' + stroke + '" stroke-width="3"' : '') + '/>';
     }
-    var svg = rect(0, 0, 1920, 1080, c['lapis-900']);
+    var svg = '', background = 'background-color:' + c['lapis-900'] + ';';
     if (p.background !== 'plain') {
-      svg += '<defs><pattern id="preview-pattern" width="960" height="540" patternUnits="userSpaceOnUse"><image xlink:href="patterns/' + p.background + '.svg" width="960" height="540"/></pattern></defs><rect width="1920" height="1080" fill="url(#preview-pattern)"/>';
+      // Old WebKit clips later controls when an SVG image paints the pattern.
+      background += 'background-image:url(patterns/' + p.background + '.svg);background-size:50% 50%;';
     }
     if (mihrab) {
       svg += '<path transform="translate(' + archX + ' 124) scale(' + archWidth / D.homeMihrab.width + ' 1)" d="M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z" fill="' + c['lapis-800'] + '" stroke="' + c['gold-400'] + '" stroke-width="3"/>' +
@@ -325,7 +326,7 @@
     for (i = 0; i < cells; i++) { svg += rect(x + i * (width / cells), top, width / cells - 12, 110, c['lapis-800'], i === cells - 1 ? c['gold-400'] : c['lapis-700']); }
     for (i = 0; i < 3; i++) { svg += rect(x + i * (width / 3), tiles + 48, width / 3 - 24, 200, c['lapis-800'], c['lapis-700']); }
     svg += rect(x, tiles + 276, 300, 76, c['lapis-800']) + rect(x + 320, tiles + 276, 260, 76, c['lapis-800']);
-    return '<div class="appearance-model"><svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="' + escape(t('معاينة تخطيط ', 'Layout preview: ') + name) + '">' + svg + '</svg></div><div class="appearance-caption"><h2>' + escape(name) + '</h2><div class="swatches">' +
+    return '<div class="appearance-model"><svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" style="' + background + '" role="img" aria-label="' + escape(t('معاينة تخطيط ', 'Layout preview: ') + name) + '">' + svg + '</svg></div><div class="appearance-caption"><h2>' + escape(name) + '</h2><div class="swatches">' +
       ['lapis-900', 'lapis-800', 'gold-400', 'plaster-100'].map(function (key) { return '<span style="background:' + c[key] + '"></span>'; }).join('') +
       '</div></div>';
   }

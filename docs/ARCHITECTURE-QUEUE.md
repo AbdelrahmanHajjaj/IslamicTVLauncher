@@ -92,65 +92,75 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are software-verified across consumers. LG 0.2.13 is installed with preferences/input/startup preserved; picture/sound and earlier All apps routes are physically accepted. A final Home safe-margin correction and watched sizing checks continue; live HDMI background remains unresolved. Android hardware remains open. |
+| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are software-verified across consumers. LG preference-preserving updates, Home sizing and remote routes are physically accepted. Final appearance-preview correction continues; live HDMI background remains unresolved. Android hardware remains open. |
 
 ## Current cursor
 
-Next: diagnose the owner's LG Home customization preview report: compact and
-hidden layouts render incorrectly with a background pattern; plain background
-reflects both layouts correctly. This new Home defect takes precedence over the
-manual online check. Preserve saved settings; use unsaved draft/cancel for trials.
+Finish the LG Home customization preview correction as 0.2.15. With Hidden or
+Compact plus a pattern, the old TV paints controls cut off within the miniature;
+plain is correct. Desktop and live SVG bounds are correct, so geometry alone did
+not detect it. Owner's photo confirms clipping. Changing the pattern ID did not
+help. Replacing embedded SVG pattern/image with CSS background worked; owner
+initially said no, then clarified it worked until another control redrew the old
+source. Persist the CSS background on every appearancePreview render. Preserve
+all draft/save/cancel behavior; no shared-core/native/website change is needed.
 
-Installed0.2.14 margin correction is now physically accepted: owner confirms the
-outline and prayer names/times fully visible at110. Independent live DOM proves
-left1288.006/top57.989/right1888.005/bottom1047.989, minimum clearance31.995px,
-no preference write. Picture/sound already accepted; all31 prefs/input/startup/
-boot/master/mute unchanged, Node88+adapter30/WebKit88/101 installed hashes pass.
-Source7759803 and candidate provenance agree. v0214 inspector remains owned/open
-for this next watched defect investigation; close it before yielding.
+Source fix and aligned 0.2.15 versions are prepared. New regression fails the old
+SVG image paint-server path, then passes all three layouts/plain+pattern in both
+languages at 110% (appearance-pattern-red.log, appearance-pattern-green-ar/en.log).
+LG ES5/service suite and full browser suite pass (lg-0215-tests-final.log,
+lg-0215-browser.log).
+One initial version check correctly rejected an incomplete metadata bump; all four
+sources and lock root are now aligned. Do not count lg-0215-tests.log as a pass.
+Captures and scoped diff reviewed. Fresh candidate 0.2.15:18,658,918 bytes,
+SHA-256 f4a13747a5da01a425ca5e57747716d77cef87d005f5c4364df9c5822a7e61b8.
+Archive/CLI metadata, all101 payloads and53 media/font/notices pass. Next: commit,
+refresh provenance and perform the guarded watched in-place upgrade.
 
-Shared Home work is committed in b6b49ba: prayer row height128/name28/time36,
-cell inset10, header clock share0.42 and labelled control height152. Large Home
-places toolbar beside metadata and body below measured header. Owner accepts the
-150% LG prototype's separation and prayer readability. Universal inline sizing
-80–150%/10%, save/cancel and progressive mihrab width were committed in 6545506;
-old-WebKit RTL viewport correction is bb727a7. No generic UI engine or new setting.
-Owner confirms inline cancel, Arabic150 readability/sidebar and first/last rows.
-Owner explicitly allowed restoring110 after choosing130; actual row restored110,
-independent snapshot proves all original31 preferences unchanged. Preserve110.
+Installed 0.2.14 margin correction is physically accepted: outline and prayer text
+fully visible at 110%, unchanged HDMI picture/sound and no error. Actual outline
+left1288.006/top57.989/right1888.005/bottom1047.989 gives 31.995px clearance.
+All 31 preferences, current/selected HDMI_1, full startup, boot and master/mute
+survived unchanged; actual Node 0.10.25 passes 88+adapter30, WebKit538.2 passes88,
+all 101 installed files match. Source7759803/candidate provenance agree; installed
+acceptance is committed in5d9123e. Intermediate0.2.12 was never installed.
 
-Final native build/lint and all16 English/Arabic x80–150 page cases plus Home
-variants pass (home-native-build-final-3.log, home-native/pages-4.log raw -1).
-APK21,159,759 bytes. Both native typed preferences and secure/display settings
-were independently restored, all92 known captures removed from the emulator;
-identity-checked owned emulator is CLOSED. No rerun for this LG-only margin fix.
-Preview full8x2 matrix passes with inset12; final inset10 only widens cells,
-fresh18-page build and affected80/150 bilingual smoke pass.
-LG0.2.13 full browser/ES5 suite passes; final unused-field rebuild/Home check passes.
-Final generated token/catalog checks and scoped source review pass.
+Existing watcher/update authorization continues for this necessary final correction.
+Take fresh before-state and preserve any new owner choices, not old snapshots.
+Close only identity-checked v0214-inspector-owner.json before guarded close/install-
+over/launch; compare all prefs/input/full startup/boot/master/mute afterward. Run
+installed hash/Node88+30/WebKit88 proofs. Obtain human picture/sound and permanent
+patterned preview acceptance after real redraws in Compact/Hidden. Cancel only our
+unsaved draft through the actual control; no Apply/save during diagnostic trials.
+No test alert/audio/power change belongs to this preview check. Current inspector
+remains owned/open for the watched work; close replacement before yielding.
 
-Verified0.2.14 local candidate:18,658,840 bytes, SHA-256
-574e23f649e68ccedfd7bc06973d5f5b0a83fc7e29bca53022a829cb90ef2db5.
-Archive/CLI package-info/all101 payloads/IDs/versions and53 unchanged media/font/
-notice files pass. Record final installed acceptance and diagnose the new
-appearance-preview defect before moving to the next hardware item.
+Shared inline sizing80–150%/10% and narrower mihrab are6545506; RTL clipping viewport
+fix isbb727a7; shared taller Home prayer cells/header layout isb6b49ba. Universal
+contract/range/step remain in core, dimensions in tokens, rendering native.
+Physical LG inline edit/cancel, Arabic150 sidebar/first-last rows, Home150 header
+separation and larger prayer text pass. Owner explicitly allowed return110 after
+choosing130; real row restored110 with all original31 prefs unchanged.
+Native build/lint + all16 English/Arabic x80–150 page cases/Home variants pass
+(home-native-build-final-3, home-native/pages-4 raw-1), APK21,159,759 bytes.
+Owned emulator prefs/secure/display restored,92 captures removed, identity checked
+and CLOSED. Preview full8x2 passes with inset12; final inset10 widens cells, fresh
+18-page build and affected80/150 bilingual smoke pass. Tokens/catalog checks pass.
+No repeat native/preview test for this LG-only preview paint correction.
 
-Then continue manual LG secure-online/TLS acceptance and the separately announced
-20-second watched video-only HDMI probe. Online comparison is source-complete
-across native/LG/preview: manual bounded fixed HTTPS, six advisory differences,
-offline calculations remain schedule authority; no polling/accounts/backend.
-Live HDMI during audible adhan remains unresolved because audio releases the
-video decoder. A prior probe was not observed; do not infer success or choose a
-speculative backend. Quiet playback/volume restoration is already physically
-accepted. App audio30%, last observed master50/unmuted are current choices;
-never restore older snapshots or assume these values cannot have changed.
+Then resume manual LG secure-online/TLS acceptance and separately announced
+20-second watched video-only HDMI probe. Online comparison is software-complete
+across native/LG/website: bounded manual HTTPS, six advisory differences, offline
+calculations remain schedule authority. No polling/accounts/backend. Audible adhan
+still releases HDMI decoder; prior video probe was not observed. No coexistence
+claim or speculative backend. Quiet playback/volume restoration, startup/power
+and All apps/Home routes are already physically accepted. Last known app30/master50
+unmuted is evidence, not permission to overwrite a newer owner setting.
 
-All apps/Home routes and startup/power checks already have physical LG acceptance.
-Android TV hardware remains unavailable until around2026-11-25; emulator results
-do not close that gate. Newer LG/Samsung/Sony are unverified. Q00–Q08 complete;
-Q09/Q09.5 and the overall goal remain incomplete. The earlier blocked hardware
-hold was superseded by resumed watched LG work. No publication/push/PR/merge,
-repository detachment, firmware, companion or unrelated work is authorized here.
+Q00–Q08 complete; Q09/Q09.5 and overall goal remain incomplete. Android TV hardware
+awaits around2026-11-25; emulator results do not close that gate. Newer LG/Samsung/
+Sony unverified. No publication/push/PR/merge/detachment, firmware, companion or
+unrelated work. Resume this cursor only, not historical pending notes below.
 
 ## Evidence and decisions
 
@@ -2793,3 +2803,35 @@ repository detachment, firmware, companion or unrelated work is authorized here.
   zoom repaint. First bounded probe changed only preview-pattern ID and its one
   fill reference, no geometry or prefs. Owner result is pending; do not fix source
   until this exact-symptom feedback loop identifies a working correction.
+
+- Owner reports unique-pattern-ID trial still wrong, ruling out ID reuse as a fix.
+  Supplied TV photo confirms foreground tiles/controls clipped within a full-width
+  patterned miniature; local geometry is wider than painted area. Attachment was
+  viewed directly, no public copy. Tested next ranked probe: remove embedded SVG
+  pattern/image and use CSS background on the same SVG, keeping geometry. First
+  probe guarded out when the current preview had no pattern; atomic retry selects
+  only unsaved Hidden+stars then applies CSS background. Owner result pending.
+
+- Owner corrects CSS-trial response: it worked, then changing controls replaced the
+  temporary DOM edit. Thus the embedded SVG image/pattern paint path is the working
+  diagnosis. Persist CSS background on each preview render, retaining its geometry,
+  selected pattern and unsaved draft behavior. No pattern-ID counter is needed.
+- Added regression at the actual preview seam rejecting the legacy-clipping SVG
+  image paint server and checking CSS pattern/foreground bounds across all layouts.
+  Private fast runner fails before fix (appearance-pattern-red.log), as expected.
+  This guards the proven compatible path; actual old-TV paint still needs human
+  confirmation after the permanent package. No shared core/native/preview change.
+
+- Persisted the working CSS background per preview render, removed only embedded
+  SVG image/pattern background and redundant xlink namespace, retained palette,
+  tile geometry, selected pattern size and all controls. Regression is red before
+  fix and green in Arabic/English110 across all three layouts/plain+stars. Full
+  ES5/service suite passes; full browser suite pending. Version0.2.15 aligned.
+
+- PASS final0.2.15 full browser suite, including16 size/language cases and all
+  enlarged Home variants, plus new all-layout pattern regression. Arabic/English
+  focused110 captures and source diff reviewed; no debug/ID-counter code shipped.
+  Candidate18,658,918 bytes, SHA-256
+  f4a13747a5da01a425ca5e57747716d77cef87d005f5c4364df9c5822a7e61b8.
+  CLI package reader, archive/IDs/version/101 payloads and53 unchanged media/font/
+  notices pass. Commit source, refresh provenance, then guarded watched update.

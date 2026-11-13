@@ -644,9 +644,20 @@ const server = http.createServer((req, res) => {
     await carousel('theme').focus();
     for (let i = 0; i < forestIndex; i++) await page.keyboard.press('ArrowRight');
     await carousel('background').focus(); await page.keyboard.press('ArrowRight');
+    for (const layout of ['mihrab', 'compact', 'hidden']) {
+      const svg = page.locator('.appearance-model svg');
+      assert.equal(await svg.locator('pattern, image').count(), 0, 'old WebKit preview must not clip controls through an SVG image paint server');
+      assert.match(await svg.evaluate(el => getComputedStyle(el).backgroundImage), /eight_point_stars/, 'preview retains the selected CSS pattern');
+      assert.deepEqual(await svg.locator('rect').evaluateAll(nodes => nodes.flatMap(el => {
+        const box = el.getBBox();
+        return box.x < 0 || box.y < 0 || box.x + box.width > 1920 || box.y + box.height > 1080 ? [el.outerHTML] : [];
+      })), [], 'patterned ' + layout + ' preview keeps all controls in its viewport');
+      if (layout !== 'hidden') { await carousel('homeLayout').focus(); await page.keyboard.press('ArrowRight'); }
+    }
+    await carousel('homeLayout').focus(); await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowLeft');
     assert.ok(await page.evaluate(() => new Promise(resolve => {
       const pattern = new Image(); pattern.onload = () => resolve(pattern.naturalWidth > 0); pattern.onerror = () => resolve(false);
-      pattern.src = document.querySelector('.appearance-preview image').getAttribute('xlink:href');
+      pattern.src = /url\(["']?([^"')]+)["']?\)/.exec(getComputedStyle(document.querySelector('.appearance-model svg')).backgroundImage)[1];
     })), 'preview pattern asset decodes');
     await carousel('homeLayout').focus(); await page.keyboard.press('ArrowRight');
     await carousel('homeBar').focus(); await page.keyboard.press('ArrowRight');

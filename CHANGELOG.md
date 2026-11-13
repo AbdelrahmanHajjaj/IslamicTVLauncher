@@ -6,6 +6,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- LG Home customization keeps the complete Compact and Hidden previews visible
+  with patterned backgrounds, including after changing controls.
+
 - Home uses shared taller prayer cells and larger names/times at every interface
   size. Enlarged layouts place the toolbar beside the clock and the mihrab below
   the measured header; labelled controls wrap without reducing their text size.
