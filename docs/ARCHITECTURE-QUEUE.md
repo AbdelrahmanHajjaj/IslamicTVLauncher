@@ -96,21 +96,31 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Next: prepare a bounded quiet local-audio + HDMI-video-only coexistence test,
-then obtain fresh explicit audible-test readiness before playing anything. The
-owner watched20s native video_only probe and confirms picture kept moving, programme
-sound stopped and both restored. This proves the video-only path, not coexistence
-with adhan. Do not change production playback or claim live adhan transparency
-until a separate quiet concurrent-audio test and safe restoration succeed.
+Await the pending quiet-adhan watcher response. The concrete coexistence test is
+prepared but NOT RUN: v0216-dom-coexist-start-params.json/result-params.json,
+2s audio limit/12s watchdog, verified native audioVolume prepare/release and exact
+HDMI/UI restoration. Owner only approved the completed video-only test so far;
+do not infer audible readiness. The TV remains unchanged on normal HDMI.
 
-Probe source/visibility restored automatically after20s, ready4/noerror at3s/9s
-and after, zero audio elements; completed probe variable removed. Independent
-before/after snapshot proves all31 prefs/input/fullstartup/boot/master/mute
-unchanged, no test/audio-volume owner. No adhan/master-volume change occurred.
-Current owned inspector remains v0216; close before yielding. Do not rerun the
-completed video-only probe. Read only the source needed for this bounded audio
-coexistence check; use existing verified audioVolume prepare/release to preserve
-native volume ownership, never play at unchecked old-LG element volume.
+Owned v0216 inspector is identity-checked and CLOSED, emulator already CLOSED;
+no background tool jobs or test/volume owner remain. Pending question: Ready for
+two-second quiet adhan over moving HDMI with saved30% app gain and restoration.
+On Ready: start a NEW owned hidden inspector with fresh
+v0216-coexist-inspector-private.log / v0216-coexist-inspector-owner.json (do not
+overwrite the closed original owner/log). Use lg-0216-coexist-dom.cjs, prepared to
+read that new log while retaining existing unused coexist params/results names.
+Take fresh lg-0216-coexist-state.cjs before2 snapshot; old before baseline is stale.
+Guard version16, no test/audio owner/imminent prayer, HDMI1, saved volume30 and
+selected alqatami voice; preserve any newer owner choices and adjust test setup
+rather than overwrite them. Announce start, run once only after readiness, verify
+source/volume/owner cleanup and get human picture/audio result. If Later, leave
+TV unchanged. No production media change until concurrent-audio evidence passes.
+
+Completed20s video_only probe is physically accepted: moving picture, programme
+sound suppressed then restored. Exact source/visibility restored, ready4/noerror,
+zero audio; probe variable removed. Independent before/after snapshots prove all
+31 prefs/input/fullstartup/boot/master/mute unchanged. This proves video-only,
+not concurrent adhan. No adhan or master-volume mutation occurred during that test.
 
 Installed0.2.16 online correction is fully accepted: actual verified network returns
 six validated Cairo/Egyptian13-11-2026 references, differences[1,0,-1,2,1,0]. Owner
@@ -131,8 +141,8 @@ app attribution intentionally extends prior notice, plus public CA/source notice
 Guarded fresh0.2.15 backup, owned v0215 inspector closed, close/install-over/launch
 all succeed. All31 prefs, current/selected HDMI_1, full startup, boot and master/
 mute compare unchanged. No test/audio owner. All103 installed hashes, actual
-Node88+adapter30 and WebKit538.2 common88 pass; video stays1920x1080. Current owned
-inspectorv0216 is open; close only its identity-checked process before yielding.
+Node88+adapter30 and WebKit538.2 common88 pass; video stays1920x1080. Owned v0216 inspector is now identity-checked and closed; reopen only a new
+owned session for the approved next test.
 ES5/service/final build and affected bilingual110 online UI checks pass; full
 browser matrix passed0.2.15 with unchanged app renderer. New CA test is red before
 fix and green after. No native/website retest for this service-only change.
@@ -151,8 +161,8 @@ selected/current HDMI_1, full startup, boot and master/mute compare unchanged bo
 after upgrade and after unsaved trial cancellation. No test/audio owner. Actual
 Node0.10.25 passes88+adapter30, WebKit538.2 passes88, all101 installed hashes match;
 video remains1920x1080. Final UI is saved Home. No Apply/save during trials.
-Owned inspector is v0215-inspector-owner.json; v0214 was identity-checked/closed
-before upgrade. Keep only while actively testing; close before yielding.
+Historical v0215/v0214 inspectors are closed; the current v0216 inspector is
+also closed as recorded above.
 
 Verified0.2.15 candidate18,658,918 bytes, SHA-256
 f4a13747a5da01a425ca5e57747716d77cef87d005f5c4364df9c5822a7e61b8.
@@ -2986,3 +2996,22 @@ unrelated work. Resume this cursor only, not historical pending notes below.
   production media or claiming live HDMI during adhan; watcher readiness for
   video-only is not permission to start audio. Prepare concrete bounded test then
   ask; retain current v0216 inspector only while actively working.
+
+- Prepared private v0216-dom-coexist-start probe (ES5 parses;2s playing limit,
+  12s no-start watchdog, native audioVolume prepare before playback and release on
+  every finish/late-preparation path). Requests proved HDMI_1 video_only, plays
+  local saved alqatami voice using verified TV-volume mode only, removes audio,
+  restores exact source/UI and checks backend ownership afterward. No source change.
+- Asked fresh quiet-adhan watcher readiness because video-only approval excluded
+  audio. Do not execute until Ready. Next take fresh coexist-before snapshot,
+  guard no test/volume owner/imminent prayer, saved app volume30/HDMI1, then announce
+  start, run once and observe. If Later, leave TV unchanged and close inspector.
+
+- Quiet test readiness remains unanswered; elapsed time is not consent. Test was
+  prepared, ES5/limit/release guards checked and read-only coexist-before captured,
+  but no coexistence script/audio/volume mutation ran. Closed only owned v0216
+  inspector after PID/birth/command verification; TV unchanged. Prepared separate
+  coexist-inspector DOM helper and before2 label so next turn can use fresh state
+  without overwriting earlier evidence. No active emulator/browser/tool jobs.
+  Remaining actual acceptance is the quiet coexistence test (needs watcher) and
+  Android TV hardware around25Nov; do not mark overall goal complete.
