@@ -14,6 +14,7 @@ const compact = value => Array.isArray(value) ? value.map(text => text.replace(/
 const strings = Object.fromEntries(Object.entries(json('shared/data/strings.json')).map(([key, entry]) => [key, {...entry, ar: compact(entry.ar), en: compact(entry.en)}]));
 const write = (p, text) => { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, text); };
 execFileSync(process.execPath, [path.join(root, 'tools/validate-shared.mjs')], { stdio: 'inherit' });
+execFileSync(process.execPath, [path.join(root, 'tools/prepare-adhans.mjs'), '--check'], { stdio: 'inherit' });
 execFileSync(process.execPath, [path.join(root, 'shared/core/build-js.cjs')], { stdio: 'inherit' });
 const outputs = ['app', 'service'].map(part => path.join(out, part));
 for (const directory of [out, ...outputs]) {

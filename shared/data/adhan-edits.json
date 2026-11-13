@@ -1,0 +1,30 @@
+{
+  "alafasy": {
+    "sourceSha256": "06a9ef43abf7a8907df477a878704d0679d941886273b1a1834e15c2934a1629",
+    "endSeconds": 233.9
+  },
+  "alarkani": {
+    "sourceSha256": "8414483e630efe001e2c29eee3ff02fb62178f37372bf3ef7f24bd386e5c8462",
+    "endSeconds": 233.9
+  },
+  "chebae_fajr": {
+    "sourceSha256": "89580ee0304ba7812822ba3b2de0cf4a0534bb4a1ee9220c5c98f9075da318c6",
+    "endSeconds": 243
+  },
+  "alhamathani": {
+    "sourceSha256": "246b2de1a7a4242bd8005f7ea00c5d89472e453c78c710eadd1879e6f0f6f9d4",
+    "endSeconds": 218.5
+  },
+  "alzahrani": {
+    "sourceSha256": "b4d596a8d60f3120ed6a3d0709dd63cd589b35d4bcc9a792bfc74da80f2a14f2",
+    "endSeconds": 183.5
+  },
+  "deghreri": {
+    "sourceSha256": "90c46eb25feafdbb590752d16a43d5895f8806ca6454bec567a9ab8ce55cb74d",
+    "endSeconds": 154.2
+  },
+  "alqatami": {
+    "sourceSha256": "b30f4e2c44d6fcb975d2c2f797590dfb11061b11ab7e8fc5d2cdb3ea86b92fbe",
+    "endSeconds": 132
+  }
+}

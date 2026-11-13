@@ -6,6 +6,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- Android and LG share reviewed adhan media cleanup, removing promotional
+  endings from seven voices while preserving the complete adhan and originals.
+  Build checks prevent the untrimmed source from silently returning.
+
 - LG adhan keeps HDMI video moving while programme audio is suppressed, with
   only the central mihrab over the picture. Dismissal restores normal HDMI sound
   and the previous TV volume; other audio/input modes retain their decoder handoff.

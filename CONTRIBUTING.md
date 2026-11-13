@@ -106,6 +106,13 @@ Only add recordings you have the right to share, and say where each one comes fr
 licence. Local recordings go in ignored `state/media/adhan/`; metadata and download filenames
 belong in `shared/data/voices.json`. Run `node tools/catalogs.mjs` to update the
 native catalog and fetch list. Do not commit recordings without permission to distribute them.
+Reviewed content cuts live in `shared/data/adhan-edits.json`, guarded by the exact
+original SHA-256 and applied once by `node tools/prepare-adhans.mjs` using FFmpeg.
+Keep originals under `state/media-originals/`, never inside the packaged `state/media/`.
+Run `node tools/prepare-adhans.test.mjs` for changes to this preparation step; its
+synthetic-audio check requires FFmpeg/ffprobe and verifies unchanged encoded frames,
+backups, idempotence and rejection of unknown recordings. Keep audit findings in
+`docs/AUDIO-AUDIT.md`, with raw transcripts/review clips ignored.
 
 ## Pull requests
 

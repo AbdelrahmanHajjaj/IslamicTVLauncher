@@ -13,7 +13,8 @@ times, with a 32 KiB body cap, no redirects/cache and a 12-second one-shot deadl
 Pause/Back cancel the request; returning offers manual retry. No account, polling,
 new network dependency or background service is involved.
 
-From the repository root, with JDK 17 and Android SDK 34 installed:
+From the repository root, with JDK 17 and Android SDK 34 installed (also Node 24
+when local adhan recordings are present):
 
 ```sh
 ./gradlew -p platforms/android-tv verifyApkSize lintDebug --no-daemon

@@ -203,6 +203,11 @@ Run `bash tools/fetch-adhans.sh` before building to download the 14 recordings f
 They are Git-ignored because the source collection does not provide a redistribution licence.
 Local inputs live in `state/media/adhan/` and `state/media/announce/`; Android and LG
 package them under their existing asset names.
+The fetch step uses Node 24 and FFmpeg to remove reviewed promotional endings from
+known source recordings. For an existing cache, run `node tools/prepare-adhans.mjs`
+once. Original files and preparation hashes stay in ignored `state/media-originals/`,
+outside the packaged assets. Android and LG builds reject unprepared edited tracks;
+ordinary builds only need Node, not FFmpeg. See the [audio audit](docs/AUDIO-AUDIT.md).
 Optional spoken announcements use `tools/fetch-announce.sh` and `edge-tts`; generated clips also stay
 out of Git. Without them, spoken announcements are silent. Do not commit or redistribute unlicensed audio.
 

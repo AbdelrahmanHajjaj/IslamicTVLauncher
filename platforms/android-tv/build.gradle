@@ -50,6 +50,12 @@ dependencies {
 
 tasks.withType(JavaCompile).configureEach { dependsOn(unpackAdhan) }
 
+def checkAdhanMedia = tasks.register('checkAdhanMedia', Exec) {
+    onlyIf { file('../../state/media/adhan').isDirectory() }
+    commandLine 'node', file('../../tools/prepare-adhans.mjs'), '--check'
+}
+tasks.named('preBuild') { dependsOn(checkAdhanMedia) }
+
 // The distributed launcher must stay below 25 MB (decimal), including bundled audio.
 def verifyApkSize = tasks.register('verifyApkSize') {
     group = 'verification'

@@ -13,4 +13,5 @@ while IFS=$'\t' read -r id name; do
   echo "  $id"
   curl -fsSL -o "$DEST/$id.mp3" "$BASE/$(printf '%s' "$name" | sed 's/ /%20/g')"
 done < "$ROOT/tools/adhan-sources.tsv"
+node "$ROOT/tools/prepare-adhans.mjs"
 echo "Adhan recordings are in $DEST"

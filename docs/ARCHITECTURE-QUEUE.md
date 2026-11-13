@@ -63,12 +63,14 @@ Until then, do not repeat unavailable-device checks or invent more refactor work
 
 ## Separate authorized follow-up
 
-**Recording cleanup:** remove the advertising sentence from Nasser Al-Qatami
-(`alqatami`), the owner's current non-Fajr voice. Identify the exact boundary,
-preserve the complete adhan/intended supplication and original recording, and
-make cleaned media consistent across consumers. This is separate from architecture
-completion and must not extend that goal. No TV playback/update is needed to inspect
-local media; audible TV checks still require a watcher.
+**Recording cleanup:** all 14 adhan recordings and 12 spoken clips decoded and
+screened. Seven confirmed site-credit endings removed losslessly; originals stay
+outside packaged assets. The owner deferred the one-minute review of four
+inconclusive endings to tomorrow; preserve those tracks. Findings/checks live in
+[AUDIO-AUDIT.md](AUDIO-AUDIT.md).
+Shared preparation/build guards and LG 0.2.18 are ready locally. **Leave the TV
+unchanged until 2026-11-14** for fresh state capture and watched in-place upgrade.
+This follow-up does not extend the architecture goal.
 
 ## Deferred and guarded
 

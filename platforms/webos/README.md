@@ -243,7 +243,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.17_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.18_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -256,6 +256,11 @@ with this CLI; its older `ares-device-info` command is a deprecated stub.
 
 The build requires the local `state/media/{adhan,announce}/` recordings (see
 `tools/fetch-adhans.sh` and `tools/fetch-announce.sh` if absent). It reuses
+the common reviewed audio edits: prepare an existing cache with
+`node tools/prepare-adhans.mjs` (FFmpeg required once). Build-time checks reject
+unprepared edited recordings without modifying media. Original recordings and
+hash stamps remain outside the packaged assets in `state/media-originals/`.
+See the [audio audit](../../docs/AUDIO-AUDIT.md). It also reuses
 the common `tools/validate-shared.mjs` checks, emits literal token values into CSS,
 and parses every shipped JavaScript file as ES5. Build outputs and packages are
 ignored; each build replaces its generated app/service directories. The browser check uses a temporary, headless Microsoft Edge profile and
@@ -295,6 +300,13 @@ These actions cancel only this package's own activities; they do not touch other
 native input settings or Developer Mode.
 
 ## Hardware validation
+
+Version 0.2.18 is a local audio-maintenance candidate, not installed evidence.
+It packages seven reviewed promotional-ending cuts shared with Android; the
+other recordings and runtime playback/UI code are unchanged. Four inconclusive
+endings remain intact pending human review. See the [audio audit](../../docs/AUDIO-AUDIT.md).
+Its ES5/service and complete mocked browser suites pass. The watched in-place
+upgrade is deferred to 14 November 2026; keep the TV unchanged until then.
 
 Version 0.2.17 was installed over 0.2.16 on 13 November 2026. All 103 installed
 app/service files match the verified candidate; Node 0.10.25 passes 88 current
