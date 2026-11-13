@@ -10,6 +10,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   size. Enlarged layouts place the toolbar beside the clock and the mihrab below
   the measured header; labelled controls wrap without reducing their text size.
 
+- LG preserves a safe margin around the Home mihrab at enlarged fixed-canvas
+  sizes, keeping its outline visible without shrinking its text.
+
 - LG keeps the scaling viewport independent of Arabic page direction, correcting
   horizontal sidebar clipping on old WebKit while retaining joined RTL content.
 
@@ -26,7 +29,8 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   The browser preview applies the same control to its screens and menus while
   keeping the website frame and backgrounds unchanged. Arabic All apps labels
   keep their count inside the tile, and labelled Home buttons remain complete.
-  Physical-TV sizing acceptance remains pending.
+  LG inline sizing and enlarged Arabic settings/Home checks are physically
+  accepted; Android TV hardware acceptance remains pending.
   At larger sizes, Home reflows and scrolls, and the mihrab narrows toward a shared
   minimum width while preserving its text sizes to leave more room for controls.
 

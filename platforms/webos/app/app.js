@@ -489,16 +489,23 @@
     if (content && view === 'home' && prefs.homeLayout === 'mihrab') {
       var archWidth = mihrabWidth(prefs), arch = content.querySelector('.arch');
       var onRight = prefs.archSide === 'right' || prefs.archSide === 'auto' && prefs.lang === 'ar';
-      arch.style.width = archWidth + 'px'; arch.style.left = onRight ? 'auto' : '96px'; arch.style.right = onRight ? '96px' : 'auto';
+      var edge = D.homeMihrab.gap / 2, homeInset = large ? 96 : Math.max(96, (1920 - width) / 2 + edge / factor);
+      arch.style.width = archWidth + 'px'; arch.style.left = onRight ? 'auto' : homeInset + 'px'; arch.style.right = onRight ? homeInset + 'px' : 'auto';
+      if (!large && factor > 1) {
+        // Enlarging the fixed canvas consumes the TV-safe outer margin.
+        var frame = document.getElementById('stage').getBoundingClientRect();
+        var pageTop = (content.getBoundingClientRect().top - frame.top) / (frame.width / 1920);
+        arch.style.top = Math.min(124, (1080 - edge - pageTop) / factor - 900) + 'px';
+      }
       arch.querySelector('svg').setAttribute('preserveAspectRatio', 'none');
       arch.querySelector('.arch-info').style.width = (archWidth - 80) + 'px';
       arch.querySelector('.verse-ref').style.width = (archWidth - 80) + 'px';
       arch.querySelector('.verse').style.width = (archWidth - 140) + 'px';
-      var courts = content.querySelectorAll('.courtyard'), side = 96 + archWidth + D.homeMihrab.gap;
+      var courts = content.querySelectorAll('.courtyard'), side = homeInset + archWidth + D.homeMihrab.gap;
       for (var i = 0; i < courts.length; i++) {
         var fullRow = large && /home-clock|home-quick/.test(courts[i].className);
-        courts[i].style.left = (fullRow || onRight ? 96 : side) + 'px';
-        courts[i].style.right = (fullRow || !onRight ? 96 : side) + 'px';
+        courts[i].style.left = (fullRow || onRight ? homeInset : side) + 'px';
+        courts[i].style.right = (fullRow || !onRight ? homeInset : side) + 'px';
       }
     }
     if (view === 'bar' && content) {

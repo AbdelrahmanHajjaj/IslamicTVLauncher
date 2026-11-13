@@ -243,7 +243,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.13_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.14_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -296,17 +296,25 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
-Version 0.2.10 was installed over 0.2.9 on 13 November 2026. All 101 installed
-app/service files match the verified candidate byte-for-byte. Node 0.10.25 passes
-80 current common checks and 30 adapter checks; WebKit 538.2 passes the same 80
-common checks. All 30 saved preferences, HDMI selection, complete startup state,
-boot and master volume/mute were preserved. The owner confirmed unchanged HDMI
-picture/sound with no error, and the physical All apps Up/header routes work.
-The current pre-upgrade volume choices were app audio 30% and TV master 50.
-Saving 110% through the new size picker preserves the original 30 preferences and
-adds only uiScale. Physical sizing and old-LG secure HTTPS checks remain pending.
-Live HDMI behind audible adhan remains unresolved. Media, fonts and notices are
-unchanged; browser/Luna/media mocks remain distinct from these hardware results.
+Version 0.2.13 was installed over 0.2.11 on 13 November 2026. All 101 installed
+app/service files match the verified candidate; Node 0.10.25 passes 88 current
+common checks and 30 adapter checks. All 31 saved preferences, HDMI selection,
+complete startup state, boot and master volume/mute were preserved. The owner
+confirms unchanged picture/sound without error. Earlier physical All apps
+Up/header routes, startup and quiet adhan volume/restoration checks remain valid.
+
+Shared sizing now offers 80–150% in 10% steps, with inline −/+ draft/save/cancel.
+The owner confirms inline cancellation, joined/readable Arabic at150%, complete
+sidebar and first/last settings rows. Enlarged Home moves the toolbar beside the
+clock and uses taller prayer cells with larger text at every size; the owner
+accepted its150% prototype. Interface size was restored to110 through the actual
+row, preserving all other preferences. A slight mihrab crop at110 was corrected
+in a bounded live trial; the owner confirms the complete outline. Source0.2.14
+persists that safe-margin correction; its installation is still pending.
+
+Old-LG secure HTTPS and live HDMI behind audible adhan remain unverified.
+Media/fonts/notices are unchanged. Browser simulations and Android emulator
+checks establish software geometry, not physical-TV picture/sound behavior.
 
 The source adds **Prayer & Qibla → Check online**, a manual AlAdhan comparison for
 all catalog cities and 19 named methods. The read-only view shows the requested

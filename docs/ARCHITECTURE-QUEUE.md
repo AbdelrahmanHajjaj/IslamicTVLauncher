@@ -92,200 +92,72 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are software-verified across consumers. LG 0.2.11 is installed with preferences/input/startup preserved; picture/sound and earlier All apps routes are physically accepted. A legacy viewport correction and watched sizing checks continue; live HDMI background remains unresolved. Android hardware remains open. |
+| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are software-verified across consumers. LG 0.2.13 is installed with preferences/input/startup preserved; picture/sound and earlier All apps routes are physically accepted. A final Home safe-margin correction and watched sizing checks continue; live HDMI background remains unresolved. Android hardware remains open. |
 
 ## Current cursor
 
-Home implementation checkpoint: the owner confirms the live 150% prototype is
-clear, toolbar/mihrab are separate and prayer names/times readable. The TV was
-returned to110 through its actual inline control as authorized; the read-only
-size110 snapshot independently confirms all31 original preferences unchanged; permanent app
-remains0.2.11 with temporary CSS trials. No new audio/power test. Source0.2.13
-changes are uncommitted across Android/LG/preview. Shared tokens now define
-Home prayer height128/name28/time36, header clock share0.42 and labelled control
-height152 (allows complete canonical Arabic labels over three lines), with cell
-inset10 for larger English 12-hour times. Passive prayer-to-caption gap is half
-Home gap, preserving readable app tiles. A measured full-width header puts the
-toolbar beside metadata and body below it. The prototype used144px controls; the
-source reserves8px more for full native/preview labels, without reducing fonts.
+Complete the watched LG Home/sizing correction. Installed 0.2.13 preserves all
+31 preferences, selected/current HDMI_1, complete startup state, boot and master
+volume/mute. Owner confirms unchanged picture/sound without error. Actual Node
+0.10.25 passes 88 common + 30 adapter checks; all 101 installed payloads match.
+The installed old-WebKit proof is still due after the final correction.
 
-Current checks: preview domain/editor/geometry tests pass (home-preview-tests-2),
-18-page build passes, and Arabic/English150 browser checks pass including Home
-variants (home-preview-browser-fast-2). LG ES5/service tests and enlarged Home
-geometry/text checks pass; full lg-0213-browser.log passes all16 cases plus the header/mihrab separation
-and larger prayer-text bounds in Home variants. An unused generated data field
-was removed afterwards; rebuild and rerun the focused Home check before packaging. Native first
-Home page/variant matrix passed, but a stronger width assertion caught English80
-text clipping at the original20px cell inset. Canonical inset10 is implemented: an intermediate12px inset still left a
-145px English time in a143px area (pages-3 raw code0). Final build/lint is in
-home-native-build-final-3.log; rerun the native page matrix English first with real text widths, complete labels and a settled Up-to-toolbar check.
-Do not count pages-2.log as pass (raw code0). A valid final run requires -1 and
-all16 progress cases. Larger prayer typography is Home-only; HDMI dock unchanged.
+Owner found the 110% Home mihrab slightly cropped. A bounded live trial keeps its
+size/fonts, fits the art and adjacent content column with half the shared panel
+gap (32px) as the screen edge, and shifts its bottom inside that margin. Actual
+DOM clearance is 32px; owner confirms the complete outline is now visible.
+Persisted LG-only fixed-canvas fix and aligned 0.2.14 versions are prepared.
+Local ES5/service and full8x2 browser matrix pass, including new safe-edge
+assertions. Do not repeat 0.2.13's
+update or install intermediate 0.2.12. Existing watched-update authorization
+covers this necessary final correction while the owner remains beside the TV.
 
-Owned headless emulator is BOOTED: session.json PID40404; fresh original-state
-backup is state/platform-core/ui-size/home-native/native-session.json and original-
-preferences.xml. It is prepared at1920x1080/160dpi. Use in-place APK updates;
-never rerun prepare-home-native.py over this backup. Restore/verify preferences,
-secure/display settings and known cache captures, then identity-check and close
-before yielding. The new test also saves home-header captures; include that exact
-name in bounded cleanup. Native windows/full UI passed in the prior range slice;
-this Home-only slice requires affected page/variant checks, not unrelated reruns.
+Shared Home work is committed in b6b49ba: prayer row height128/name28/time36,
+cell inset10, header clock share0.42 and labelled control height152. Large Home
+places toolbar beside metadata and body below measured header. Owner accepts the
+150% LG prototype's separation and prayer readability. Universal inline sizing
+80–150%/10%, save/cancel and progressive mihrab width were committed in 6545506;
+old-WebKit RTL viewport correction is bb727a7. No generic UI engine or new setting.
+Owner confirms inline cancel, Arabic150 readability/sidebar and first/last rows.
+Owner explicitly allowed restoring110 after choosing130; actual row restored110,
+independent snapshot proves all original31 preferences unchanged. Preserve110.
 
-Final Home package: lg-0213-candidate/tv.afnon.webos_0.2.13_all.ipk,
-18,658,554 bytes, SHA-256 b25c0b9706da1c1c1733728cf56d85c5b6c2ab577e0f64ec85c7cc5a1f90aee1.
-All101 payload files/metadata and53 unchanged media/font/notice files pass.
-Owner explicitly reconfirms readiness for the final watched0.2.13 update. A fresh
-before-snapshot is being captured; use the guarded in-place workflow and preserve
-its current state. Refresh candidate provenance after this source commit.
+Final native build/lint and all16 English/Arabic x80–150 page cases plus Home
+variants pass (home-native-build-final-3.log, home-native/pages-4.log raw -1).
+APK21,159,759 bytes. Both native typed preferences and secure/display settings
+were independently restored, all92 known captures removed from the emulator;
+identity-checked owned emulator is CLOSED. No rerun for this LG-only margin fix.
+Preview full8x2 matrix passes with inset12; final inset10 only widens cells,
+fresh18-page build and affected80/150 bilingual smoke pass.
+LG0.2.13 full browser/ES5 suite passes; final unused-field rebuild/Home check passes.
+Final generated token/catalog checks and scoped source review pass.
 
-Next: finish final native matrix, fresh preview full8x2 matrix at12-hour clock,
-LG final browser suite, token/catalog/Java geometry checks and final source review.
-Inspect actual native/browser captures (take header capture after focus settles).
-Then update owning docs/ledger, commit and prepare a fresh0.2.13 package. Verify
-all payloads/provenance, obtain fresh watched readiness only if the watcher has
-left, capture current TV state and update in place. The current inspector remains
-owned by v0211-inspector-owner.json. Actual final UI acceptance and closing that
-inspector are still required. Do not install the intermediate0.2.12 candidate.
+Verified0.2.14 local candidate:18,658,840 bytes, SHA-256
+574e23f649e68ccedfd7bc06973d5f5b0a83fc7e29bca53022a829cb90ef2db5.
+Archive/CLI package-info/all101 payloads/IDs/versions and53 unchanged media/font/
+notice files pass. Next: commit the verified fix and refresh source provenance.
+Take a fresh current-state backup and use guarded close/install-over/launch,
+compare all31 preferences/input/full startup/boot/master/mute, run installed
+101-file/Node88+30/WebKit88 proofs and obtain human final picture/sound and outline
+confirmation. Close only the identity-checked v0213 inspector before upgrading;
+close its replacement before yielding. No audio/power test belongs to sizing.
 
-Latest owner steering: at 150% Home the toolbar intersects the mihrab and space
-beside the clock is unused. Inspect and correct the actual Home geometry, retaining
-shared design language and native input routes. Owner also clarified that a taller
-prayer bar with larger base text means the prayer-time row on Home, not the compact
-HDMI dock. Increase its canonical row height/name/time typography across Android,
-LG and preview, so lower global sizes remain readable; no separate size setting.
-Do this as the next sequential Home slice after the verified legacy viewport fix.
-The owner chose 130% during experimentation and explicitly permits returning to
-110%; cancellation itself is confirmed working. Temporary 150% Arabic settings,
-joined text, complete sidebar and first/last-row focus are physically accepted.
-Keep 0.2.12's verified viewport candidate intact, but combine these Home changes
-into a fresh later package before another watched update rather than installing
-an intermediate candidate while the owner is reporting further Home refinements.
+Then continue manual LG secure-online/TLS acceptance and the separately announced
+20-second watched video-only HDMI probe. Online comparison is source-complete
+across native/LG/preview: manual bounded fixed HTTPS, six advisory differences,
+offline calculations remain schedule authority; no polling/accounts/backend.
+Live HDMI during audible adhan remains unresolved because audio releases the
+video decoder. A prior probe was not observed; do not infer success or choose a
+speculative backend. Quiet playback/volume restoration is already physically
+accepted. App audio30%, last observed master50/unmuted are current choices;
+never restore older snapshots or assume these values cannot have changed.
 
-Continue the watched LG sizing acceptance. Shared 80–150% sizing (10% steps,
-default 100), inline −/+ draft/save/cancel and the narrower Home mihrab are
-implemented across core, Android, LG and preview in 6545506. The owner reconfirmed
-universal product behavior: validation/range/step live in core; the 520px minimum
-mihrab width lives in shared design tokens; native renderers own flow and scrolling.
-No generic UI engine, separate bar/font setting or companion work is approved.
-
-All source/build tests pass: core JVM/JS plus 88 ES5 assertions (86,490 runtime
-bytes); Arabic/English x all eight sizes in Android pages, actual Android windows,
-preview and LG mocks; native full UI contract; expanded pure-Java geometry;
-preview domain/editor/calendar/text tests; token/catalog freshness; LG ES5/service/
-volume/online tests. Android final APK is 21,158,877 bytes, build/lint pass. Final
-raw native results are -1/pass and independent original preference comparisons
-pass after each matrix. The earlier range emulator session was restored/closed: 150 known captures
-saved/removed, original preference values/types and secure/display settings restored,
-serial offline, original AVD hashes unchanged. Evidence: ignored ui-size/range-native.
-
-LG 0.2.11 is installed after explicit watcher readiness. Fresh before/after snapshots
-prove all 31 preferences, HDMI_1/current input, complete startup state, boot and
-master volume/mute preserved. App audio is 30%, master 50/unmuted, size 110%.
-All 101 installed payloads match; actual Node 0.10.25 passes 88 common +30 adapter
-checks; WebKit 538.2 passes 88 common checks; HDMI bounds remain 1920x1080.
-Owner confirms unchanged picture/sound and no error. No test/audio-volume owner,
-new audio test, power test, uninstall, reset or alert cancellation occurred.
-
-Physical sizing found the Arabic sidebar cropped horizontally at 110%. Actual
-old WebKit placed its right edge at 2004px; a left-position-only trial did not help.
-Keeping the clipping viewport LTR and its page RTL corrected the edge to 1908px;
-owner confirms it is fully visible. The equivalent CSS trial remains active across
-redraws, without preference writes. Physical OK/Left/Right/Back inline edit/cancel is confirmed. The owner deliberately
-saved 130% afterwards and explicitly permits restoring 110%. A bounded 150% check
-then passed joined/readable Arabic, complete sidebar and first/last-row focus.
-The current size is 150% while investigating the owner's further Home feedback.
-
-Persisted viewport CSS and aligned 0.2.12 metadata are prepared. LG ES5/service
-checks pass; final browser matrix (ui-size/lg-0212-browser-3.log) passes all 16 sizes/languages
-and the enlarged Home variants. The complete matrix passes after its new centring check was changed from a
-visibility-waiting locator read to a synchronous DOM read: the page behind a
-silent banner is deliberately hidden. No production alert failure occurred and
-no geometry assertion was weakened. Local
-0.2.12 candidate: lg-0212-candidate/tv.afnon.webos_0.2.12_all.ipk, 18,657,852 bytes,
-SHA-256 ee44968da169ce1a5c753129f654aef918cdd2a0afd1f269a4a4c98bde116013.
-Archive/IDs/version/101 payloads and 53 unchanged media/font/notice files pass.
-Commit the verified viewport correction and refresh its package provenance. Keep
-this intermediate package intact; the owner's new Home refinements are the next
-sequential slice and will ship together in a fresh later candidate. Existing
-watcher/update authorization continues; do not repeat a generic permission flow.
-
-Owned hidden LG inspector: state/platform-core/v0211-inspector-owner.json; close
-only its identity-checked process before yielding. Afterwards verify installed
-110% sidebar, inline editing, 80/150% readability/focus/Home mihrab and restore 110%
-unless owner chooses otherwise. LG secure online/TLS and separate watched live-HDMI
-probe remain next; Android TV hardware acceptance still awaits hardware. No release,
-push, merge, detachment, firmware or unrelated project work.
-
-Historical hardware hold audit (2026-11-13): third consecutive continuation at this impasse
-after 93e370a's completed package preparation. Both preceding hold continuations
-made no product progress; this is not a verified process wait. Rechecked current
-cursor and worktree: only our ledger checkpoint changed; hardware acceptance
-remains. Candidate provenance and package hash were verified in the first hold audit.
-LG watcher deferral and unavailable Android TV still prevent the remaining gates;
-no independent queue item remained and the goal was marked blocked. The owner's
-subsequent watched-update readiness now permits LG work; acceptance is incomplete.
-
-Q09.5h's original 80/90/100/110% sizing is software-complete across core, LG, native
-Android and preview; the owner's new 80–150% +/- expansion is now in progress.
-The original default is 100, covering all existing app-owned screens/alerts/menus,
-unchanged video/background framing, bounded controls/focus and preserved settings.
-Native separate windows/dialogs/dream and preview layout variants are checked;
-both owned emulator and browser/server sessions are closed. Required physical
-acceptance remains open. Keep renderers native; no separate font/bar setting,
-generic rendering framework or companion work.
-
-Q09.5g manual online comparison is source-complete and software-verified across
-LG, native Android and preview: fixed HTTPS, bounded/cancellable requests, validated
-source identity, raw civil-day times (not tomorrow-Fajr display substitution), six
-advisory differences, retry and late-result focus guards. Calculated times remain
-the offline schedule source; no accounts, backend, polling or schedule replacement.
-Native's temporary prayer.online gap is removed. Old-LG secure TLS/UI and physical
-Android-TV acceptance remain unverified; watched LG checks are now authorized.
-
-Earlier TV deferral is superseded by today's explicit watched-update readiness.
-Run watched checks sequentially. The separate 20-second video-only probe still
-needs its own clearly announced observation step; no power cycle is pending.
-
-LG 0.2.10 is now installed in place. All 101 installed payload files match the
-candidate; actual Node 0.10.25 passes the current 80 common and 30 adapter checks,
-and WebKit 538.2 passes the same 80 common checks. A local run independently
-confirmed this proof's current 80-check count. All 30 saved preferences, HDMI_1,
-complete startup state, boot and master volume/mute survived unchanged. The owner
-confirmed normal picture/sound with no error. Physical UI acceptance is underway.
-
-Q09.5i volume is accepted: saved 15% produced actual 75→11→75, quiet playback,
-automatic stop and normal restoration. Owner subsequently confirmed changing app
-audio to 30%; they also changed TV volume to 75. Today's pre-upgrade snapshot shows
-app audio still 30% and master volume now 50; preserve today's current choices.
-Final snapshot: no pending test/volume owner/audio/overlay, input view, decoder=4,
-no error. Owned inspector and emulator are closed. Never restore older snapshots.
-
-Q09.5i live background is unresolved. CSS outer alpha is 0 and Settings is hidden,
-but startAudio unloads HDMI, leaving a blank video plane. A reversible 15-second
-video-only probe restored normally; owner did not observe its picture/sound. The
-20-second encodeURI variant is prepared but NOT RUN. Do not claim coexistence or
-add speculative audio backends before the native result is actually observed.
-No root/firmware, fake still image or permanent PC requirement.
-
-Q09.5e All apps rules are implemented across core/Android/LG/preview and software
-verified: Up from any first-row column reaches Back; horizontal movement stays in
-the circular Back/Prayer/Settings row, with one RTL translation. Physical LG
-acceptance passed on 0.2.10: owner confirmed Up from the second column reaches Back
-and Left/Right remains in the header. Home's existing navigation is accepted too.
-
-Q09.5h scales text and controls together, including the prayer bar, with the
-current size by default and a bounded range. LG source is verified in browser
-mocks and installed in 0.2.10. Native is verified on the owned emulator and preview in the
-actual browser. HDMI/video stays unscaled. No separate bar/font controls or
-generic renderer engine. Physical sizing acceptance remains open.
-
-Q00–Q08 and Q09.5's initial semantic UI/binding work are complete; see evidence and
-docs/UI-CONTRACT.md. Android physical acceptance awaits hardware around 2026-11-25;
-API 37 phone emulator checks do not close TV gates. Newer LG/Samsung/Sony remain
-unverified. Preview retains three documented low build-only deepmerge findings;
-core/LG audits are zero. Preserve notices and the APK budget. No release, merge,
-remote detachment or unrelated work; the overall goal remains incomplete at the
-hardware gate, with watched LG acceptance resumed as recorded above.
+All apps/Home routes and startup/power checks already have physical LG acceptance.
+Android TV hardware remains unavailable until around2026-11-25; emulator results
+do not close that gate. Newer LG/Samsung/Sony are unverified. Q00–Q08 complete;
+Q09/Q09.5 and the overall goal remain incomplete. The earlier blocked hardware
+hold was superseded by resumed watched LG work. No publication/push/PR/merge,
+repository detachment, firmware, companion or unrelated work is authorized here.
 
 ## Evidence and decisions
 
@@ -2835,3 +2707,45 @@ hardware gate, with watched LG acceptance resumed as recorded above.
 - Continue this Home slice sequentially, then build/test/package a fresh version
   for watched acceptance, restore110 unless owner chooses otherwise, and close
   the identity-checked inspector. Do not install0.2.12 as a needless intermediate.
+
+
+### Q09.5i shared Home layout and installed 0.2.13 (2026-11-13)
+
+- b6b49ba completes shared Home typography/header flow across Android/LG/preview.
+  Canonical prayer height128/name28/time36 and inset10 fit larger English12-hour
+  times; controls height152 keeps full Arabic labels over up to three lines.
+  Toolbar uses space beside clock, body begins below the measured header. Native
+  and preview preserve font sizes; renderer-specific flow stays outside the core.
+- PASS final native build/lint and page matrix (home-native-build-final-3.log,
+  home-native/pages-4.log): all16 cases, real text widths, complete labels,
+  five enlarged Home variants and settled Up-to-toolbar focus. Raw result -1.
+  Earlier pages-2/pages-3 raw0 exposed English clipping and are not passes.
+  APK21,159,759 bytes. Original typed prefs, secure/display state and92 owned
+  captures restored/removed; owned emulator identity checked and closed.
+- PASS preview tests/full8x2 browser matrix and18-page build; final inset10
+  widens cells after the passing12px matrix. PASS LG ES5/service/full browser
+  matrix plus final rebuild/focused Home variants after unused data removal.
+  Browser/native captures are simulations, not TV picture/sound evidence.
+- Verified0.2.13 candidate:18,658,554 bytes, SHA-256
+  b25c0b9706da1c1c1733728cf56d85c5b6c2ab577e0f64ec85c7cc5a1f90aee1.
+  All101 payloads/IDs/versions and53 retained media/font/notice files pass.
+  Installed over0.2.11 with explicit watcher readiness, fresh backup and guarded
+  close/install/launch. All31 prefs, current/selected HDMI_1, full startup record,
+  boot and master/mute unchanged. Node88+adapter30 and101 installed hashes pass.
+  Owner confirms normal picture/sound; no uninstall/reset/audio/power test.
+- Owner physically accepted150% prototype header/prayer readability and allowed
+  restore110. After permanent update, owner spotted slight mihrab crop at110;
+  actual right1910.4/bottom1076.4. Temporary art/content inset retained size and
+  fonts, achieved32px minimum margin and owner confirms full outline visible.
+  Persisting narrow LG fixed-canvas fix as0.2.14, with margin regression assertions.
+  Private0.2.13 snapshots/host logs and v0213-dom-mihrab-margin-trial results stay
+  ignored. Owned v0213 inspector remains open until identity-checked cleanup.
+
+- Final0.2.14 ES5/service suite and full8x2 bilingual browser matrix pass, including
+  fixed-canvas vertical and all-size horizontal mihrab safe-edge assertions.
+  Preview final inset10 affected80/150 bilingual checks pass; tokens/catalog check
+  pass. Scoped diff is limited to LG correction/tests/version metadata and owning
+  docs.0.2.14 candidate18,658,840 bytes, SHA-256
+  574e23f649e68ccedfd7bc06973d5f5b0a83fc7e29bca53022a829cb90ef2db5.
+  Exact archive/metadata/101 build payloads and53 retained media/font/notices pass.
+  Actual installation/human final check remains next; source commit pending.

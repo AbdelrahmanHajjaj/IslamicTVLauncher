@@ -942,6 +942,10 @@ const server = http.createServer((req, res) => {
         }
         return bad;
       }), [], 'narrowed mihrab keeps its text inside');
+      const artwork = await page.locator('.home .arch').boundingBox();
+      const safeEdge = size <= 110 ? 31.5 : 0;
+      assert.ok(artwork.x >= 31.5 && artwork.x + artwork.width <= 1920 - 31.5, 'Home mihrab retains horizontal TV-safe clearance');
+      if (size <= 110) assert.ok(artwork.y >= safeEdge && artwork.y + artwork.height <= 1080 - safeEdge, 'fixed Home mihrab retains vertical TV-safe clearance');
       const rememberedApp = page.locator('.home-apps .app-tile').nth(1);
       await rememberedApp.focus(); await page.keyboard.press('ArrowUp');
       assert.equal(await page.locator('.home-quick button:focus').count(), 1, 'Up reaches the visible top controls');
