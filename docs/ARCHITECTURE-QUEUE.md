@@ -92,28 +92,33 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are implemented and software-verified across their consumers. LG 0.2.10 is locally packaged and verified, not installed. Keep the TV unchanged until watched acceptance resumes. LG live HDMI background and physical All apps/sizing/online checks await a watcher; Android hardware remains open. |
+| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are software-verified across consumers. LG 0.2.10 is installed with preferences/input/startup preserved; picture/sound and All apps routes are physically accepted. Watched sizing/online checks continue; live HDMI background remains unresolved. Android hardware remains open. |
 
 ## Current cursor
 
-Next action requires hardware availability: Q09/Q09.5 watched LG upgrade from 0.2.9
-to the locally verified 0.2.10 candidate, or Android TV acceptance when that device
-returns. No independent implementation or package-preparation item remains. Do not
-install, launch, probe or change the LG while the owner's watcher deferral remains.
+Owner confirmed readiness for the watched LG update and picture/sound, remote and
+sizing checks on 2026-11-13. This supersedes the earlier LG watcher deferral.
+Q09/Q09.5 upgrade/state/picture/sound and physical All apps routes are now accepted.
+Before/after backups and installed-package/runtime verification are complete. Current
+screen: Arabic Display settings at saved 110%; owner readability/focus response is
+pending. Next: remaining sizing checks, manual online/TLS check, then separately
+announced live-HDMI probe if the watcher remains ready. Restore the starting 100%
+size after bounded checks unless the owner chooses another size. Android TV
+acceptance still awaits hardware. No independent implementation remains.
 The private candidate is state/platform-core/lg-0210-candidate/
 tv.afnon.webos_0.2.10_all.ipk; its manifest records every payload hash. Reconfirm the
 candidate hash and source freshness before any authorized upgrade, capture current
 preferences/input/startup then, and install over the existing app without uninstalling.
 Preparation does not close any hardware gate.
 
-Hardware hold audit (2026-11-13): third consecutive continuation at this impasse
+Historical hardware hold audit (2026-11-13): third consecutive continuation at this impasse
 after 93e370a's completed package preparation. Both preceding hold continuations
 made no product progress; this is not a verified process wait. Rechecked current
 cursor and worktree: only our ledger checkpoint changed; hardware acceptance
 remains. Candidate provenance and package hash were verified in the first hold audit.
 LG watcher deferral and unavailable Android TV still prevent the remaining gates;
-no independent queue item remains. Goal is blocked and incomplete. Do not repeat
-tests or create new scope to fill the wait; resume hardware work only when available.
+no independent queue item remained and the goal was marked blocked. The owner's
+subsequent watched-update readiness now permits LG work; acceptance is incomplete.
 
 Q09.5h source sizing is software-complete across core, LG, native Android and
 preview: 80/90/100/110%, default 100, all existing app-owned screens/alerts/menus,
@@ -129,20 +134,23 @@ source identity, raw civil-day times (not tomorrow-Fajr display substitution), s
 advisory differences, retry and late-result focus guards. Calculated times remain
 the offline schedule source; no accounts, backend, polling or schedule replacement.
 Native's temporary prayer.online gap is removed. Old-LG secure TLS/UI and physical
-Android-TV acceptance remain unverified; do not contact the LG while deferred.
+Android-TV acceptance remain unverified; watched LG checks are now authorized.
 
-Owner explicitly deferred further TV changes: Later; leave the TV unchanged. Do not
-run the prepared 20-second video-only probe, another update or audio/power/UI test
-until watcher readiness returns. Continue independent software work meanwhile.
+Earlier TV deferral is superseded by today's explicit watched-update readiness.
+Run watched checks sequentially. The separate 20-second video-only probe still
+needs its own clearly announced observation step; no power cycle is pending.
 
-Installed LG 0.2.9 is verified against the package (100 files), actual Node 0.10.25
-(72 common + 30 adapter assertions) and WebKit 538.2 (72 common assertions). Upgrade
-preserved all 30 preferences, HDMI_1 and full startup state. Owner confirmed normal
-picture/sound. Downward minute rounding is installed; Cairo fixture Maghrib is 17:00.
+LG 0.2.10 is now installed in place. All 101 installed payload files match the
+candidate; actual Node 0.10.25 passes the current 80 common and 30 adapter checks,
+and WebKit 538.2 passes the same 80 common checks. A local run independently
+confirmed this proof's current 80-check count. All 30 saved preferences, HDMI_1,
+complete startup state, boot and master volume/mute survived unchanged. The owner
+confirmed normal picture/sound with no error. Physical UI acceptance is underway.
 
 Q09.5i volume is accepted: saved 15% produced actual 75→11→75, quiet playback,
 automatic stop and normal restoration. Owner subsequently confirmed changing app
-audio to 30%; they also changed TV volume to 75. Preserve both current choices.
+audio to 30%; they also changed TV volume to 75. Today's pre-upgrade snapshot shows
+app audio still 30% and master volume now 50; preserve today's current choices.
 Final snapshot: no pending test/volume owner/audio/overlay, input view, decoder=4,
 no error. Owned inspector and emulator are closed. Never restore older snapshots.
 
@@ -156,11 +164,12 @@ No root/firmware, fake still image or permanent PC requirement.
 Q09.5e All apps rules are implemented across core/Android/LG/preview and software
 verified: Up from any first-row column reaches Back; horizontal movement stays in
 the circular Back/Prayer/Settings row, with one RTL translation. Physical LG
-acceptance remains open. Home's existing shared navigation is physically accepted.
+acceptance passed on 0.2.10: owner confirmed Up from the second column reaches Back
+and Left/Right remains in the header. Home's existing navigation is accepted too.
 
 Q09.5h scales text and controls together, including the prayer bar, with the
 current size by default and a bounded range. LG source is verified in browser
-mocks, not installed. Native is verified on the owned emulator and preview in the
+mocks and installed in 0.2.10. Native is verified on the owned emulator and preview in the
 actual browser. HDMI/video stays unscaled. No separate bar/font controls or
 generic renderer engine. Physical sizing acceptance remains open.
 
@@ -170,7 +179,7 @@ API 37 phone emulator checks do not close TV gates. Newer LG/Samsung/Sony remain
 unverified. Preview retains three documented low build-only deepmerge findings;
 core/LG audits are zero. Preserve notices and the APK budget. No release, merge,
 remote detachment or unrelated work; the overall goal remains incomplete at the
-hardware gate, with execution blocked as recorded above.
+hardware gate, with watched LG acceptance resumed as recorded above.
 
 ## Evidence and decisions
 
@@ -2648,3 +2657,42 @@ hardware gate, with execution blocked as recorded above.
   Android TV hardware is still unavailable. Do not run any of these while deferred.
   This turn made progress; the overall goal remains active and incomplete, with
   hardware gates open. No release, push, PR, merge, detachment or firmware action.
+
+
+### Q09/Q09.5 watched LG 0.2.10 upgrade (2026-11-13)
+
+- Owner explicitly confirmed readiness for the in-place update and watched picture/
+  sound, remote and sizing checks, superseding the earlier deferral. Captured new
+  before/after snapshots under ignored q095-0210-lg-*-service; no old snapshot was
+  restored. Current app audio was 30%, master volume 50 and unmuted, with input
+  HDMI_1 and startup enabled. These current values supersede the old master-75 note.
+- Candidate hash and all packed bytes were freshly verified; runtime/source inputs
+  are unchanged since package preparation. Used the existing guarded close/install/
+  launch workflow with an exclusive operation record. All three phases completed;
+  no uninstall, reset, pending-test creation or alert cancellation was performed.
+  A previous reminder was already displayed and expired; the next real prayer was
+  outside the bounded upgrade window. Operation logs stay private.
+- PASS: installed version 0.2.10, all 101 payload hashes, actual Node 0.10.25 shared
+  proof (80 current checks) and adapter proof (30), actual WebKit 538.2 shared proof
+  (80). The private harness initially assumed 86 common checks; running the current
+  proof locally independently established 80, then the exact-count host check passed.
+  The app/core/proof were not changed to accommodate that harness correction.
+- PASS: all original 30 saved preferences, selected/current HDMI_1, full startup
+  record, boot, master volume and mute compare unchanged across the in-place update.
+  No test or audio-volume owner remained. Owner confirmed picture/sound match with
+  no visible error. These are hardware results, not desktop screenshot claims.
+- PASS: owner physically tested Up from the second app column to Back, then Left/
+  Right among Back/Prayer/Settings without entering the grid. The new All apps input
+  route is accepted on installed 0.2.10; prior Home acceptance remains valid.
+- Set 110% using the actual four-choice UI picker. Read-back proves uiScale=110,
+  exactly the original 30 other preferences preserved, only the new uiScale key
+  added, unchanged input/startup and master volume still 50. Current TV screen is
+  Arabic Display settings; owner readability/first-last-row focus response is pending.
+  HDMI remains 1920x1080 with no alert overlay. No 80%/online/live-HDMI acceptance
+  has been inferred. Restore the original 100% after bounded sizing checks unless
+  the owner chooses otherwise. No new audible or power test was started.
+- Closed only the owned local inspector after verifying PID/start time/command;
+  its tool session is terminal and its local endpoint no longer responds. The TV
+  app remains running for the pending 110% observation. Earlier failed DOM setup
+  looked for Home while the prayer bar was closed; the real click path opened it
+  before positioning All apps. No source/runtime change was needed.

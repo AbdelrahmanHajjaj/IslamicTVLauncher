@@ -47,7 +47,7 @@ to the Prayer section. Unsaved appearance changes are discarded when leaving.
   Current source also adds one Interface size control (80/90/100/110%, default 100%)
   for screens, controls, alerts and the prayer bar. Video keeps its original size;
   the bar stays full width and attached to its chosen edge. This sizing change is
-  not installed or verified on the physical old LG yet.
+  installed in 0.2.10; physical sizing acceptance is in progress.
 - Home: mihrab/compact/hidden countdown, mihrab side, compact countdown top/bottom,
   all/current/next/current-and-next/hidden prayer times, the 20 existing color palettes
   and all eight bundled SVG patterns. Android's animated
@@ -69,8 +69,8 @@ LG model forbids editing.
 
 Version 0.2.10 adds shared All apps navigation: Up from every first-row column
 selects Back, and Left/Right cycles through Back, Prayer and Settings. Down returns
-to the app grid; lower rows keep their column where possible. Installed-device
-acceptance below still describes 0.2.9 until the next in-place upgrade is verified.
+to the app grid; lower rows keep their column where possible. The owner confirmed
+the first-row Up and horizontal header routes on installed 0.2.10.
 
 Home & appearance has a schematic layout preview and palette swatches, matching
 Android's draft/apply workflow. Theme, background, countdown, placement and prayer
@@ -281,14 +281,17 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
-Version 0.2.10 is prepared locally, not installed. It packages the shared All apps
-routes, manual online comparison and global Interface size control. All 101 packed
-app/service files match the tested build byte-for-byte; the 14 adhan and 12 spoken
-recordings, fonts and notices are unchanged from accepted 0.2.9. ES5/service tests
-and all eight Arabic/English size cases pass in browser mocks. The watched upgrade,
-physical navigation/sizing and old-LG secure HTTPS checks remain pending. Live HDMI
-behind audible adhan remains unresolved. The TV stays on 0.2.9 while checks are
-deferred; preserve the owner's current app audio 30% and TV master volume 75.
+Version 0.2.10 was installed over 0.2.9 on 13 November 2026. All 101 installed
+app/service files match the verified candidate byte-for-byte. Node 0.10.25 passes
+80 current common checks and 30 adapter checks; WebKit 538.2 passes the same 80
+common checks. All 30 saved preferences, HDMI selection, complete startup state,
+boot and master volume/mute were preserved. The owner confirmed unchanged HDMI
+picture/sound with no error, and the physical All apps Up/header routes work.
+The current pre-upgrade volume choices were app audio 30% and TV master 50.
+Saving 110% through the new size picker preserves the original 30 preferences and
+adds only uiScale. Physical sizing and old-LG secure HTTPS checks remain pending.
+Live HDMI behind audible adhan remains unresolved. Media, fonts and notices are
+unchanged; browser/Luna/media mocks remain distinct from these hardware results.
 
 The source adds **Prayer & Qibla → Check online**, a manual AlAdhan comparison for
 all catalog cities and 19 named methods. The read-only view shows the requested
@@ -301,9 +304,8 @@ manual retry without changing any setting, input, startup state or alert schedul
 Only requested checks contact api.aladhan.com over verified HTTPS, with a 12-second
 total timeout, 32 KiB body limit and no redirects or insecure fallback. No account,
 backend, polling, persistent online data or development PC is required.
-This feature has computer-only service/browser/HTTPS proof and is not installed
-on the LF6300. Secure TLS on its Node 0.10.25 host remains unverified. The installed
-0.2.9 acceptance below applies to the earlier volume/navigation/rounding package.
+This feature is installed in 0.2.10; secure TLS on its Node 0.10.25 host and the
+physical comparison screen remain unverified.
 
 Version 0.2.9 was installed over 0.2.8 on 12 November 2026. All 100 payload files
 match the verified package; Node 0.10.25 passes 72 shared and 30 adapter assertions,
