@@ -6,6 +6,9 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- LG keeps the scaling viewport independent of Arabic page direction, correcting
+  horizontal sidebar clipping on old WebKit while retaining joined RTL content.
+
 - LG 0.2.10 installs the shared All apps routes, online comparison and global sizing.
   The watched upgrade preserves existing settings/input/startup; picture/sound and
   the new All apps remote routes are confirmed. Physical sizing/online checks continue.

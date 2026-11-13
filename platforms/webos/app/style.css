@@ -8,7 +8,9 @@ body, button { font: {{font.size.body}} Alexandria, sans-serif; color: {{color.p
 #input-video { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
 #preview { display: none; position: absolute; width: 100%; height: 100%; background: {{color.lapis-950}}; text-align: center; padding-top: 410px; font-size: 64px; }
 #preview small { color: {{color.mist-400}}; font-size: 26px; }
-#screen { position: absolute; width: 100%; height: 100%; overflow: hidden; }
+#screen { position: absolute; width: 100%; height: 100%; overflow: hidden; direction: ltr; }
+/* Old WebKit shifts enlarged content when its clipping viewport is RTL. */
+[dir=rtl] #screen > *, [dir=rtl] #overlay > * { direction: rtl; }
 #screen[data-page=true] { background: {{color.lapis-900}}; }
 .page { position: absolute; width: 100%; height: 100%; padding: 56px 96px; background: {{color.lapis-900}}; }
 .online-check table { width: 100%; border-collapse: collapse; margin: 18px 0; }
@@ -212,7 +214,7 @@ button.editing .inline-step > strong { text-decoration: underline; }
 .clock-page { text-align: center; padding-top: 300px; }
 .clock-page [data-clock] { font-size: 180px; direction: ltr; }
 .clock-page button { margin-top: 100px; }
-#overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; overflow: hidden; }
+#overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; overflow: hidden; direction: ltr; }
 .alert-content { position: absolute; width: 100%; height: 100%; }
 .alert-box { pointer-events: auto; background: {{color.lapis-900}}; border: 3px solid {{color.gold-400}}; padding: 28px 44px; border-radius: 20px; }
 .alert-box h1 { font-size: 46px; font-weight: normal; margin: 0 0 14px; }

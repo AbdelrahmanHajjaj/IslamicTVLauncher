@@ -1,6 +1,6 @@
 {
   "id": "tv.afnon.webos",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "vendor": "Islamic TV Launcher",
   "type": "web",
   "main": "index.html",

@@ -870,10 +870,17 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.evaluate(() => window.mockMasterVolume), 50, 'native volume also restores after decoder failure');
     assert.deepEqual(errors, []);
     async function fits(selector) {
+      await page.locator(selector).first().waitFor({state:'visible'});
       assert.deepEqual(await page.evaluate(() => {
         const screen = document.getElementById('screen'), overlay = document.getElementById('overlay');
         return [document.documentElement.scrollWidth, document.documentElement.scrollHeight, screen.scrollLeft, screen.scrollTop, overlay.scrollLeft, overlay.scrollTop];
       }), [1920,1080,0,0,0,0], 'UI zoom must not enlarge or scroll the root viewport');
+      const centre = await page.evaluate(() => {
+        const panel = document.getElementById('screen').firstElementChild;
+        if (!panel || !panel.getClientRects().length) return null;
+        const box = panel.getBoundingClientRect(); return (box.left + box.right) / 2;
+      });
+      assert.ok(centre === null || Math.abs(centre - 960) < 0.5, 'scaled content stays horizontally centred in its physical viewport');
       const items = await page.locator(selector).all();
       assert.ok(items.length, 'expected visible controls: ' + selector);
       for (const item of items) {
