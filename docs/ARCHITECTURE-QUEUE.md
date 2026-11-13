@@ -96,21 +96,18 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Complete the watched LG Home/sizing correction. Installed 0.2.13 preserves all
-31 preferences, selected/current HDMI_1, complete startup state, boot and master
-volume/mute. Owner confirms unchanged picture/sound without error. Actual Node
-0.10.25 passes 88 common + 30 adapter checks; all 101 installed payloads match.
-The installed old-WebKit proof is still due after the final correction.
+Next: diagnose the owner's LG Home customization preview report: compact and
+hidden layouts render incorrectly with a background pattern; plain background
+reflects both layouts correctly. This new Home defect takes precedence over the
+manual online check. Preserve saved settings; use unsaved draft/cancel for trials.
 
-Owner found the 110% Home mihrab slightly cropped. A bounded live trial keeps its
-size/fonts, fits the art and adjacent content column with half the shared panel
-gap (32px) as the screen edge, and shifts its bottom inside that margin. Actual
-DOM clearance is 32px; owner confirms the complete outline is now visible.
-Persisted LG-only fixed-canvas fix and aligned 0.2.14 versions are prepared.
-Local ES5/service and full8x2 browser matrix pass, including new safe-edge
-assertions. Do not repeat 0.2.13's
-update or install intermediate 0.2.12. Existing watched-update authorization
-covers this necessary final correction while the owner remains beside the TV.
+Installed0.2.14 margin correction is now physically accepted: owner confirms the
+outline and prayer names/times fully visible at110. Independent live DOM proves
+left1288.006/top57.989/right1888.005/bottom1047.989, minimum clearance31.995px,
+no preference write. Picture/sound already accepted; all31 prefs/input/startup/
+boot/master/mute unchanged, Node88+adapter30/WebKit88/101 installed hashes pass.
+Source7759803 and candidate provenance agree. v0214 inspector remains owned/open
+for this next watched defect investigation; close it before yielding.
 
 Shared Home work is committed in b6b49ba: prayer row height128/name28/time36,
 cell inset10, header clock share0.42 and labelled control height152. Large Home
@@ -135,12 +132,8 @@ Final generated token/catalog checks and scoped source review pass.
 Verified0.2.14 local candidate:18,658,840 bytes, SHA-256
 574e23f649e68ccedfd7bc06973d5f5b0a83fc7e29bca53022a829cb90ef2db5.
 Archive/CLI package-info/all101 payloads/IDs/versions and53 unchanged media/font/
-notice files pass. Next: commit the verified fix and refresh source provenance.
-Take a fresh current-state backup and use guarded close/install-over/launch,
-compare all31 preferences/input/full startup/boot/master/mute, run installed
-101-file/Node88+30/WebKit88 proofs and obtain human final picture/sound and outline
-confirmation. Close only the identity-checked v0213 inspector before upgrading;
-close its replacement before yielding. No audio/power test belongs to sizing.
+notice files pass. Record final installed acceptance and diagnose the new
+appearance-preview defect before moving to the next hardware item.
 
 Then continue manual LG secure-online/TLS acceptance and the separately announced
 20-second watched video-only HDMI probe. Online comparison is source-complete
@@ -2749,3 +2742,54 @@ repository detachment, firmware, companion or unrelated work is authorized here.
   574e23f649e68ccedfd7bc06973d5f5b0a83fc7e29bca53022a829cb90ef2db5.
   Exact archive/metadata/101 build payloads and53 retained media/font/notices pass.
   Actual installation/human final check remains next; source commit pending.
+
+
+### Q09.5i installed 0.2.14 final margin correction (2026-11-13)
+
+- Source7759803, candidate provenance/hash and all101 archive files freshly checked.
+  Fresh before-snapshot captured installed0.2.13,31 prefs,HDMI_1 and startupenabled.
+  Closed only owned v0213 inspector after PID/birth/command checks. Guarded close,
+  install-over and launch completed once with exclusive operation record; no
+  uninstall/reset/test creation/cancellation. Current-state backup was not restored.
+- PASS independent after-snapshot: installed0.2.14, all31 prefs including110%,
+  selected/current HDMI_1, fullstartup, boot and master/mute unchanged. No test or
+  audio-volume owner. All101 installed payloads, actual Node88+adapter30 and
+  actual WebKit538.2 common88 pass; video stays1920x1080. Owner confirms normal
+  picture/sound with no error. No new audible/power test.
+- Final installed Home outline check pending. Two inspector attempts reported Home
+  absent around a read that did see Home; retained failed evidence, made no source
+  change or preference write. Asked owner to open/leave Home for human confirmation.
+  v0214 hidden inspector remains owned/open until the watched check is complete.
+
+- Owner confirms permanent0.2.14 Home outline/prayer text fully visible at110.
+  Read-only Home read-back independently measures31.995px minimum clearance and
+  final snapshot remains31 prefs,Home/mihrab/Arabic110. No new preference write.
+- New owner report: Home customization preview breaks for compact/hidden layouts
+  when a background pattern is selected; both reflect correctly with plain.
+  Reproduce through real draft controls, fix at the renderer seam and regress all
+  three layouts with/without patterns; defer online/HDMI until this is resolved.
+
+
+### Q09.5j appearance pattern/layout preview diagnosis (2026-11-13)
+
+- Owner clarifies: with Hidden/Compact and a background, the mihrab disappears but
+  the preview buttons retain the narrow mihrab arrangement; clearing the background
+  updates them. This is the settings miniature, not the saved Home layout.
+- Local isolated actual-control loop check-appearance-pattern.cjs covers all three
+  layouts with plain/eight-point background; SVG geometry is unchanged by pattern
+  and desktop captures are correct. It does not reproduce the reported TV paint
+  defect and is not an exact-symptom pass. Live old-WebKit getBBox also gives correct
+  wide compact/hidden controls (333.6 vs mihrab211.709); art/path changes as expected.
+  Need human paint confirmation because TV screenshot APIs cannot establish it.
+- Opened appearance and changed only unsaved draft through actual controls, now
+  Hidden + eight-point stars. No Apply/save. Asked owner whether this is the visible
+  failure. Actual saved preferences remain mihrab/plain. Initial diagnostic used
+  SVG.children unsupported on this host; corrected private probe to childNodes,
+  no shipped-source change. Inspector remains owned by v0214 record.
+
+- Human confirms exact live Hidden+pattern failure (baseline red): buttons retain
+  the narrow mihrab arrangement despite correct333.6px actual SVG bounds. Ranked
+  probes: reused pattern ID/cache, embedded external SVG image paint, whole-SVG
+  zoom repaint. First bounded probe changed only preview-pattern ID and its one
+  fill reference, no geometry or prefs. Owner result is pending; do not fix source
+  until this exact-symptom feedback loop identifies a working correction.
