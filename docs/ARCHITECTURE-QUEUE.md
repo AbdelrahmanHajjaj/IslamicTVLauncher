@@ -92,123 +92,66 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are software-verified across consumers. LG preference-preserving updates, Home sizing and remote routes are physically accepted. Online comparison and separate live-background acceptance continue; live HDMI background remains unresolved. Android hardware remains open. |
+| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are software-verified across consumers. LG preference-preserving updates, Home sizing/routes, online comparison and bounded HDMI adhan are accepted; Android hardware remains open; live HDMI background remains unresolved. Android hardware remains open. |
 
 ## Current cursor
 
-Persist and verify the proved HDMI adhan handoff as0.2.17. Two-second quiet
-coexistence test passed: owner heard adhan with moving HDMI, then normal sound
-restored. Native prepare modeTV/release succeeded, videoReady4/noerror, zero audio
-and exact source restored. Independent before2/after snapshots match all31 prefs,
-input/fullstartup/boot/master/mute, no test/audio owner. DOM currentTime0 is not
-physical audio evidence; owner confirmation is the evidence. No longer awaiting
-that readiness or test; do not rerun the completed private coexistence probe.
+Hardware gate: approved software work is complete. Next required acceptance is
+Android TV hardware, expected around2026-11-25. Do not mark the overall migration
+complete from emulator/desktop results, repeatedly recheck unavailable hardware,
+or invent new work. Full-length natural adhan completion, additional HDMI ports
+and newer LG/Samsung/Sony remain unverified. Any later audible/power check still
+requires the platform watcher workflow. Companion/pairing remains deferred.
 
-Production slice: only kindadhan on HDMI1–4 requests the documented video_only
-source before local audio; other audio/input modes retain their existing decoder
-release. Keep native gain preparation,450ms handoff, deadlines, replay/error/end/
-external-return cleanup and original normal source restoration. No new setting,
-core engine or support claim for unavailable modern TVs/other inputs. New browser
-regression fails before source change (lg-hdmi-adhan-red-fast); add explicit normal
-source/no-audio waits now that HDMI remains attached during adhan, and regress
-non-HDMI and other-audio paths. Affected LG media/UI suite passes (lg-0217-tests.log, lg-hdmi-adhan-green.log,
-lg-0217-browser-final.log): non-HDMI/spoken/radio, replay/end/error/native gain
-races/external-close and all16 size/language cases. Candidate0.2.17:18,661,548
-bytes, SHA-2567444077698b45ff8ec7b6a74b6708f7bcc14e31e8fe7f3637d8aa310b7add1a9.
-Exact103 payloads/metadata and52 retained media/font/notices pass. Commit source,
-refresh provenance, guarded current-state in-place update, actual hashes/runtime
-and installed mihrab/transparency with bounded quiet audio. No new readiness is
-needed for already authorized reversible preparation; verify watcher presence
-before the final audible check.
+Installed old-LG0.2.17 is the current verified build, sourcef49a67d. It keeps
+HDMI video_only during adhan, suppressing programme audio while local adhan plays;
+only the central mihrab has a background. Other audio/input modes retain their
+existing decoder release. Original volume ownership,450ms handoff, replay/end/
+error/suspend/external-return handling remain unchanged. No new setting/core UI
+engine, dependency or global TV configuration.
 
-Owned coexist inspector process exited ECONNRESET after the completed trial; no
-other process stopped. Optional in-memory probe-reference cleanup could not connect,
-but independent snapshot/source/audio restoration is already proven. In-place app
-restart discards inert references; no running probe/audio/timer/volume owner.
-Capture fresh current state and watcher availability as needed for final install;
-close only new owned diagnostics before yielding. Android TV gate remains open.
+Owner accepted moving picture + quiet adhan + normal restoration in the bounded
+coexistence trial. The initial installed2s-from-play diagnostic was too short to
+confirm audibility; do not call it a production playback failure. Owner then ran
+the actual normal12-second Test adhan and reports everything worked fine. Keep
+the existing product test/playback durations; no recording or startup workaround.
+Actual installed DOM showed videoReady4/noerror, video_only, outer alpha0, hidden
+originating page and mihrab. Final normal source/visibility, no audio/overlay and
+independent after12 state read-back prove restoration.
 
-Installed0.2.16 online correction is fully accepted: actual verified network returns
-six validated Cairo/Egyptian13-11-2026 references, differences[1,0,-1,2,1,0]. Owner
-confirms all six rows readable and physical Back focus returns to Check online.
-Picture/sound normal, final independent snapshot confirms all31 prefs, selected/
-current HDMI_1, fullstartup, boot and master/mute unchanged; no test/audio owner.
-No saved calculation/reminder replacement. Current UI is Settings after Back.
+All31 preferences, selected/current HDMI_1, complete startup, boot and master/mute
+match the fresh before0.2.17 snapshot. Current saved uiScale110/app volume30 remain
+owner choices; never overwrite newer choices with an old snapshot. No test or
+audio-volume owner remains. Own diagnostic record removed; owned0.2.17 inspector
+identity-checked and CLOSED. Earlier inspectors/emulator are closed; no active
+browser/helper/test jobs. TV left on its current Settings screen/normal HDMI.
 
-Source3552619 bundles verified public USERTrustRSA root only for this fixed-host
-request, retaining certificate/hostname/body checks,12s deadline and cancellation.
-Old service was CERT_UNTRUSTED; clock/modern server chain valid, CA-only actual-host
-trial isolated missing trust. No system trust-store/firmware or insecure fallback.
-Verified candidate18,661,446 bytes, SHA-256
-290674f69d11d9c67ab48e651b6a16a2cddd8ed287e8b1cd8985ad4ee863b435.
-All103 archive files/IDs/versions/provenance and52 retained media/font/notices pass;
-app attribution intentionally extends prior notice, plus public CA/source notice.
+Verified0.2.17 candidate18,661,548 bytes, SHA-256
+7444077698b45ff8ec7b6a74b6708f7bcc14e31e8fe7f3637d8aa310b7add1a9.
+All103 archive/installed bytes, IDs/versions/provenance and52 retained media/font/
+notices pass. App attribution retains the new public-CA credit. Actual Node0.10.25
+common88+adapter30 and WebKit538.2 common88 pass; HDMI bounds1920x1080.
+ES5/service/volume/online and focused HDMI regression pass. Final full browser
+lg-0217-browser-final.log passes all16 sizes/languages, normal-source/no-audio
+restoration, non-HDMI/spoken/radio, replay/end/error/volume races/manual override/
+suspend/external-close and Home variants. The earlier full-run failure was an
+obsolete trace boundary counting the newly intentional startup; completion still
+asserts no HDMI restart after external close. No production lifecycle fix hidden.
 
-Guarded fresh0.2.15 backup, owned v0215 inspector closed, close/install-over/launch
-all succeed. All31 prefs, current/selected HDMI_1, full startup, boot and master/
-mute compare unchanged. No test/audio owner. All103 installed hashes, actual
-Node88+adapter30 and WebKit538.2 common88 pass; video stays1920x1080. Owned v0216 inspector is now identity-checked and closed; reopen only a new
-owned session for the approved next test.
-ES5/service/final build and affected bilingual110 online UI checks pass; full
-browser matrix passed0.2.15 with unchanged app renderer. New CA test is red before
-fix and green after. No native/website retest for this service-only change.
+Online0.2.16 remains physically accepted: real verified HTTPS gives six advisory
+Cairo/Egyptian reference rows, readable table and correct Back focus; calculations
+and reminders stay offline. Fixed-host public USERTrustRSA root/provenance is
+bundled with verification retained. Earlier0.2.14 Home safe margin and0.2.15 pattern
+miniature redraw fixes are installed/accepted, as are inline80–150%/10% sizing,
+Arabic150 settings/readability, Home150 header/prayer typography, shared remote
+routes, startup/power and quiet native-volume restoration.
 
-Next: record/commit completed online acceptance and handle pending video-only
-readiness. Keep current v0216 inspector owned; close it before yielding.
-
-Installed 0.2.15 (source6cdca6f) is physically accepted: picture/sound match, and
-Compact/Hidden previews remain complete after remote control/background changes.
-CSS draws the pattern behind SVG controls on every redraw; no SVG image paint
-server, pattern-ID counter, geometry change or new dependency. Actual WebKit shows
-all three552px app tiles inside the miniature; human confirms actual painting.
-
-0.2.15 was installed over0.2.14 after fresh current-state backup. All31 preferences,
-selected/current HDMI_1, full startup, boot and master/mute compare unchanged both
-after upgrade and after unsaved trial cancellation. No test/audio owner. Actual
-Node0.10.25 passes88+adapter30, WebKit538.2 passes88, all101 installed hashes match;
-video remains1920x1080. Final UI is saved Home. No Apply/save during trials.
-Historical v0215/v0214 inspectors are closed; the current v0216 inspector is
-also closed as recorded above.
-
-Verified0.2.15 candidate18,658,918 bytes, SHA-256
-f4a13747a5da01a425ca5e57747716d77cef87d005f5c4364df9c5822a7e61b8.
-All101 archive files/IDs/versions and53 retained media/font/notices pass; provenance
-matches source6cdca6f. ES5/service/full8x2 browser and targeted bilingual110
-plain/pattern x3layouts checks pass. Regression fails old SVG paint-server path.
-Actual TV painting uses the human feedback loop, not desktop geometry as proof.
-
-Earlier installed0.2.14 Home margin fix remains accepted: full outline/prayer text
-at110, actual31.995px clearance, normal picture/sound and preserved settings.
-Owner photo clarified preview clipping, ID-only trial failed, CSS trial worked;
-owner corrected initial no after another control had replaced temporary styling.
-Permanent installed redraw checks now pass. Intermediate0.2.12 was never installed.
-
-Shared inline sizing80–150%/10% and narrower mihrab are6545506; RTL clipping viewport
-fix isbb727a7; shared taller Home prayer cells/header layout isb6b49ba. Universal
-contract/range/step remain in core, dimensions in tokens, rendering native.
-Physical LG inline edit/cancel, Arabic150 sidebar/first-last rows, Home150 header
-separation and larger prayer text pass. Owner explicitly allowed return110 after
-choosing130; real row restored110 with all original31 prefs unchanged.
-Native build/lint + all16 English/Arabic x80–150 page cases/Home variants pass
-(home-native-build-final-3, home-native/pages-4 raw-1), APK21,159,759 bytes.
-Owned emulator prefs/secure/display restored,92 captures removed, identity checked
-and CLOSED. Preview full8x2 passes with inset12; final inset10 widens cells, fresh
-18-page build and affected80/150 bilingual smoke pass. Tokens/catalog checks pass.
-No repeat native/preview test for this LG-only preview paint correction.
-
-Then resume manual LG secure-online/TLS acceptance and separately announced
-20-second watched video-only HDMI probe. Online comparison is software-complete
-across native/LG/website: bounded manual HTTPS, six advisory differences, offline
-calculations remain schedule authority. No polling/accounts/backend. Audible adhan
-still releases HDMI decoder; prior video probe was not observed. No coexistence
-claim or speculative backend. Quiet playback/volume restoration, startup/power
-and All apps/Home routes are already physically accepted. Last known app30/master50
-unmuted is evidence, not permission to overwrite a newer owner setting.
-
-Q00–Q08 complete; Q09/Q09.5 and overall goal remain incomplete. Android TV hardware
-awaits around2026-11-25; emulator results do not close that gate. Newer LG/Samsung/
-Sony unverified. No publication/push/PR/merge/detachment, firmware, companion or
-unrelated work. Resume this cursor only, not historical pending notes below.
+Shared architecture/contracts remain in the core/tokens, with native renderers and
+LG media handling in its adapter. Native build/lint/all16 page cases/Home variants
+passed previously, APK21,159,759 bytes; emulator preferences/secure/display restored
+and closed. Preview matrix/build and token/catalog checks passed. No native/site
+rerun for the later LG-only slices. Q00–Q08 complete; Q09/Q09.5 stay hardware-gated
+on Android. No push/PR/merge/release/detachment, firmware or companion work.
 
 ## Evidence and decisions
 
@@ -3069,3 +3012,50 @@ unrelated work. Resume this cursor only, not historical pending notes below.
   unchanged. Public CA/source notice retained; attribution extension preserved.
   Source review complete; no dependency/core/native/preview changes. Commit and
   refresh provenance before authorized preference-preserving watched update.
+
+- Installed0.2.17 in place after fresh snapshot;103 hashes/Node88+adapter30/
+  WebKit88 pass and all31 prefs/input/startup/boot/master/mute preserved. Owner
+  confirms picture/sound and Ready for final bounded installed check.
+- Actual production test showed mihrab, videoReady4/noerror, video_only, alpha0
+  outside and hidden originating page. Instrumented audio.play call was capped
+  at2s and Dismiss returned test-row focus, original source/visibility, no audio.
+  Owner did NOT hear adhan before dismissal, saw volume OSD; do not claim installed
+  audio/visual acceptance. Independent after/final state proves native volume,
+  prefs/input/startup/boot/mute unchanged and no test/audio-volume owner.
+- Diagnose whether short cap/selected Fajr recording startup or concurrent decoder
+  caused no audible result before any source change. Private alqatami coexistence
+  passed physically; production Test alerts defaults Fajr/chebae_fajr. A normal
+  bounded12s test may be needed with fresh watcher readiness. Current .17 inspector
+  remains owned/open; close it before yielding. Do not rerun previous exclusive op.
+
+- Owner then manually ran the actual standard12-second Test adhan and reports
+  everything worked fine. The2s instrumentation did not establish a production
+  playback defect; its shortened trial ended too early to confirm audibility.
+  Keep the existing12s product test and playback implementation. Do not alter
+  recordings, decoder code or add startup workarounds based on the truncated test.
+  Final normal-input/audio/overlay/native-volume read-back and owning-doc cleanup
+  remain before closing the diagnostics session and committing evidence.
+
+
+### Q09.5i installed 0.2.17 final acceptance and cleanup (2026-11-13)
+
+- Sourcef49a67d/candidate provenance match. Fresh0.2.16 before-state and guarded
+  close/install-over/launch succeed once; no uninstall/reset. Owner confirms normal
+  picture/sound and Ready for final installed quiet check. All103 installed hashes,
+  actual Node88+adapter30 and WebKit538.2 common88 pass; HDMI1920x1080.
+- Actual installed adhan showed central frame, hidden Settings, outer alpha0,
+  video_only/ready4/noerror. The artificial2s play-call cap dismissed before owner
+  heard adhan. Owner then manually ran unchanged standard12s Test adhan: everything
+  worked fine. Thus retain product durations/decoder code; do not fabricate a
+  playback defect or alter media based on the truncated diagnostic.
+- Final actual source ext://hdmi:1, normal service/webos-external, ready4/noerror,
+  no audio/overlay and visible original page. Removed only inert own test record.
+  Independent q095-0217-lg-after12 snapshot matches all31 prefs, selected/current
+  input, fullstartup, boot and master/mute against fresh pre-update state. No test/
+  volume owner; uiScale110/app30 preserved. Normal12s completion/restoration is
+  owner-confirmed; full-length natural completion is not inferred.
+- Closed only owned v0217 inspector after PID/birth/command check; earlier coexist
+  process had exited and no unrelated process was stopped. No running browser,
+  emulator, audio/probe or background tool job remains. TV unchanged on current
+  Settings/normal input. Remaining hardware gate is Android TV and the explicitly
+  unverified broader-device/full-length paths, not additional speculative code.

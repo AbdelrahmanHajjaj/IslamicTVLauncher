@@ -121,7 +121,7 @@ is conditional on the TV still having the level applied by that record.
 Version 0.2.9 removes the adhan screen's outer dim layer and hides its
 originating page while the central mihrab is visible. Dismissal restores the page
 and its focus. That version released the input decoder during local audio.
-Source0.2.17 adds the HDMI video-only handoff described below. Silent banners are unchanged.
+Version0.2.17 adds the HDMI video-only handoff described below. Silent banners are unchanged.
 
 Scheduled alerts are **off by default**; upgrades preserve your saved choice. Turn them on in Adhan & reminders
 after checking the timetable and the audible test. They use a separate persistent
@@ -296,7 +296,7 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
-Version 0.2.16 was installed over 0.2.15 on 13 November 2026. All 103 installed
+Version 0.2.17 was installed over 0.2.16 on 13 November 2026. All 103 installed
 app/service files match the verified candidate; Node 0.10.25 passes 88 current
 common checks and 30 adapter checks; WebKit 538.2 passes the same 88 checks.
 All 31 saved preferences, HDMI selection,
@@ -326,7 +326,8 @@ HTTPS now returns six validated Cairo/Egyptian/Standard rows for13 November2026,
 with differences[1,0,-1,2,1,0] minutes. Saved calculations/reminders remain unchanged.
 Certificate/hostname checks, timeouts and response validation remain enabled; the
 TV's system trust store and firmware are unchanged. The owner confirms all six rows readable and physical Back focus correct.
-Final state remains unchanged; live HDMI during audible adhan remains unresolved.
+Final state remains unchanged. Version0.2.17 adds the HDMI adhan path validated
+below.
 
 Media/fonts and prior notices are retained; the attribution notice adds the
 public-CA credit and a source notice accompanies the new certificate. Browser simulations and Android emulator
@@ -356,9 +357,9 @@ The owner confirmed quiet playback, automatic stop and normal sound restoration.
 
 The adhan's outer CSS is transparent and Settings is hidden, but the owner did
 not see a transparent live background: local MP3 playback still unloads HDMI.
-CSS transparency alone does not satisfy that visual requirement. Live HDMI during
-adhan is not claimed. A bounded video-only input probe restored normally, but its
-picture/sound result was not observed; it establishes no coexistence capability.
+CSS transparency alone did not satisfy that0.2.9 requirement. Later watched
+video-only/coexistence tests and0.2.17 address HDMI playback as recorded below;
+this older unobserved probe did not establish that capability.
 
 Version 0.2.8 was installed over 0.2.7 on the LF6300 on 12 November 2026. All 100
 installed payload files match the reviewed package. All 30 preferences, Arabic,
@@ -569,7 +570,7 @@ still required before changing the production decoder handoff.
 
 ## HDMI picture during adhan
 
-Source0.2.17 requests the documented video-only external HDMI source during adhan,
+Version0.2.17 requests the documented video-only external HDMI source during adhan,
 keeping the decoder's picture while suppressing programme audio. The call screen
 keeps only its central mihrab opaque; the originating page is hidden. Existing
 native-volume preparation and Stop/Replay/Dismiss/end/error/suspend/external-return
@@ -579,6 +580,11 @@ release. No preference or global TV configuration is added.
 
 The owner accepted a bounded actual-host coexistence trial on HDMI_1: quiet adhan,
 moving picture, automatic stop and normal sound/volume restoration. The installed
-0.2.17 mihrab/background test is still pending. Browser mocks check source types,
+0.2.17 standard12-second Test adhan is owner-confirmed working normally, including
+return to normal input/sound. A shortened2s diagnostic had ended before audibility
+was confirmed; it did not establish a playback defect. Final DOM/state read-back
+shows normal source, no audio/overlay/volume owner and all31 preferences, startup
+and master/mute unchanged. Browser mocks check source types,
 normal-source restoration and lifecycle; they cannot establish actual audio/video.
-Other HDMI ports and newer LG hardware remain unverified.
+Full-length natural adhan completion, other HDMI ports and newer LG hardware
+remain unverified. The physical evidence above covers the normal12s test on HDMI_1.
