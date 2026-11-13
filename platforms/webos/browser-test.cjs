@@ -91,11 +91,17 @@ const server = http.createServer((req, res) => {
         };
       };
     });
+    async function inputRestored() {
+      await page.waitForFunction(() => {
+        const source = document.querySelector('#input-video source');
+        return source && !source.type.includes('mediaOption=') && !document.querySelector('audio');
+      });
+    }
     const errors = []; page.on('pageerror', e => errors.push(e.message));
     await page.goto('http://127.0.0.1:' + server.address().port);
     assert.match(await page.title(), /^Islamic TV Launcher/);
     await page.evaluate(() => document.fonts.ready);
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     await page.evaluate(() => { window.originalVideo = document.getElementById('input-video'); });
     // Magic Remote OK becomes a click while its pointer is visible.
     await page.mouse.click(960, 540);
@@ -487,7 +493,7 @@ const server = http.createServer((req, res) => {
     }
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('button').count(), 0, 'Back dismisses bar without closing app');
-    await page.reload(); await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.reload(); await inputRestored();
     await page.keyboard.press('Enter');
     assert.match(await page.locator('.bar').getAttribute('aria-label'), /HDMI 2.*Giza/);
     await page.locator('[data-action=input]').click();
@@ -557,7 +563,7 @@ const server = http.createServer((req, res) => {
     const voiceScroll = await page.locator('.voice-list').evaluate(el => el.scrollTop);
     assert.ok(voiceScroll > 0, 'last voice is reachable by scrolling');
     await page.evaluate(() => document.querySelector('audio').dispatchEvent(new Event('ended')));
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     assert.equal(await page.locator('.voice-list').evaluate(el => el.scrollTop), voiceScroll, 'preview completion preserves list position');
     await page.screenshot({path: path.join(shots, 'voices-en.png')});
     await page.keyboard.press('Escape');
@@ -586,7 +592,10 @@ const server = http.createServer((req, res) => {
     await page.locator('[data-action=test-adhan]').click();
     await page.waitForFunction(() => document.querySelector('audio') && document.querySelector('audio').getAttribute('src'));
     assert.match(await page.locator('audio').getAttribute('src'), /chebae_fajr\.mp3$/);
-    assert.equal(await page.locator('#input-video source').count(), 0, 'HDMI decoder released before MP3');
+    assert.equal(await page.locator('#input-video source').count(), 1, 'adhan retains HDMI while audio plays');
+    assert.equal(await page.locator('#input-video source').getAttribute('src'), 'ext://hdmi:2', 'adhan retains the selected HDMI picture');
+    assert.deepEqual(await page.locator('#input-video source').evaluate(el => JSON.parse(decodeURI(el.type.split(';mediaOption=')[1]))),
+      {option: {mediaFormat: {type: 'video_only'}}}, 'adhan suppresses programme audio while keeping HDMI video');
     await page.screenshot({path: path.join(shots, 'adhan-test-en.png')});
     assert.equal(await page.locator('.call-frame').count(), 1, 'adhan uses the Android mihrab layout');
     assert.equal(await page.locator('#overlay').evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)', 'only the adhan mihrab has a background');
@@ -598,7 +607,7 @@ const server = http.createServer((req, res) => {
     await page.locator('[data-action=toggle-adhan]').click();
     await page.waitForFunction(() => document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
     await page.keyboard.press('Escape');
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     assert.equal(await page.locator(':focus').getAttribute('data-action'), 'test-adhan', 'adhan returns to the original test row');
     assert.equal(await page.locator('#screen').evaluate(el => getComputedStyle(el).visibility), 'visible', 'dismissing adhan restores the originating page');
     assert.equal(await page.locator('audio').count(), 0, 'audio source removed before input returns');
@@ -606,9 +615,10 @@ const server = http.createServer((req, res) => {
     await tests();
     await page.locator('[data-action=test-spoken]').click();
     await page.waitForFunction(() => document.querySelector('audio') && document.querySelector('audio').getAttribute('src'));
+    assert.equal(await page.locator('#input-video source').count(), 0, 'spoken playback retains the existing decoder handoff');
     assert.match(await page.locator('audio').getAttribute('src'), /before_fajr\.mp3$/);
     await page.evaluate(() => document.querySelector('audio').dispatchEvent(new Event('ended')));
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     await tests();
     await page.locator('[data-action=test-adhan]').click();
     await page.waitForFunction(() => document.querySelector('audio') && document.querySelector('audio').getAttribute('src'));
@@ -616,8 +626,24 @@ const server = http.createServer((req, res) => {
       const audio = document.querySelector('audio');
       Object.defineProperty(audio, 'error', {value: {code: 4}}); audio.dispatchEvent(new Event('error'));
     });
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     assert.equal(await page.locator('audio').count(), 0, 'media failure releases decoder and restores input');
+    const hdmiFixture = await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')));
+    for (const input of ['DTV', 'AV_1']) {
+      await page.evaluate(input => {
+        const state = JSON.parse(localStorage.getItem('fixture')); state.input = input;
+        localStorage.setItem('fixture', JSON.stringify(state));
+      }, input);
+      await page.reload(); await inputRestored(); await tests();
+      await page.locator('[data-action=test-adhan]').click();
+      await page.waitForFunction(() => document.querySelector('audio')?.getAttribute('src'));
+      assert.equal(await page.locator('#input-video source').count(), 0, input + ' keeps the existing audio decoder handoff');
+      await page.evaluate(() => document.querySelector('audio').dispatchEvent(new Event('ended')));
+      await inputRestored();
+      assert.equal(await page.locator('#input-video source').getAttribute('type'), await page.evaluate(input => window.Afnon.input(input).type, input));
+    }
+    await page.evaluate(state => localStorage.setItem('fixture', JSON.stringify(state)), hdmiFixture);
+    await page.reload(); await inputRestored(); await tests();
     await tests();
     await page.locator('[data-action=section][data-value=appearance]').click();
     await page.waitForSelector('#notice', {state: 'hidden'});
@@ -685,11 +711,12 @@ const server = http.createServer((req, res) => {
       const b = await button.boundingBox(); assert.ok(b.x >= 0 && b.y >= 0 && b.x + b.width <= 1920 && b.y + b.height <= 1080, 'compact Home controls fit');
     }
     await page.locator('[data-action=radio]').click(); await page.locator('[data-action=radio-play]').click();
+    assert.equal(await page.locator('#input-video source').count(), 0, 'radio retains the existing decoder handoff');
     await page.waitForFunction(() => document.querySelector('audio') && document.querySelector('audio').getAttribute('src'));
     assert.match(await page.locator('audio').getAttribute('src'), /^https:\/\//, 'radio uses the shared station URL');
-    await page.locator('[data-action=input]').click(); await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.locator('[data-action=input]').click(); await inputRestored();
     assert.equal(await page.locator('audio').count(), 0);
-    await page.reload(); await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.reload(); await inputRestored();
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')).prefs);
     assert.equal(saved.offsets[0], 2); assert.equal(saved.bells[0], false); assert.equal(saved.theme, 'forest');
     assert.equal(saved.automatic, false, 'test buttons do not enable real alarms');
@@ -704,7 +731,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#screen').evaluate(el => getComputedStyle(el).visibility), 'hidden', 'Arabic adhan hides the originating page');
     await page.screenshot({path: path.join(shots, 'adhan-test-ar.png')});
     await page.keyboard.press('Escape');
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     assert.equal(await page.locator(':focus').getAttribute('data-action'), 'test-adhan');
     await page.locator('[data-action=section][data-value=appearance]').click();
     await carousel('theme').focus();
@@ -726,7 +753,7 @@ const server = http.createServer((req, res) => {
             Object.assign(fixture.prefs, {lang, homeLayout: layout, homeBar: position});
             localStorage.setItem('fixture', JSON.stringify(fixture));
           }, {lang, layout, position});
-          await page.reload(); await page.waitForSelector('#input-video source', {state: 'attached'});
+          await page.reload(); await inputRestored();
           await page.keyboard.press('Enter'); await page.locator('[data-action=home]').click();
           for (const label of await page.locator('.quick-caption').all()) {
             assert.ok(await label.isVisible(), 'quick labels stay visible without focus');
@@ -764,6 +791,8 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.evaluate(() => window.closeCount), 0, 'scheduled adhan in foreground preserves Settings');
     for (const mode of ['adhan', 'banner']) {
       await scheduled(mode, true);
+      if (mode === 'adhan') assert.match(await page.locator('#input-video source').getAttribute('type'), /mediaOption=/, 'background adhan also retains HDMI video');
+      await page.evaluate(() => { window.mediaCalls = []; });
       if (mode === 'adhan') {
         await page.waitForSelector('audio', {state: 'attached'});
         await page.evaluate(() => document.querySelector('audio').dispatchEvent(new Event('ended')));
@@ -785,7 +814,7 @@ const server = http.createServer((req, res) => {
       const state = JSON.parse(localStorage.getItem('fixture')); state.expiredAlert = true;
       localStorage.setItem('fixture', JSON.stringify(state));
     });
-    await page.reload(); await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.reload(); await inputRestored();
     await tests();
     await page.locator('[data-action=test-adhan]').click();
     await page.waitForSelector('#overlay button');
@@ -796,7 +825,7 @@ const server = http.createServer((req, res) => {
       const state = JSON.parse(localStorage.getItem('fixture')); state.prefs.volume = 15;
       localStorage.setItem('fixture', JSON.stringify(state));
     });
-    await page.reload(); await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.reload(); await inputRestored();
     await page.evaluate(() => { window.legacyVolume = true; window.mockMasterVolume = 50; window.mediaCalls = []; });
     await tests(); await page.locator('[data-action=test-adhan]').click();
     await page.waitForFunction(() => window.mediaCalls.some(c => c.op === 'play' && c.tag === 'AUDIO'));
@@ -812,7 +841,7 @@ const server = http.createServer((req, res) => {
     assert.equal(new Set(owners).size, owners.length, 'each replay has a distinct volume owner');
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => window.mockMasterVolume === 50);
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     await page.evaluate(() => { window.mediaCalls = []; });
     await tests(); await page.locator('[data-action=test-adhan]').click();
     await page.waitForFunction(() => window.mockMasterVolume === 7);
@@ -827,10 +856,10 @@ const server = http.createServer((req, res) => {
     await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => window.mockMasterVolume === 50);
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     await page.evaluate(() => { window.failVolume = true; window.mediaCalls = []; });
     await tests(); await page.locator('[data-action=test-adhan]').click();
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     assert.equal(await page.evaluate(() => window.mediaCalls.filter(c => c.op === 'play' && c.tag === 'AUDIO').length), 0, 'preparation failure never falls back to loud playback');
     assert.equal(await page.evaluate(() => window.mockMasterVolume), 50);
     await page.evaluate(() => { window.failVolume = false; window.deferVolume = true; window.mediaCalls = []; });
@@ -840,12 +869,12 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => { window.deferVolume = false; window.volumeReplies.shift()(); });
     await page.waitForFunction(() => window.mockMasterVolume === 50 && !document.querySelector('audio'));
     assert.equal(await page.evaluate(() => window.mediaCalls.filter(c => c.op === 'play' && c.tag === 'AUDIO').length), 0, 'cancelled preparation cannot start audio after its reply arrives');
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     await tests(); await page.locator('[data-action=test-adhan]').click();
     await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('audio').getAttribute('src'));
     await page.evaluate(() => { window.mockMasterVolume = 22; });
     await page.keyboard.press('Escape');
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     assert.equal(await page.evaluate(() => window.mockMasterVolume), 22, 'manual remote level survives dismissal');
     await page.evaluate(() => { window.mockMasterVolume = 50; });
     await tests(); await page.locator('[data-action=test-adhan]').click();
@@ -859,12 +888,12 @@ const server = http.createServer((req, res) => {
       Object.defineProperty(document, 'hidden', {configurable: true, value: false});
       document.dispatchEvent(new Event('visibilitychange'));
     });
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     await page.evaluate(() => {
       const state = JSON.parse(localStorage.getItem('fixture')); state.prefs.callClose = 1;
       localStorage.setItem('fixture', JSON.stringify(state));
     });
-    await page.reload(); await page.waitForSelector('#input-video source', {state: 'attached'});
+    await page.reload(); await inputRestored();
     await page.evaluate(() => { window.legacyVolume = true; window.mockMasterVolume = 50; });
     await tests(); await page.locator('[data-action=test-full]').click();
     await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('audio').getAttribute('src'));
@@ -877,7 +906,7 @@ const server = http.createServer((req, res) => {
       const audio = document.querySelector('audio');
       Object.defineProperty(audio, 'error', {value: {code: 4}}); audio.dispatchEvent(new Event('error'));
     });
-    await page.waitForSelector('#input-video source', {state: 'attached'});
+    await inputRestored();
     assert.equal(await page.evaluate(() => window.mockMasterVolume), 50, 'native volume also restores after decoder failure');
     assert.deepEqual(errors, []);
     async function fits(selector) {
@@ -910,7 +939,7 @@ const server = http.createServer((req, res) => {
       await page.evaluate(lang => {
         localStorage.setItem('fixture', JSON.stringify({prefs: window.Afnon.prefs({lang, volume: 30, dockAutoHide: 0}), input: 'HDMI_2', startup: {enabled: true}}));
       }, lang);
-      await page.reload(); await page.waitForSelector('#input-video source', {state: 'attached'});
+      await page.reload(); await inputRestored();
       await page.evaluate(() => document.fonts.ready);
       await page.keyboard.press('Enter'); await page.locator('[data-action=settings]').click();
       await page.locator('[data-action=section][data-value=display]').click();
@@ -1002,7 +1031,7 @@ const server = http.createServer((req, res) => {
       await fits('.call-column button,.call-verse,.call-name,.call-time,.call-status');
       assert.equal(await page.locator('.call-verse').innerText(), sacred.adhanCall);
       if (size === 80 || size === 110 || size === 150) await page.screenshot({path:path.join(shots, 'size-' + lang + '-' + size + '-call.png')});
-      await page.keyboard.press('Escape'); await page.waitForSelector('#input-video source', {state:'attached'});
+      await page.keyboard.press('Escape'); await inputRestored();
       await tests(); await page.locator('[data-action=settings-back]').click();
       if (await page.locator('[data-action=apps-back]').count()) { await page.locator('[data-action=apps-back]').click(); }
       await page.locator('.home-quick [data-action=inputs]').click();
@@ -1022,7 +1051,7 @@ const server = http.createServer((req, res) => {
       const video = await page.locator('#input-video').boundingBox();
       assert.deepEqual(video,{x:0,y:0,width:1920,height:1080},'HDMI video never scales with UI');
       const beforeReload = await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')).prefs);
-      await page.reload(); await page.waitForSelector('#input-video source', {state:'attached'}); await page.keyboard.press('Enter');
+      await page.reload(); await inputRestored(); await page.keyboard.press('Enter');
       assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')).prefs), beforeReload, 'reopening preserves the saved size and other preferences');
       assert.ok(Math.abs((await page.locator('.bar .icon-button').first().boundingBox()).width - 72 * size / 100) < 0.2, 'saved scale is applied after reopening');
       await page.keyboard.press('Escape');
@@ -1037,7 +1066,7 @@ const server = http.createServer((req, res) => {
         Object.assign(fixture.prefs, {lang,uiScale:150,quickLabels:true}, variant);
         localStorage.setItem('fixture',JSON.stringify(fixture));
       }, {lang,variant});
-      await page.reload(); await page.waitForSelector('#input-video source', {state:'attached'});
+      await page.reload(); await inputRestored();
       await page.keyboard.press('Enter'); await page.locator('[data-action=home]').click();
       await fits('.home-quick button,.home-apps button,.home-links button');
       const quick = await page.locator('.home-quick').boundingBox(), prayer = await page.locator('.home-prayers').boundingBox();

@@ -27,7 +27,9 @@ earlier experiments; later versioned validation in this README takes precedence.
 ## Behavior to preserve
 
 - HDMI is a video source inside our app. Silent banners keep picture/sound alive.
-  Audible alerts release that decoder before playing local audio, then restore it.
+  Adhan on HDMI uses the native video-only source while local audio plays.
+  Other audio/input modes release the decoder first. Restore normal input and
+  native volume through the existing ownership/lifecycle handlers.
 - In-app tests return to the same screen, focused row and scroll position. An alert
   interrupting another app closes our window afterward so LG can restore its history.
   This is not a guaranteed app/playback-position snapshot. Keep the cold-start,

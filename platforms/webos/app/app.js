@@ -668,13 +668,14 @@
       else { notify(t('لم تُحفظ الإعدادات. حاول مرة أخرى.', 'Settings were not saved. Please try again.'), reply.errorText); }
     });
   }
-  function play(target) {
+  function play(target, videoOnly) {
     if (!target) { show('inputs'); return; }
     input = target; lastError = null;
     if (tv && !media && !(document.hidden || document.webkitHidden)) {
       video.style.display = 'block';
       video.pause(); while (video.firstChild) { video.removeChild(video.firstChild); }
       var source = document.createElement('source'); source.type = target.type; source.src = target.url;
+      if (videoOnly) { source.type += ';mediaOption=' + encodeURI(JSON.stringify({option: {mediaFormat: {type: 'video_only'}}})); }
       video.appendChild(source); video.load(); video.play();
     }
     report();
@@ -750,7 +751,8 @@
   }
   function startAudio(kind, url, seconds) {
     if (media) { stopAudio('stopped', false); }
-    releaseVideo();
+    if (kind === 'adhan' && input && /^HDMI_[1-4]$/.test(input.id)) { play(input, true); }
+    else { releaseVideo(); }
     var audio = document.createElement('audio'), serial = ++audioSerial, decoderReadyAt = Date.now() + 450;
     audio.setAttribute('preload', 'none'); audio.volume = prefs.volume / 100;
     var item = {kind: kind, audio: audio, serial: serial, started: false};
@@ -774,7 +776,7 @@
         if (kind !== 'radio' && !item.deadline) {
           item.deadline = setTimeout(function () { if (active()) { stopAudio('stopped', true); } }, (seconds || (prefs.callClose ? prefs.callClose * 60 : 600)) * 1000);
         }
-        // This LG needs the HDMI decoder released; only this prepared owner may start playback.
+        // Wait for the decoder handoff; only this prepared owner may start playback.
         mediaTimer = setTimeout(function () {
           if (!active() || item.volumeId !== id || item.paused) { return; }
           if (!audio.getAttribute('src')) { audio.src = url; audio.load(); }

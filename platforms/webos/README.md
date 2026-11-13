@@ -120,8 +120,8 @@ is conditional on the TV still having the level applied by that record.
 
 Version 0.2.9 removes the adhan screen's outer dim layer and hides its
 originating page while the central mihrab is visible. Dismissal restores the page
-and its focus. This does not establish live HDMI behind local audio; the LF6300
-still releases its input decoder for that playback. Silent banners are unchanged.
+and its focus. That version released the input decoder during local audio.
+Source0.2.17 adds the HDMI video-only handoff described below. Silent banners are unchanged.
 
 Scheduled alerts are **off by default**; upgrades preserve your saved choice. Turn them on in Adhan & reminders
 after checking the timetable and the audible test. They use a separate persistent
@@ -243,7 +243,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.16_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.17_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -566,3 +566,19 @@ Original input source, all31 preferences, startup, boot and master/mute were
 unchanged; no adhan played. This establishes the native video-only request on
 this TV, not concurrent adhan playback. A separate quiet coexistence check is
 still required before changing the production decoder handoff.
+
+## HDMI picture during adhan
+
+Source0.2.17 requests the documented video-only external HDMI source during adhan,
+keeping the decoder's picture while suppressing programme audio. The call screen
+keeps only its central mihrab opaque; the originating page is hidden. Existing
+native-volume preparation and Stop/Replay/Dismiss/end/error/suspend/external-return
+handling remain in charge of cleanup. Normal HDMI picture/sound returns afterward.
+Other inputs and radio/spoken/announcement playback retain the existing decoder
+release. No preference or global TV configuration is added.
+
+The owner accepted a bounded actual-host coexistence trial on HDMI_1: quiet adhan,
+moving picture, automatic stop and normal sound/volume restoration. The installed
+0.2.17 mihrab/background test is still pending. Browser mocks check source types,
+normal-source restoration and lifecycle; they cannot establish actual audio/video.
+Other HDMI ports and newer LG hardware remain unverified.

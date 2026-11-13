@@ -6,6 +6,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- LG adhan keeps HDMI video moving while programme audio is suppressed, with
+  only the central mihrab over the picture. Dismissal restores normal HDMI sound
+  and the previous TV volume; other audio/input modes retain their decoder handoff.
+
 - Old LG can verify the online prayer provider using a bundled public CA root,
   fixing CERT_UNTRUSTED while keeping HTTPS and hostname checks enabled.
 
@@ -52,9 +56,8 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   existing method corrections and saved manual offsets remain intact.
 
 - LG's adhan screen removes the outer dim layer and hides its originating page
-  until dismissal. On the tested old LG, local audio still releases HDMI's decoder,
-  so a live TV background during adhan remains unresolved. Silent prayer banners
-  keep their existing appearance and input playback behavior.
+  until dismissal. HDMI adhan uses the native video-only path while local audio
+  plays; silent prayer banners keep their existing appearance and input playback behavior.
   Old LG audio uses temporary TV volume because its decoder ignores per-element
   volume. The app applies the saved percentage before playback and restores the
   previous level on Stop/end/error/exit, preserving mute and changed remote levels.

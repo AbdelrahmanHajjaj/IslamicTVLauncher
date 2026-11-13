@@ -96,31 +96,37 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 
 ## Current cursor
 
-Await the pending quiet-adhan watcher response. The concrete coexistence test is
-prepared but NOT RUN: v0216-dom-coexist-start-params.json/result-params.json,
-2s audio limit/12s watchdog, verified native audioVolume prepare/release and exact
-HDMI/UI restoration. Owner only approved the completed video-only test so far;
-do not infer audible readiness. The TV remains unchanged on normal HDMI.
+Persist and verify the proved HDMI adhan handoff as0.2.17. Two-second quiet
+coexistence test passed: owner heard adhan with moving HDMI, then normal sound
+restored. Native prepare modeTV/release succeeded, videoReady4/noerror, zero audio
+and exact source restored. Independent before2/after snapshots match all31 prefs,
+input/fullstartup/boot/master/mute, no test/audio owner. DOM currentTime0 is not
+physical audio evidence; owner confirmation is the evidence. No longer awaiting
+that readiness or test; do not rerun the completed private coexistence probe.
 
-Owned v0216 inspector is identity-checked and CLOSED, emulator already CLOSED;
-no background tool jobs or test/volume owner remain. Pending question: Ready for
-two-second quiet adhan over moving HDMI with saved30% app gain and restoration.
-On Ready: start a NEW owned hidden inspector with fresh
-v0216-coexist-inspector-private.log / v0216-coexist-inspector-owner.json (do not
-overwrite the closed original owner/log). Use lg-0216-coexist-dom.cjs, prepared to
-read that new log while retaining existing unused coexist params/results names.
-Take fresh lg-0216-coexist-state.cjs before2 snapshot; old before baseline is stale.
-Guard version16, no test/audio owner/imminent prayer, HDMI1, saved volume30 and
-selected alqatami voice; preserve any newer owner choices and adjust test setup
-rather than overwrite them. Announce start, run once only after readiness, verify
-source/volume/owner cleanup and get human picture/audio result. If Later, leave
-TV unchanged. No production media change until concurrent-audio evidence passes.
+Production slice: only kindadhan on HDMI1–4 requests the documented video_only
+source before local audio; other audio/input modes retain their existing decoder
+release. Keep native gain preparation,450ms handoff, deadlines, replay/error/end/
+external-return cleanup and original normal source restoration. No new setting,
+core engine or support claim for unavailable modern TVs/other inputs. New browser
+regression fails before source change (lg-hdmi-adhan-red-fast); add explicit normal
+source/no-audio waits now that HDMI remains attached during adhan, and regress
+non-HDMI and other-audio paths. Affected LG media/UI suite passes (lg-0217-tests.log, lg-hdmi-adhan-green.log,
+lg-0217-browser-final.log): non-HDMI/spoken/radio, replay/end/error/native gain
+races/external-close and all16 size/language cases. Candidate0.2.17:18,661,548
+bytes, SHA-2567444077698b45ff8ec7b6a74b6708f7bcc14e31e8fe7f3637d8aa310b7add1a9.
+Exact103 payloads/metadata and52 retained media/font/notices pass. Commit source,
+refresh provenance, guarded current-state in-place update, actual hashes/runtime
+and installed mihrab/transparency with bounded quiet audio. No new readiness is
+needed for already authorized reversible preparation; verify watcher presence
+before the final audible check.
 
-Completed20s video_only probe is physically accepted: moving picture, programme
-sound suppressed then restored. Exact source/visibility restored, ready4/noerror,
-zero audio; probe variable removed. Independent before/after snapshots prove all
-31 prefs/input/fullstartup/boot/master/mute unchanged. This proves video-only,
-not concurrent adhan. No adhan or master-volume mutation occurred during that test.
+Owned coexist inspector process exited ECONNRESET after the completed trial; no
+other process stopped. Optional in-memory probe-reference cleanup could not connect,
+but independent snapshot/source/audio restoration is already proven. In-place app
+restart discards inert references; no running probe/audio/timer/volume owner.
+Capture fresh current state and watcher availability as needed for final install;
+close only new owned diagnostics before yielding. Android TV gate remains open.
 
 Installed0.2.16 online correction is fully accepted: actual verified network returns
 six validated Cairo/Egyptian13-11-2026 references, differences[1,0,-1,2,1,0]. Owner
@@ -3015,3 +3021,51 @@ unrelated work. Resume this cursor only, not historical pending notes below.
   without overwriting earlier evidence. No active emulator/browser/tool jobs.
   Remaining actual acceptance is the quiet coexistence test (needs watcher) and
   Android TV hardware around25Nov; do not mark overall goal complete.
+
+
+### Q09.5i quiet coexistence watcher resumed (2026-11-13)
+
+- Owner explicitly Ready for the prepared two-second quiet adhan test over moving
+  HDMI, saved30% app setting and automatic sound/native-volume restoration. This
+  supersedes the prior pending readiness hold only for this bounded test. Reopen
+  fresh owned diagnostics, capture before2 and validate idle/source/volume guards;
+  run once, read result and independently verify cleanup before any next action.
+
+- Bounded quiet coexistence test ran once after fresh before2 guards. Actual native
+  volume prepare modeTV and release both succeed; audio playing events report
+  videoReady4/noerror. Stop at2s; exact HDMI source/visibility restored, ready4,
+  zero audio. DOM currentTime stayed0 during short probe, so it does not establish
+  audible output; owner explicitly confirms hearing adhan while picture kept moving,
+  followed by normal programme sound. Human evidence establishes coexistence.
+- Independent before2/after comparison confirms all31 prefs/input/fullstartup/
+  boot/master/mute unchanged, no test/audio owner. Next persist minimal HDMI adhan
+  video_only handoff, preserve other audio/input paths, volume and restoration;
+  add regression before fix, verify existing media lifecycle tests and installed
+  actual central-mihrab background. No new setting/core/platform scaffolding.
+
+- Production source changes only play(target,videoOnly), encoded source type and
+  HDMI1–4/adhan selection before existing prepared playback. No new media timers,
+  volume handlers or failure/replay logic. Other modes remain decoder-release.
+  ES5/service/volume/online suite passes; focused HDMI source/transparency/replay/
+  end/error/focus regression is green. Full media/UI matrix is running, with
+  source-normal/no-audio restoration waits and explicit non-HDMI/spoken/radio
+  checks. Owning media docs updated with pending installed acceptance.
+
+- First full browser run reached external-return check and failed its old zero-
+  video-play assumption: video_only now starts once during adhan, as intended.
+  Kept the actual no-HDMI-restart-after-external-close assertion, reset its call
+  trace at completion boundary and asserted video_only during background adhan.
+  No production lifecycle change was made. Rerun full suite to a new final log.
+
+- PASS final full LG browser suite after correctly scoping external-close trace
+  to completion: keeps no-normal-HDMI-restart assertion, explicitly verifies
+  video_only during background adhan. Normal-source/no-audio waits prove actual
+  restoration instead of merely finding the already attached video_only source.
+  Non-HDMI(DTV/AV), spoken/radio, replay/end/error, volume failures/cancel/manual
+  overrides/suspend and full8x2 UI/Home variants pass. Focused green passes too.
+- Verified0.2.17 candidate18,661,548 bytes, SHA-256
+  7444077698b45ff8ec7b6a74b6708f7bcc14e31e8fe7f3637d8aa310b7add1a9.
+  All103 payloads/IDs/version/archive/CLI metadata and52 old media/font/notices
+  unchanged. Public CA/source notice retained; attribution extension preserved.
+  Source review complete; no dependency/core/native/preview changes. Commit and
+  refresh provenance before authorized preference-preserving watched update.
