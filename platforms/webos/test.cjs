@@ -44,7 +44,7 @@ assert.throws(() => A.prefs({station: 'https://untrusted.example'}), /Invalid/);
 assert.equal(A.prefs({theme: 'aurora'}).homeBar, 'top', 'old preferences gain safe layout defaults');
 assert.equal(A.prefs().quickLabels, false);
 assert.equal(A.prefs({volume: 30}).uiScale, 100, 'old preferences keep the original UI size');
-for (const uiScale of [80, 90, 100, 110]) {
+for (const uiScale of [80, 90, 100, 110, 120, 130, 140, 150]) {
   assert.equal(A.prefs({uiScale, volume: 30}).uiScale, uiScale);
   assert.equal(A.prefs({uiScale, volume: 30}).volume, 30, 'size changes preserve audio preferences');
 }

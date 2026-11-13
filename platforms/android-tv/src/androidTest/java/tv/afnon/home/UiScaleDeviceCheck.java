@@ -33,14 +33,14 @@ final class UiScaleDeviceCheck {
             check(Prefs.uiScale(test.getTargetContext()) == 100, "Missing size keeps the original UI");
             prefs.edit().putString("ui_scale", "90").commit();
             check(Prefs.uiScale(test.getTargetContext()) == 100, "Type-confused size uses the safe default");
-            for (int invalid : new int[] {0, 85, 111}) {
+            for (int invalid : new int[] {0, 85, 111, 155, 160}) {
                 prefs.edit().putInt("ui_scale", invalid).commit();
                 check(Prefs.uiScale(test.getTargetContext()) == 100, "Unknown saved size uses the default");
                 boolean rejected = false;
                 try { Prefs.setUiScale(test.getTargetContext(), invalid); } catch (IllegalArgumentException expected) { rejected = true; }
                 check(rejected, "Invalid size must not be saved");
             }
-            for (String language : new String[] {"ar", "en"}) for (int size : new int[] {80, 90, 100, 110}) {
+            for (String language : new String[] {"ar", "en"}) for (int size : new int[] {150, 80, 90, 100, 110, 120, 130, 140}) {
                 prefs.edit().putString("locale", language).putString("clock", "24").putString("digits", "")
                     .putInt("ui_scale", 100).putInt("appearance_cycle", 0).putBoolean("reduce_motion", false)
                     .putBoolean("adhan", false).putBoolean("announce", false).putBoolean("remind_voice", false).putInt("remind", 0).commit();
@@ -163,6 +163,18 @@ final class UiScaleDeviceCheck {
         UiContractDeviceCheck.onMain(test, () -> {
             pageBounds(screen, size);
         });
+        if (screen instanceof MainActivity && size > 110) {
+            View initial = screen.getCurrentFocus();
+            View[] nodes = (View[]) UiContractDeviceCheck.field(screen, "nodes");
+            key(test, screen, KeyEvent.KEYCODE_DPAD_UP);
+            check(Arrays.asList(FavouriteChoice.QIBLA, FavouriteChoice.WIFI, FavouriteChoice.SETTINGS, FavouriteChoice.RADIO, FavouriteChoice.INPUTS)
+                .contains(Arrays.asList(nodes).indexOf(screen.getCurrentFocus())), "Large Home Up reaches top controls");
+            key(test, screen, KeyEvent.KEYCODE_DPAD_DOWN);
+            check(screen.getCurrentFocus() == initial, "Large Home returns to its app");
+            for (int i = 0; i < 20 && screen.getCurrentFocus() != nodes[FavouriteChoice.ALL]; i++) key(test, screen, KeyEvent.KEYCODE_DPAD_DOWN);
+            check(screen.getCurrentFocus() == nodes[FavouriteChoice.ALL], "Large Home Down reaches All apps");
+            UiContractDeviceCheck.onMain(test, () -> pageBounds(screen, size));
+        }
     }
 
     private static void pageBounds(Screen screen, int size) {
@@ -171,6 +183,28 @@ final class UiScaleDeviceCheck {
         check(background.getBackground() != null && background.getBackground().getCallback() == background, "Unscaled background retains its viewport owner");
         int[] at = new int[2]; background.getLocationOnScreen(at);
         bounds(screen.root, false, new Rect(at[0], at[1], at[0] + background.getWidth(), at[1] + background.getHeight()));
+        if (screen instanceof MainActivity && size > 110) {
+            for (String field : new String[] {"cellName", "cellTime"}) for (android.widget.TextView label : (android.widget.TextView[]) UiContractDeviceCheck.field(screen, field)) {
+                if (label == null) continue;
+                check(label.getLayout() != null && label.getLayout().getEllipsisCount(0) == 0, "Large Home prayer labels and times must fit");
+            }
+        }
+        if (screen instanceof SettingsActivity && size > 110) {
+            View pane = (View) UiContractDeviceCheck.field(screen, "rowScroll");
+            Rect content = new Rect();
+            check(pane != null && pane.getGlobalVisibleRect(content), "Large Settings rows are visible");
+            Rect previous = null;
+            for (View nav : (View[]) UiContractDeviceCheck.field(screen, "nav")) {
+                Rect section = new Rect();
+                check(nav.getGlobalVisibleRect(section), "Large Settings navigation remains visible");
+                // FocusTile reserves REACH around its painted card; adjacent hit bounds may overlap.
+                int reach = Math.round(Ui.px(FocusTile.REACH) * size / 100f);
+                section.inset(reach, reach);
+                check(!Rect.intersects(content, section), "Large Settings columns must not overlap");
+                check(previous == null || !Rect.intersects(previous, section), "Large Settings navigation rows must not overlap");
+                previous = section;
+            }
+        }
     }
 
     private static void modal(Instrumentation test, Screen screen, String field) {
@@ -199,9 +233,16 @@ final class UiScaleDeviceCheck {
             check(view.getGlobalVisibleRect(visible) && at[0] >= viewport.left - 1 && at[1] >= viewport.top - 1
                 && at[0] + view.getWidth() * sx <= viewport.right + 1
                 && at[1] + view.getHeight() * sy <= viewport.bottom + 1,
-                "Control clips: " + view.getContentDescription() + " at " + at[0] + "," + at[1] + " size " + view.getWidth() * sx + "x" + view.getHeight() * sy);
+                "Control clips: " + (view.getTag() instanceof SettingsActivity.Row ? ((SettingsActivity.Row) view.getTag()).contract.getId() : view.getContentDescription()) + " at " + at[0] + "," + at[1] + " size " + view.getWidth() * sx + "x" + view.getHeight() * sy + " viewport " + viewport + " visible " + visible + " parents " + parents(view));
         }
         if (view instanceof ViewGroup) for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) bounds(((ViewGroup) view).getChildAt(i), scroll, viewport);
+    }
+
+    private static String parents(View view) {
+        StringBuilder out = new StringBuilder();
+        for (View node = view; node != null; node = node.getParent() instanceof View ? (View) node.getParent() : null)
+            out.append(node.getClass().getSimpleName()).append('[').append(node.getTop()).append(',').append(node.getHeight()).append(',').append(node.getScrollY()).append(']');
+        return out.toString();
     }
 
     @SuppressWarnings("unchecked")

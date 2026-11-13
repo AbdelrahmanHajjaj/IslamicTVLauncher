@@ -86,8 +86,10 @@ for completed checks and remaining hardware tests.
   focus rings have room around labels and neighbouring panels. Up to five recent apps and All apps remain below. Recent history records
   launches through Afnon, including assigned remote buttons, and stays on the TV.
 - **Interface size.** **Settings → Display & language → Interface size** offers
-  80%, 90%, 100% and 110%. One control resizes app text and controls together,
+  80–150% in 10% steps, using inline − / + controls. One control resizes app text and controls together,
   including the prayer bar, menus, dialogs and screensaver; the default is 100%.
+  At larger sizes, Home scrolls and its mihrab narrows to leave more room for
+  prayer times and app controls without reducing their text sizes.
 - **App management.** Hold OK in All apps to add, reorder or replace a favourite. Replacement returns
   to Home so you can select its destination. Uninstall opens Android's confirmation for removable apps.
   An optional system-utility filter keeps media apps, games and Play Store visible. The app list reuses
@@ -212,7 +214,7 @@ authorisations, restart the TV and verify that its ADB port is closed. Port 5555
 | City, calculation method, Asr school or Hijri date | Settings → Prayer times |
 | Adjust each prayer's time | Prayer times → Prayer time offsets; compare the centred time with your local timetable |
 | Choose 12/24-hour display, digits or language | Settings → Display & language |
-| Resize the whole app, including the prayer bar | Display & language → Interface size → 80 / 90 / 100 / 110% |
+| Resize the whole app, including the prayer bar | Display & language → Interface size → − / + (80–150%) |
 | Customize Home and appearance | Home & appearance; Left/Right previews, Up/Down scrolls, Apply saves the page, Back cancels |
 | Add, reorder or replace favourites | All apps → hold OK; replacement selects a tile on Home |
 | Hide system utilities | Display & language → Hide system apps in All apps; this does not disable packages |
@@ -266,7 +268,7 @@ assets use `shared/design/` and `afnon-mihrab/`.
 It demonstrates Home layouts, appearance and quick controls, but cannot control TV inputs, Wi-Fi,
 Android overlays or screensavers. Prayer-offset editing mirrors the TV: six centred adjusted times,
 minus/value/plus controls, draft cancellation and saved offsets, in Arabic and English.
-Interface size uses the same four choices as the apps and resizes preview screens,
+Interface size uses the same 80–150% inline control as the apps and resizes preview screens,
 menus and alerts together; the website frame keeps its size.
 [Browser offset screenshots](docs/screenshots/README.md#browser-offset-preview) show this separate preview.
 

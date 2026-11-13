@@ -7,6 +7,7 @@
   var prayerRules = window['tv.afnon:core'].tv.afnon.core.PrayerRules;
   var tv = typeof window.PalmServiceBridge !== 'undefined';
   var prefs = A.prefs(), startup = false, loaded = false, busy = false;
+  var uiScaleDraft = null;
   var input = null, inputs = [], view = 'input', picker = null, page = 0;
   var screen = document.getElementById('screen'), video = document.getElementById('input-video');
   var bridges = [], instance = String(Date.now()), cachedDay = null, cacheKey = '', noticeTimer;
@@ -152,6 +153,10 @@
   }
   function row(id, action, value, kind) {
     var control = uiContract.bind(id, kind || 'action');
+    if (id === 'display.size') {
+      return button(action, escape(controlLabel(control)) + '<span class="value inline-step"><span data-ui-scale-step="-1" aria-hidden="true">−</span><strong dir="ltr">' +
+        digits(uiScaleDraft === null ? prefs.uiScale : uiScaleDraft) + '%</strong><span data-ui-scale-step="1" aria-hidden="true">+</span></span>', '', uiScaleDraft === null ? '' : 'editing', '', control);
+    }
     var values = control.kind === 'choice' ? choiceValues(id, choices(action, true)) : null;
     return button(action, escape(controlLabel(control)) + '<span class="value">' + escape(value) + '</span>', '', '', '', control, values);
   }
@@ -215,7 +220,7 @@
       result = row('display.language', 'language', t('العربية', 'English'), 'choice') +
         row('display.digits', 'digits', prefs.digits === 'auto' ? t('حسب اللغة', 'Follow language') : prefs.digits === 'eastern' ? '٠١٢٣' : '0123', 'choice') +
         row('display.clock', 'clock', digits(prefs.clock), 'choice') +
-        row('display.size', 'uiScale', digits(prefs.uiScale) + '%', 'choice') +
+        row('display.size', 'uiScale', digits(prefs.uiScale) + '%', 'number') +
         row('display.quick-labels', 'quickLabels', onOff(prefs.quickLabels), 'toggle') +
         row('display.bar-position', 'dockPosition', prefs.dockPosition === 'top' ? t('أعلى', 'Top') : t('أسفل', 'Bottom'), 'choice') +
         row('display.bar-timeout', 'dockAutoHide', prefs.dockAutoHide ? digits(prefs.dockAutoHide) + t(' ثانية', ' sec') : t('يدويًا', 'Manually'), 'choice') +
@@ -297,7 +302,8 @@
     var c = D.palettes[p.theme], rtl = prefs.lang === 'ar', name = s('themeNames')[D.themes.indexOf(p.theme)];
     var mihrab = p.homeLayout === 'mihrab', compact = p.homeLayout === 'compact';
     var onRight = p.archSide === 'right' || p.archSide === 'auto' && rtl;
-    var x = mihrab && !onRight ? 744 : 96, width = mihrab ? 1080 : 1728, archX = onRight ? 1224 : 96;
+    var archWidth = mihrabWidth(p), x = mihrab && !onRight ? 96 + archWidth + D.homeMihrab.gap : 96;
+    var width = mihrab ? 1728 - archWidth - D.homeMihrab.gap : 1728, archX = onRight ? 1824 - archWidth : 96;
     var cells = p.prayerMode === 'none' ? 0 : p.prayerMode === 'all' ? 6 : p.prayerMode === 'both' ? 2 : 1;
     var top = compact && p.homeBar === 'top' ? 370 : 290, tiles = compact && p.homeBar === 'top' ? 540 : 452;
     if (p.quickLabels) { top = compact && p.homeBar === 'top' ? 466 : 362; tiles = compact ? p.homeBar === 'top' ? 616 : 504 : 520; }
@@ -309,8 +315,8 @@
       svg += '<defs><pattern id="preview-pattern" width="960" height="540" patternUnits="userSpaceOnUse"><image xlink:href="patterns/' + p.background + '.svg" width="960" height="540"/></pattern></defs><rect width="1920" height="1080" fill="url(#preview-pattern)"/>';
     }
     if (mihrab) {
-      svg += '<path transform="translate(' + archX + ' 124)" d="M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z" fill="' + c['lapis-800'] + '" stroke="' + c['gold-400'] + '" stroke-width="3"/>' +
-        '<text x="' + (archX + 300) + '" y="570" text-anchor="middle" font-size="76" fill="' + c['gold-400'] + '">' + escape(s('nextPrayer')) + '</text>';
+      svg += '<path transform="translate(' + archX + ' 124) scale(' + archWidth / D.homeMihrab.width + ' 1)" d="M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z" fill="' + c['lapis-800'] + '" stroke="' + c['gold-400'] + '" stroke-width="3"/>' +
+        '<text x="' + (archX + archWidth / 2) + '" y="570" text-anchor="middle" font-size="76" fill="' + c['gold-400'] + '">' + escape(s('nextPrayer')) + '</text>';
     } else if (compact) { svg += rect(96, p.homeBar === 'bottom' ? 916 : p.quickLabels ? 342 : 242, 1728, 100, c['lapis-800'], c['gold-400']); }
     svg += '<text x="' + (rtl ? x + width : x) + '" y="150" text-anchor="' + (rtl ? 'end' : 'start') + '" direction="ltr" font-size="88" fill="' + c['plaster-100'] + '">' + digits(A.clock(new Date(), prefs)) + '</text>';
     for (var i = 0; i < 5; i++) { svg += rect(p.quickLabels ? x + i * width / 5 : rtl ? x + i * 80 : x + width - 64 - i * 80, p.quickLabels ? compact ? 250 : 270 : 56, p.quickLabels ? width / 5 - 12 : 64, 64, c['lapis-700']); }
@@ -430,7 +436,7 @@
       var target = focusAction && screen.querySelector(focusAction.charAt(0) === '[' ? focusAction : '[data-action="' + focusAction + '"]');
       target = target || (view === 'settings' ? screen.querySelector('.settings-nav .selected') :
         view === 'home' ? homeNodes[homeNavigation.initial(homeAppCount, 0)] :
-        view === 'apps' ? screen.querySelector('.app-tile') : view === 'picker' && stepper() ? screen.querySelector('[data-action=save-step]') : screen.querySelector('button')); if (target) { target.focus(); }
+        view === 'apps' ? screen.querySelector('.app-tile') : view === 'picker' && stepper() ? screen.querySelector('[data-action=save-step]') : screen.querySelector('button')); if (target) { focusControl(target); }
     }
     updateClock(); report();
   }
@@ -440,18 +446,59 @@
     el.style.webkitTransformOrigin = el.style.transformOrigin = origin || '50% 50%';
     el.style.webkitTransform = el.style.transform = 'scale(' + factor + ')';
   }
+  function focusControl(el) {
+    el.focus();
+    screen.scrollLeft = screen.scrollTop = 0;
+    overlay.scrollLeft = overlay.scrollTop = 0;
+  }
+  function mihrabWidth(p) {
+    var factor = window['tv.afnon:core'].tv.afnon.core.UiScale.percent(p.uiScale) / 100;
+    return Math.max(D.homeMihrab.minWidth, D.homeMihrab.width / Math.max(1, factor));
+  }
   function sizeUi() {
     var factor = window['tv.afnon:core'].tv.afnon.core.UiScale.percent(prefs.uiScale) / 100;
-    var content = screen.firstElementChild, width = 1920 / factor;
+    var content = screen.firstElementChild, width = 1920 / factor, height = 1080 / factor, large = factor > 1.1;
+    document.getElementById('stage').setAttribute('data-large-ui', String(large));
     screen.setAttribute('data-page', String(view !== 'input' && view !== 'bar'));
     zoomUi(content, factor, view === 'bar' ? '50% ' + (prefs.dockPosition === 'bottom' ? '100%' : '0') : null);
     // Reserve a focus-ring edge when enlarged pages consume the top overscan margin.
-    if (content && view !== 'bar') { content.style.top = Math.max(0, (1080 - 1080 / factor) / 2 + 12 / factor - 56) + 'px'; }
+    if (content && view !== 'bar') {
+      if (large) {
+        content.style.width = width + 'px'; content.style.height = height + 'px';
+        content.style.left = (1920 - width) / 2 + 'px'; content.style.top = (1080 - height) / 2 + 'px';
+      } else { content.style.top = Math.max(0, (1080 - height) / 2 + 12 / factor - 56) + 'px'; }
+    }
     var nav = content && content.querySelector('.settings-nav'), rows = content && content.querySelector('.settings-rows');
     var inset = Math.max(72, (1920 - width) / 2 + 12 / factor);
     // Keep both Settings columns and their focus rings inside the scaled viewport.
-    if (nav) { nav.style[prefs.lang === 'ar' ? 'right' : 'left'] = inset + 'px'; }
-    if (rows) { rows.style.left = (prefs.lang === 'ar' ? inset : 1920 - rows.offsetWidth - inset) + 'px'; }
+    if (nav) {
+      nav.style[prefs.lang === 'ar' ? 'right' : 'left'] = (large ? 72 : inset) + 'px';
+      if (large) { nav.style.height = (height - 220) + 'px'; }
+    }
+    if (rows) {
+      rows.style.left = (prefs.lang === 'ar' ? (large ? 72 : inset) : large ? 560 : 1920 - rows.offsetWidth - inset) + 'px';
+      if (large) { rows.style.width = (width - 632) + 'px'; rows.style.height = (height - (section === 'appearance' ? 420 : 172) - 48) + 'px'; }
+    }
+    if (large && content) {
+      var grid = content.querySelector('.app-grid'), voices = content.querySelector('.voice-list');
+      if (grid) { grid.style.height = (height - 248) + 'px'; }
+      if (voices) { voices.style.height = (height - 392) + 'px'; }
+    }
+    if (content && view === 'home' && prefs.homeLayout === 'mihrab') {
+      var archWidth = mihrabWidth(prefs), arch = content.querySelector('.arch');
+      var onRight = prefs.archSide === 'right' || prefs.archSide === 'auto' && prefs.lang === 'ar';
+      arch.style.width = archWidth + 'px'; arch.style.left = onRight ? 'auto' : '96px'; arch.style.right = onRight ? '96px' : 'auto';
+      arch.querySelector('svg').setAttribute('preserveAspectRatio', 'none');
+      arch.querySelector('.arch-info').style.width = (archWidth - 80) + 'px';
+      arch.querySelector('.verse-ref').style.width = (archWidth - 80) + 'px';
+      arch.querySelector('.verse').style.width = (archWidth - 140) + 'px';
+      var courts = content.querySelectorAll('.courtyard'), side = 96 + archWidth + D.homeMihrab.gap;
+      for (var i = 0; i < courts.length; i++) {
+        var fullRow = large && /home-clock|home-quick/.test(courts[i].className);
+        courts[i].style.left = (fullRow || onRight ? 96 : side) + 'px';
+        courts[i].style.right = (fullRow || !onRight ? 96 : side) + 'px';
+      }
+    }
     if (view === 'bar' && content) {
       content.style.width = width + 'px'; content.style.left = (1920 - width) / 2 + 'px';
       content.querySelector('.dock-prayers').style.width = (width - 432) + 'px';
@@ -463,9 +510,12 @@
       banner.style.left = (1920 - 1792 / factor) / 2 + 'px';
       banner.style.top = ((1080 - 1080 / factor) / 2 + 36 / factor) + 'px';
     }
-    zoomUi(document.getElementById('notice'), factor, '50% 0');
+    var notice = document.getElementById('notice'), noticeWidth = 1480 / factor;
+    notice.style.width = noticeWidth + 'px'; notice.style.left = (1920 - noticeWidth) / 2 + 'px'; notice.style.right = 'auto';
+    zoomUi(notice, factor, '50% 0');
   }
   function show(nextView, focusAction) {
+    uiScaleDraft = null;
     if (nextView !== 'online-prayer') { cancelOnline(); }
     clearTimeout(noticeTimer); document.getElementById('notice').style.display = 'none';
     if (nextView !== 'picker' && (nextView !== 'settings' || section !== 'appearance')) { appearanceDraft = null; }
@@ -514,7 +564,6 @@
     if (key === 'station') { return D.stations.map(function (v) { return {value: v.id, label: v[prefs.lang] + ' · ' + (v[prefs.lang === 'ar' ? 'whereAr' : 'whereEn'] || '')}; }); }
     if (key === 'theme') { return D.themes.map(function (id, i) { return {value: id, label: s('themeNames')[i]}; }); }
     if (key === 'testPrayer') { return [0, 2, 3, 4, 5].map(function (i) { return {value: i, label: s('prayerNames')[i]}; }); }
-    if (key === 'uiScale') { return uiContract.choices('display.size').map(function (value) { return {value: Number(value), label: digits(value) + '%'}; }); }
     var options = {
       language: [['ar', 'العربية'], ['en', 'English']],
       hanafi: [[false, t('شافعي / قياسي', 'Shafi / Standard')], [true, t('حنفي', 'Hanafi')]],
@@ -543,7 +592,6 @@
     if (picker === 'city') { return t('المدينة', 'City'); }
     if (picker === 'method') { return t('طريقة الحساب', 'Calculation method'); }
     if (picker === 'zone') { return t('التوقيت', 'Time zone'); }
-    if (picker === 'uiScale') { return s('uiSize'); }
     if (/^offset-/.test(picker)) { return s('prayerNames')[Number(picker.slice(7))]; }
     return sectionName(section) || t('اختر', 'Choose');
   }
@@ -568,6 +616,12 @@
   function changeStep(delta) {
     var min = uiContract.minimum(pickerControl), max = uiContract.maximum(pickerControl);
     editValue = Math.max(min, Math.min(max, editValue + delta * (picker === 'volume' ? 5 : 1))); render('save-step');
+  }
+  function changeUiScale(delta) {
+    var range = window['tv.afnon:core'].tv.afnon.core.UiScale;
+    if (uiScaleDraft === null) { uiScaleDraft = prefs.uiScale; }
+    uiScaleDraft = Math.max(range.MIN_PERCENT, Math.min(range.MAX_PERCENT, uiScaleDraft + delta * range.STEP_PERCENT));
+    render('uiScale');
   }
   function savePrefs(next, focusAction, returnView) {
     if (!loaded || busy) { return; } busy = true;
@@ -768,7 +822,7 @@
       button('dismiss-alert', audible ? t('إيقاف والعودة', 'Stop & return') : t('إغلاق', 'Dismiss')) + '</section></div>';
     }
     sizeUi();
-    overlay.querySelector('button').focus();
+    focusControl(overlay.querySelector('button'));
     if (!audible) { overlayTimer = setTimeout(finishOverlay, alert.test ? 16000 : 20000); }
   }
   function consumeAlert() {
@@ -781,6 +835,15 @@
   function activate(action, value) {
     if (busy) { return; }
     armDock();
+    if (action === 'uiScale') {
+      if (uiScaleDraft === null) { uiScaleDraft = prefs.uiScale; render('uiScale'); }
+      else {
+        var resized = A.prefs(prefs); resized.uiScale = uiScaleDraft; uiScaleDraft = null;
+        savePrefs(resized, 'uiScale');
+      }
+      return;
+    }
+    uiScaleDraft = null;
     if (action === 'online-prayer' || action === 'online-retry') { checkOnline(); return; }
     if (action === 'online-back') { show('settings', 'online-prayer'); return; }
     if (voicePreview && action !== 'preview-voice') { stopAudio('stopped', true); }
@@ -845,7 +908,7 @@
     if (action === 'hanafi') { next.hanafi = !next.hanafi; savePrefs(next, action); }
     if (action === 'city') { openPicker('country'); }
     if (['method', 'zone', 'voice', 'fajrVoice', 'station', 'testPrayer', 'remind', 'callClose', 'digits', 'clock', 'dockPosition',
-      'dockAutoHide', 'uiScale', 'volume', 'hijriOffset'].indexOf(action) >= 0 || /^offset-[0-5]$/.test(action)) { openPicker(action); }
+      'dockAutoHide', 'volume', 'hijriOffset'].indexOf(action) >= 0 || /^offset-[0-5]$/.test(action)) { openPicker(action); }
     if (action === 'step-down' || action === 'step-up') { changeStep(action === 'step-down' ? -1 : 1); }
     if (action === 'save-step') {
       if (/^offset-/.test(picker)) { next.offsets[Number(picker.slice(7))] = editValue; } else { next[picker] = editValue; }
@@ -920,6 +983,12 @@
   }
   document.getElementById('stage').addEventListener('click', function (event) {
     if (busy) { return; }
+    var stepTarget = event.target;
+    while (stepTarget && stepTarget !== document.getElementById('stage')) {
+      var delta = stepTarget.getAttribute && stepTarget.getAttribute('data-ui-scale-step');
+      if (delta !== null && delta !== undefined) { changeUiScale(Number(delta)); return; }
+      stepTarget = stepTarget.parentNode;
+    }
     var el = event.target;
     while (el && el !== document.getElementById('stage') && el.tagName !== 'BUTTON') { el = el.parentNode; }
     if (el && el.tagName === 'BUTTON') { activate(el.getAttribute('data-action'), el.getAttribute('data-value')); }
@@ -928,6 +997,21 @@
   screen.addEventListener('focus', function (event) {
     var id = Number(event.target.getAttribute('data-home-focus'));
     if (view === 'home' && id >= homeNavigation.FIRST_APP && id < homeNavigation.FIRST_APP + homeAppCount) { lastHomeApp = id; }
+    var factor = window['tv.afnon:core'].tv.afnon.core.UiScale.percent(prefs.uiScale) / 100;
+    if (factor <= 1.1) { return; }
+    var page = screen.firstElementChild;
+    if (view === 'home' && event.target.getAttribute('data-action') === 'apps') { page.scrollTop = page.scrollHeight; }
+    if (view === 'home' && String(event.target.parentNode.className).indexOf('home-quick') >= 0) { page.scrollTop = 0; }
+    // Native focus scrolling exposes the button box; leave room for its painted ring too.
+    var parent = event.target.parentNode;
+    while (parent && parent !== screen) {
+      if (parent.scrollHeight > parent.clientHeight && getComputedStyle(parent).overflowY === 'auto') {
+        var box = event.target.getBoundingClientRect(), frame = parent.getBoundingClientRect(), edge = 12 * factor;
+        if (box.top < frame.top + edge) { parent.scrollTop -= (frame.top + edge - box.top) / factor; }
+        else if (box.bottom > frame.bottom - edge) { parent.scrollTop += (box.bottom - frame.bottom + edge) / factor; }
+      }
+      parent = parent.parentNode;
+    }
   }, true);
   function move(key) {
     var current = document.activeElement;
@@ -937,15 +1021,15 @@
       if (view === 'apps') {
         var from = current && current.getAttribute('data-app-focus');
         var appTarget = allAppsNavigation.move(from === null ? allAppsNavigation.NONE : Number(from), appNodes.length, 0, dx, dy);
-        if (appNodes[appTarget]) { appNodes[appTarget].focus(); }
+        if (appNodes[appTarget]) { focusControl(appNodes[appTarget]); }
         return;
       }
       var target = homeNavigation.move(homeNodes.indexOf(current), homeAppCount, 0, Math.max(1, homeAppCount), lastHomeApp, dx, dy, !!homeNodes[homeNavigation.WATCH_INPUT]);
-      if (homeNodes[target] && !homeNodes[target].disabled) { homeNodes[target].focus(); }
+      if (homeNodes[target] && !homeNodes[target].disabled) { focusControl(homeNodes[target]); }
       return;
     }
     var items = screen.querySelectorAll('button');
-    if (!current || current.tagName !== 'BUTTON') { if (items[0]) { items[0].focus(); } return; }
+    if (!current || current.tagName !== 'BUTTON') { if (items[0]) { focusControl(items[0]); } return; }
     var from = current.getBoundingClientRect(), x = (from.left + from.right) / 2, y = (from.top + from.bottom) / 2;
     var best = null, score = Infinity;
     for (var i = 0; i < items.length; i++) {
@@ -955,7 +1039,7 @@
       var secondary = key === 37 || key === 39 ? Math.abs(dy) : Math.abs(dx);
       if (primary > 1 && secondary < primary * 2 && primary + secondary * 3 < score) { score = primary + secondary * 3; best = items[i]; }
     }
-    if (best) { best.focus(); }
+    if (best) { focusControl(best); }
   }
   document.addEventListener('keydown', function (event) {
     var key = event.keyCode;
@@ -968,8 +1052,14 @@
       if (key === 461 || key === 27) { activate('dismiss-alert'); }
       else if (key === 13) { var focusedOverlay = document.activeElement; if (focusedOverlay && overlay.contains(focusedOverlay) && focusedOverlay.tagName === 'BUTTON') { focusedOverlay.click(); } }
       else if (key === 38 || key === 40) {
-        var overlayButtons = overlay.querySelectorAll('button'); if (overlayButtons.length) { overlayButtons[key === 38 ? 0 : overlayButtons.length - 1].focus(); }
+        var overlayButtons = overlay.querySelectorAll('button'); if (overlayButtons.length) { focusControl(overlayButtons[key === 38 ? 0 : overlayButtons.length - 1]); }
       }
+      return;
+    }
+    if (view === 'settings' && uiScaleDraft !== null) {
+      if (key === 27 || key === 461) { uiScaleDraft = null; render('uiScale'); }
+      else if (key === 37 || key === 39) { changeUiScale((key === 37) !== (prefs.lang === 'ar') ? -1 : 1); }
+      else if (key === 13) { activate('uiScale'); }
       return;
     }
     if (view === 'picker' && stepper() && (key === 37 || key === 39)) { changeStep(key === 37 ? -1 : 1); return; }

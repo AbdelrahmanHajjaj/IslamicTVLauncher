@@ -48,12 +48,15 @@ in the platform adapters. `PrayerComparison` supplies canonical named-method loo
 and signed whole-minute differences. A reference never writes settings or replaces
 the offline schedule; each shell binds the shared read-only `prayer.online` action.
 
-`UiScale` validates the shared four-size policy. Each shell owns persistence and
+`UiScale` validates the shared 80–150% policy in 10% steps. Each shell owns persistence and
 rendering: Android scales native page content and measured overlay windows, keeps
 backgrounds at viewport size, uses local themed dialog resources and bounds dream
 drift by the scaled group. Display-pixel conversion remains separate from the
 saved UI percentage, so service and Activity initialization cannot compound it.
 External Android settings remain controlled by the OS.
+The numeric editor stays inline in each shell. At larger sizes the Home mihrab
+uses the canonical minimum width, while native flow/scroll containers keep
+content and focus reachable; no renderer or layout engine is added to the core.
 The preview keeps website fitting (`--k`) separate from a scaled DOM content
 layer. It fits enlarged groups after model/DOM/font changes, counter-sizes modal
 backdrops and bounds screensaver drift; saved browser preferences stay local.

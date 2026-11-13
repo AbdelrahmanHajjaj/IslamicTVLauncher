@@ -1,11 +1,21 @@
-import { uiFactor, uiPercent } from '../lib/ui-scale';
+import { uiFactor, uiPercent, safeInline } from '../lib/ui-scale';
 import type { Prefs } from '../lib/data';
 
 export function sizeUi(stage: HTMLElement, prefs: Prefs) {
   const value = String(uiPercent(prefs.uiScale));
   if (stage.dataset.uiSize === value) return;
   stage.dataset.uiSize = value;
-  stage.style.setProperty('--ui-size', String(uiFactor(prefs)));
+  const factor = uiFactor(prefs);
+  stage.style.setProperty('--ui-size', String(factor));
+  stage.dataset.largeUi = String(factor > 1.1);
+  if (factor > 1.1) {
+    const side = safeInline(prefs), top = 540 - 540 / factor + 12 / factor;
+    stage.style.setProperty('--large-side-start', `${side}px`);
+    stage.style.setProperty('--large-content-start', `${side + 504}px`);
+    stage.style.setProperty('--large-content-width', `${1920 - 2 * side - 504}px`);
+    stage.style.setProperty('--large-top', `${top}px`);
+    stage.style.setProperty('--large-rows-top', `${top + 104}px`);
+  }
 }
 
 /** Fit page groups without changing their spacing or maximum focus ring. */
@@ -13,8 +23,11 @@ export function fitUi(stage: HTMLElement) {
   if (stage.dataset.screen === 'screensaver') return;
   const content = stage.querySelector<HTMLElement>('.tv-ui');
   if (!content) return;
-  const nodes = content.querySelectorAll<HTMLElement>(
-    ':scope > :not([data-settings]), [data-settings] > :not(.side):not(.rows), .side > .head, .side .nav, .rows.scrolling, .rows:not(.scrolling) > .srow');
+  const nodes = [...content.querySelectorAll<HTMLElement>(
+    ':scope > :not([data-settings]), [data-settings] > :not(.side):not(.rows), .side > .head, .side .nav, .rows.scrolling, .rows:not(.scrolling) > .srow')];
+  if (stage.dataset.screen === 'home' && Number(stage.dataset.uiSize) <= 110) {
+    nodes.push(...content.querySelectorAll<HTMLElement>('.home-countdown,.when,.pills,.gear,.cells,.fav-label,.fav,.more-label,.more'));
+  }
   for (const node of nodes) node.style.removeProperty('translate');
   const factor = Number(stage.dataset.uiSize) / 100;
   if (!(factor > 1)) return;

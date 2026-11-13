@@ -44,10 +44,12 @@ to the Prayer section. Unsaved appearance changes are discarded when leaving.
   level, spoken reminders/announcements, reminder lead time and call-screen duration.
 - Display: Arabic/English, independent digit style, 12/24-hour clock, quick-control
   labels, top/bottom prayer bar, automatic/manual bar dismissal and a manual clock screen.
-  Current source also adds one Interface size control (80/90/100/110%, default 100%)
+  Current source provides an inline − / + Interface size control (80–150% in 10%
+  steps, default 100%)
   for screens, controls, alerts and the prayer bar. Video keeps its original size;
-  the bar stays full width and attached to its chosen edge. This sizing change is
-  installed in 0.2.10; physical sizing acceptance is in progress.
+  the bar stays full width and attached to its chosen edge. Installed 0.2.10 has
+  the earlier four-choice control; Arabic 110% is readable. The expanded inline
+  control and responsive layout await a watched upgrade.
 - Home: mihrab/compact/hidden countdown, mihrab side, compact countdown top/bottom,
   all/current/next/current-and-next/hidden prayer times, the 20 existing color palettes
   and all eight bundled SVG patterns. Android's animated
@@ -216,6 +218,15 @@ offset does **not** change for daylight saving: update it when local rules requi
 Selecting another city does not change the time zone. Keep the TV clock correct and
 compare the displayed times with the timetable you follow locally.
 
+Source version 0.2.11 replaces the size picker with an inline − / + draft editor:
+OK starts/saves, Left/Right step by 10%, and Back cancels. Its shared range is
+80–150%. Above 110%, pages scroll to reveal focused controls; Home's mihrab narrows
+from the canonical 600px width toward the 520px minimum without shrinking text.
+Local ES5/service regressions and Arabic/English browser checks cover all eight
+sizes, unchanged settings and simulated HDMI, mihrab text bounds and the labelled
+Home variants. These tests mock Luna and media. The installed TV remains 0.2.10;
+0.2.11's actual old-WebKit layout and remote acceptance await a watched upgrade.
+
 ## Build and check
 
 Use Node 24 and JDK 17 for the build tools. The build compiles `shared/core` with
@@ -228,7 +239,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.10_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.11_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 

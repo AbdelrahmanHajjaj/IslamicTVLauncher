@@ -252,15 +252,10 @@
   {
     "id": "display.size",
     "section": "display",
-    "kind": "choice",
+    "kind": "number",
     "label": "uiSize",
     "save": "immediate",
-    "choices": [
-      "80",
-      "90",
-      "100",
-      "110"
-    ]
+    "range": "ui-scale"
   },
   {
     "id": "display.hide-system-apps",

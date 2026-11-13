@@ -32,6 +32,10 @@ final class Ui {
 
     static float factor(Context c) { return Prefs.uiScale(c) / 100f; }
 
+    static float mihrabWidth(Context c) {
+        return Math.max(Tokens.LAYOUT_HOME_MIHRAB_MIN_WIDTH, Tokens.LAYOUT_HOME_MIHRAB_WIDTH / Math.max(1f, factor(c)));
+    }
+
     static float safeInline(Context c) {
         float factor = factor(c);
         if (factor <= 1f) return Tokens.SPACE_SAFE_INLINE;

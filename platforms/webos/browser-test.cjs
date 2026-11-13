@@ -877,6 +877,7 @@ const server = http.createServer((req, res) => {
       const items = await page.locator(selector).all();
       assert.ok(items.length, 'expected visible controls: ' + selector);
       for (const item of items) {
+        await item.evaluate(el => { if (el.matches('button')) { el.focus(); document.getElementById('screen').scrollLeft = document.getElementById('screen').scrollTop = 0; document.getElementById('overlay').scrollLeft = document.getElementById('overlay').scrollTop = 0; } else if (document.getElementById('stage').getAttribute('data-large-ui') === 'true') el.scrollIntoView({block:'center', inline:'nearest'}); });
         const b = await item.boundingBox();
         assert.ok(b && b.x >= -0.1 && b.y >= -0.1 && b.x + b.width <= 1920.1 && b.y + b.height <= 1080.1, selector + ' stays on screen: ' + JSON.stringify(b));
         const ring = await item.evaluate(el => {
@@ -884,10 +885,10 @@ const server = http.createServer((req, res) => {
           const css = getComputedStyle(el), scale = JSON.parse(localStorage.getItem('fixture')).prefs.uiScale / 100;
           return (parseFloat(css.outlineWidth) + parseFloat(css.outlineOffset)) * scale;
         });
-        assert.ok(b.x - ring >= -0.5 && b.y - ring >= -0.5 && b.x + b.width + ring <= 1920.5 && b.y + b.height + ring <= 1080.5, 'focused outline stays on screen');
+        assert.ok(b.x - ring >= -0.5 && b.y - ring >= -0.5 && b.x + b.width + ring <= 1920.5 && b.y + b.height + ring <= 1080.5, 'focused outline stays on screen: ' + selector + ' ' + JSON.stringify({box:b,ring}));
       }
     }
-    for (const lang of ['ar', 'en']) for (const size of [80, 90, 100, 110]) {
+    for (const lang of ['ar', 'en']) for (const size of [150, 80, 90, 100, 110, 120, 130, 140]) {
       await page.evaluate(lang => {
         localStorage.setItem('fixture', JSON.stringify({prefs: window.Afnon.prefs({lang, volume: 30, dockAutoHide: 0}), input: 'HDMI_2', startup: {enabled: true}}));
       }, lang);
@@ -897,33 +898,60 @@ const server = http.createServer((req, res) => {
       await page.locator('[data-action=section][data-value=display]').click();
       const beforeSize = await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')));
       await page.locator('[data-ui="display.size"]').click();
-      assert.deepEqual(await page.locator('[data-action=choose]').evaluateAll(items => items.map(el => el.dataset.value)), ['80', '90', '100', '110']);
+      assert.equal(await page.locator('.settings-page').count(), 1, 'size editing stays in the settings row');
+      assert.equal(await page.locator('.picker,.stepper').count(), 0, 'no size editor page');
+      await page.keyboard.press(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
+      assert.equal(await page.locator('[data-ui="display.size"] strong').innerText(), lang === 'ar' ? '١١٠%' : '110%');
       await page.keyboard.press('Escape');
       assert.equal(await page.locator(':focus').getAttribute('data-ui'), 'display.size', 'cancel size picker restores its row');
       assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')).prefs), beforeSize.prefs, 'Back does not save');
       await page.locator('[data-ui="display.size"]').click();
-      await page.locator('.picker [data-action=settings]').click();
-      assert.equal(await page.locator(':focus').getAttribute('data-ui'), 'display.size', 'pointer Back restores the size row');
+      await page.locator('[data-ui-scale-step="1"]').click();
+      await page.locator('[data-action=settings-back]').click();
+      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')).prefs), beforeSize.prefs, 'leaving cancels the inline draft');
+      await page.locator('[data-action=settings]').click();
+      await page.locator('[data-action=section][data-value=display]').click();
       await page.locator('[data-ui="display.size"]').click();
-      await page.locator('[data-action=choose][data-value="' + size + '"]').click();
-      await page.waitForSelector('.settings-page');
+      for (let i = 0; i < 4; i++) await page.locator('[data-ui-scale-step="-1"]').click();
+      assert.equal(await page.locator('[data-ui="display.size"] strong').innerText(), lang === 'ar' ? '٨٠%' : '80%');
+      for (let i = 0; i < 9; i++) await page.locator('[data-ui-scale-step="1"]').click();
+      assert.equal(await page.locator('[data-ui="display.size"] strong').innerText(), lang === 'ar' ? '١٥٠%' : '150%');
+      for (let i = 150; i > size; i -= 10) await page.locator('[data-ui-scale-step="-1"]').click();
+      await page.keyboard.press('Enter');
+      await page.waitForSelector('[data-ui="display.size"]:not(.editing)');
       assert.equal(await page.locator(':focus').getAttribute('data-ui'), 'display.size', 'saving size restores its row');
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('fixture')));
       assert.deepEqual(saved.prefs, {...beforeSize.prefs, uiScale: size}, 'only global UI size changes');
       assert.deepEqual(saved.startup, beforeSize.startup); assert.equal(saved.input, beforeSize.input);
       await fits('[data-ui="display.size"],.settings-page .round-back,.settings-nav button');
-      if (size === 80 || size === 110) await page.screenshot({path:path.join(shots, 'size-' + lang + '-' + size + '-settings.png')});
+      if (size === 80 || size === 110 || size === 150) await page.screenshot({path:path.join(shots, 'size-' + lang + '-' + size + '-settings.png')});
       await page.locator('[data-action=settings-back]').click();
       await fits('.home-quick button,.home-apps button,.home-links button,.verse,.city-name');
+      assert.deepEqual(await page.locator('.arch .verse,.arch .verse-ref,.arch .prayer-name,.arch .prayer-time,.arch .countdown,.arch .city-name').evaluateAll(nodes => {
+        const bad = [];
+        for (const el of nodes) {
+          const box = el.getBoundingClientRect(), text = document.createRange(); text.selectNodeContents(el);
+          for (const ink of text.getClientRects()) if (ink.left < box.left - 1 || ink.right > box.right + 1) bad.push(el.className);
+        }
+        return bad;
+      }), [], 'narrowed mihrab keeps its text inside');
+      const rememberedApp = page.locator('.home-apps .app-tile').nth(1);
+      await rememberedApp.focus(); await page.keyboard.press('ArrowUp');
+      assert.equal(await page.locator('.home-quick button:focus').count(), 1, 'Up reaches the visible top controls');
+      await page.keyboard.press('ArrowDown');
+      assert.equal(await rememberedApp.evaluate(el => el === document.activeElement), true, 'Down returns to the same app');
+      await page.keyboard.press('ArrowDown');
+      assert.equal(await page.locator(':focus').getAttribute('data-action'), 'apps', 'Down reaches visible All apps');
+      await fits('.home-links [data-action=apps]');
       assert.ok(Math.abs((await page.locator('.home-quick button').first().boundingBox()).width - 64 * size / 100) < 0.2, 'controls scale with the setting');
-      if (size === 80 || size === 110) await page.screenshot({path:path.join(shots, 'size-' + lang + '-' + size + '-home.png')});
+      if (size === 80 || size === 110 || size === 150) await page.screenshot({path:path.join(shots, 'size-' + lang + '-' + size + '-home.png')});
       await page.locator('.home-links [data-action=apps]').click();
       await fits('.apps-heading,.apps-tools');
       await page.locator('.app-tile').nth(3).focus(); await page.keyboard.press('ArrowUp');
       assert.equal(await page.locator(':focus').getAttribute('data-action'), 'apps-back');
       await page.keyboard.press(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
       assert.equal(await page.locator(':focus').getAttribute('data-action'), 'prayer-day');
-      await page.keyboard.press('Enter'); await fits('.day-times,.day-details button');
+      await page.keyboard.press('Enter'); await fits('.day-row,.day-row button,.day-details button');
       await page.keyboard.press('Escape'); await page.locator('[data-action=settings]').click();
       await page.locator('[data-action=section][data-value=prayer]').click();
       await page.locator('[data-action=method]').click(); await fits('.picker button'); await page.keyboard.press('Escape');
@@ -934,7 +962,7 @@ const server = http.createServer((req, res) => {
       await fits('.online-check .header,.online-check table,.online-note,[data-action=online-retry]');
       await page.locator('[data-action=online-back]').click();
       await page.locator('[data-action=section][data-value=appearance]').click();
-      await fits('.appearance-preview,.settings-rows');
+      await fits('.appearance-preview,.settings-rows,.carousel-main,.carousel-arrow');
       await page.locator('[data-action=section][data-value=reminders]').click();
       await page.locator('[data-action=voice]').click(); await fits('.voice-list,.voice-footer button');
       await page.keyboard.press('Escape');
@@ -951,7 +979,7 @@ const server = http.createServer((req, res) => {
       await page.locator('[data-action=test-adhan]').click(); await page.waitForFunction(() => document.querySelector('audio')?.getAttribute('src'));
       await fits('.call-column button,.call-verse,.call-name,.call-time,.call-status');
       assert.equal(await page.locator('.call-verse').innerText(), sacred.adhanCall);
-      if (size === 80 || size === 110) await page.screenshot({path:path.join(shots, 'size-' + lang + '-' + size + '-call.png')});
+      if (size === 80 || size === 110 || size === 150) await page.screenshot({path:path.join(shots, 'size-' + lang + '-' + size + '-call.png')});
       await page.keyboard.press('Escape'); await page.waitForSelector('#input-video source', {state:'attached'});
       await tests(); await page.locator('[data-action=settings-back]').click();
       if (await page.locator('[data-action=apps-back]').count()) { await page.locator('[data-action=apps-back]').click(); }
@@ -966,7 +994,7 @@ const server = http.createServer((req, res) => {
         const bar = await page.locator('.bar').boundingBox();
         assert.ok(Math.abs(bar.x) < 0.2 && Math.abs(bar.width - 1920) < 0.2, 'prayer bar fits full width');
         assert.ok(Math.abs(position === 'top' ? bar.y : bar.y + bar.height - 1080) < 0.2, 'bar remains attached to selected edge');
-        if (size === 80 || size === 110) await page.screenshot({path:path.join(shots, 'size-' + lang + '-' + size + '-' + position + '-bar.png')});
+        if (size === 80 || size === 110 || size === 150) await page.screenshot({path:path.join(shots, 'size-' + lang + '-' + size + '-' + position + '-bar.png')});
         await page.keyboard.press('Escape');
       }
       const video = await page.locator('#input-video').boundingBox();
@@ -977,6 +1005,28 @@ const server = http.createServer((req, res) => {
       assert.ok(Math.abs((await page.locator('.bar .icon-button').first().boundingBox()).width - 72 * size / 100) < 0.2, 'saved scale is applied after reopening');
       await page.keyboard.press('Escape');
       console.log('PASS: global size',lang,size,'picker/save/cancel, Home/Apps/header/Today/online/settings/pickers/appearance/voices/clock/inputs/radio/alerts, top/bottom bar, unchanged HDMI');
+    }
+    for (const lang of ['ar', 'en']) for (const variant of [
+      {homeLayout:'mihrab',archSide:'left'}, {homeLayout:'mihrab',archSide:'right'},
+      {homeLayout:'compact',homeBar:'top'}, {homeLayout:'compact',homeBar:'bottom'}, {homeLayout:'hidden'}
+    ]) {
+      await page.evaluate(({lang,variant}) => {
+        const fixture = JSON.parse(localStorage.getItem('fixture'));
+        Object.assign(fixture.prefs, {lang,uiScale:150,quickLabels:true}, variant);
+        localStorage.setItem('fixture',JSON.stringify(fixture));
+      }, {lang,variant});
+      await page.reload(); await page.waitForSelector('#input-video source', {state:'attached'});
+      await page.keyboard.press('Enter'); await page.locator('[data-action=home]').click();
+      await fits('.home-quick button,.home-apps button,.home-links button');
+      const quick = await page.locator('.home-quick').boundingBox(), prayer = await page.locator('.home-prayers').boundingBox();
+      const apps = await page.locator('.home-actions').boundingBox();
+      assert.ok(quick.y + quick.height < prayer.y, 'large labelled controls clear prayer times');
+      assert.ok(prayer.y + prayer.height < apps.y, 'large prayer times clear apps');
+      if (variant.homeLayout === 'compact') {
+        const arch = await page.locator('.arch').boundingBox();
+        assert.ok(arch.y + arch.height < prayer.y || arch.y > apps.y + apps.height, 'large compact countdown clears prayer/app content');
+      }
+      await page.screenshot({path:path.join(shots,'size-'+lang+'-150-home-'+variant.homeLayout+'-'+(variant.archSide||variant.homeBar||'none')+'.png')});
     }
     assert.deepEqual(errors, []);
     console.log('PASS: Arabic/English controls, grouped settings, offsets and cancel, prayer bells, overlays preserving HDMI, audio stop/end/error recovery, radio, theme/layout, persistence and global sizing. Decoder and Luna boundaries are mocked; actual LG tests remain separate.');

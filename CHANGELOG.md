@@ -10,15 +10,18 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
   The watched upgrade preserves existing settings/input/startup; picture/sound and
   the new All apps remote routes are confirmed. Physical sizing/online checks continue.
 
-- A shared Interface size contract offers 80%, 90%, 100% and 110%, defaulting to the
-  current size. Android and LG source add their global picker and scale screens,
+- A shared Interface size contract offers 80–150% in 10% steps, defaulting to
+  100%. Inline − / + controls edit a draft in the settings row, with OK to save
+  and Back to cancel. Android and LG source scale screens,
   controls, alerts and the prayer bar together; HDMI video stays unchanged. Native
   Android also sizes quick menus, dialogs and the screensaver; enlarged settings
   scroll to keep every row reachable. Cancellation restores the originating row.
-  The browser preview applies the same choice to its screens and menus while
+  The browser preview applies the same control to its screens and menus while
   keeping the website frame and backgrounds unchanged. Arabic All apps labels
   keep their count inside the tile, and labelled Home buttons stay on one line.
   Physical-TV sizing acceptance remains pending.
+  At larger sizes, Home reflows and scrolls, and the mihrab narrows toward a shared
+  minimum width while preserving its text sizes to leave more room for controls.
 
 - Android, LG and the browser preview add a manual **Check online** comparison with AlAdhan for all catalog
   locations and methods. It shows six calculated/reference times and signed minute

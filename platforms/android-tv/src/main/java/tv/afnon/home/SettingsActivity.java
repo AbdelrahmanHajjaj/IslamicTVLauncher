@@ -44,6 +44,8 @@ public class SettingsActivity extends Screen {
     private static final int PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, APPEARANCE = 4, NETWORK = 5, DEVICE = 6, SECTIONS = 7;
     private static final int VALUE = 0, SEG = 1, STEP = 2, TOGGLE = 3, CAROUSEL = 4;
     private static final float ROWS_TOP = Tokens.LAYOUT_SETTINGS_ROWS_TOP, ROW_H = Tokens.LAYOUT_SETTINGS_ROW_HEIGHT, ROW_GAP = Tokens.LAYOUT_SETTINGS_ROW_GAP;
+    private boolean largeUi;
+    private float sideStart, contentStart, contentWidth, headerTop, rowsTop, canvasHeight;
     private static final float NAV_TOP = 152, NAV_H = 76, NAV_GAP = 10;
 
     /** One row: what it shows and what OK (and ◀▶ while editing) do. */
@@ -92,6 +94,8 @@ public class SettingsActivity extends Screen {
         int lowest() { return 0; }
 
         int highest() { return 0; }
+
+        int step() { return 1; }
 
         String valueOf(int n) { return ""; }
 
@@ -151,10 +155,17 @@ public class SettingsActivity extends Screen {
         newRoot();
         root.setBackgroundColor(Palette.LAPIS_900);
         readClockFormat();
+        largeUi = Ui.factor(this) > 1.1f;
+        canvasHeight = getResources().getDisplayMetrics().heightPixels / Ui.scale;
+        sideStart = largeUi ? Ui.safeInline(this) : 96;
+        contentStart = largeUi ? sideStart + 504 : Tokens.LAYOUT_SETTINGS_CONTENT_START;
+        contentWidth = largeUi ? 1920 - sideStart - contentStart : Tokens.LAYOUT_SETTINGS_ROW_WIDTH;
+        headerTop = largeUi ? canvasHeight / 2 * (1 - 1 / Ui.factor(this)) + Tokens.SPACE_2 / Ui.factor(this) : 56;
+        rowsTop = largeUi ? headerTop + 104 : ROWS_TOP;
 
         View side = new View(this);
         side.setBackgroundColor(Palette.LAPIS_950);
-        place(side, 0, 0, Tokens.LAYOUT_SETTINGS_SIDEBAR_WIDTH, 1080);
+        place(side, 0, 0, largeUi ? sideStart + 464 : Tokens.LAYOUT_SETTINGS_SIDEBAR_WIDTH, 1080);
 
         LinearLayout head = new LinearLayout(this);
         head.setGravity(Gravity.CENTER_VERTICAL);
@@ -168,23 +179,33 @@ public class SettingsActivity extends Screen {
         head.addView(title, tlp);
         lineHeight(title, 1.1f);
         head.setClipChildren(false);
-        place(head, 96, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        place(head, sideStart, headerTop, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         for (int i = 0; i < SECTIONS; i++) nav[i] = navItem(i);
 
         sectionLabel = caps(text(ui400, Tokens.FONT_SIZE_LABEL, Palette.MIST_400));
         sectionLabel.setAllCaps(!t.ar);
-        place(sectionLabel, 640, 56, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        place(sectionLabel, contentStart, headerTop, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // Save feedback sits below the settings rows.
         saved = text(ui500, 22, Palette.GOLD_400);
         saved.setText(t.saved());
         saved.setAlpha(0);
-        placeEnd(saved, 1920 - 640 - Tokens.LAYOUT_SETTINGS_ROW_WIDTH, 1016,
+        placeEnd(saved, largeUi ? 1920 - contentStart - contentWidth : 1920 - 640 - Tokens.LAYOUT_SETTINGS_ROW_WIDTH, largeUi ? headerTop : 1016,
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         setContentView(root);
         showSection();
+        if (largeUi) {
+            FrameLayout measuredRoot = root;
+            measuredRoot.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override public void onGlobalLayout() {
+                    if (measuredRoot.getHeight() == 0) return;
+                    measuredRoot.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    if (measuredRoot == root) fitLargeRows();
+                }
+            });
+        }
         if (onNav || rows.isEmpty()) focusNav();
         else focusRow(Math.min(rowIndex, rows.size() - 1));
     }
@@ -219,7 +240,8 @@ public class SettingsActivity extends Screen {
         b.addView(v, new FrameLayout.LayoutParams(-1, -1));
         navLabel[i] = v;
         b.setLook(f -> styleNav(i));
-        placeTile(b, 96, NAV_TOP + i * (NAV_H + NAV_GAP), 424, NAV_H);
+        float height = largeUi ? 64 : NAV_H;
+        placeTile(b, sideStart, (largeUi ? rowsTop : NAV_TOP) + i * (height + NAV_GAP), 424, height);
         return b;
     }
 
@@ -255,7 +277,11 @@ public class SettingsActivity extends Screen {
             showAppearancePreview();
         }
         if (section == APPEARANCE || Ui.factor(this) > 1f) {
-            rowScroll = new ScrollView(this);
+            rowScroll = new ScrollView(this) {
+                @Override public boolean requestChildRectangleOnScreen(View child, android.graphics.Rect rectangle, boolean immediate) {
+                    return super.requestChildRectangleOnScreen(child, rectangle, largeUi || immediate);
+                }
+            };
             rowScroll.setClipToPadding(true);
             int padding = Ui.ipx(Tokens.LAYOUT_SETTINGS_SCROLL_PADDING);
             int edge = Ui.ipx(Tokens.SPACE_1);
@@ -267,15 +293,24 @@ public class SettingsActivity extends Screen {
             rowList.setPadding(padding - edge, padding - edge, padding - edge, padding - edge);
             rowScroll.addView(rowList);
             float outside = Tokens.LAYOUT_SETTINGS_SCROLL_PADDING + FocusTile.REACH;
-            float top = section == APPEARANCE ? Tokens.LAYOUT_SETTINGS_APPEARANCE_TOP : ROWS_TOP;
-            float height = section == APPEARANCE ? Tokens.LAYOUT_SETTINGS_APPEARANCE_ROWS_HEIGHT
+            float top = largeUi ? rowsTop + (section == APPEARANCE ? 224 : 0) : section == APPEARANCE ? Tokens.LAYOUT_SETTINGS_APPEARANCE_TOP : ROWS_TOP;
+            float height = largeUi ? canvasHeight - headerTop - top + outside : section == APPEARANCE ? Tokens.LAYOUT_SETTINGS_APPEARANCE_ROWS_HEIGHT
                 : getResources().getDisplayMetrics().heightPixels / Ui.scale / Ui.factor(this) - top - Tokens.SPACE_SAFE_BLOCK;
-            place(rowScroll, Tokens.LAYOUT_SETTINGS_CONTENT_START - outside, top - outside,
-                Tokens.LAYOUT_SETTINGS_ROW_WIDTH + 2 * outside, height);
+            place(rowScroll, contentStart - outside, top - outside, contentWidth + 2 * outside, height);
         }
         rows.addAll(prayerOffsetsPage ? offsetRows() : rowsFor(section));
         for (int i = 0; i < rows.size(); i++) addRow(rows.get(i), i);
+        if (largeUi) fitLargeRows();
         refresh();
+    }
+
+    private void fitLargeRows() {
+        if (rowScroll == null || root.getHeight() == 0) return;
+        float factor = Ui.factor(this);
+        float bottom = root.getHeight() * (1 + 1 / factor) / 2 - Ui.px(Tokens.SPACE_2) / factor;
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rowScroll.getLayoutParams();
+        int height = Math.max(1, (int) Math.floor(bottom - lp.topMargin));
+        if (lp.height != height) { lp.height = height; rowScroll.setLayoutParams(lp); }
     }
 
     private static String[] numberKeys(int[] values) {
@@ -339,7 +374,7 @@ public class SettingsActivity extends Screen {
                 HomeLayout h = homePreviewLayout;
                 box(c, h.x, Tokens.SPACE_SAFE_BLOCK, 400, 100, previewStyle.colors[6]);
                 for (int i = 0; i < 5; i++) box(c, h.x + h.width - 472 + i * 100, h.quickY, 72, 72, i == 0 ? previewStyle.colors[4] : previewStyle.colors[3]);
-                if (h.mode == HomeLayout.MIHRAB) box(c, h.panelX, h.panelY, Tokens.LAYOUT_HOME_MIHRAB_WIDTH, Tokens.LAYOUT_HOME_MIHRAB_HEIGHT, previewStyle.colors[3]);
+                if (h.mode == HomeLayout.MIHRAB) box(c, h.panelX, h.panelY, h.panelWidth, Tokens.LAYOUT_HOME_MIHRAB_HEIGHT, previewStyle.colors[3]);
                 if (h.mode == HomeLayout.COMPACT) box(c, h.x, h.panelY, h.width, Tokens.LAYOUT_HOME_BAR_HEIGHT, previewStyle.colors[3]);
                 int slots = homePreviewSlots;
                 float cw = Math.min(Tokens.LAYOUT_HOME_TILE_MAX_WIDTH, (h.width - (slots - 1) * 12) / Math.max(1, slots));
@@ -553,14 +588,15 @@ public class SettingsActivity extends Screen {
                     int selected() { return Math.max(0, Arrays.asList(values).indexOf(Prefs.clock(c))); }
                     void select(int i) { prefs().edit().putString("clock", values[i]).apply(); readClockFormat(); }
                 },
-                new Row("display.size", SEG) {
-                    final String[] values = UiContract.INSTANCE.choices("display.size");
-                    String[] keys() { return values.clone(); }
+                new Row("display.size", STEP) {
                     String label() { return t.uiSize(); }
                     String help() { return t.uiSizeHelp(); }
-                    String[] segs() { return digits(Arrays.stream(values).map(value -> value + "%").toArray(String[]::new)); }
-                    int selected() { return Arrays.asList(values).indexOf(String.valueOf(Prefs.uiScale(c))); }
-                    void select(int i) { Prefs.setUiScale(c, Integer.parseInt(values[i])); relaunch(); }
+                    int amount() { return Prefs.uiScale(c); }
+                    int lowest() { return tv.afnon.core.UiScale.MIN_PERCENT; }
+                    int highest() { return tv.afnon.core.UiScale.MAX_PERCENT; }
+                    int step() { return tv.afnon.core.UiScale.STEP_PERCENT; }
+                    String valueOf(int n) { return t.d(n + "%"); }
+                    void setAmount(int n) { Prefs.setUiScale(c, n); relaunch(); }
                 },
                 new Row("display.hide-system-apps", TOGGLE) {
                     String label() { return t.hideSystemApps(); }
@@ -782,32 +818,34 @@ public class SettingsActivity extends Screen {
         r.tile.setRest(Palette.LAPIS_800, 0, 0);
         LinearLayout line = new LinearLayout(this);
         line.setGravity(Gravity.CENTER_VERTICAL);
-        line.setPadding(Ui.ipx(28), 0, Ui.ipx(28), 0);
+        if (largeUi) line.setOrientation(LinearLayout.VERTICAL);
+        line.setPadding(Ui.ipx(28), largeUi ? Ui.ipx(12) : 0, Ui.ipx(28), largeUi ? Ui.ipx(12) : 0);
         LinearLayout words = new LinearLayout(this);
         words.setOrientation(LinearLayout.VERTICAL);
         r.label = text(ui500, Tokens.FONT_SIZE_BODY, Palette.PLASTER_100);
         r.help = text(r.prayer() >= 0 ? ui500 : ui400, r.prayer() >= 0 ? Tokens.FONT_SIZE_BODY_L : Tokens.FONT_SIZE_CAPTION, Palette.PLASTER_100);
-        r.help.setSingleLine(true);
+        r.help.setSingleLine(!largeUi);
         if (r.prayer() >= 0) r.help.setTextDirection(View.TEXT_DIRECTION_LTR);
         words.addView(r.label);
-        if (r.prayer() < 0) words.addView(r.help);
+        if (r.prayer() < 0 || largeUi) words.addView(r.help);
         lineHeight(r.label, 1.25f);
         if (r.prayer() < 0) lineHeight(r.help, 1.35f);
         else r.help.setIncludeFontPadding(false);
-        line.addView(words, new LinearLayout.LayoutParams(0, -2, 1));
+        line.addView(words, largeUi ? new LinearLayout.LayoutParams(-1, -2) : new LinearLayout.LayoutParams(0, -2, 1));
         r.control = new LinearLayout(this);
         r.control.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-2, -2);
-        clp.setMarginStart(Ui.ipx(24));
+        if (largeUi) clp.topMargin = Ui.ipx(12); else clp.setMarginStart(Ui.ipx(24));
         line.addView(r.control, clp);
-        r.tile.addView(line, new FrameLayout.LayoutParams(-1, -1));
-        if (r.prayer() >= 0) {
+        r.tile.addView(line, new FrameLayout.LayoutParams(-1, largeUi ? -2 : -1));
+        if (largeUi) r.tile.setMinimumHeight(Ui.ipx(ROW_H + 2 * FocusTile.REACH));
+        if (r.prayer() >= 0 && !largeUi) {
             r.help.setGravity(Gravity.CENTER);
             r.tile.addView(r.help, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_OFFSET_TIME_WIDTH), -2, Gravity.CENTER));
         }
         r.tile.setLook(f -> render(r, f));
         if (rowScroll != null) {
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, Ui.ipx(ROW_H + 2 * FocusTile.REACH));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, largeUi ? -2 : Ui.ipx(ROW_H + 2 * FocusTile.REACH));
             if (i > 0) lp.topMargin = Ui.ipx(ROW_GAP - 2 * FocusTile.REACH);
             rowList.addView(r.tile, lp);
         } else placeTile(r.tile, Tokens.LAYOUT_SETTINGS_CONTENT_START, ROWS_TOP + i * (ROW_H + ROW_GAP), Tokens.LAYOUT_SETTINGS_ROW_WIDTH, ROW_H);
@@ -817,7 +855,7 @@ public class SettingsActivity extends Screen {
     private void refresh() {
         if (appearancePreview != null) updateAppearancePreview();
         if (appearancePreview != null) {
-            homePreviewLayout = new HomeLayout(homeDraft[0], homeDraft[1], homeDraft[2], homeDraft[3], Apps.slots(this, t).size(), homeDraft[4] == 1, rtl, Prefs.quickLabels(this), Ui.safeInline(this));
+            homePreviewLayout = new HomeLayout(homeDraft[0], homeDraft[1], homeDraft[2], homeDraft[3], Apps.slots(this, t).size(), homeDraft[4] == 1, rtl, Prefs.quickLabels(this), Ui.safeInline(this), Ui.mihrabWidth(this));
             homePreviewSlots = HomeLayout.prayers(homePreviewLayout.table, -1, 0).length;
             appearancePreview.getChildAt(0).invalidate();
         }
@@ -908,6 +946,7 @@ public class SettingsActivity extends Screen {
                 TextView v = text(ui400, 26, ink);
                 v.setText(r.valueOf(edit ? draft : r.amount()));
                 v.setGravity(Gravity.CENTER);
+                if (r.contract.getId().equals("display.size")) v.setTextDirection(View.TEXT_DIRECTION_LTR);
                 v.setMinWidth(Ui.ipx(150));
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
                 lp.setMarginStart(Ui.ipx(18));
@@ -943,7 +982,7 @@ public class SettingsActivity extends Screen {
         rowIndex = i;
         Row r = rows.get(i);
         r.tile.requestFocus();
-        if (rowScroll != null) r.tile.post(() -> {
+        Runnable reveal = () -> {
             if (rowScroll == null || !r.tile.isFocused()) return;
             int padding = Ui.ipx(Tokens.LAYOUT_SETTINGS_SCROLL_PADDING);
             int top = r.tile.getTop() - padding, bottom = r.tile.getBottom() + padding;
@@ -951,7 +990,17 @@ public class SettingsActivity extends Screen {
                 - rowScroll.getPaddingTop() - rowScroll.getPaddingBottom();
             if (top < y) rowScroll.scrollTo(0, top);
             else if (bottom > y + height) rowScroll.scrollTo(0, bottom - height);
-        });
+        };
+        if (rowScroll != null) {
+            if (largeUi) r.tile.getViewTreeObserver().addOnPreDrawListener(new android.view.ViewTreeObserver.OnPreDrawListener() {
+                @Override public boolean onPreDraw() {
+                    r.tile.getViewTreeObserver().removeOnPreDrawListener(this);
+                    reveal.run();
+                    return true;
+                }
+            });
+            else r.tile.post(reveal);
+        }
         styleNav(section);
     }
 
@@ -1044,7 +1093,7 @@ public class SettingsActivity extends Screen {
                 Row r = editing;
                 int lo = r.kind == SEG ? 0 : r.lowest();
                 int hi = r.kind == SEG ? r.segs().length - 1 : r.highest();
-                int to = Math.max(lo, Math.min(hi, draft + (toEnd ? 1 : -1)));
+                int to = Math.max(lo, Math.min(hi, draft + (toEnd ? 1 : -1) * r.step()));
                 if (to != draft) {
                     draft = to;
                     render(r, true);
@@ -1167,7 +1216,9 @@ public class SettingsActivity extends Screen {
         previewStyle = Appearance.style(this, Appearance.PRESETS[themeChoice], BACKGROUNDS[backgroundChoice], lightChoice);
         View home = homeLayoutPreview();
         home.setContentDescription(t.appearancePreview());
-        appearancePreview.addView(home, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_PREVIEW_WIDTH), Ui.ipx(Tokens.LAYOUT_SETTINGS_PREVIEW_HEIGHT), Gravity.START));
+        float previewWidth = largeUi ? contentWidth * .45f : Tokens.LAYOUT_SETTINGS_PREVIEW_WIDTH;
+        float previewHeight = largeUi ? previewWidth * 9 / 16 : Tokens.LAYOUT_SETTINGS_PREVIEW_HEIGHT;
+        appearancePreview.addView(home, new FrameLayout.LayoutParams(Ui.ipx(previewWidth), Ui.ipx(previewHeight), Gravity.START | Gravity.CENTER_VERTICAL));
         LinearLayout caption = new LinearLayout(this);
         caption.setOrientation(LinearLayout.VERTICAL);
         TextView label = text(ui400, Tokens.FONT_SIZE_LABEL, Palette.MIST_400); label.setText(t.homeHelp()); caption.addView(label);
@@ -1175,8 +1226,8 @@ public class SettingsActivity extends Screen {
         caption.addView(appearanceName);
         appearanceSwatches = new LinearLayout(this);
         caption.addView(appearanceSwatches);
-        appearancePreview.addView(caption, new FrameLayout.LayoutParams(Ui.ipx(Tokens.LAYOUT_SETTINGS_APPEARANCE_CAPTION_WIDTH), -2, Gravity.END | Gravity.CENTER_VERTICAL));
-        place(appearancePreview, Tokens.LAYOUT_SETTINGS_CONTENT_START, Tokens.LAYOUT_SETTINGS_ROWS_TOP, Tokens.LAYOUT_SETTINGS_ROW_WIDTH, Tokens.LAYOUT_SETTINGS_PREVIEW_HEIGHT);
+        appearancePreview.addView(caption, new FrameLayout.LayoutParams(Ui.ipx(largeUi ? contentWidth - previewWidth - 24 : Tokens.LAYOUT_SETTINGS_APPEARANCE_CAPTION_WIDTH), -2, Gravity.END | Gravity.CENTER_VERTICAL));
+        place(appearancePreview, contentStart, rowsTop, contentWidth, largeUi ? 200 : Tokens.LAYOUT_SETTINGS_PREVIEW_HEIGHT);
         updateAppearancePreview();
     }
 

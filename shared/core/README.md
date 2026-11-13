@@ -57,8 +57,8 @@ values, while `validateChoiceCoverage` accounts for offered conditional variants
 and explicit platform option gaps. `prayerAdhanId` maps each of the five prayer
 indexes to its toggle definition and rejects sunrise. Stored-value conversions remain in the shells.
 
-`UiScale` defines the shared 80/90/100/110 percent preference policy, matching
-`display.size` choices. Unknown or invalid values resolve to the original 100%.
+`UiScale` defines the shared 80–150 percent preference policy in steps of 10, matching
+the numeric `display.size` contract. Unknown or invalid values resolve to the original 100%.
 Canvas fitting, text/control scaling, video exclusion and persistence belong to
 the renderers; defining the control does not implement it in a shell.
 

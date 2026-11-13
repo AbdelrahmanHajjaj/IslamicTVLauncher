@@ -170,6 +170,10 @@ final class Tokens {
     static final float LAYOUT_HOME_TILE_MAX_HEIGHT = 156f;
     /** layout.home.tile-classic-height */
     static final float LAYOUT_HOME_TILE_CLASSIC_HEIGHT = 196f;
+    /** layout.home.more-min-width */
+    static final float LAYOUT_HOME_MORE_MIN_WIDTH = 160f;
+    /** layout.home.mihrab-min-width */
+    static final float LAYOUT_HOME_MIHRAB_MIN_WIDTH = 520f;
     /** layout.home.app-icon-size */
     static final float LAYOUT_HOME_APP_ICON_SIZE = 72f;
     /** layout.home.app-icon-classic-size */

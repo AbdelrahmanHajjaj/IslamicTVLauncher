@@ -46,7 +46,7 @@ final class UiScaleWindowDeviceCheck {
             prefs.edit().putBoolean("adhan", false).putBoolean("announce", false).putBoolean("remind_voice", false)
                 .putInt("remind", 0).putBoolean("remote_enabled", false).putInt("appearance_cycle", 0)
                 .putString("dock_mode", "hidden").putBoolean("quick_labels", false).commit();
-            for (String language : new String[] {"ar", "en"}) for (int size : new int[] {80, 90, 100, 110}) {
+            for (String language : new String[] {"ar", "en"}) for (int size : new int[] {150, 80, 90, 100, 110, 120, 130, 140}) {
                 prefs.edit().putString("locale", language).putInt("ui_scale", size).commit();
                 MainActivity home = launch(test, MainActivity.class); active[0] = home;
                 onMain(test, () -> popup[0] = QuickMenus.show(home, home.getCurrentFocus()));
@@ -133,6 +133,8 @@ final class UiScaleWindowDeviceCheck {
                 shell(test, "am start -W -a android.settings.DREAM_SETTINGS"); settle(test);
                 String app = test.getTargetContext().getString(R.string.app_name);
                 String preview = "Preview " + app;
+                until(test, () -> preview(test, preview) != null || named(test.getUiAutomation(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES).getRootInActiveWindow(), app) != null,
+                    "System Settings loads the installed launcher dream");
                 if (preview(test, preview) == null) {
                     AccessibilityNodeInfo choice = named(test.getUiAutomation(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES).getRootInActiveWindow(), app);
                     check(choice != null, "System Settings lists the installed launcher dream");
@@ -271,7 +273,7 @@ final class UiScaleWindowDeviceCheck {
         check(ready.getAsBoolean(), message); settle(test);
     }
     private static void shot(Instrumentation test, String language, int size, String name) throws Exception {
-        if (size != 80 && size != 110) return;
+        if (size != 80 && size != 110 && size != 150) return;
         Bitmap image = test.getUiAutomation(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES).takeScreenshot();
         check(image != null, "Window screenshot is available");
         try (FileOutputStream output = new FileOutputStream(test.getTargetContext().getCacheDir() + "/size-native-" + language + "-" + size + "-" + name + ".png")) { image.compress(Bitmap.CompressFormat.PNG, 100, output); }

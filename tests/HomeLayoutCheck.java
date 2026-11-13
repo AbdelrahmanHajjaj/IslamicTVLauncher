@@ -6,13 +6,12 @@ public final class HomeLayoutCheck {
     private static void check(boolean ok, String message) { if (!ok) throw new AssertionError(message); }
     public static void main(String[] args) {
         int cases = 0;
-        for (float margin : new float[] {96, 128})
+        for (float margin : new float[] {96, 128, 378}) for (float panelWidth : new float[] {600, 520})
         for (int mode = 0; mode < 3; mode++) for (int side = 0; side < 3; side++)
         for (int bar = 0; bar < 2; bar++) for (int table = 0; table < 5; table++)
         for (int count = 0; count <= 9; count++) for (boolean classic : new boolean[] {false, true})
         for (boolean rtl : new boolean[] {false, true}) for (boolean labels : new boolean[] {false, true}) {
-            HomeLayout h = margin == 96 ? new HomeLayout(mode, side, bar, table, count, classic, rtl, labels)
-                : new HomeLayout(mode, side, bar, table, count, classic, rtl, labels, margin);
+            HomeLayout h = new HomeLayout(mode, side, bar, table, count, classic, rtl, labels, margin, panelWidth);
             check(h.x >= margin && h.x + h.width <= 1920 - margin, "safe horizontal bounds");
             check(h.recentY + 94 <= 1024, "recent apps fit");
             check(h.count == 0 || h.tileHeight >= 120, "readable app tiles");
@@ -20,10 +19,10 @@ public final class HomeLayoutCheck {
             check(h.count == 0 || h.favouritesY + h.rows * h.tileHeight + (h.rows - 1) * 24 < h.recentLabelY, "app rows do not overlap");
             check(table == 4 || h.tableY + 112 < h.labelY, "table does not overlap apps");
             if (mode == 0) {
-                check(h.panelX + 600 < h.x || h.x + h.width < h.panelX, "mihrab does not overlap content");
-                float physical = rtl ? 1920 - h.panelX - 600 : h.panelX;
+                check(h.panelX + panelWidth < h.x || h.x + h.width < h.panelX, "mihrab does not overlap content");
+                float physical = rtl ? 1920 - h.panelX - panelWidth : h.panelX;
                 if (side == 1) check(physical == margin, "explicit left is physical left in either language");
-                if (side == 2) check(physical == 1920 - margin - 600, "explicit right is physical right in either language");
+                if (side == 2) check(physical == 1920 - margin - panelWidth, "explicit right is physical right in either language");
             }
             if (mode == 1 && bar == 0) check(h.panelY + 100 < h.tableY, "top bar separated");
             if (mode == 1 && bar == 1) check(h.recentY + 94 < h.panelY, "bottom bar separated");

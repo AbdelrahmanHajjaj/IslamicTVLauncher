@@ -30,11 +30,13 @@ object UiContract {
     }
 
     fun minimum(id: String): Int = when (bind(id, "number").range) {
+        "ui-scale" -> UiScale.MIN_PERCENT
         "percent", "bearing" -> 0
         else -> -maximum(id)
     }
 
     fun maximum(id: String): Int = when (bind(id, "number").range) {
+        "ui-scale" -> UiScale.MAX_PERCENT
         "prayer-offset" -> PrayerRules.MAX_OFFSET_MINUTES
         "hijri-offset" -> PrayerRules.MAX_HIJRI_OFFSET_DAYS
         "percent" -> 100

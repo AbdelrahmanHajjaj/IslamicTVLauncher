@@ -36,22 +36,22 @@ final class ArchView extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int ow, int oh) {
-        float k = w / 600f;
+        float k = w / 600f, y = h / 900f;
         // design/Home.dc.html: M0 900 L0 330 C0 170 140 70 300 0 C460 70 600 170 600 330 L600 900 Z
         outer.reset();
-        outer.moveTo(0, 900 * k);
-        outer.lineTo(0, 330 * k);
-        outer.cubicTo(0, 170 * k, 140 * k, 70 * k, 300 * k, 0);
-        outer.cubicTo(460 * k, 70 * k, 600 * k, 170 * k, 600 * k, 330 * k);
-        outer.lineTo(600 * k, 900 * k);
+        outer.moveTo(0, 900 * y);
+        outer.lineTo(0, 330 * y);
+        outer.cubicTo(0, 170 * y, 140 * k, 70 * y, 300 * k, 0);
+        outer.cubicTo(460 * k, 70 * y, 600 * k, 170 * y, 600 * k, 330 * y);
+        outer.lineTo(600 * k, 900 * y);
         outer.close();
         // M18 900 L18 334 C18 184 150 92 300 22 C450 92 582 184 582 334 L582 900
         innerLine.reset();
-        innerLine.moveTo(18 * k, 900 * k);
-        innerLine.lineTo(18 * k, 334 * k);
-        innerLine.cubicTo(18 * k, 184 * k, 150 * k, 92 * k, 300 * k, 22 * k);
-        innerLine.cubicTo(450 * k, 92 * k, 582 * k, 184 * k, 582 * k, 334 * k);
-        innerLine.lineTo(582 * k, 900 * k);
+        innerLine.moveTo(18 * k, 900 * y);
+        innerLine.lineTo(18 * k, 334 * y);
+        innerLine.cubicTo(18 * k, 184 * y, 150 * k, 92 * y, 300 * k, 22 * y);
+        innerLine.cubicTo(450 * k, 92 * y, 582 * k, 184 * y, 582 * k, 334 * y);
+        innerLine.lineTo(582 * k, 900 * y);
     }
 
     @Override

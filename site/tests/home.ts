@@ -5,7 +5,7 @@ import { makeCtx } from '../src/lib/ctx';
 import { cellsHtml } from '../src/screens/home';
 import { rowsFor, pick, DISPLAY, APPEARANCE, PRAYER, rowsHtml, previewHtml } from '../src/screens/settings';
 
-for (const uiScale of [100, 110]) for (let homeCountdown = 0; homeCountdown < 3; homeCountdown++)
+for (const uiScale of [100, 110, 120, 130, 140, 150]) for (let homeCountdown = 0; homeCountdown < 3; homeCountdown++)
 for (let homeSide = 0; homeSide < 3; homeSide++) for (let homeBar = 0; homeBar < 2; homeBar++)
 for (let homePrayers = 0; homePrayers < 5; homePrayers++) for (let count = 0; count <= 9; count++)
 for (const homeLayoutMode of ['classic', 'two_rows'] as const) for (const rtl of [false, true]) for (const quickLabels of [false, true]) {
@@ -19,7 +19,10 @@ for (const homeLayoutMode of ['classic', 'two_rows'] as const) for (const rtl of
   assert.ok(h.tileWidth > 0 && h.tileWidth <= 640);
   if (homeCountdown !== 0 && count === 6 && homeLayoutMode !== 'classic') assert.equal(h.columns, 4);
   if (h.count) assert.ok(h.favouritesY - (10 + (h.tileHeight + 20) * .03) > h.labelY + 22 * 1.4 + 8);
-  if (homeCountdown === 0) assert.ok(h.panelX + 600 < h.x || h.x + h.width < h.panelX);
+  if (homeCountdown === 0) {
+    assert.ok(h.panelWidth >= 520 && h.panelWidth <= 600);
+    assert.ok(h.panelX + h.panelWidth < h.x || h.x + h.width < h.panelX);
+  }
   if (homeCountdown === 1 && homeBar === 1) assert.ok(h.recentY + 94 < h.panelY);
 }
 assert.equal(homeChoice(NaN, 2), 0);

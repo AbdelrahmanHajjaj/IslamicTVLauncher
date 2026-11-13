@@ -88,7 +88,7 @@ const { t, lang } = ctx;
       const r = rowEls()[Math.max(0, Math.min(rowEls().length - 1, i))];
       if (!r) return;
       r.focus({ preventScroll: true });
-      if (section === APPEARANCE) {
+      if (rowsEl.classList.contains('scrolling')) {
         const pad = parseFloat(getComputedStyle(rowsEl).paddingTop);
         if (r.offsetTop - pad < rowsEl.scrollTop) rowsEl.scrollTop = r.offsetTop - pad;
         else if (r.offsetTop + r.offsetHeight + pad > rowsEl.scrollTop + rowsEl.clientHeight)
@@ -103,7 +103,8 @@ const { t, lang } = ctx;
       $('[data-appearance-preview]').hidden = section !== APPEARANCE;
       if (appearanceDraft) appearance($('[data-appearance-preview]'), appearanceDraft);
       $('[data-theme-name]').textContent = ctx.t.list('themeNames')[Math.max(0, THEMES.indexOf(rowCtx().prefs.theme ?? 'mihrab'))];
-      rowsEl.classList.toggle('scrolling', section === APPEARANCE);
+      rowsEl.classList.toggle('scrolling', section === APPEARANCE || (ctx.prefs.uiScale ?? 100) > 110);
+      rowsEl.classList.toggle('appearance', section === APPEARANCE);
       if (appearanceDraft) $('[data-home-plan]').innerHTML = homePreview(appearanceDraft, rtl);
       $('[data-label]').textContent = offsetsPage ? ctx.t.s('prayerOffsets') : sectionName(ctx.t, section);
       const h = rowsHtml(rowCtx(), section, radioOn, edit, offsetsPage);
@@ -507,6 +508,30 @@ const { t, lang } = ctx;
 
   .settings .rows.scrolling { position:absolute; inset-inline-start:calc(var(--layout-settings-content-start) - var(--layout-settings-scroll-padding)); top:calc(var(--layout-settings-appearance-top) - var(--layout-settings-scroll-padding)); width:calc(var(--layout-settings-row-width) + 2 * var(--layout-settings-scroll-padding)); height:calc(var(--layout-settings-appearance-rows-height) - var(--focus-ring-offset) - var(--focus-ring-width)); overflow-y:auto; overflow-x:hidden; padding:var(--layout-settings-scroll-padding); display:flex; flex-direction:column; gap:var(--layout-settings-row-gap); }
   .settings .rows.scrolling .srow { position:relative; inset-inline-start:auto; top:auto !important; flex:none; }
+  .tv[data-large-ui='true'] .settings .side { width:calc(var(--large-side-start) + 464px); }
+  .tv[data-large-ui='true'] .settings .head { inset-inline-start:var(--large-side-start); top:var(--large-top); }
+  .tv[data-large-ui='true'] .settings .nav { inset-inline-start:var(--large-side-start); top:calc(var(--large-rows-top) + var(--nav-index) * 74px) !important; height:64px; }
+  .tv[data-large-ui='true'] .settings .label { inset-inline-start:var(--large-content-start); top:var(--large-top); max-width:var(--large-content-width); }
+  .tv[data-large-ui='true'] .settings .rows.scrolling {
+    inset-inline-start:calc(var(--large-content-start) - var(--layout-settings-scroll-padding));
+    top:calc(var(--large-rows-top) - var(--layout-settings-scroll-padding));
+    width:calc(var(--large-content-width) + 2 * var(--layout-settings-scroll-padding));
+    height:calc(1080px - var(--large-top) - var(--large-rows-top) + var(--layout-settings-scroll-padding));
+  }
+  .tv[data-large-ui='true'] .settings .rows.appearance { top:calc(var(--large-rows-top) + 224px - var(--layout-settings-scroll-padding)); height:calc(1080px - var(--large-top) - var(--large-rows-top) - 224px + var(--layout-settings-scroll-padding)); }
+  .tv[data-large-ui='true'] .settings .rows .srow { width:100%; height:auto; min-height:var(--layout-settings-row-height); flex-direction:column; align-items:flex-start; padding:12px var(--layout-settings-row-padding); gap:12px; }
+  .tv[data-large-ui='true'] .settings .words { width:100%; }
+  .tv[data-large-ui='true'] .settings .rh { white-space:normal; overflow:visible; }
+  .tv[data-large-ui='true'] .settings .offset-time { position:static; transform:none; width:auto; }
+  .tv[data-large-ui='true'] .settings .appearance-preview { inset-inline-start:var(--large-content-start); top:var(--large-rows-top); width:var(--large-content-width); height:200px; gap:24px; }
+  .tv[data-large-ui='true'] .settings .appearance-home { width:45%; height:auto; aspect-ratio:16/9; }
+  .tv[data-large-ui='true'] .settings .appearance-caption { width:calc(55% - 24px); }
+  .tv[data-large-ui='true'] .settings .appearance-caption h3 { margin:8px 0 12px; }
+  .tv[data-large-ui='true'] .settings .swatches { gap:var(--space-2); }
+  .tv[data-large-ui='true'] .settings .hints { display:none; }
+  .tv[data-large-ui='true'] .settings .ch-list { max-height:calc(1080px / var(--ui-size) - 240px); }
+  .tv[data-large-ui='true'] .settings .online-body { min-height:0; overflow-y:auto; }
+  .tv[data-large-ui='true'] .settings .online-heading, .tv[data-large-ui='true'] .settings .online-note, .tv[data-large-ui='true'] .settings .online-retry { flex-shrink:0; }
   /* Rows: label and help at the start, the control at the end. */
   .settings .srow {
     inset-inline-start: var(--layout-settings-content-start); width: var(--layout-settings-row-width); height: var(--layout-settings-row-height); padding: 0 var(--layout-settings-row-padding); align-items: center; justify-content: space-between;

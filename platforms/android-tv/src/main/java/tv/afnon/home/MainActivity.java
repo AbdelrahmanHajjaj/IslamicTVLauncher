@@ -33,6 +33,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +65,7 @@ public class MainActivity extends Screen {
     private int favouriteCount, recentCount;
     private boolean classicHome;
     private HomeLayout home;
+    private View countdownPanel;
     private PrayerDay day;
     private long lastMinute = -1;
     private int lastFav = F0;
@@ -206,7 +209,7 @@ public class MainActivity extends Screen {
         List<String> favs = Apps.slots(this, t);
         classicHome = Prefs.classicHome(this);
         home = new HomeLayout(Prefs.homeCountdown(this), Prefs.homeSide(this), Prefs.homeBar(this),
-            Prefs.homePrayers(this), favs.size(), classicHome, rtl, Prefs.quickLabels(this), Ui.safeInline(this));
+            Prefs.homePrayers(this), favs.size(), classicHome, rtl, Prefs.quickLabels(this), Ui.safeInline(this), Ui.mihrabWidth(this));
         favouriteCount = home.count;
         buildCountdown();
         nodes[QIBLA] = quickPill(t.today(), Icon.COMPASS, () -> startActivity(new Intent(this, PrayerDayActivity.class)));
@@ -328,6 +331,7 @@ public class MainActivity extends Screen {
                 if (!candidate) nodes[i].setAlpha(.4f);
             }
         }
+        if (Ui.factor(this) > 1.1f) largeHome(when, pills, fav, recent, slots);
         setContentView(root);
         builtApps = appsKey();
         lastMinute = -1;
@@ -340,29 +344,137 @@ public class MainActivity extends Screen {
         restore.requestFocus();
     }
 
+    /** Large text keeps the existing sections in flow; scrolling replaces clipping. */
+    private void largeHome(View when, View pills, View fav, View recent, int slots) {
+        float reach = FocusTile.REACH;
+        LinearLayout column = new LinearLayout(this);
+        column.setOrientation(LinearLayout.VERTICAL);
+        column.setClipChildren(false);
+        when.setPadding(Ui.ipx(reach), 0, Ui.ipx(reach), 0);
+        fav.setPadding(Ui.ipx(reach), 0, Ui.ipx(reach), 0);
+        recent.setPadding(Ui.ipx(reach), 0, Ui.ipx(reach), 0);
+        appendLarge(column, largeShelf(pills), 0);
+        appendLarge(column, when, Tokens.SPACE_4);
+        boolean compact = home.mode == HomeLayout.COMPACT, bottom = Prefs.homeBar(this) == 1;
+        if (compact && !bottom) appendLarge(column, countdownPanel, Tokens.SPACE_4);
+        if (slots > 0) {
+            FrameLayout times = new FrameLayout(this);
+            int columns = Math.min(slots, 3);
+            float width = Math.min(Tokens.LAYOUT_HOME_TILE_MAX_WIDTH, (home.width - (columns - 1) * 12) / columns);
+            for (int i = 0; i < slots; i++) {
+                root.removeView(cell[i]);
+                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(Ui.ipx(width), Ui.ipx(Tokens.LAYOUT_HOME_TABLE_HEIGHT), Gravity.TOP | Gravity.START);
+                lp.setMarginStart(Ui.ipx(reach + i % columns * (width + 12)));
+                lp.topMargin = Ui.ipx(i / columns * (Tokens.LAYOUT_HOME_TABLE_HEIGHT + 12));
+                times.addView(cell[i], lp);
+            }
+            appendLarge(column, times, Tokens.SPACE_4);
+        }
+        if (favouriteCount > 0) {
+            appendLarge(column, fav, Tokens.SPACE_4);
+            appendLarge(column, largeGroup(F0, M0, home.x - reach, home.favouritesY - reach), Tokens.SPACE_2);
+        }
+        appendLarge(column, recent, Tokens.SPACE_4);
+        appendLarge(column, largeShelf(largeGroup(M0, ALL + 1, home.x - reach, home.recentY - reach)), Tokens.SPACE_2);
+        if (compact && bottom) appendLarge(column, countdownPanel, Tokens.SPACE_4);
+        place(column, home.x - reach, Tokens.SPACE_SAFE_BLOCK - reach, home.width + 2 * reach, -2);
+
+        FrameLayout canvas = new FrameLayout(this);
+        canvas.setLayoutDirection(root.getLayoutDirection());
+        canvas.setClipChildren(false);
+        canvas.setPadding(0, 0, 0, Ui.ipx(Tokens.SPACE_SAFE_BLOCK));
+        for (int i = root.getChildCount() - 1; i >= 0; i--) {
+            View child = root.getChildAt(i);
+            if (child == focusGlow) continue;
+            ViewGroup.LayoutParams lp = child.getLayoutParams();
+            root.removeView(child); canvas.addView(child, 0, lp);
+        }
+        final float factor = Ui.factor(this);
+        ScrollView scroll = new ScrollView(this) {
+            @Override public boolean requestChildRectangleOnScreen(View child, android.graphics.Rect rectangle, boolean immediate) {
+                rectangle.inset(0, -Ui.ipx(Tokens.SPACE_4));
+                return super.requestChildRectangleOnScreen(child, rectangle, true);
+            }
+        };
+        scroll.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        scroll.setVerticalScrollBarEnabled(false);
+        FrameLayout.LayoutParams canvasLp = new FrameLayout.LayoutParams(Ui.ipx(1920), -2, Gravity.TOP | Gravity.LEFT);
+        canvasLp.leftMargin = -Ui.ipx(960 - 960 / factor);
+        scroll.addView(canvas, canvasLp);
+        FrameLayout host = new FrameLayout(this) {
+            @Override protected void onMeasure(int widthSpec, int heightSpec) {
+                int width = MeasureSpec.getSize(widthSpec), height = MeasureSpec.getSize(heightSpec);
+                scroll.measure(MeasureSpec.makeMeasureSpec(Math.round(width / factor), MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(Math.round(height / factor), MeasureSpec.EXACTLY));
+                setMeasuredDimension(width, height);
+            }
+        };
+        host.addView(scroll, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER));
+        root.addView(host, new FrameLayout.LayoutParams(-1, -1));
+    }
+
+    private void appendLarge(LinearLayout column, View child, float gap) {
+        if (child.getParent() instanceof ViewGroup) ((ViewGroup) child.getParent()).removeView(child);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.topMargin = Ui.ipx(gap);
+        column.addView(child, lp);
+    }
+
+    private FrameLayout largeGroup(int first, int end, float x, float y) {
+        FrameLayout group = new FrameLayout(this);
+        group.setClipChildren(false);
+        int slot = 0;
+        for (int i = first; i < end; i++) {
+            View child = nodes[i];
+            if (child == null) continue;
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) child.getLayoutParams();
+            root.removeView(child);
+            lp.setMarginStart(lp.getMarginStart() - Ui.ipx(x)); lp.topMargin -= Ui.ipx(y);
+            if (first == M0) {
+                lp.width = Ui.ipx(Tokens.LAYOUT_HOME_MORE_MIN_WIDTH + 2 * FocusTile.REACH);
+                lp.setMarginStart(Ui.ipx(slot++ * (Tokens.LAYOUT_HOME_MORE_MIN_WIDTH + 20))); lp.topMargin = 0;
+            }
+            group.addView(child, lp);
+        }
+        return group;
+    }
+
+    private HorizontalScrollView largeShelf(View child) {
+        if (child.getParent() instanceof ViewGroup) ((ViewGroup) child.getParent()).removeView(child);
+        HorizontalScrollView shelf = new HorizontalScrollView(this);
+        shelf.setHorizontalScrollBarEnabled(false);
+        shelf.setFillViewport(true);
+        shelf.setClipToPadding(false);
+        int reach = Ui.ipx(FocusTile.REACH);
+        shelf.setPadding(reach, reach, reach, reach);
+        shelf.addView(child, new FrameLayout.LayoutParams(-2, -2));
+        return shelf;
+    }
+
     private void buildCountdown() {
         arch = null;
         archLabel = archName = archCount = archSub = archSub2 = null;
-        homePrayerTime = null;
+        homePrayerTime = null; countdownPanel = null;
         if (home.mode == HomeLayout.HIDDEN) return;
         boolean compact = home.mode == HomeLayout.COMPACT;
         float inset = Tokens.LAYOUT_HOME_PANEL_INSET;
         if (!compact) {
             arch = new ArchView(this);
-            place(arch, home.panelX, home.panelY, Tokens.LAYOUT_HOME_MIHRAB_WIDTH, Tokens.LAYOUT_HOME_MIHRAB_HEIGHT);
+            place(arch, home.panelX, home.panelY, home.panelWidth, Tokens.LAYOUT_HOME_MIHRAB_HEIGHT);
             TextView verse = text(sacred, Tokens.FONT_SIZE_SACRED, Palette.GOLD_400);
             verse.setText(SacredText.PRAYER_VERSE);
             verse.setTextDirection(View.TEXT_DIRECTION_RTL);
             verse.setGravity(Gravity.CENTER);
             lineHeightPixels(verse, Ui.ipx(Tokens.FONT_SIZE_SACRED * 1.55f));
             place(verse, home.panelX + inset, home.panelY + Tokens.LAYOUT_HOME_VERSE_TOP,
-                Tokens.LAYOUT_HOME_MIHRAB_WIDTH - 2 * inset, -2);
+                home.panelWidth - 2 * inset, -2);
             TextView ref = text(ui400, Tokens.FONT_SIZE_CAPTION, Palette.MIST_400);
             ref.setText(t.ref()); ref.setGravity(Gravity.CENTER);
             place(ref, home.panelX + inset, home.panelY + Tokens.LAYOUT_HOME_REFERENCE_TOP,
-                Tokens.LAYOUT_HOME_MIHRAB_WIDTH - 2 * inset, -2);
+                home.panelWidth - 2 * inset, -2);
         }
         LinearLayout info = new LinearLayout(this);
+        countdownPanel = info;
         info.setOrientation(compact ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
         info.setGravity(Gravity.CENTER);
         if (compact) {
@@ -397,7 +509,7 @@ public class MainActivity extends Screen {
         info.setClipChildren(false);
         place(info, compact ? home.x : home.panelX + inset,
             compact ? home.panelY : home.panelY + Tokens.LAYOUT_HOME_INFO_TOP,
-            compact ? home.width : Tokens.LAYOUT_HOME_MIHRAB_WIDTH - 2 * inset,
+            compact ? home.width : home.panelWidth - 2 * inset,
             compact ? Tokens.LAYOUT_HOME_BAR_HEIGHT : Tokens.LAYOUT_HOME_MIHRAB_HEIGHT - Tokens.LAYOUT_HOME_INFO_TOP - inset);
     }
 
@@ -625,6 +737,19 @@ public class MainActivity extends Screen {
     private void onNodeFocused(int n) {
         if (focusGlow != null) focusGlow.show(nodePackage[n]);
         if (n >= F0 && n < M0) lastFav = n;
+        if (Ui.factor(this) > 1.1f) {
+            View node = nodes[n];
+            node.getViewTreeObserver().addOnPreDrawListener(new android.view.ViewTreeObserver.OnPreDrawListener() {
+                @Override public boolean onPreDraw() {
+                    node.getViewTreeObserver().removeOnPreDrawListener(this);
+                    if (node.isFocused()) {
+                        int edge = Ui.ipx(Tokens.SPACE_4);
+                        node.requestRectangleOnScreen(new android.graphics.Rect(0, -edge, node.getWidth(), node.getHeight() + edge), true);
+                    }
+                    return true;
+                }
+            });
+        }
     }
 
 

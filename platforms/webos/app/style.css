@@ -136,6 +136,54 @@ button:disabled { color: {{color.disabled-text}}; }
 .settings-rows button { display: block; width: 100%; margin-bottom: 16px; font-size: 26px; min-height: 88px; }
 .settings-rows .value { max-width: 48%; color: {{color.gold-400}}; }
 .settings-rows button:focus .value { color: {{color.lapis-900}}; }
+.inline-step { display: inline-table; border-spacing: 8px 0; }
+.inline-step > span, .inline-step > strong { display: table-cell; vertical-align: middle; text-align: center; }
+.inline-step > span { min-width: 36px; border: 1px solid currentColor; border-radius: 20px; }
+.inline-step > strong { min-width: 96px; font-weight: normal; }
+button.editing .inline-step > strong { text-decoration: underline; }
+#stage[data-large-ui=true] .page { overflow-x: hidden; overflow-y: auto; }
+#stage[data-large-ui=true] .settings-page { overflow: hidden; }
+#stage[data-large-ui=true] .settings-nav { overflow-y: auto; padding: 12px; }
+#stage[data-large-ui=true] .picker, #stage[data-large-ui=true] .stepper, #stage[data-large-ui=true] .media-page { width: 100%; max-width: 1400px; }
+#stage[data-large-ui=true] .appearance-preview { left: 560px; right: 72px; width: auto; height: 200px; }
+[dir=rtl] #stage[data-large-ui=true] .appearance-preview { left: 72px; right: 560px; }
+#stage[data-large-ui=true] .appearance-model, #stage[data-large-ui=true] .appearance-caption { width: 48%; }
+#stage[data-large-ui=true] .appearance-model svg { height: 180px; }
+#stage[data-large-ui=true] .appearance-caption { padding-left: 16px; }
+[dir=rtl] #stage[data-large-ui=true] .appearance-caption { padding-left: 0; padding-right: 16px; }
+#stage[data-large-ui=true] .appearance-settings .settings-rows { top: 420px; }
+#stage[data-large-ui=true] .settings-rows .carousel-main { padding: 16px 24px 100px; }
+#stage[data-large-ui=true] .carousel-choice { left: 80px; right: 80px; top: auto; bottom: 8px; width: auto; line-height: 72px; }
+#stage[data-large-ui=true] .settings-rows .carousel-arrow { top: auto; bottom: 8px; }
+#stage[data-large-ui=true] .carousel-arrow.previous { left: auto; right: 12px; }
+#stage[data-large-ui=true] .carousel-arrow.next { left: 12px; right: auto; }
+[dir=rtl] #stage[data-large-ui=true] .carousel-arrow.previous { left: 12px; right: auto; }
+[dir=rtl] #stage[data-large-ui=true] .carousel-arrow.next { left: auto; right: 12px; }
+#stage[data-large-ui=true] .day-times { width: 52%; }
+#stage[data-large-ui=true] .day-details { width: 28%; }
+#stage[data-large-ui=true] .day-times, #stage[data-large-ui=true] .day-details { padding-bottom: 16px; }
+#stage[data-large-ui=true] .clock-page { padding-top: 120px; }
+#stage[data-large-ui=true] .voice-name { width: 72%; }
+#stage[data-large-ui=true] .voice-preview { width: 24%; margin: 0 0 0 2%; }
+[dir=rtl] #stage[data-large-ui=true] .voice-preview { margin: 0 2% 0 0; }
+#stage[data-large-ui=true] .home .arch { top: 292px; }
+#stage[data-large-ui=true] .home-clock, #stage[data-large-ui=true] .home-quick { left: 96px; right: 96px; }
+#stage[data-large-ui=true] .home-prayers { top: 292px; }
+#stage[data-large-ui=true][data-layout=mihrab] .home-prayers .prayers { display: block; font-size: 0; }
+#stage[data-large-ui=true][data-layout=mihrab] .home-prayers .prayer { display: inline-block; width: 31.3%; margin: 0 1% 8px; vertical-align: top; font-size: 22px; }
+#stage[data-large-ui=true] .home-actions { top: 580px; padding-bottom: 24px; }
+#stage[data-large-ui=true][data-layout=compact][data-home-bar=top] .home-prayers { top: 440px; }
+#stage[data-large-ui=true][data-layout=compact][data-home-bar=top] .home-actions { top: 616px; }
+#stage[data-large-ui=true][data-layout=compact][data-home-bar=bottom] .home .arch { top: 936px; }
+#stage[data-large-ui=true][data-layout=hidden] .home-actions, #stage[data-large-ui=true][data-layout=compact][data-home-bar=bottom] .home-actions { top: 472px; }
+#stage[data-large-ui=true][data-quick-labels=true] .home-prayers { top: 362px; }
+#stage[data-large-ui=true][data-layout=mihrab][data-quick-labels=true] .home-actions { top: 650px; }
+#stage[data-large-ui=true][data-layout=hidden][data-quick-labels=true] .home-actions,
+#stage[data-large-ui=true][data-layout=compact][data-home-bar=bottom][data-quick-labels=true] .home-actions { top: 548px; }
+#stage[data-large-ui=true][data-layout=compact][data-home-bar=top][data-quick-labels=true] .home .arch { top: 342px; }
+#stage[data-large-ui=true][data-layout=compact][data-home-bar=top][data-quick-labels=true] .home-prayers { top: 466px; }
+#stage[data-large-ui=true][data-layout=compact][data-home-bar=top][data-quick-labels=true] .home-actions { top: 616px; }
+#stage[data-large-ui=true][data-layout=compact][data-home-bar=bottom][data-quick-labels=true] .home .arch { top: 1100px; }
 .appearance-settings .settings-rows { top: 602px; height: 370px; }
 .carousel-row { position: relative; margin-bottom: 16px; }
 .settings-rows .carousel-main { margin: 0; padding-right: 580px; }

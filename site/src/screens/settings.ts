@@ -13,10 +13,11 @@ import { prayerLabel } from '../lib/prayer-icon';
 import { loadFacing } from './prayer-day';
 import portable from '@islamic-tv/core';
 import type { OnlineResult } from '../lib/online-prayer';
-import { UI_SIZES, uiPercent } from '../lib/ui-scale';
+import { uiPercent } from '../lib/ui-scale';
 
 const onlineControl = portable.tv.afnon.core.UiContract.bind('prayer.online', 'action');
-const sizeControl = portable.tv.afnon.core.UiContract.bind('display.size', 'choice');
+const sizeControl = portable.tv.afnon.core.UiContract.bind('display.size', 'number');
+const sizeRange = portable.tv.afnon.core.UiScale;
 
 export const PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, APPEARANCE = 4, NETWORK = 5, DEVICE = 6, SECTIONS = 7;
 export type Kind = 'value' | 'seg' | 'step' | 'toggle' | 'carousel';
@@ -111,7 +112,7 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
       { id: 'lang', kind: 'seg', label: t.s('language'), help: t.s('languageHelp'), segs: [t.ar ? 'التلفاز' : 'TV', 'العربية', 'English'], selected: t.ar ? 1 : 2 },
       { id: 'digits', kind: 'seg', label: t.s('digits'), help: '', segs: ['0123', '٠١٢٣'], selected: t.eastern ? 1 : 0 },
       { id: 'clock', kind: 'seg', label: t.s('clockRow'), help: t.s('clockHelp'), segs: t.list('clocks').map(t.d), selected: Math.max(0, CLOCKS.indexOf(p.clock)) },
-      { id: sizeControl.id, kind: 'seg', label: t.s(sizeControl.labelKey), help: t.s('uiSizeHelp'), segs: UI_SIZES.map(value => t.d(value + '%')), selected: UI_SIZES.indexOf(String(uiPercent(p.uiScale))) },
+      { id: sizeControl.id, kind: 'step', label: t.s(sizeControl.labelKey), help: t.s('uiSizeHelp'), value: t.d(uiPercent(p.uiScale) + '%') },
       { id: 'quickLabels', kind: 'toggle', label: t.s('quickLabels'), help: '', on: p.quickLabels ?? false },
       { id: 'dockMode', kind: 'value', label: t.s('prayerDock'), help: '', value: t.list('dockModes')[DOCK_MODES.indexOf(p.dockMode ?? 'hidden')] },
       { id: 'dockPosition', kind: 'seg', label: t.s('dockPosition'), help: '', segs: t.list('dockPositions'), selected: p.dockPosition === 'top' ? 0 : 1 },
@@ -143,15 +144,17 @@ export function rowsFor(c: Ctx, section: number, radioOn = false, offsetsPage = 
 export type Edit = { row: number; draft: number };
 
 /** What editing starts from: the chosen segment, or the Hijri offset. */
-export const savedDraft = (c: Ctx, row: Row) => (row.kind === 'seg' ? row.selected! : row.prayer !== undefined ? prayerOffsets(c.prefs)[row.prayer] : row.id === 'lighting' ? c.prefs.lighting ?? 35 : (c.prefs as SPrefs).hijriOffset);
+export const savedDraft = (c: Ctx, row: Row) => (row.id === sizeControl.id ? uiPercent(c.prefs.uiScale) : row.kind === 'seg' ? row.selected! : row.prayer !== undefined ? prayerOffsets(c.prefs)[row.prayer] : row.id === 'lighting' ? c.prefs.lighting ?? 35 : (c.prefs as SPrefs).hijriOffset);
 
 /** ◀▶ while editing (d = +1 toward the end), held to the row's range. */
 export const moveDraft = (row: Row, draft: number, d: number) =>
-  row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : row.prayer !== undefined ? Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, draft + d)) : row.id === 'lighting' ? Math.max(0, Math.min(100, draft + d)) : Math.max(-MAX_HIJRI_OFFSET, Math.min(MAX_HIJRI_OFFSET, draft + d));
+  row.id === sizeControl.id ? Math.max(sizeRange.MIN_PERCENT, Math.min(sizeRange.MAX_PERCENT, draft + d * sizeRange.STEP_PERCENT)) : row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : row.prayer !== undefined ? Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, draft + d)) : row.id === 'lighting' ? Math.max(0, Math.min(100, draft + d)) : Math.max(-MAX_HIJRI_OFFSET, Math.min(MAX_HIJRI_OFFSET, draft + d));
 
 /** OK while editing: the new prefs, or null when the draft is what is already saved. 'lang' is the page's. */
 export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
+  if (row.id === sizeControl.id && (typeof draft !== 'number' || draft !== uiPercent(draft))) throw new RangeError('Invalid interface size');
   if (draft === savedDraft(c, row)) return null;
+  if (row.id === sizeControl.id) return { ...c.prefs, uiScale: draft };
   if (row.prayer !== undefined) {
     const offsets = prayerOffsets(c.prefs);
     offsets[row.prayer] = moveDraft(row, draft, 0);
@@ -164,10 +167,6 @@ export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {
 export function pick(c: Ctx, id: string, i: number): SPrefs | null {
   const p = { ...(c.prefs as SPrefs) };
   switch (id) {
-    case 'display.size': {
-      if (!Number.isInteger(i) || !UI_SIZES[i]) throw new RangeError('Invalid interface size choice');
-      return { ...p, uiScale: Number(UI_SIZES[i]) };
-    }
     case 'homeCountdown': return { ...p, homeCountdown: homeChoice(i, 2) };
     case 'homePosition': return p.homeCountdown === 2 ? p : p.homeCountdown === 1 ? { ...p, homeBar: homeChoice(i, 1) } : { ...p, homeSide: homeChoice(i, 2) };
     case 'homePrayers': return { ...p, homePrayers: homeChoice(i, 4) };
@@ -215,14 +214,14 @@ export function rowHtml(t: Text, r: Row, i: number, editing = false, top = 'var(
 
 export function navHtml(t: Text, section: number) {
   return Array.from({ length: SECTIONS }, (_, i) =>
-    `<button class="ft row nav${i === section ? ' open' : ''}" data-nav="${i}"${i === section ? ' data-focus-start' : ''} style="top:${152 + i * 86}px">${esc(sectionName(t, i))}</button>`).join('');
+    `<button class="ft row nav${i === section ? ' open' : ''}" data-nav="${i}"${i === section ? ' data-focus-start' : ''} style="--nav-index:${i};top:${152 + i * 86}px">${esc(sectionName(t, i))}</button>`).join('');
 }
 
 /** The rows; the one being edited shows its draft. */
 export const rowsHtml = (c: Ctx, section: number, radioOn = false, edit: Edit | null = null, offsetsPage = false) =>
   rowsFor(c, section, radioOn, offsetsPage).map((r, i) => {
     if (edit?.row !== i) return rowHtml(c.t, r, i, false, section === APPEARANCE ? '0px' : 'var(--layout-settings-rows-top)');
-    const shown = r.prayer !== undefined ? { ...r, value: c.t.offsetMinutes(edit.draft), help: clock(c.t, new Date(c.day.times[r.prayer].getTime() + (edit.draft - savedDraft(c, r)) * 60000), c.h24) } : r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
+    const shown = r.prayer !== undefined ? { ...r, value: c.t.offsetMinutes(edit.draft), help: clock(c.t, new Date(c.day.times[r.prayer].getTime() + (edit.draft - savedDraft(c, r)) * 60000), c.h24) } : r.kind === 'seg' ? { ...r, selected: edit.draft } : { ...r, value: r.id === 'lighting' || r.id === sizeControl.id ? c.t.d(`${edit.draft}%`) : c.t.days(edit.draft) };
     if (r.id === 'school') shown.help = c.t.s('preview') + c.t.sep() + previewHtml(makeCtx(c.lang, { ...c.prefs, hanafi: edit.draft === 1 }, c.now, c.mode));
     return rowHtml(c.t, shown, i, true, section === APPEARANCE ? '0px' : 'var(--layout-settings-rows-top)');
   }).join('');

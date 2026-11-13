@@ -32,18 +32,19 @@ const more = ar ? ['يوتيوب ميوزك', 'متجر Play', 'مشغل الو�
 const allCount = 14;
 const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this opens' };
 ---
+<div class="home-scroll"><div class="home-canvas" dir={ar ? 'rtl' : 'ltr'}>
 <div class="home-countdown">
   <Arch ctx={ctx} model={arch} infoTop={340} subSize={20} subGap={0} sub2Color="var(--color-gold-200)" sub2Gap={0}>
     <div slot="time" class="prayer-time num" data-k="homePrayerTime" set:html={m.html.homePrayerTime} />
   </Arch>
 </div>
 
-<div class="when">
+<div class="home-column"><div class="when">
   <div class="clock display num" data-k="clock" set:html={m.html.clock} />
   <div class="hdate" data-k="hdate" set:html={m.html.hdate} />
   <div class="gdate" data-k="gdate" set:html={m.html.gdate} />
 </div>
-
+<div class="home-controls">
 <div class:list={["pills", {"icons-only": !ctx.prefs.quickLabels}]}>
   <a class="ft pill" data-qibla href={href('prayer-day', lang) + '#tv'} aria-label={t.s('today')}><Icon name="compass" /><span class="pill-label">{t.s('today')}</span></a>
   <button class="ft pill" data-open-inputs aria-label={t.s('inputsTitle')}><Icon name="input" stroke={2} /> <span class="pill-label">{t.s('inputsTitle')}</span></button>
@@ -60,18 +61,23 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 <a class="ft gear" href={href('settings', lang) + '#tv'} aria-label={t.s('settings')}>
   <Icon name="gear" size={34} />
 </a>
+</div>
+<div class="home-countdown-top" />
 
 <div class="cells" data-k="cells" set:html={m.html.cells} />
 
 <div class="label fav-label caps">{t.s('fav')}</div>
+<div class="home-favourites">
 {favs.map((f, i) => (
   <button class="ft fav" {...(cardHidden && i === 0 ? { 'data-focus-start': '' } : {})} data-extra={i >= 4 ? "true" : undefined} style={`--slot:${i};--column:${i % 3};--row:${Math.floor(i / 3)}`} data-toast={`${W.site} ${f.label}`}>
     <Icon name={f.icon} class="app-icon" size={HOME['app-icon-size']} />
     <span>{f.label}</span>
   </button>
 ))}
+</div>
 
 <div class="label more-label caps">{t.s('recentApps')}</div>
+<div class="home-recent"><div class="recent-strip">
 {[...more, t.s('settings')].map((label, i) => {
   const style = `inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + ${i} * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))`;
   return label === t.s('settings')
@@ -79,6 +85,9 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
     : <button class="ft more" style={style} data-toast={`${W.site} ${label}`}>{label}</button>;
 })}
 <a class="ft more all" href={href('apps', lang) + '#tv'} style="inset-inline-start:calc(var(--layout-courtyard-inset-inline-start) + 5 * ((var(--layout-courtyard-width) - 5 * var(--layout-gap-more)) / 6 + var(--layout-gap-more)))">{t.all(allCount)}</a>
+</div></div>
+<div class="home-countdown-bottom" />
+</div></div></div>
 
 
 <!-- The reminder before a prayer (MainActivity.showReminder). -->
@@ -155,6 +164,9 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
       $('.pills').classList.toggle('icons-only', !c.prefs.quickLabels);
       stage.dataset.homeLayout = c.prefs.homeLayout === 'classic' ? 'classic' : 'two_rows';
       const h = homeLayout(c.prefs, stage.querySelectorAll('.fav').length, c.t.ar);
+      const column = $('.home-column');
+      column.style.marginInlineStart = `${h.x}px`; column.style.width = `${h.width}px`;
+      $('.home-favourites').style.gridTemplateColumns = `repeat(${h.columns}, minmax(0, 1fr))`;
       stage.dataset.countdown = String(h.mode);
       const rect = (el: HTMLElement, x: number, y: number, w?: number, height?: number) => {
         el.style.insetInlineStart = `${x}px`; el.style.top = `${y}px`;
@@ -165,12 +177,17 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
       rect($('.pills'), h.x, h.quickY, h.width - 72 - HOME.gap);
       rect($('.gear'), h.x + h.width - 72, h.quickY);
       const panel = $('.home-countdown'); panel.hidden = h.mode === 2;
-      rect(panel, h.mode === 0 ? h.panelX : h.x, h.panelY, h.mode === 0 ? HOME['mihrab-width'] : h.width, h.mode === 0 ? HOME['mihrab-height'] : HOME['bar-height']);
+      const large = (c.prefs.uiScale ?? 100) > 110;
+      $('.home-scroll').classList.toggle('scrolling', large);
+      const countdownOwner = large && h.mode === 1 ? $(c.prefs.homeBar === 1 ? '.home-countdown-bottom' : '.home-countdown-top') : $('.home-canvas');
+      if (panel.parentElement !== countdownOwner) countdownOwner.append(panel);
+      rect(panel, h.mode === 0 ? h.panelX : h.x, h.panelY, h.mode === 0 ? h.panelWidth : h.width, h.mode === 0 ? HOME['mihrab-height'] : HOME['bar-height']);
       const cells = $('.cells'), slots = homePrayers(h.table, -1, 0).length;
       cells.hidden = slots === 0;
-      const cw = Math.min(HOME['tile-max-width'], (h.width - (slots - 1) * 12) / Math.max(1, slots));
+      const columns = large ? Math.max(1, Math.min(3, slots)) : Math.max(1, slots);
+      const cw = Math.min(HOME['tile-max-width'], (h.width - (columns - 1) * 12) / columns);
       rect(cells, h.x, h.tableY, slots * cw + Math.max(0, slots - 1) * 12);
-      cells.style.gridTemplateColumns = `repeat(${Math.max(1, slots)}, minmax(0, 1fr))`;
+      cells.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
       rect($('.fav-label'), h.x, h.labelY); $('.fav-label').hidden = h.count === 0;
       stage.querySelectorAll<HTMLElement>('.fav').forEach((tile, i) => {
         tile.hidden = i >= h.count;
@@ -182,6 +199,13 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
       const remind = c.prefs.remind * 60;
       const due = (forced || (remind > 0 && left > 0 && left <= remind)) && card.dataset.for !== dismissedFor;
       showCard(due);
+    });
+    stage.addEventListener('focusin', (event) => {
+      const item = event.target as HTMLElement;
+      const scroll = item.closest<HTMLElement>('.home-scroll');
+      if (stage.dataset.largeUi !== 'true' || !scroll) return;
+      item.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      scroll.scrollLeft = 0;
     });
     $('[data-card-ok]').addEventListener('click', () => {
       dismissedFor = card.dataset.for ?? '';
@@ -266,6 +290,22 @@ const W = { site: ar ? 'على التلفاز يفتح هذا' : 'On the TV this
 </script>
 
 <style>
+  .home-scroll, .home-canvas, .home-column, .home-controls, .home-favourites, .home-recent, .recent-strip, .home-countdown-top, .home-countdown-bottom { display:contents; }
+  :global(.tv[data-large-ui='true']) .home-scroll { display:block; position:absolute; left:calc(960px - 960px / var(--ui-size)); top:calc(540px - 540px / var(--ui-size)); width:calc(1920px / var(--ui-size)); height:calc(1080px / var(--ui-size)); overflow-y:auto; overflow-x:hidden; direction:ltr; scroll-padding:16px; scrollbar-width:none; }
+  :global(.tv[data-large-ui='true']) .home-canvas { display:block; position:relative; left:calc(960px / var(--ui-size) - 960px); width:1920px; min-height:1080px; padding:56px 0; }
+  :global(.tv[data-large-ui='true']) .home-column { display:flex; position:relative; flex-direction:column; gap:var(--layout-home-gap); }
+  :global(.tv[data-large-ui='true']) .home-controls { display:flex; order:-1; position:relative; height:96px; padding:12px; gap:var(--layout-home-gap); overflow-x:auto; overflow-y:hidden; scroll-padding:12px; scrollbar-width:none; flex:none; }
+  :global(.tv[data-large-ui='true']) .home-column .pills { display:contents; }
+  :global(.tv[data-large-ui='true']) .home-controls .pill { flex:none; }
+  :global(.tv[data-large-ui='true']) .home-column .gear { position:relative; inset-inline-start:auto !important; top:auto !important; flex:none; }
+  :global(.tv[data-large-ui='true']) .home-column :is(.when,.cells,.label) { position:relative; inset-inline-start:auto !important; top:auto !important; width:100% !important; }
+  :global(.tv[data-large-ui='true']) .cells { height:auto; grid-auto-rows:var(--layout-home-table-height); gap:12px; }
+  :global(.tv[data-large-ui='true']) .home-favourites { display:grid; gap:var(--layout-home-gap); }
+  :global(.tv[data-large-ui='true']) .home-favourites .fav { position:relative; inset-inline-start:auto !important; top:auto !important; width:auto !important; }
+  :global(.tv[data-large-ui='true']) .home-recent { display:block; overflow-x:auto; padding:24px; margin:-24px; scroll-padding:24px; scrollbar-width:none; }
+  :global(.tv[data-large-ui='true']) .recent-strip { display:flex; width:max-content; gap:20px; }
+  :global(.tv[data-large-ui='true']) .recent-strip .more { position:relative; inset-inline-start:auto !important; top:auto !important; width:var(--layout-home-more-min-width) !important; min-height:94px; height:auto; flex:none; }
+  :global(.tv[data-large-ui='true']) .home-column .home-countdown { position:relative; inset-inline-start:auto !important; top:auto !important; width:100% !important; }
   .clock, .home-countdown :global(.display), .home-countdown :global(.display-bold) { font-family:var(--home-display, var(--display)); }
   .home-countdown :global(.display-bold) { font-weight:var(--home-display-weight, var(--display-weight)); }
   .quick-card { position:absolute; inset-inline-end:96px; top:152px; width:640px; padding:24px 28px; border:2px solid var(--color-gold-400-60); border-radius:24px; background:var(--color-lapis-900); display:flex; flex-direction:column; gap:8px; }
