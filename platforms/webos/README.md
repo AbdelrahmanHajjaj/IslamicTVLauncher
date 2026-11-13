@@ -296,7 +296,7 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
-Version 0.2.15 was installed over 0.2.14 on 13 November 2026. All 101 installed
+Version 0.2.16 was installed over 0.2.15 on 13 November 2026. All 103 installed
 app/service files match the verified candidate; Node 0.10.25 passes 88 current
 common checks and 30 adapter checks; WebKit 538.2 passes the same 88 checks.
 All 31 saved preferences, HDMI selection,
@@ -320,15 +320,16 @@ draft/save/cancel behavior. The owner confirms installed Compact/Hidden previews
 remain complete after changing controls and backgrounds. Cancelling the unsaved
 test returns Home with all 31 preferences and input/startup/volume unchanged.
 
-The installed 0.2.15 online check reports CERT_UNTRUSTED on this old runtime.
-A disposable actual-host trial with the verified public USERTrust RSA root succeeds:
-TLS authorized and six validated references. Source 0.2.16 bundles that root only
-for the fixed AlAdhan request; HTTPS, hostname checks, timeouts and response
-validation remain enabled. No TV system trust-store or firmware change is needed.
-Permanent package/network/UI acceptance is pending; live HDMI during adhan remains
-unresolved.
+Version 0.2.16 resolves CERT_UNTRUSTED on the old Node runtime by bundling the
+verified public USERTrust RSA root for the fixed AlAdhan request. Installed real
+HTTPS now returns six validated Cairo/Egyptian/Standard rows for13 November2026,
+with differences[1,0,-1,2,1,0] minutes. Saved calculations/reminders remain unchanged.
+Certificate/hostname checks, timeouts and response validation remain enabled; the
+TV's system trust store and firmware are unchanged. The owner confirms all six rows readable and physical Back focus correct.
+Final state remains unchanged; live HDMI during audible adhan remains unresolved.
 
-Media/fonts/notices are unchanged. Browser simulations and Android emulator
+Media/fonts and prior notices are retained; the attribution notice adds the
+public-CA credit and a source notice accompanies the new certificate. Browser simulations and Android emulator
 checks establish software geometry, not physical-TV picture/sound behavior.
 
 The source adds **Prayer & Qibla → Check online**, a manual AlAdhan comparison for
@@ -342,8 +343,8 @@ manual retry without changing any setting, input, startup state or alert schedul
 Only requested checks contact api.aladhan.com over verified HTTPS, with a 12-second
 total timeout, 32 KiB body limit and no redirects or insecure fallback. No account,
 backend, polling, persistent online data or development PC is required.
-This feature is installed in 0.2.10; secure TLS on its Node 0.10.25 host and the
-physical comparison screen remain unverified.
+Introduced in0.2.10, this feature now has installed Node0.10.25 secure-HTTPS
+evidence in0.2.16 and physical comparison-screen/Back acceptance.
 
 Version 0.2.9 was installed over 0.2.8 on 12 November 2026. All 100 payload files
 match the verified package; Node 0.10.25 passes 72 shared and 30 adapter assertions,

@@ -92,30 +92,43 @@ below 25,000,000 bytes; record performance measurements before claiming improvem
 | Q07 | Done | Ownership/documentation: update actual upstream download/support references safely, architecture/contribution/agent guidance and relevant changelog; retain attribution/notices; do not publish or detach. |
 | Q08 | Done | Full automated review and measured optimization: affected Python/Java, Android build/lint/size, preview test/build/tokens and LG ES5/service/browser checks; resolve introduced regressions and review final diff. |
 | Q09 | Hardware gate | Upgrade and device acceptance on old LG and Android: preserve settings/input/startup, verify both languages/focus, prayer/media/remote/lifecycle; record exact evidence and unverified paths. Android awaits hardware. |
-| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are software-verified across consumers. LG preference-preserving updates, Home sizing and remote routes are physically accepted. Final appearance-preview correction continues; live HDMI background remains unresolved. Android hardware remains open. |
+| Q09.5 | Hardware gate | Shared controls/input, online comparison and global sizing are software-verified across consumers. LG preference-preserving updates, Home sizing and remote routes are physically accepted. Online comparison and separate live-background acceptance continue; live HDMI background remains unresolved. Android hardware remains open. |
 
 ## Current cursor
 
-Finish the LG online trust correction as0.2.16 before the separately watched
-20-second video-only HDMI probe. Actual service returns CERT_UNTRUSTED despite
-connectivity. Clock and modern verified endpoint chain are valid. Disposable actual
-Node0.10.25 CA-only trial succeeds with TLS authorized and six validated times,
-differences[1,0,-1,2,1,0]. Verified public USERTrustRSA root is extracted from the
-official Node certificate source, matches endpoint root/self-signature/fingerprint.
-Source0.2.16 bundles it per fixed-host request, retains rejectUnauthorized:true,
-hostname/body validation, timeouts and cancellation. No system trust change.
+Continue the separately announced20-second watched video-only HDMI probe only
+if the owner answers the pending readiness question Ready. Earlier deferral still
+requires this clear watcher step. No adhan or TV master-volume change. Prepare
+bounded restore/error handling and fresh no-alert/current-source guards before
+starting; if Later, leave TV unchanged and close the owned inspector.
 
-New CA/option regression is red before fix and green after. ES5/service suite
-passes; final notice/build and affected bilingual online UI checks pass. Full
-browser matrix passed0.2.15 and rendering is unchanged in this service-only slice.
-Added public-root provenance/source notice and third-party credit. Package now
-needs103 payloads (+root,+notice); existing app/licenses/media.txt intentionally
-adds the credit, leaving52 previous media/font/notice files unchanged. Verified candidate0.2.16 is18,661,446 bytes, SHA-256
+Installed0.2.16 online correction is fully accepted: actual verified network returns
+six validated Cairo/Egyptian13-11-2026 references, differences[1,0,-1,2,1,0]. Owner
+confirms all six rows readable and physical Back focus returns to Check online.
+Picture/sound normal, final independent snapshot confirms all31 prefs, selected/
+current HDMI_1, fullstartup, boot and master/mute unchanged; no test/audio owner.
+No saved calculation/reminder replacement. Current UI is Settings after Back.
+
+Source3552619 bundles verified public USERTrustRSA root only for this fixed-host
+request, retaining certificate/hostname/body checks,12s deadline and cancellation.
+Old service was CERT_UNTRUSTED; clock/modern server chain valid, CA-only actual-host
+trial isolated missing trust. No system trust-store/firmware or insecure fallback.
+Verified candidate18,661,446 bytes, SHA-256
 290674f69d11d9c67ab48e651b6a16a2cddd8ed287e8b1cd8985ad4ee863b435.
-All103 archive files/metadata, public root/notice and52 retained media/font/notices
-pass; the existing app attribution file intentionally adds the new credit. Next:
-commit scoped source and refresh provenance, then watched in-place upgrade,
-actual hash/runtime/TLS/UI and current-state preservation checks.
+All103 archive files/IDs/versions/provenance and52 retained media/font/notices pass;
+app attribution intentionally extends prior notice, plus public CA/source notice.
+
+Guarded fresh0.2.15 backup, owned v0215 inspector closed, close/install-over/launch
+all succeed. All31 prefs, current/selected HDMI_1, full startup, boot and master/
+mute compare unchanged. No test/audio owner. All103 installed hashes, actual
+Node88+adapter30 and WebKit538.2 common88 pass; video stays1920x1080. Current owned
+inspectorv0216 is open; close only its identity-checked process before yielding.
+ES5/service/final build and affected bilingual110 online UI checks pass; full
+browser matrix passed0.2.15 with unchanged app renderer. New CA test is red before
+fix and green after. No native/website retest for this service-only change.
+
+Next: record/commit completed online acceptance and handle pending video-only
+readiness. Keep current v0216 inspector owned; close it before yielding.
 
 Installed 0.2.15 (source6cdca6f) is physically accepted: picture/sound match, and
 Compact/Hidden previews remain complete after remote control/background changes.
@@ -2921,3 +2934,25 @@ unrelated work. Resume this cursor only, not historical pending notes below.
   Exact103 payloads/IDs/versions/CLI archive metadata pass;52 old media/font/notice
   files unchanged, app attribution deliberately extended;14 adhan/12 spoken files
   retained. Commit and refresh provenance before installed acceptance.
+
+
+### Q09.5g installed 0.2.16 actual online success (2026-11-13)
+
+- Source3552619/candidate provenance match. Fresh current0.2.15 snapshot and guarded
+  in-place upgrade succeed once, owned v0215 inspector identity-checked/closed.
+  All31 prefs, selected/current HDMI_1, fullstartup, boot and master/mute unchanged;
+  no test/audio owner. All103 installed bytes, actual Node88+adapter30/WebKit88
+  pass; video1920x1080. Owner confirms picture/sound match without error.
+- One manual check through installed UI now succeeds over real verified HTTPS,
+  six Cairo/Egyptian/Standard/Africa-Cairo13-11-2026 rows: Fajr04:48/04:49,+1;
+  Sunrise06:18/06:18,0; Dhuhr11:40/11:39,-1; Asr14:38/14:40,+2;
+  Maghrib16:59/17:00,+1; Isha18:20/18:20,0. Metadata and Back focus present.
+  Saved calculations/schedule were not replaced. Human screen/readability and
+  physical Back return are pending. Inspectorv0216 remains owned/open for checks.
+
+- Owner confirms all six online rows readable and physical Back restores Check
+  online focus. Final0.2.16 snapshot independently confirms all31 prefs/input/full
+  startup/boot/master/mute unchanged and no test/audio owner. Online acceptance is
+  complete on this old LG; generic offline failure remains supported. Asked fresh
+  clear readiness for separately deferred20-second video-only HDMI probe. Do not
+  start until Ready; no adhan or master-volume mutation.
