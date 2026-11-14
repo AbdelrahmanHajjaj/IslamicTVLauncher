@@ -60,7 +60,7 @@ public class SettingsActivity extends Screen {
             this.kind = kind;
             contract = UiContract.INSTANCE.control(id);
             String semantic = contract.getKind();
-            boolean valid = kind == VALUE ? semantic.equals("choice") || semantic.equals("action") || semantic.equals("number")
+            boolean valid = kind == VALUE ? semantic.equals("choice") || semantic.equals("action") || semantic.equals("number") && UiContract.INSTANCE.numberEditor(id).equals("bearing")
                 : kind == SEG ? semantic.equals("choice") || semantic.equals("toggle")
                 : semantic.equals(kind == STEP ? "number" : kind == TOGGLE ? "toggle" : "choice");
             if (!valid) throw new IllegalArgumentException("Wrong UI row kind: " + id);
@@ -91,11 +91,11 @@ public class SettingsActivity extends Screen {
 
         void setAmount(int n) {}
 
-        int lowest() { return 0; }
+        int lowest() { return UiContract.INSTANCE.minimum(contract.getId()); }
 
-        int highest() { return 0; }
+        int highest() { return UiContract.INSTANCE.maximum(contract.getId()); }
 
-        int step() { return 1; }
+        int step() { return UiContract.INSTANCE.numberStep(contract.getId()); }
 
         String valueOf(int n) { return ""; }
 
@@ -445,8 +445,6 @@ public class SettingsActivity extends Screen {
                     String help() { return t.hijriToday(hijri(day)); }
                     int amount() { return Prefs.hijriOffset(c); }
                     void setAmount(int n) { Prefs.setHijriOffset(c, n); }
-                    int lowest() { return -Prefs.MAX_HIJRI_OFFSET; }
-                    int highest() { return Prefs.MAX_HIJRI_OFFSET; }
                     String valueOf(int n) { return t.days(n); }
                 },
                 new Row("prayer.facing", VALUE) {
@@ -592,9 +590,6 @@ public class SettingsActivity extends Screen {
                     String label() { return t.uiSize(); }
                     String help() { return t.uiSizeHelp(); }
                     int amount() { return Prefs.uiScale(c); }
-                    int lowest() { return tv.afnon.core.UiScale.MIN_PERCENT; }
-                    int highest() { return tv.afnon.core.UiScale.MAX_PERCENT; }
-                    int step() { return tv.afnon.core.UiScale.STEP_PERCENT; }
                     String valueOf(int n) { return t.d(n + "%"); }
                     void setAmount(int n) { Prefs.setUiScale(c, n); relaunch(); }
                 },
@@ -648,7 +643,6 @@ public class SettingsActivity extends Screen {
                 new Row("appearance.lighting", STEP) {
                     String label() { return t.lightingRow(); }
                     int amount() { return previewStyle.lighting; }
-                    int lowest() { return 0; } int highest() { return 100; }
                     String valueOf(int n) { return t.d(n + "%"); }
                     void setAmount(int n) { lightChoice = n; }
                     boolean saves() { return false; }
@@ -809,7 +803,9 @@ public class SettingsActivity extends Screen {
             }
         }
         if (r.kind == STEP && (r.lowest() != UiContract.INSTANCE.minimum(r.contract.getId())
-                || r.highest() != UiContract.INSTANCE.maximum(r.contract.getId()))) {
+                || r.highest() != UiContract.INSTANCE.maximum(r.contract.getId())
+                || r.step() != UiContract.INSTANCE.numberStep(r.contract.getId())
+                || !UiContract.INSTANCE.numberEditor(r.contract.getId()).equals("inline"))) {
             throw new IllegalArgumentException("Wrong UI number bounds: " + r.contract.getId());
         }
         r.tile = new FocusTile(this, 16);
@@ -1093,7 +1089,8 @@ public class SettingsActivity extends Screen {
                 Row r = editing;
                 int lo = r.kind == SEG ? 0 : r.lowest();
                 int hi = r.kind == SEG ? r.segs().length - 1 : r.highest();
-                int to = Math.max(lo, Math.min(hi, draft + (toEnd ? 1 : -1) * r.step()));
+                int to = r.kind == SEG ? Math.max(lo, Math.min(hi, draft + (toEnd ? 1 : -1)))
+                    : UiContract.INSTANCE.adjustNumber(r.contract.getId(), draft, toEnd ? 1 : -1);
                 if (to != draft) {
                     draft = to;
                     render(r, true);
@@ -1202,8 +1199,6 @@ public class SettingsActivity extends Screen {
                 }
                 int amount() { return Prefs.prayerOffset(SettingsActivity.this, prayer); }
                 void setAmount(int n) { Prefs.setPrayerOffset(SettingsActivity.this, prayer, n); }
-                int lowest() { return -Prefs.MAX_PRAYER_OFFSET; }
-                int highest() { return Prefs.MAX_PRAYER_OFFSET; }
                 String valueOf(int n) { return t.offsetMinutes(n); }
             });
         }

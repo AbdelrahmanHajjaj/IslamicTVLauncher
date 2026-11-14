@@ -92,6 +92,17 @@ Android, LG and the browser preview bind this rule and translate RTL once.
 
 ## Settings coverage
 
+`shared/core` is the root contract for every control's ID, kind, label reference,
+range, choices, save scope and declared platform gaps. A renderer translates this
+contract into native widgets; it must not invent its own setting definition.
+For numeric controls, `numberEditor`, `numberStep` and `adjustNumber` also own the
+editor style, increment and validated/clamped draft transition. Android, LG and
+the preview call these same rules. Standard numbers edit inline with −/+,
+OK saves the row and Back/leaving cancels; appearance rows retain their page-wide
+Apply scope. Focus returns to the originating row. Size steps by 10%, volume by
+5%, and Hijri/prayer offsets/lighting by 1. The specialized room-bearing card
+retains its compass behavior and shared 5° horizontal increment.
+
 The audio-level percentage is stored unchanged by native adapters and describes
 the full range of the controlled output, independent of its captured level.
 For the old LG native-TV adapter, 30% means TV volume 30/100; the captured level

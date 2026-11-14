@@ -49,6 +49,28 @@ class UiContractTest {
         assertFailsWith<IllegalArgumentException> { UiContract.maximum("appearance.theme") }
     }
 
+    @Test fun allNumericEditorsShareStepsBoundsAndDraftAdjustment() {
+        for (control in UiContract.controls().filter { it.kind == "number" }) {
+            val id = control.id
+            val low = UiContract.minimum(id)
+            val high = UiContract.maximum(id)
+            val step = when (id) { "display.size" -> 10; "reminders.volume", "prayer.facing" -> 5; else -> 1 }
+            assertEquals(step, UiContract.numberStep(id))
+            assertEquals(if (id == "prayer.facing") "bearing" else "inline", UiContract.numberEditor(id))
+            assertEquals(low, UiContract.adjustNumber(id, low.toDouble(), -1.0))
+            assertEquals(high, UiContract.adjustNumber(id, high.toDouble(), 1.0))
+            assertEquals(low + step, UiContract.adjustNumber(id, low.toDouble(), 1.0))
+            assertEquals(high, UiContract.adjustNumber(id, Double.MAX_VALUE, 0.0))
+            for (invalid in listOf(Double.NaN, Double.POSITIVE_INFINITY, 0.5)) {
+                assertFailsWith<IllegalArgumentException> { UiContract.adjustNumber(id, invalid, 1.0) }
+            }
+            assertFailsWith<IllegalArgumentException> { UiContract.adjustNumber(id, low.toDouble(), 2.0) }
+        }
+        assertFailsWith<IllegalArgumentException> { UiContract.numberEditor("prayer.online") }
+        assertFailsWith<IllegalArgumentException> { UiContract.numberStep("unknown.control") }
+        assertEquals(100, UiContract.adjustNumber("display.size", 101.0, 1.0))
+    }
+
     @Test fun bindingsUseSemanticTypesAndSeparateStorageConcepts() {
         assertEquals("choice", UiContract.bind("appearance.favourites", "choice").kind)
         assertNotEquals(UiContract.control("appearance.favourites").id, UiContract.control("appearance.countdown").id)

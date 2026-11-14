@@ -42,6 +42,9 @@ to the Prayer section. Unsaved appearance changes are discarded when leaving.
   (-30 to +30), Hijri adjustment (-2 to +2), Today & Qibla and five prayer switches.
 - Adhan: separate regular/Fajr voices (all 14 existing local recordings), app audio
   level, spoken reminders/announcements, reminder lead time and call-screen duration.
+  Volume edits inline in 5% steps; OK saves and Back cancels in the same row.
+  Hijri adjustment and prayer offsets use the same inline number editor, with
+  their editor kind, steps and bounds supplied by the shared core.
 - Display: Arabic/English, independent digit style, 12/24-hour clock, quick-control
   labels, top/bottom prayer bar, automatic/manual bar dismissal and a manual clock screen.
   Current source provides an inline − / + Interface size control (80–150% in 10%
@@ -245,7 +248,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.19_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.20_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -311,9 +314,12 @@ mihrab area and restoration. The installed Al-Qatami ending reaches natural EOF
 and returns to the test row without an error or watchdog. Seven promotional-ending
 cuts are shared with Android; the owner accepted the four previously inconclusive
 endings unchanged. See the [audio audit](../../docs/AUDIO-AUDIT.md).
-Version 0.2.19 corrects the native-volume interpretation to the full 0–100 scale;
-its ES5/service/volume and complete mocked browser suites pass. Watched acceptance
-of the revised level is the remaining check.
+Version 0.2.19 corrects the native-volume interpretation to the full 0–100 scale.
+The owner confirms TV level 30 during adhan and restoration to 50 with normal
+HDMI picture/sound. Version 0.2.20 unifies inline numeric editing through core
+rules consumed by Android, LG and the preview. Core JVM/JS and 93 legacy checks,
+LG service/browser suites, all 16 size/language cases, preview and Android
+build/lint/regressions pass locally. Watched inline-control acceptance follows.
 
 Version 0.2.17 was installed over 0.2.16 on 13 November 2026. All 103 installed
 app/service files match the verified candidate; Node 0.10.25 passes 88 current

@@ -41,6 +41,9 @@ downloads/support target `AbdelrahmanHajjaj/IslamicTVLauncher`, not upstream.
   where the controls already communicate the action.
 - Reuse `afnon-mihrab/tokens.json`, canonical city/method/radio/voice data and assets.
   Do not hand-edit generated files. Shared-source changes require checking consumers.
+- Define control behavior in `shared/core`/the canonical UI catalog first. Shells
+  bind those IDs and reuse numeric editor/step/adjustment rules; declare capability
+  gaps instead of silently creating different platform contracts.
 - Android-specific constraints and device workflows are in `CLAUDE.md`; its Java,
   ADB, accessibility and TCL rules do not apply to LG's JS/Activity Manager service.
 - Keep credentials, local device addresses, pairing keys, logs, backups and captures

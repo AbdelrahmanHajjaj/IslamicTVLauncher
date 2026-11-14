@@ -7,7 +7,7 @@ import voicesJson from '../../../shared/data/voices.json';
 import F from '../../../shared/data/format-text.json';
 import { makeCtx, type Ctx } from '../lib/ctx';
 import { CITIES, METHODS, REGIONS, STATIONS, cityOf, methodOf, stationOf, type Prefs, type Station } from '../lib/data';
-import { ASR, clock, hijri, methodParams, prayerOffsets, MAX_PRAYER_OFFSET, MAX_HIJRI_OFFSET } from '../lib/prayer';
+import { ASR, clock, hijri, methodParams, prayerOffsets } from '../lib/prayer';
 import type { Text } from '../lib/text';
 import { prayerLabel } from '../lib/prayer-icon';
 import { loadFacing } from './prayer-day';
@@ -17,7 +17,7 @@ import { uiPercent } from '../lib/ui-scale';
 
 const onlineControl = portable.tv.afnon.core.UiContract.bind('prayer.online', 'action');
 const sizeControl = portable.tv.afnon.core.UiContract.bind('display.size', 'number');
-const sizeRange = portable.tv.afnon.core.UiScale;
+const uiContract = portable.tv.afnon.core.UiContract;
 
 export const PRAYER = 0, REMINDERS = 1, RADIO = 2, DISPLAY = 3, APPEARANCE = 4, NETWORK = 5, DEVICE = 6, SECTIONS = 7;
 export type Kind = 'value' | 'seg' | 'step' | 'toggle' | 'carousel';
@@ -147,8 +147,15 @@ export type Edit = { row: number; draft: number };
 export const savedDraft = (c: Ctx, row: Row) => (row.id === sizeControl.id ? uiPercent(c.prefs.uiScale) : row.kind === 'seg' ? row.selected! : row.prayer !== undefined ? prayerOffsets(c.prefs)[row.prayer] : row.id === 'lighting' ? c.prefs.lighting ?? 35 : (c.prefs as SPrefs).hijriOffset);
 
 /** ◀▶ while editing (d = +1 toward the end), held to the row's range. */
-export const moveDraft = (row: Row, draft: number, d: number) =>
-  row.id === sizeControl.id ? Math.max(sizeRange.MIN_PERCENT, Math.min(sizeRange.MAX_PERCENT, draft + d * sizeRange.STEP_PERCENT)) : row.kind === 'seg' ? Math.max(0, Math.min(row.segs!.length - 1, draft + d)) : row.prayer !== undefined ? Math.max(-MAX_PRAYER_OFFSET, Math.min(MAX_PRAYER_OFFSET, draft + d)) : row.id === 'lighting' ? Math.max(0, Math.min(100, draft + d)) : Math.max(-MAX_HIJRI_OFFSET, Math.min(MAX_HIJRI_OFFSET, draft + d));
+export const moveDraft = (row: Row, draft: number, d: number) => {
+  if (row.kind === 'seg') return Math.max(0, Math.min(row.segs!.length - 1, draft + d));
+  const ids: Record<string, string> = {hijri: 'prayer.hijri', lighting: 'appearance.lighting', [sizeControl.id]: sizeControl.id};
+  const id = row.prayer !== undefined
+    ? 'offsets.' + ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'][row.prayer]
+    : ids[row.id];
+  if (!id || uiContract.numberEditor(id) !== 'inline') throw new Error('Wrong numeric editor: ' + row.id);
+  return uiContract.adjustNumber(id, draft, d);
+};
 
 /** OK while editing: the new prefs, or null when the draft is what is already saved. 'lang' is the page's. */
 export function commit(c: Ctx, row: Row, draft: number): SPrefs | null {

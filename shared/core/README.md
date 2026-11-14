@@ -49,8 +49,12 @@ Actual native rows, favourite-menu actions/replacement targets and LG rows/carou
 enumerate real views/DOM controls in both languages, rather than a support manifest.
 Shell gap declarations generate the [gap report](../../docs/UI-GAPS.md).
 Numeric controls reference named ranges; `minimum`/`maximum` reuse `PrayerRules`
-for prayer/Hijri limits and define 0–100 percentages and 0–359° room bearings. Native steppers validate
-their bounds; LG's actual numeric editor reads them from its bound control ID.
+for prayer/Hijri limits and define 0–100 percentages and 0–359° room bearings.
+`numberEditor` selects inline editing or the specialized bearing card;
+`numberStep` and `adjustNumber` supply shared increments and validated/clamped
+draft changes. Android, LG and the browser preview consume these rules. Native
+rows validate their bindings; LG renders every implemented number inline. OK
+commits the row, Back/leaving cancels, and appearance retains its Apply scope.
 Choice values are semantic strings, with catalog references resolved during
 generation. `choices` returns a copy; `validateChoices` rejects unknown/duplicate
 values, while `validateChoiceCoverage` accounts for offered conditional variants

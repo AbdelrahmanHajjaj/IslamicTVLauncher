@@ -44,6 +44,27 @@ object UiContract {
         else -> throw IllegalArgumentException("Unknown UI number range: $id")
     }
 
+    fun numberEditor(id: String): String = if (bind(id, "number").range == "bearing") "bearing" else "inline"
+
+    fun numberStep(id: String): Int {
+        bind(id, "number")
+        return when (id) {
+            "display.size" -> UiScale.STEP_PERCENT
+            "reminders.volume", "prayer.facing" -> 5
+            else -> 1
+        }
+    }
+
+    fun adjustNumber(id: String, value: Double, direction: Double): Int {
+        val low = minimum(id)
+        val high = maximum(id)
+        require(value.isFinite() && value % 1.0 == 0.0) { "Invalid numeric draft: $id" }
+        require(direction == -1.0 || direction == 0.0 || direction == 1.0) { "Invalid numeric direction: $id" }
+        val current = value.coerceIn(low.toDouble(), high.toDouble()).toInt()
+        val next = (current + direction.toInt() * numberStep(id)).coerceIn(low, high)
+        return if (id == "display.size") UiScale.percent(next.toDouble()) else next
+    }
+
     fun prayerAdhanId(prayer: Double): String = when (prayer) {
         0.0 -> "prayer.adhan-fajr"
         2.0 -> "prayer.adhan-dhuhr"

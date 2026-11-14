@@ -127,5 +127,13 @@ function verifyIslamicTVCore(core) {
   for (var size = 80; size <= 150; size += 10) check(uiScale.percent(size) === size, 'shared UI size range');
   check(core.tv.afnon.core.UiContract.minimum('display.size') === 80 && core.tv.afnon.core.UiContract.maximum('display.size') === 150 && uiScale.STEP_PERCENT === 10, 'shared UI size stepper');
   check(uiScale.percent(NaN) === 100 && uiScale.percent(Infinity) === 100 && uiScale.percent(99.9) === 100 && uiScale.percent(160) === 100, 'invalid size fallback');
+  check(ui.numberEditor('reminders.volume') === 'inline' && ui.numberEditor('prayer.hijri') === 'inline' && ui.numberEditor('prayer.facing') === 'bearing', 'shared numeric editor kinds');
+  check(ui.numberStep('reminders.volume') === 5 && ui.numberStep('display.size') === 10 && ui.numberStep('prayer.hijri') === 1 && ui.numberStep('prayer.facing') === 5, 'shared numeric steps');
+  check(ui.adjustNumber('reminders.volume', 30, 1) === 35 && ui.adjustNumber('reminders.volume', 0, -1) === 0 && ui.adjustNumber('reminders.volume', 100, 1) === 100, 'volume draft bounds');
+  check(ui.adjustNumber('offsets.fajr', -30, -1) === -30 && ui.adjustNumber('display.size', 150, 1) === 150 && ui.adjustNumber('prayer.hijri', 2, 1) === 2, 'numeric draft bounds');
+  rejected = 0;
+  try { ui.adjustNumber('reminders.volume', NaN, 1); } catch (invalidNumber) { rejected++; }
+  try { ui.numberEditor('appearance.theme'); } catch (wrongEditor) { rejected++; }
+  check(rejected === 2, 'invalid numeric editor input rejected');
   return {checks: checks};
 }

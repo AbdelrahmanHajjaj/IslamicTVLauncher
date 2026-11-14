@@ -99,13 +99,16 @@ LG 0.2.18 was installed in place on 14 November with exact payload verification,
 picture/transparency and sound restoration. Al-Qatami's installed ending reaches
 natural EOF and returns normally. The owner then requested absolute TV volume:
 0.2.19 sets 30% to native level 30/100, restoring the captured previous level.
-The revised adapter passes local suites; its watched upgrade/checks follow.
+The owner confirms the installed absolute level and normal restoration. Version
+0.2.20 retains these recordings and volume behavior while unifying numeric editor
+rules in core and rendering LG numeric adjustments inline.
 
-Verified local candidate: `state/media-review/lg-0219-candidate/tv.afnon.webos_0.2.19_all.ipk`,
-18,274,730 bytes, SHA-256
-`84f1120f96440d65dca4f64bd7e85c0957fbd093814e314cd87569d23d5a8642`.
-All 103 payload files match the tested build; only the volume service and
-app/service version metadata differ from installed 0.2.18. All recordings match it.
+Verified local candidate: `state/media-review/lg-0220-candidate/tv.afnon.webos_0.2.20_all.ipk`,
+18,275,282 bytes, SHA-256
+`7ce5101cd6d315a5561a41ab8ea092adc582b745a6144497058c838072c59dfe`.
+All 103 payload files match the tested build; only the shared core, numeric
+renderer and app/service version metadata differ from installed 0.2.19.
+All recordings and the verified absolute-volume service are unchanged.
 All 26 packaged recordings match the shared cache in both IPK and APK; no originals,
-review clips or preparation stamps are bundled. Android APK is 21,159,759 bytes,
+review clips or preparation stamps are bundled. Android APK is 20,957,070 bytes,
 within its 25 MB budget. Detailed manifests and test logs stay in `state/media-review/`.

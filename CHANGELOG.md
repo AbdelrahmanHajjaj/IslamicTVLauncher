@@ -6,6 +6,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- Numeric control editor kinds, increments and draft bounds now come from the
+  shared core across Android, LG and the preview. LG volume, size, Hijri adjustment
+  and prayer offsets use the same inline −/+ row with save/cancel and return focus.
+
 - On old LG, app audio percentage now sets the absolute TV level during playback:
   30% means 30/100, then the previous level is restored. Manual remote changes
   and mute remain preserved.

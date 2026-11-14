@@ -7,13 +7,13 @@
   var prayerRules = window['tv.afnon:core'].tv.afnon.core.PrayerRules;
   var tv = typeof window.PalmServiceBridge !== 'undefined';
   var prefs = A.prefs(), startup = false, loaded = false, busy = false;
-  var uiScaleDraft = null;
+  var inlineDraft = null;
   var input = null, inputs = [], view = 'input', picker = null, page = 0;
   var screen = document.getElementById('screen'), video = document.getElementById('input-video');
   var bridges = [], instance = String(Date.now()), cachedDay = null, cacheKey = '', noticeTimer;
   var lastError = null;
   var section = 'prayer', testPrayer = 0, dockTimer, overlayTimer, audioTimer, mediaTimer, media = null;
-  var pendingLaunch = null, seenLaunch = null, radioBeforeCall = false, audioSerial = 0, volumeSerial = 0, editValue = 0, country = null, dayViewMinute = -1, previewTestTimer;
+  var pendingLaunch = null, seenLaunch = null, radioBeforeCall = false, audioSerial = 0, volumeSerial = 0, country = null, dayViewMinute = -1, previewTestTimer;
   var returnContext = null, voicePreview = null, coldAlert = false;
   var appearanceDraft = null, settingsParent = 'home', dayParent = 'home';
   var homeNodes = [], homeAppCount = 0, lastHomeApp = homeNavigation.FIRST_APP;
@@ -155,9 +155,11 @@
   }
   function row(id, action, value, kind) {
     var control = uiContract.bind(id, kind || 'action');
-    if (id === 'display.size') {
-      return button(action, escape(controlLabel(control)) + '<span class="value inline-step"><span data-ui-scale-step="-1" aria-hidden="true">−</span><strong dir="ltr">' +
-        digits(uiScaleDraft === null ? prefs.uiScale : uiScaleDraft) + '%</strong><span data-ui-scale-step="1" aria-hidden="true">+</span></span>', '', uiScaleDraft === null ? '' : 'editing', '', control);
+    if (control.kind === 'number' && uiContract.numberEditor(id) === 'inline') {
+      var editing = inlineDraft && inlineDraft.key === action;
+      var suffix = control.range === 'percent' || control.range === 'ui-scale' ? '%' : control.range === 'prayer-offset' ? ' ' + f('minuteUnit') : '';
+      return button(action, escape(controlLabel(control)) + '<span class="value inline-step"><span data-number-step="-1" aria-hidden="true">−</span><strong dir="ltr">' +
+        digits(editing ? inlineDraft.value : inlineValue(action)) + escape(suffix) + '</strong><span data-number-step="1" aria-hidden="true">+</span></span>', '', editing ? 'editing' : '', '', control);
     }
     var values = control.kind === 'choice' ? choiceValues(id, choices(action, true)) : null;
     return button(action, escape(controlLabel(control)) + '<span class="value">' + escape(value) + '</span>', '', '', '', control, values);
@@ -418,10 +420,6 @@
             D.voices.map(function (v) { return '<div class="voice-row">' + button('choose', escape(v[prefs.lang]) + (prefs[picker] === v.id ? ' ✓' : ''), v.id, 'voice-name') +
               button('preview-voice', voicePreview === v.id ? t('إيقاف', 'Stop') : t('معاينة', 'Preview'), v.id, 'voice-preview', (voicePreview === v.id ? t('إيقاف ', 'Stop ') : t('معاينة ', 'Preview ')) + v[prefs.lang]) + '</div>'; }).join('') +
             '</div><div class="voice-footer">' + button('settings', t('رجوع', 'Back')) + '</div></section>';
-        } else if (stepper()) {
-          html = '<section class="page">' + header(pickerTitle()) + '<div class="stepper"><strong>' + digits(editValue) +
-            (picker === 'volume' ? '%' : '') + '</strong><div class="actions">' + button('step-down', '−') + button('step-up', '+') +
-            button('save-step', t('حفظ', 'Save')) + button('settings', t('إلغاء', 'Cancel')) + '</div></div></section>';
         } else {
           var list = choices(), start = page * 6;
           html = '<section class="page">' + header(pickerTitle()) +
@@ -439,7 +437,7 @@
       var target = focusAction && screen.querySelector(focusAction.charAt(0) === '[' ? focusAction : '[data-action="' + focusAction + '"]');
       target = target || (view === 'settings' ? screen.querySelector('.settings-nav .selected') :
         view === 'home' ? homeNodes[homeNavigation.initial(homeAppCount, 0)] :
-        view === 'apps' ? screen.querySelector('.app-tile') : view === 'picker' && stepper() ? screen.querySelector('[data-action=save-step]') : screen.querySelector('button')); if (target) { focusControl(target); }
+        view === 'apps' ? screen.querySelector('.app-tile') : screen.querySelector('button')); if (target) { focusControl(target); }
     }
     if (view !== 'home') { updateClock(); } report();
   }
@@ -525,7 +523,7 @@
     zoomUi(notice, factor, '50% 0');
   }
   function show(nextView, focusAction) {
-    uiScaleDraft = null;
+    inlineDraft = null;
     if (nextView !== 'online-prayer') { cancelOnline(); }
     clearTimeout(noticeTimer); document.getElementById('notice').style.display = 'none';
     if (nextView !== 'picker' && (nextView !== 'settings' || section !== 'appearance')) { appearanceDraft = null; }
@@ -628,33 +626,29 @@
     if (/^offset-/.test(picker)) { return s('prayerNames')[Number(picker.slice(7))]; }
     return sectionName(section) || t('اختر', 'Choose');
   }
-  function stepper() { return /^offset-/.test(picker) || picker === 'volume' || picker === 'hijriOffset'; }
+  function inlineValue(key) { return /^offset-/.test(key) ? prefs.offsets[Number(key.slice(7))] : prefs[key]; }
+  function inlineControl(key) {
+    var row = screen.querySelector('.settings-rows [data-action="' + key + '"][data-ui-kind=number]');
+    var id = row && row.getAttribute('data-ui');
+    return id && uiContract.numberEditor(id) === 'inline' ? id : null;
+  }
   function openPicker(key) {
     picker = key; page = 0;
     var source = screen.querySelector('.settings-rows [data-action="' + (key === 'country' ? 'city' : key) + '"][data-ui]');
     if (source) { pickerControl = source.getAttribute('data-ui'); }
     else if (!((key === 'country' || key === 'city') && pickerControl === 'prayer.location')) { throw new Error('Missing UI editor binding: ' + key); }
-    uiContract.bind(pickerControl, stepper() ? 'number' : 'choice');
+    uiContract.bind(pickerControl, 'choice');
     var selected = key === 'country' ? A.city(prefs.city).countryEn : key === 'zone' ? prefs.utcOffset : key === 'testPrayer' ? testPrayer : (appearanceDraft || prefs)[key];
-    if (stepper()) {
-      editValue = /^offset-/.test(key) ? prefs.offsets[Number(key.slice(7))] : prefs[key];
-    }
-    else {
-      var list = choices();
-      if (key !== 'country') { choiceValues(pickerControl, list); }
-      for (var i = 0; i < list.length; i++) { if (String(list[i].value) === String(selected === null ? '' : selected)) { page = Math.floor(i / 6); } }
-    }
+    var list = choices();
+    if (key !== 'country') { choiceValues(pickerControl, list); }
+    for (var i = 0; i < list.length; i++) { if (String(list[i].value) === String(selected === null ? '' : selected)) { page = Math.floor(i / 6); } }
     show('picker');
   }
-  function changeStep(delta) {
-    var min = uiContract.minimum(pickerControl), max = uiContract.maximum(pickerControl);
-    editValue = Math.max(min, Math.min(max, editValue + delta * (picker === 'volume' ? 5 : 1))); render('save-step');
-  }
-  function changeUiScale(delta) {
-    var range = window['tv.afnon:core'].tv.afnon.core.UiScale;
-    if (uiScaleDraft === null) { uiScaleDraft = prefs.uiScale; }
-    uiScaleDraft = Math.max(range.MIN_PERCENT, Math.min(range.MAX_PERCENT, uiScaleDraft + delta * range.STEP_PERCENT));
-    render('uiScale');
+  function changeInlineNumber(key, delta) {
+    var id = inlineControl(key); if (!id) { return; }
+    if (!inlineDraft || inlineDraft.key !== key) { inlineDraft = {key: key, value: inlineValue(key)}; }
+    inlineDraft.value = uiContract.adjustNumber(id, inlineDraft.value, delta);
+    render(key);
   }
   function savePrefs(next, focusAction, returnView) {
     if (!loaded || busy) { return; } busy = true;
@@ -870,15 +864,18 @@
   function activate(action, value) {
     if (busy) { return; }
     armDock();
-    if (action === 'uiScale') {
-      if (uiScaleDraft === null) { uiScaleDraft = prefs.uiScale; render('uiScale'); }
+    if (inlineControl(action)) {
+      if (!inlineDraft || inlineDraft.key !== action) { inlineDraft = {key: action, value: inlineValue(action)}; render(action); }
       else {
-        var resized = A.prefs(prefs); resized.uiScale = uiScaleDraft; uiScaleDraft = null;
-        savePrefs(resized, 'uiScale');
+        var changed = A.prefs(prefs);
+        if (/^offset-/.test(action)) { changed.offsets[Number(action.slice(7))] = inlineDraft.value; }
+        else { changed[action] = inlineDraft.value; }
+        inlineDraft = null;
+        savePrefs(changed, action);
       }
       return;
     }
-    uiScaleDraft = null;
+    inlineDraft = null;
     if (action === 'online-prayer' || action === 'online-retry') { checkOnline(); return; }
     if (action === 'online-back') { show('settings', 'online-prayer'); return; }
     if (voicePreview && action !== 'preview-voice') { stopAudio('stopped', true); }
@@ -943,12 +940,7 @@
     if (action === 'hanafi') { next.hanafi = !next.hanafi; savePrefs(next, action); }
     if (action === 'city') { openPicker('country'); }
     if (['method', 'zone', 'voice', 'fajrVoice', 'station', 'testPrayer', 'remind', 'callClose', 'digits', 'clock', 'dockPosition',
-      'dockAutoHide', 'volume', 'hijriOffset'].indexOf(action) >= 0 || /^offset-[0-5]$/.test(action)) { openPicker(action); }
-    if (action === 'step-down' || action === 'step-up') { changeStep(action === 'step-down' ? -1 : 1); }
-    if (action === 'save-step') {
-      if (/^offset-/.test(picker)) { next.offsets[Number(picker.slice(7))] = editValue; } else { next[picker] = editValue; }
-      savePrefs(next, picker);
-    }
+      'dockAutoHide'].indexOf(action) >= 0) { openPicker(action); }
     if (action === 'next' || action === 'previous') { page += action === 'next' ? 1 : -1; render(); }
     if (action === 'choose') {
       if (!choices().some(function (item) { return String(item.value) === String(value); })) { throw new Error('Unknown offered UI value'); }
@@ -1020,8 +1012,12 @@
     if (busy) { return; }
     var stepTarget = event.target;
     while (stepTarget && stepTarget !== document.getElementById('stage')) {
-      var delta = stepTarget.getAttribute && stepTarget.getAttribute('data-ui-scale-step');
-      if (delta !== null && delta !== undefined) { changeUiScale(Number(delta)); return; }
+      var delta = stepTarget.getAttribute && stepTarget.getAttribute('data-number-step');
+      if (delta !== null && delta !== undefined) {
+        while (stepTarget && stepTarget.tagName !== 'BUTTON') { stepTarget = stepTarget.parentNode; }
+        if (stepTarget) { changeInlineNumber(stepTarget.getAttribute('data-action'), Number(delta)); }
+        return;
+      }
       stepTarget = stepTarget.parentNode;
     }
     var el = event.target;
@@ -1091,13 +1087,13 @@
       }
       return;
     }
-    if (view === 'settings' && uiScaleDraft !== null) {
-      if (key === 27 || key === 461) { uiScaleDraft = null; render('uiScale'); }
-      else if (key === 37 || key === 39) { changeUiScale((key === 37) !== (prefs.lang === 'ar') ? -1 : 1); }
-      else if (key === 13) { activate('uiScale'); }
+    if (view === 'settings' && inlineDraft !== null) {
+      var editKey = inlineDraft.key;
+      if (key === 27 || key === 461) { inlineDraft = null; render(editKey); }
+      else if (key === 37 || key === 39) { changeInlineNumber(editKey, (key === 37) !== (prefs.lang === 'ar') ? -1 : 1); }
+      else if (key === 13) { activate(editKey); }
       return;
     }
-    if (view === 'picker' && stepper() && (key === 37 || key === 39)) { changeStep(key === 37 ? -1 : 1); return; }
     if (view === 'settings' && document.activeElement && document.activeElement.getAttribute('data-action') === 'carousel' && (key === 37 || key === 39)) {
       changeAppearance(document.activeElement.getAttribute('data-value'), (key === 37) !== (prefs.lang === 'ar') ? -1 : 1); return;
     }

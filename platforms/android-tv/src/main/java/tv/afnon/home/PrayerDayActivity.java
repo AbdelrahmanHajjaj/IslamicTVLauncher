@@ -438,8 +438,8 @@ public class PrayerDayActivity extends Screen {
         }
         if (e.getAction() == KeyEvent.ACTION_DOWN) {
             int v = pickerFacing;
-            if (k == KeyEvent.KEYCODE_DPAD_RIGHT) v += 5;
-            else if (k == KeyEvent.KEYCODE_DPAD_LEFT) v -= 5;
+            if (k == KeyEvent.KEYCODE_DPAD_RIGHT) v += UiContract.INSTANCE.numberStep("prayer.facing");
+            else if (k == KeyEvent.KEYCODE_DPAD_LEFT) v -= UiContract.INSTANCE.numberStep("prayer.facing");
             else if (k == KeyEvent.KEYCODE_DPAD_UP) v = (v / 45 + 1) * 45;
             else if (k == KeyEvent.KEYCODE_DPAD_DOWN) v = ((v + 44) / 45 - 1) * 45;
             pickerFacing = Math.floorMod(v, UiContract.INSTANCE.maximum("prayer.facing") + 1);

@@ -68,9 +68,12 @@ screened. Seven confirmed site-credit endings removed losslessly; originals stay
 outside packaged assets. The owner accepted the other four endings unchanged.
 LG 0.2.18 is installed with all 103 files verified; settings/input/startup/volume
 are preserved. Its normal short adhan and Al-Qatami ending restore correctly.
-The owner now requests **absolute TV volume**: 30% means 30/100, then restore the
-captured level. Implement/test/package 0.2.19 and continue the authorized watched
-upgrade, saved regular/Fajr voice and restoration checks. Findings/checks live in
+LG 0.2.19 is installed; absolute 30/100 and restoration to 50 are owner-confirmed.
+The owner requests unified inline controls and a shared root contract. Centralize
+numeric editor/step/adjustment rules in core and bind Android, LG and preview.
+Make all supported LG numeric settings inline, retaining the existing bearing
+calibration editor and explicit platform gaps. Build/test/deploy 0.2.20, then finish
+watched inline save/cancel and saved regular/Fajr EOF/restoration checks. Findings live in
 [AUDIO-AUDIT.md](AUDIO-AUDIT.md). This does not extend the architecture goal.
 
 ## Deferred and guarded

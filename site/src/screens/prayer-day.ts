@@ -10,6 +10,7 @@ import { archModel, prayerNames } from './home';
 
 const BELLS = 'afnon-bells', FACING = 'afnon-facing';
 export const prayerRules = portable.tv.afnon.core.PrayerRules;
+export const facingStep = portable.tv.afnon.core.UiContract.numberStep('prayer.facing');
 
 /** Each prayer's adhan bell (Prefs.bell): on by default except Sunrise, which has no adhan. */
 export function loadBells(): boolean[] {

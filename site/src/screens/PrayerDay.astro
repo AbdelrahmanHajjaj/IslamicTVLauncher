@@ -86,7 +86,7 @@ const dial = (needle: string, north: string, a: Record<string, Record<string, st
 
 <script>
   import { live, bind } from '../scripts/live';
-  import { prayerDayModel, pickerModel, prayerRules, loadBells, saveBells, loadFacing, saveFacing } from './prayer-day';
+  import { prayerDayModel, pickerModel, prayerRules, facingStep, loadBells, saveBells, loadFacing, saveFacing } from './prayer-day';
   import type { Ctx } from '../lib/ctx';
 
   const stage = document.querySelector<HTMLElement>('.tv')!;
@@ -144,8 +144,8 @@ const dial = (needle: string, north: string, a: Record<string, Record<string, st
       if (k === 'Escape' || k === 'Backspace') return close(false);
       let v = facing;
       // Clockwise is always Right, as on a compass, in either language.
-      if (k === 'ArrowRight') v += 5;
-      else if (k === 'ArrowLeft') v -= 5;
+      if (k === 'ArrowRight') v += facingStep;
+      else if (k === 'ArrowLeft') v -= facingStep;
       else if (k === 'ArrowUp') v = (Math.floor(v / 45) + 1) * 45;
       else if (k === 'ArrowDown') v = (Math.floor((v + 44) / 45) - 1) * 45;
       else return;
