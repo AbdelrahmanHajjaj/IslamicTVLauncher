@@ -107,10 +107,12 @@ a correctly saved 15% setting. LG documents media-element volume control from
 Version 0.2.9 replaces that ineffective control on the tested LF6300.
 Spoken Arabic clips are the same clips as Android, including Friday's Jumuah line.
 
-Version 0.2.9 uses temporary native TV volume on SDK versions below 4. It applies
-the saved percentage to the current TV level (50 at 15% becomes 7), verifies that
-level before playing, and restores it after Stop, completion, errors, dismissal or
-suspend. It never changes mute. A changed remote volume is retained if it differs
+On SDK versions below 4, version 0.2.19 uses the saved percentage as an absolute
+TV level: 30% sets 30/100, regardless of the current level. It verifies that level
+before playing and restores the captured previous level after Stop, completion,
+errors, dismissal or suspend. The earlier 0.2.9–0.2.18 implementation multiplied
+the current level by the percentage; this was corrected at the owner's request.
+It never changes mute. A changed remote volume is retained if it differs
 from the app's applied level. Newer SDKs keep media-element attenuation; those
 hosts are not hardware-validated. Failure to prepare volume prevents playback.
 The baseline is saved before native changes. After a process crash, recovery waits
@@ -243,7 +245,7 @@ npm --prefix platforms/webos ci
 npm --prefix platforms/webos test
 npm --prefix platforms/webos run test:browser
 ares-package platforms/webos/build/app platforms/webos/build/service --outdir platforms/webos/build --no-minify
-ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.18_all.ipk
+ares-install --device YOUR_LG_ALIAS platforms/webos/build/tv.afnon.webos_0.2.19_all.ipk
 ares-launch --device YOUR_LG_ALIAS tv.afnon.webos
 ```
 
@@ -301,12 +303,17 @@ native input settings or Developer Mode.
 
 ## Hardware validation
 
-Version 0.2.18 is a local audio-maintenance candidate, not installed evidence.
-It packages seven reviewed promotional-ending cuts shared with Android; the
-other recordings and runtime playback/UI code are unchanged. Four inconclusive
-endings remain intact pending human review. See the [audio audit](../../docs/AUDIO-AUDIT.md).
-Its ES5/service and complete mocked browser suites pass. The watched in-place
-upgrade is deferred to 14 November 2026; keep the TV unchanged until then.
+Version 0.2.18 was installed in place on 14 November 2026. All 103 installed files
+match the candidate, with 31 preferences, HDMI selection, startup, boot and master
+level preserved. The owner unmuted the TV with the remote and confirmed normal
+programme sound, quiet 12-second adhan, moving HDMI picture, transparent outer
+mihrab area and restoration. The installed Al-Qatami ending reaches natural EOF
+and returns to the test row without an error or watchdog. Seven promotional-ending
+cuts are shared with Android; the owner accepted the four previously inconclusive
+endings unchanged. See the [audio audit](../../docs/AUDIO-AUDIT.md).
+Version 0.2.19 corrects the native-volume interpretation to the full 0–100 scale;
+its ES5/service/volume and complete mocked browser suites pass. Watched acceptance
+of the revised level is the remaining check.
 
 Version 0.2.17 was installed over 0.2.16 on 13 November 2026. All 103 installed
 app/service files match the verified candidate; Node 0.10.25 passes 88 current

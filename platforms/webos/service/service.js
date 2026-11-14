@@ -36,7 +36,7 @@ function volumeId(id) { return typeof id === 'string' && /^[0-9]{1,16}-[0-9]{1,1
 function volumeLevel(value) { return typeof value === 'number' && isFinite(value) && value % 1 === 0 && value >= 0 && value <= 100; }
 function volumeOwner() {
   var owner = read().audioVolume;
-  if (owner && (!volumeId(owner.id) || !volumeLevel(owner.original) || !volumeLevel(owner.applied) || owner.applied > owner.original || typeof owner.confirmed !== 'boolean')) {
+  if (owner && (!volumeId(owner.id) || !volumeLevel(owner.original) || !volumeLevel(owner.applied) || typeof owner.confirmed !== 'boolean')) {
     throw new Error('Invalid saved audio volume');
   }
   return owner;
@@ -93,7 +93,7 @@ function runVolume() {
       var previous = volumeOwner();
       if (previous && newerVolumeId(previous.id, job.id)) { throw new Error('Audio request superseded'); }
       var original = previous && level === previous.applied ? previous.original : level;
-      var applied = Math.floor(original * core.prefs(read().prefs).volume / 100);
+      var applied = core.prefs(read().prefs).volume;
       var owner = {id: job.id, original: original, applied: applied, confirmed: false};
       saveVolume(owner);
       checked('luna://com.webos.audio/setVolume', {volume: applied}, function () {

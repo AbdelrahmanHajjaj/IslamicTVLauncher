@@ -61,39 +61,39 @@ function host(sdk = '2.2.0', previous) {
 
 {
   const e = host(), original = e.state();
-  assert.equal(e.invoke('prepare').mode, 'tv'); assert.equal(e.volume, 7);
+  assert.equal(e.invoke('prepare').mode, 'tv'); assert.equal(e.volume, 15);
   assert.equal(e.state().audioVolume.confirmed, true);
   assert.equal(e.invoke('release').returnValue, true); assert.equal(e.volume, 50);
   const after = e.state(); delete after.audioVolume;
   assert.deepEqual(after, original, 'preferences, input and startup are untouched');
-  assert.deepEqual(e.sets(), [7, 50]);
+  assert.deepEqual(e.sets(), [15, 50]);
 }
-for (const percent of [0, 5, 15, 60, 100]) {
-  const e = host(), state = e.state(); state.prefs.volume = percent; e.write(state); e.muted = true;
+for (const original of [0, 10, 50, 90, 100]) for (const percent of [0, 5, 15, 30, 60, 100]) {
+  const e = host(), state = e.state(); state.prefs.volume = percent; e.write(state); e.muted = true; e.volume = original;
   assert.equal(e.invoke('prepare').returnValue, true);
-  assert.equal(e.volume, Math.floor(50 * percent / 100)); assert.equal(e.muted, true);
-  assert.equal(e.invoke('release').returnValue, true); assert.equal(e.volume, 50); assert.equal(e.muted, true);
+  assert.equal(e.volume, percent, "saved percentage uses the full TV range, independent of current level"); assert.equal(e.muted, true);
+  assert.equal(e.invoke('release').returnValue, true); assert.equal(e.volume, original); assert.equal(e.muted, true);
 }
 {
   const e = host(); e.invoke('prepare', '100-1');
-  e.invoke('prepare', '100-2'); assert.equal(e.volume, 7, 'overlap does not compound attenuation');
-  assert.equal(e.invoke('release', '100-1').returnValue, true); assert.equal(e.volume, 7, 'old stop cannot restore over new playback');
-  assert.equal(e.invoke('prepare', '100-1').returnValue, false); assert.equal(e.volume, 7, 'older preparation cannot replace a newer owner');
+  e.invoke('prepare', '100-2'); assert.equal(e.volume, 15, 'overlap does not compound the saved level');
+  assert.equal(e.invoke('release', '100-1').returnValue, true); assert.equal(e.volume, 15, 'old stop cannot restore over new playback');
+  assert.equal(e.invoke('prepare', '100-1').returnValue, false); assert.equal(e.volume, 15, 'older preparation cannot replace a newer owner');
   e.invoke('release', '100-2'); assert.equal(e.volume, 50);
 }
 {
   const e = host(); e.invoke('prepare'); e.volume = 22; e.muted = true;
   e.invoke('release'); assert.equal(e.volume, 22, 'remote changes win over restoration'); assert.equal(e.muted, true);
   assert.equal(e.state().audioVolume, null);
-  e.invoke('prepare', '100-2'); assert.equal(e.volume, 3, 'next playback uses the newly chosen baseline');
+  e.invoke('prepare', '100-2'); assert.equal(e.volume, 15, 'next playback uses the same absolute setting and remembers the new baseline');
   e.invoke('release', '100-2'); assert.equal(e.volume, 22);
 }
 {
   const before = host(); before.invoke('prepare');
   const restarted = host('2.2.0', before);
-  assert.equal(restarted.volume, 7, 'loading the service never raises volume over possibly live audio');
-  restarted.invoke('recover', '99-0'); assert.equal(restarted.volume, 7);
-  restarted.invoke('recover', '100-0'); assert.equal(restarted.volume, 7);
+  assert.equal(restarted.volume, 15, 'loading the service never raises volume over possibly live audio');
+  restarted.invoke('recover', '99-0'); assert.equal(restarted.volume, 15);
+  restarted.invoke('recover', '100-0'); assert.equal(restarted.volume, 15);
   restarted.invoke('recover', '200-0'); assert.equal(restarted.volume, 50, 'new silent app instance restores a persisted baseline');
   assert.equal(restarted.state().audioVolume, null);
 }
@@ -129,7 +129,7 @@ for (const version of ['', undefined, 'unknown', '0.0.0']) {
 }
 {
   const e = host(); e.ignoreSet = true;
-  assert.equal(e.invoke('prepare').returnValue, false, 'acknowledged but ineffective attenuation blocks playback');
+  assert.equal(e.invoke('prepare').returnValue, false, 'acknowledged but ineffective level change blocks playback');
   assert.equal(e.volume, 50); assert.equal(e.state().audioVolume.confirmed, false);
 }
 {
@@ -140,7 +140,7 @@ for (const version of ['', undefined, 'unknown', '0.0.0']) {
 }
 {
   const e = host(); e.failAfterSet = true;
-  assert.equal(e.invoke('prepare').returnValue, false); assert.equal(e.volume, 7);
+  assert.equal(e.invoke('prepare').returnValue, false); assert.equal(e.volume, 15);
   e.failAfterSet = false; e.invoke('release'); assert.equal(e.volume, 50, 'ambiguous preparation remains recoverable');
 }
 {
@@ -156,7 +156,7 @@ for (const version of ['', undefined, 'unknown', '0.0.0']) {
   assert.equal(e.pending.length, 1, 'native volume jobs are serialized');
   while (e.pending.length) { assert.equal(e.pending.length, 1); e.pending.shift()(); }
   assert.equal(a[0].returnValue, true); assert.equal(stop[0].returnValue, true); assert.equal(b[0].returnValue, true);
-  assert.equal(e.volume, 7); assert.equal(e.state().audioVolume.original, 50);
+  assert.equal(e.volume, 15); assert.equal(e.state().audioVolume.original, 50);
   e.defer = false; e.invoke('release', '100-2'); assert.equal(e.volume, 50);
 }
 {
@@ -171,6 +171,6 @@ for (const version of ['', undefined, 'unknown', '0.0.0']) {
 {
   const e = host(); e.duplicateReplies = true;
   assert.equal(e.invoke('prepare').returnValue, true); assert.equal(e.invoke('release').returnValue, true);
-  assert.deepEqual(e.sets(), [7, 50], 'duplicate native callbacks do not replay a volume write');
+  assert.deepEqual(e.sets(), [15, 50], 'duplicate native callbacks do not replay a volume write');
 }
-console.log('PASS: old-LG audio attenuation/verification, restoration, mute/manual overrides, serialized overlap, cold-start recovery, SDK modes and failures.');
+console.log('PASS: old-LG absolute audio level/verification, restoration, mute/manual overrides, serialized overlap, cold-start recovery, SDK modes and failures.');

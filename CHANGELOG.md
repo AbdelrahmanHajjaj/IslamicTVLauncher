@@ -6,6 +6,10 @@ All notable changes to Afnon. Versions match `versionName` in `platforms/android
 
 ### Shared foundation
 
+- On old LG, app audio percentage now sets the absolute TV level during playback:
+  30% means 30/100, then the previous level is restored. Manual remote changes
+  and mute remain preserved.
+
 - Android and LG share reviewed adhan media cleanup, removing promotional
   endings from seven voices while preserving the complete adhan and originals.
   Build checks prevent the untrimmed source from silently returning.

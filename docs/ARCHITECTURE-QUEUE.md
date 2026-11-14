@@ -1,6 +1,6 @@
 # Architecture migration queue
 
-Updated: 2026-11-13 (Africa/Cairo). Branch: `feature/platform-core`.
+Updated: 2026-11-14 (Africa/Cairo). Branch: `feature/platform-core`.
 
 ## Authority and maintenance
 
@@ -65,12 +65,13 @@ Until then, do not repeat unavailable-device checks or invent more refactor work
 
 **Recording cleanup:** all 14 adhan recordings and 12 spoken clips decoded and
 screened. Seven confirmed site-credit endings removed losslessly; originals stay
-outside packaged assets. The owner deferred the one-minute review of four
-inconclusive endings to tomorrow; preserve those tracks. Findings/checks live in
-[AUDIO-AUDIT.md](AUDIO-AUDIT.md).
-Shared preparation/build guards and LG 0.2.18 are ready locally. **Leave the TV
-unchanged until 2026-11-14** for fresh state capture and watched in-place upgrade.
-This follow-up does not extend the architecture goal.
+outside packaged assets. The owner accepted the other four endings unchanged.
+LG 0.2.18 is installed with all 103 files verified; settings/input/startup/volume
+are preserved. Its normal short adhan and Al-Qatami ending restore correctly.
+The owner now requests **absolute TV volume**: 30% means 30/100, then restore the
+captured level. Implement/test/package 0.2.19 and continue the authorized watched
+upgrade, saved regular/Fajr voice and restoration checks. Findings/checks live in
+[AUDIO-AUDIT.md](AUDIO-AUDIT.md). This does not extend the architecture goal.
 
 ## Deferred and guarded
 

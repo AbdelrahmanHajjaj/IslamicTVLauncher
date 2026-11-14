@@ -21,9 +21,9 @@ This is recording maintenance, separate from the completed architecture work.
 - Transcription makes errors on melismatic/older recordings; it is screening,
   not a word-for-word religious-text certification or human listening to all files.
   Al-Qatami's ending was explicitly heard and accepted by the owner. Additional
-  uncertain sections also received a local large-v3-turbo-q5_0 check. Four endings
-  remain inconclusive across models; preserve them pending human listening.
-  Findings below record
+  uncertain sections also received a local large-v3-turbo-q5_0 check. The owner
+  listened to the four inconclusive endings on 14 November, confirmed they are
+  correct and accepted keeping them unchanged. Findings below record
   detected promotion, not a guarantee that automated recognition never misses speech.
 
 ## Adhan findings
@@ -34,7 +34,7 @@ original SHA-256 values are in [adhan-edits.json](../shared/data/adhan-edits.jso
 | Voice / stable ID | Original → prepared | Finding/action |
 |---|---:|---|
 | Mishary Alafasy / `alafasy` | 240.58 → 233.90 | Site-credit ending removed |
-| Hamdan Al-Malki / `almalki` | 266.72 → unchanged | Conflicting recognition; human ending review pending |
+| Hamdan Al-Malki / `almalki` | 266.72 → unchanged | Owner reviewed ending; correct and preserved |
 | Ibrahim Al-Arkani / `alarkani` | 240.60 → 233.90 | Site-credit ending removed |
 | Malek Chebae, Fajr / `chebae_fajr` | 250.32 → 243.02 | Site-credit ending removed; Fajr wording retained |
 | Majed Al-Hamathani / `alhamathani` | 226.03 → 218.51 | Site-credit ending removed |
@@ -42,10 +42,10 @@ original SHA-256 values are in [adhan-edits.json](../shared/data/adhan-edits.jso
 | Hamad Al-Deghreri / `deghreri` | 161.17 → 154.20 | Site-credit ending removed |
 | Nasser Al-Qatami / `alqatami` | 139.38 → 132.02 | Site-credit ending removed at owner-approved cut |
 | Suhaib Khatba / `khatba` | 183.10 → unchanged | No promotion detected; preserved |
-| Mohammad Al-Menshawy / `menshawy` | 251.63 → unchanged | Low-fidelity recording; human ending review pending |
-| Mohammad Refaat / `refaat` | 203.72 → unchanged | Low-fidelity recording; human ending review pending |
+| Mohammad Al-Menshawy / `menshawy` | 251.63 → unchanged | Owner reviewed ending; correct and preserved |
+| Mohammad Refaat / `refaat` | 203.72 → unchanged | Owner reviewed ending; correct and preserved |
 | Abdul Basit / `abdulbasit` | 200.84 → unchanged | No promotion detected; preserved |
-| Ahmad Nuaina / `nuyne` | 210.12 → unchanged | Conflicting recognition; human ending review pending |
+| Ahmad Nuaina / `nuyne` | 210.12 → unchanged | Owner reviewed ending; correct and preserved |
 | Makkah / `makkah` | 202.53 → unchanged | No promotion detected; preserved |
 
 The source collection has some JPEG covers mislabeled as PNG. Prepared cuts copy
@@ -91,19 +91,21 @@ Android build/lint/25 MB budget check pass. Hardware playback is separate.
 
 Raw inventory, transcripts, waveform/silence checks and prepared-file hashes are in
 ignored `state/media-review/`. `uncertain-endings-review.mp3` contains 15 seconds
-each of Al-Malki, Al-Menshawy, Refaat and Nuaina, in that order. It was offered for
-human confirmation; the owner deferred it to 14 November and explicitly asked to
-preserve these four. Do not trim them based on conflicting recognition.
-LG 0.2.18 is prepared for a watched in-place
-upgrade on 14 November; the TV remains on accepted 0.2.17 until then. Capture fresh
-preferences/input/startup/volume state before that upgrade. Retain package/service
-IDs, saved voice IDs and settings; no runtime playback/UI change is included.
+each of Al-Malki, Al-Menshawy, Refaat and Nuaina, in that order. The owner confirmed
+all four endings correct on 14 November; preserve them unchanged. Conflicting
+recognition alone is not evidence for a cut.
+LG 0.2.18 was installed in place on 14 November with exact payload verification,
+31 preferences/input/startup/boot preserved, and owner-confirmed short adhan,
+picture/transparency and sound restoration. Al-Qatami's installed ending reaches
+natural EOF and returns normally. The owner then requested absolute TV volume:
+0.2.19 sets 30% to native level 30/100, restoring the captured previous level.
+The revised adapter passes local suites; its watched upgrade/checks follow.
 
-Verified local candidate: `state/media-review/lg-0218-candidate/tv.afnon.webos_0.2.18_all.ipk`,
-18,274,728 bytes, SHA-256
-`2ece17fb1fc757b361c8d367d0c34a55803bb68a9dfbf9718d886b95bfc03b99`.
-All 103 payload files match the tested build; only the seven edited recordings,
-app/service version metadata and media attribution differ from accepted 0.2.17.
+Verified local candidate: `state/media-review/lg-0219-candidate/tv.afnon.webos_0.2.19_all.ipk`,
+18,274,730 bytes, SHA-256
+`84f1120f96440d65dca4f64bd7e85c0957fbd093814e314cd87569d23d5a8642`.
+All 103 payload files match the tested build; only the volume service and
+app/service version metadata differ from installed 0.2.18. All recordings match it.
 All 26 packaged recordings match the shared cache in both IPK and APK; no originals,
 review clips or preparation stamps are bundled. Android APK is 21,159,759 bytes,
 within its 25 MB budget. Detailed manifests and test logs stay in `state/media-review/`.

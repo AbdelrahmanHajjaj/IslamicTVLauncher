@@ -92,9 +92,13 @@ Android, LG and the browser preview bind this rule and translate RTL once.
 
 ## Settings coverage
 
-The audio-level percentage is stored unchanged by native adapters. Old LG applies
-it relative to the captured TV level because its decoder cannot attenuate an
-element; newer supported SDKs use element volume. Stop/end/error/suspend restores
+The audio-level percentage is stored unchanged by native adapters and describes
+the full range of the controlled output, independent of its captured level.
+For the old LG native-TV adapter, 30% means TV volume 30/100; the captured level
+is only the restoration target. Newer supported SDKs use the full media-element
+range (0–1), which is distinct from an absolute TV master level and is not yet
+hardware-validated. Android currently declares the app-local editor unimplemented
+and uses system media volume. Stop/end/error/suspend restores
 the owned level, with manual changes retained. Crash recovery waits for a silent
 new app instance rather than raising volume over potentially frozen playback.
 

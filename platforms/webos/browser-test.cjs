@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
                 const owner = window.mockVolumeOwner;
                 if (p.action === 'prepare') {
                   const original = owner && window.mockMasterVolume === owner.applied ? owner.original : window.mockMasterVolume;
-                  const applied = Math.floor(original * state.prefs.volume / 100);
+                  const applied = state.prefs.volume;
                   window.mockMasterVolume = applied; window.mockVolumeOwner = {id: p.id, original, applied};
                 } else if (p.action === 'release' && owner && owner.id === p.id) {
                   if (window.mockMasterVolume === owner.applied) window.mockMasterVolume = owner.original;
@@ -830,13 +830,13 @@ const server = http.createServer((req, res) => {
     await tests(); await page.locator('[data-action=test-adhan]').click();
     await page.waitForFunction(() => window.mediaCalls.some(c => c.op === 'play' && c.tag === 'AUDIO'));
     const legacyPlayback = await page.evaluate(() => window.mediaCalls.find(c => c.op === 'play' && c.tag === 'AUDIO'));
-    assert.equal(legacyPlayback.masterVolume, 7, 'old LG must apply 15% of the captured TV level before adhan playback');
+    assert.equal(legacyPlayback.masterVolume, 15, 'old LG applies 15/100 independently of the captured TV level before adhan playback');
     assert.equal(legacyPlayback.elementVolume, 1, 'native volume fallback does not apply attenuation twice');
     await page.locator('[data-action=toggle-adhan]').click();
     await page.waitForFunction(() => window.mockMasterVolume === 50);
     assert.equal(await page.locator('.call-frame').count(), 1, 'Stop restores volume while keeping the replay screen');
     await page.locator('[data-action=toggle-adhan]').click();
-    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
+    await page.waitForFunction(() => window.mockMasterVolume === 15 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
     const owners = await page.evaluate(() => window.volumeCalls.filter(call => call.action === 'prepare').map(call => call.id));
     assert.equal(new Set(owners).size, owners.length, 'each replay has a distinct volume owner');
     await page.keyboard.press('Escape');
@@ -844,7 +844,7 @@ const server = http.createServer((req, res) => {
     await inputRestored();
     await page.evaluate(() => { window.mediaCalls = []; });
     await tests(); await page.locator('[data-action=test-adhan]').click();
-    await page.waitForFunction(() => window.mockMasterVolume === 7);
+    await page.waitForFunction(() => window.mockMasterVolume === 15);
     await page.locator('[data-action=toggle-adhan]').click();
     await page.waitForFunction(() => window.mockMasterVolume === 50);
     await page.evaluate(() => { window.deferVolume = true; });
@@ -853,7 +853,7 @@ const server = http.createServer((req, res) => {
     await page.waitForTimeout(700); // Cross the original 450 ms decoder-release delay while replay preparation is pending.
     assert.equal(await page.evaluate(() => window.mediaCalls.filter(c => c.op === 'play' && c.tag === 'AUDIO').length), 0, 'an old play timer cannot bypass replay volume preparation');
     await page.evaluate(() => { window.deferVolume = false; window.volumeReplies.shift()(); });
-    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
+    await page.waitForFunction(() => window.mockMasterVolume === 15 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => window.mockMasterVolume === 50);
     await inputRestored();
@@ -871,14 +871,14 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.evaluate(() => window.mediaCalls.filter(c => c.op === 'play' && c.tag === 'AUDIO').length), 0, 'cancelled preparation cannot start audio after its reply arrives');
     await inputRestored();
     await tests(); await page.locator('[data-action=test-adhan]').click();
-    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('audio').getAttribute('src'));
+    await page.waitForFunction(() => window.mockMasterVolume === 15 && document.querySelector('audio').getAttribute('src'));
     await page.evaluate(() => { window.mockMasterVolume = 22; });
     await page.keyboard.press('Escape');
     await inputRestored();
     assert.equal(await page.evaluate(() => window.mockMasterVolume), 22, 'manual remote level survives dismissal');
     await page.evaluate(() => { window.mockMasterVolume = 50; });
     await tests(); await page.locator('[data-action=test-adhan]').click();
-    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('audio').getAttribute('src'));
+    await page.waitForFunction(() => window.mockMasterVolume === 15 && document.querySelector('audio').getAttribute('src'));
     await page.evaluate(() => {
       Object.defineProperty(document, 'hidden', {configurable: true, value: true});
       document.dispatchEvent(new Event('visibilitychange'));
@@ -896,12 +896,12 @@ const server = http.createServer((req, res) => {
     await page.reload(); await inputRestored();
     await page.evaluate(() => { window.legacyVolume = true; window.mockMasterVolume = 50; });
     await tests(); await page.locator('[data-action=test-full]').click();
-    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('audio').getAttribute('src'));
+    await page.waitForFunction(() => window.mockMasterVolume === 15 && document.querySelector('audio').getAttribute('src'));
     await page.evaluate(() => document.querySelector('audio').dispatchEvent(new Event('ended')));
     await page.waitForFunction(() => window.mockMasterVolume === 50);
     assert.equal(await page.locator('.call-frame').count(), 1, 'completed full adhan restores level while keeping its timed call screen');
     await page.locator('[data-action=toggle-adhan]').click();
-    await page.waitForFunction(() => window.mockMasterVolume === 7 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
+    await page.waitForFunction(() => window.mockMasterVolume === 15 && document.querySelector('[data-action=toggle-adhan]').textContent === 'Stop');
     await page.evaluate(() => {
       const audio = document.querySelector('audio');
       Object.defineProperty(audio, 'error', {value: {code: 4}}); audio.dispatchEvent(new Event('error'));
