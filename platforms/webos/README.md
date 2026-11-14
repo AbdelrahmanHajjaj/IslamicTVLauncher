@@ -326,9 +326,11 @@ owner's current Al-Menshawy choices for both roles remain unchanged. Two tempora
 cleaned Al-Qatami/Chebae previews seek to their final eight seconds, reach natural
 EOF at native level 25 and restore normal HDMI and level 50 without a watchdog.
 Final input/startup/boot/mute/settings match the fresh baseline, with no audio,
-overlay, pending test or volume owner. The inspector is closed. Post-0.2.20
-human picture/sound, inline remote/cancel and ending observations remain requested;
-DOM/service diagnostics are not substituted for that feedback.
+overlay, pending test or volume owner. The inspector is closed. The owner confirms
+normal post-0.2.20 picture/sound, physical inline adjustment and Back cancellation,
+and both complete ending previews without advertising, with normal programme sound
+restored. These human observations supplement the DOM/service diagnostics and
+complete this follow-up's LG acceptance.
 
 Version 0.2.17 was installed over 0.2.16 on 13 November 2026. All 103 installed
 app/service files match the verified candidate; Node 0.10.25 passes 88 current

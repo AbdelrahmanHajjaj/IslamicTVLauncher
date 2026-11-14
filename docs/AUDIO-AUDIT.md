@@ -106,8 +106,11 @@ rules in core and rendering LG numeric adjustments inline. It is installed with
 Temporary Al-Qatami/Chebae previews reach natural EOF at the current native level
 25, with normal HDMI and level 50 restored. Actual inline save 25→30→25 preserves
 all other preferences. The owner's current Al-Menshawy selections for both roles
-remain unchanged. Final state is clean and the inspector is closed. Physical
-post-0.2.20 picture/sound, inline-remote and ending feedback remains pending.
+remain unchanged. Final state is clean and the inspector is closed. On
+14 November the owner confirms normal post-0.2.20 picture/sound, physical inline
+adjustment and Back cancellation, and both complete endings without advertising,
+with normal programme sound restored. This recording/inline-control follow-up
+is complete.
 
 Verified local candidate: `state/media-review/lg-0220-candidate/tv.afnon.webos_0.2.20_all.ipk`,
 18,275,282 bytes, SHA-256

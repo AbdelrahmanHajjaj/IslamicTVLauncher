@@ -43,6 +43,8 @@ tested, as the owner confirms; do not reopen that gate without a new failure.
   existing native-volume ownership and input restoration remain intact.
 - Owner accepted the normal 12-second test and 0.2.19's absolute 30/100 level,
   restoring 50 with normal HDMI picture/sound. The same volume service is in 0.2.20.
+- Owner accepted 0.2.20 picture/sound, physical inline adjustment/cancellation,
+  and complete cleaned endings without advertising, with normal restoration.
 - All 31 preferences, selected/current input, complete startup, boot and master
   volume/mute are preserved. No active test/audio owner; inspector/emulator closed.
 - Online HTTPS, shared navigation/sizing, Arabic clipping fixes, Home layout,
@@ -62,23 +64,20 @@ When Android TV hardware is available, follow `CLAUDE.md`/`CONTRIBUTING.md`:
 
 Until then, do not repeat unavailable-device checks or invent more refactor work.
 
-## Separate authorized follow-up
+## Completed follow-up
 
 **Recording cleanup:** all 14 adhan recordings and 12 spoken clips decoded and
 screened. Seven confirmed site-credit endings removed losslessly; originals stay
 outside packaged assets. The owner accepted the other four endings unchanged.
-LG 0.2.18 is installed with all 103 files verified; settings/input/startup/volume
-are preserved. Its normal short adhan and Al-Qatami ending restore correctly.
-LG 0.2.19 is installed; absolute 30/100 and restoration to 50 are owner-confirmed.
 Shared numeric editor/step/adjustment rules now drive Android, LG and preview.
 All supported LG numbers edit inline; the bearing card and platform gaps remain
 explicit. Core, LG browser/service, preview, Android build/lint and 40 regressions
 pass. 0.2.20 preserves all 31 current preferences (25%, both voices Al-Menshawy),
 HDMI, startup, boot and volume/mute. Actual inline save 25→30→25 changes only
 volume. Cleaned Al-Qatami/Chebae previews reach natural EOF at native 25 and restore
-HDMI/50; final state is clean. **Next:** record the pending owner confirmations of
-0.2.20 picture/sound, physical inline editing/cancellation and audible endings.
-Software/device diagnostics are complete; the owned inspector is closed. Findings live in
+HDMI/50. The owner confirms normal picture/sound, inline edit/cancel, complete
+endings without advertising and normal restoration. **This follow-up is complete.** Final state is
+clean and the inspector is closed; no further LG tests are queued. Findings live in
 [AUDIO-AUDIT.md](AUDIO-AUDIT.md). This does not extend the architecture goal.
 
 ## Deferred and guarded

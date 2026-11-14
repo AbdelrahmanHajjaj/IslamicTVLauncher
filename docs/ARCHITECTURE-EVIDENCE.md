@@ -125,7 +125,10 @@ files; Node/WebKit pass 93 checks and Node passes 30 adapter checks. Real inline
 save 25→30→25 restores all 31 preferences. Cleaned Al-Qatami/Chebae previews reach
 natural EOF, native level 25 and normal HDMI/50 restoration; current Al-Menshawy
 selections are preserved. Final state has no test/audio/volume owner and the
-inspector is closed. Post-0.2.20 human UI/sound feedback is still pending.
+inspector is closed. The owner confirms post-0.2.20 normal HDMI picture/sound,
+physical inline adjustment and Back cancellation, complete final words without
+advertising in both previews, and normal sound restoration. LG acceptance for
+this follow-up is complete.
 
 The full adhan/third-party texts remain exact. Recording cleanup and inline
 follow-up findings are in [AUDIO-AUDIT.md](AUDIO-AUDIT.md); Android TV hardware
