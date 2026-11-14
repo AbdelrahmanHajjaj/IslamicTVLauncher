@@ -24,8 +24,10 @@ apps change. The service permits only catalog IDs and LG Settings, and reports a
 launch failure without leaving the current page. Icons reuse our local line artwork;
 these are not the apps' official logos. No SSAP pairing key is bundled.
 
-The LG app and service also consume `shared/core` for offset validation and
-current/next prayer selection. Astronomy and date/time-zone handling remain in
+The LG app and service consume `shared/core` for prayer/reminder rules, Home and
+All apps navigation, semantic UI bindings, inline numeric editing and size policy.
+The [root architecture](../../docs/ARCHITECTURE.md) defines the boundaries and
+[TESTING.md](../../TESTING.md) defines required checks. Astronomy and date/time-zone handling remain in
 the LG adapter; today's Fajr row and tomorrow's separate value are preserved.
 Scheduled event selection and the inclusive 90-second delivery rule also use
 the core; the LG service retains persisted claims, cancellation and OS activities.
@@ -50,9 +52,9 @@ to the Prayer section. Unsaved appearance changes are discarded when leaving.
   Current source provides an inline − / + Interface size control (80–150% in 10%
   steps, default 100%)
   for screens, controls, alerts and the prayer bar. Video keeps its original size;
-  the bar stays full width and attached to its chosen edge. Installed 0.2.10 has
-  the earlier four-choice control; Arabic 110% is readable. The expanded inline
-  control and responsive layout await a watched upgrade.
+  the bar stays full width and attached to its chosen edge. The owner accepted
+  inline editing/cancellation and readable Arabic layouts through 150%; installed
+  0.2.20 shares the numeric editor rules with Android and the preview.
 - Home: mihrab/compact/hidden countdown, mihrab side, compact countdown top/bottom,
   all/current/next/current-and-next/hidden prayer times, the 20 existing color palettes
   and all eight bundled SVG patterns. Android's animated
@@ -100,9 +102,11 @@ voices appear in one scrolling list with explicit inline previews; finishing a
 preview retains that list and its position. A separate 30-second test exercises the real
 Activity Manager background service and has a cancellation action.
 
-Silent banners/cards do not pause, unload or reload the input. Audible playback must
-release the input decoder first on the LF6300; after Stop, end or a media error, the
-audio source is removed and the same recorded input is reloaded inside the app.
+Silent banners/cards do not pause, unload or reload the input. Current HDMI adhan
+uses a video-only source while local audio plays, then restores normal programme
+sound. Other audio/input paths release the decoder first and reload the recorded
+input after Stop, completion or an error. See [HDMI behavior](#hdmi-picture-during-adhan)
+for the tested path and limits.
 Version 0.2.8 did not change master TV volume. Its media-element volume setting
 was ineffective on this old webOS 2.2 decoder: the owner reported loud playback with
 a correctly saved 15% setting. LG documents media-element volume control from
@@ -223,7 +227,7 @@ offset does **not** change for daylight saving: update it when local rules requi
 Selecting another city does not change the time zone. Keep the TV clock correct and
 compare the displayed times with the timetable you follow locally.
 
-Source version 0.2.13 replaces the size picker with an inline − / + draft editor:
+The size control uses an inline − / + draft editor:
 OK starts/saves, Left/Right step by 10%, and Back cancels. Its shared range is
 80–150%. Above 110%, pages scroll to reveal focused controls; Home's mihrab narrows
 from the canonical 600px width toward the 520px minimum without shrinking text.
@@ -232,9 +236,10 @@ header places the toolbar beside the clock above the mihrab. Labels wrap within
 taller controls; remote order and return focus are retained.
 Local ES5/service regressions and Arabic/English browser checks cover all eight
 sizes, unchanged settings and simulated HDMI, mihrab text bounds and the labelled
-Home variants. These tests mock Luna and media. The watched 0.2.11 upgrade preserves all 31 settings/input/startup and master
-volume/mute; the owner confirms normal picture/sound. Physical sizing and remote
-acceptance are in progress.
+Home variants. These tests mock Luna and media. Later installed builds include the
+permanent RTL viewport, Home header and safe-mihrab-margin fixes. The owner
+accepted enlarged Arabic settings/Home, navigation and the current inline editor;
+see [hardware validation](#hardware-validation) for build-specific evidence.
 
 ## Build and check
 
@@ -242,6 +247,9 @@ Use Node 24 and JDK 17 for the build tools. The build compiles `shared/core` wit
 the root Gradle wrapper; the packaged app/service remain ES5 / Node 0.10 compatible.
 The LG project's own dependencies include the pinned Adhan build input; no preview
 or Android project is needed.
+
+Follow [TESTING.md](../../TESTING.md) for scope, shared-consumer requirements and
+the distinction between local automated checks and watched TV acceptance.
 
 ```powershell
 npm --prefix platforms/webos ci

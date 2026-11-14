@@ -31,11 +31,11 @@ body:
   - type: textarea
     id: compare
     attributes:
-      label: Afnon's times against an official source
-      description: For one date, Afnon's six times next to the official ones. Link the source (ministry, awqaf or a local masjid's timetable).
+      label: Launcher times against a reference
+      description: For one date, give six times and a source link. Include platform/app version, timezone, Asr school and saved offsets; identify an official timetable where available.
       placeholder: |
         Date: 2026-10-22
-        Fajr  Afnon 04:31  official 04:30
+        Fajr  launcher 04:31  official 04:30
         ...
         Source: https://...
     validations:

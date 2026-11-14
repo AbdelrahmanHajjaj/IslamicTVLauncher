@@ -1,32 +1,41 @@
-<!-- Arabic or English, either is fine. يمكنك الكتابة بالعربية أو الإنجليزية. -->
+<!-- Arabic or English. Target AbdelrahmanHajjaj/IslamicTVLauncher:main.
+     Use CONTRIBUTING.md and TESTING.md; remove instructions when filling this in. -->
 
-## What and why
+## Change and reason
 
-<!-- One topic per PR. Link the issue if there is one: Fixes #123 -->
+<!-- Describe the problem, resulting behavior and relevant issue. -->
 
-## Tested on
+## Architecture and compatibility
 
-<!-- Platform, TV model, OS/firmware and tested app version. Distinguish physical TV,
-     live DOM/service diagnostics and mocked browser tests. Say "Build only" when applicable. -->
+<!-- Name affected modules/consumers: core, data/design, Android TV, LG, preview,
+     installer/tools, docs. For shared behavior, state the canonical source and
+     each binding/gap. Describe preference/ID/signing, lifecycle, dependency,
+     permission or network changes; write "None" where appropriate. -->
 
-## Screenshots
+## Verification
 
-<!-- Arabic and English when layout changed. Android: tools/shot.sh. LG: label desktop
-     previews honestly; webOS 2.2 screenshot APIs are unreliable. Remove personal content. -->
+<!-- List the relevant TESTING.md checks with actual results. Include commit/app
+     version, device/model/OS and evidence type. Write pending or N/A with a reason;
+     do not turn emulator, mock or DOM evidence into physical-TV confirmation. -->
 
-## Checklist
+| Check / command | Runtime or device | Result |
+| --- | --- | --- |
+| | | |
 
-- [ ] Relevant checks pass: Android Gradle/regressions, LG `npm --prefix platforms/webos test`
-      and `npm --prefix platforms/webos run test:browser`, or shared-data/site tests. Mark N/A explicitly.
-- [ ] Arabic and English are checked in RTL/LTR; Android strings use `Text.java`,
-      LG uses shared strings and bilingual labels in `platforms/webos/app/app.js`.
-- [ ] Colours, sizes and timings come from `afnon-mihrab/tokens.json` (`npm run tokens` in `site/`).
-- [ ] D-pad focus works from every edge, and Back from every screen.
-- [ ] Dependencies, timers, services and network changes are documented. Android's
-      shared timer policy and LG's Activity Manager lifecycle are preserved.
-- [ ] Quranic text and prayer names are exact (surah:ayah given).
-- [ ] A shared/Android layout change checks the preview and LG renderer as applicable;
-      platform-only fixes are identified as such.
-- [ ] `CHANGELOG.md` has a line under Unreleased.
-- [ ] No personal data in screenshots/logs, pairing credentials, `state/`,
-      `local.properties`, APK/IPK/build output or non-redistributable audio.
+<!-- For UI/input: Arabic/English, RTL/LTR, size bounds, OK/Apply/Back and return
+     focus. For hardware changes: preserving upgrade and affected media, remote,
+     input/startup/lifecycle checks. Attach sanitized screenshots when useful,
+     labeled browser/emulator/TV; record human LG picture/sound observations. -->
+
+## Remaining limits
+
+<!-- Untested paths, unavailable hardware and known risks, or "None". -->
+
+## Before review
+
+- [ ] Required checks are recorded above; pending acceptance gates stay explicit.
+- [ ] Shared UI/input rules use core/catalog IDs; affected consumers and gaps agree.
+- [ ] Existing settings, installed identities and third-party notices are preserved.
+- [ ] Owning docs are current; user-visible changes have a Changelog entry.
+- [ ] Diff contains no private device/account data, keys, local configuration,
+      `state/`, build outputs, APK/IPK files or restricted recordings.

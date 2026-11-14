@@ -1,8 +1,18 @@
 # Changelog
 
-All notable changes to Afnon. Versions match `versionName` in `platforms/android-tv/build.gradle` and the `vX.Y` git tags.
+Notable changes to Islamic TV Launcher. Android versions use `versionName` in
+`platforms/android-tv/build.gradle`; LG versions use `platforms/webos/package.json`.
+Shared changes below identify their affected platforms; each shell keeps its own
+package version and release process.
 
 ## [Unreleased]
+
+### Project maintenance
+
+- Document the shared-core/platform-shell architecture, project-owned test
+  requirements and PR evidence template. Prepare independent repository maintenance
+  with retained Afnon credit, notices, history and installed update identities;
+  GitHub fork detachment remains a separate administrative action.
 
 ### Shared foundation
 

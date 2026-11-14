@@ -80,6 +80,16 @@ endings without advertising and normal restoration. **This follow-up is complete
 clean and the inspector is closed; no further LG tests are queued. Findings live in
 [AUDIO-AUDIT.md](AUDIO-AUDIT.md). This does not extend the architecture goal.
 
+## Repository preparation
+
+Project documentation, agent rules, test requirements and PR/issue templates now
+follow the implemented core/shell architecture. Historical upstream plans are
+superseded. [REPOSITORY-INDEPENDENCE.md](REPOSITORY-INDEPENDENCE.md) prepares
+detachment with retained history, attribution and installed update identities;
+the permanent GitHub action remains unexecuted and needs its own approved route.
+Documentation links, issue forms and documented commands validate. No runtime,
+device, CI workflow or remote configuration changed in this follow-up.
+
 ## Deferred and guarded
 
 Companion Android/iOS apps, LAN pairing/control, accounts/cloud, remote updates

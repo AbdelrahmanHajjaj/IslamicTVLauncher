@@ -22,7 +22,7 @@ flowchart TD
 
 | Module | Owns | Leaves to its consumers |
 | --- | --- | --- |
-| `shared/core` | Six-offset validation/normalization, prayer/reminder/comparison rules, semantic Home focus, UI control/type/range/choice and coverage checks | Astronomy, dates/timezones, clocks/timers, storage, rendering, physical key/device APIs and networking |
+| `shared/core` | Prayer flooring/selection/offsets, reminder/comparison rules, Home/All apps navigation, UI control/choice/coverage and inline numeric editor/step/bounds rules, global size policy | Astronomy, dates/timezones, clocks/timers, storage, rendering, physical key/device APIs and networking |
 | `shared/data` | Stable catalog/control IDs, bilingual labels, UI control metadata, formatter literals and exact sacred text | Formatting algorithms and platform capabilities |
 | `shared/design`, `afnon-mihrab` | Fonts/notices, theme/icon geometry/order, appearance IDs, tokens and SVG patterns | Native drawing, CSS layout, applying semantic focus and accessibility |
 | `platforms/android-tv` | Java Views, adhan-java, Android ICU, preferences, accessibility/remote handling, scheduling, media and Home integration | Shared product rules and canonical sources |
@@ -36,6 +36,12 @@ results and does not call back into a shell. Shared semantic input rules follow
 plugin/transport framework is introduced. Android remains Java Views; LG retains
 its separate TV renderer. A renderer change must be checked in other affected
 consumers; sharing tokens/data does not automatically update their screens.
+
+Define controls/choices in `shared/data/ui-contract.json` and pure behavior in
+core, then bind each shell's actual views/DOM. Shared numeric editor kinds, steps,
+bounds and adjustment govern inline controls; the specialized bearing editor stays
+explicit. Each shell keeps its saved-value conversion and applies RTL horizontal
+input once. Unsupported controls/options require declared capability gaps.
 
 Kotlin Multiplatform was selected after JVM/ES5 compilation, Java integration and
 an actual old-LG host probe. It shares tested rules without replacing existing UI
@@ -122,7 +128,8 @@ This project is independently maintained in
 The original [Afnon](https://github.com/egyjs/afnon-android-tv-launcher) MIT copyright,
 [CleanYourTV credit](CLEANYOURTV-LICENSE.txt) and [third-party notices](../THIRD_PARTY.md)
 remain. Repository history is retained; publishing, merging and GitHub detachment
-are separate owner operations. Preview build/support and optional installer downloads
+are separate owner operations, prepared in
+[REPOSITORY-INDEPENDENCE.md](REPOSITORY-INDEPENDENCE.md). Preview build/support and optional installer downloads
 target this project. A stable TV release asset must exist before the online installer
 can download it; source/local APK installation remains available.
 
@@ -140,3 +147,9 @@ is not claimed without validation; Sony Android/Google TV uses the Android shell
 Companion Android/iOS apps, LAN pairing/control, accounts/cloud and remote updates
 are deferred. TVs that cannot support later pairing need not support it to use the
 standalone launcher.
+
+[TESTING.md](../TESTING.md) defines required checks by changed boundary and consumer,
+including local LG/media prerequisites and physical acceptance. Contributions and
+PRs follow this project's [guide](../CONTRIBUTING.md) and
+[template](../.github/pull_request_template.md), independently of original Afnon's
+workflow. Detachment retains the provenance and installed identities above.

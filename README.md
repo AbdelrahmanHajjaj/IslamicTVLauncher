@@ -4,11 +4,11 @@
 
 **A household TV launcher built around the prayer day.**
 
-<p dir="rtl"><b>شاشة رئيسية لتلفاز أندرويد، تجمع مواقيت الصلاة والقبلة والأذان وإذاعة القرآن الكريم.</b></p>
+<p dir="rtl"><b>تطبيق للتلفاز يجمع مواقيت الصلاة والقبلة والأذان وإذاعة القرآن الكريم، بنسختين منفصلتين لأندرويد وLG webOS.</b></p>
 
 Arabic and English · 137 cities in 43 countries · 19 calculation methods · 14 adhan voices · 16 radio stations and reciters
 
-[Project](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher) · [Original Afnon](https://github.com/egyjs/afnon-android-tv-launcher) · [Build and install](#install) · [Architecture](docs/ARCHITECTURE.md)
+[Project](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher) · [Build and install](#install) · [Architecture](docs/ARCHITECTURE.md) · [Contribute](CONTRIBUTING.md) · [Tests](TESTING.md)
 
 ![Arabic Home browser preview using demonstration data](docs/screenshots/custom-home-browser-ar.png)
 
@@ -18,34 +18,53 @@ Arabic and English · 137 cities in 43 countries · 19 calculation methods · 14
 >
 > *Indeed, prayer has been decreed upon the believers at fixed times.* (An-Nisa 4:103)
 
-Afnon replaces the stock Android TV launcher with a home screen for prayer times, favourite apps and
-Quran radio. Show the next-prayer countdown in a mihrab or compact bar, or hide it. Prayer reminders and the
-adhan can appear over other apps; an optional compact prayer bar provides times and quick controls
-without returning to Home.
+Islamic TV Launcher brings prayer times, favourite apps and Quran radio to the
+household TV. Android can replace the stock Home screen; LG runs as a separate app
+with embedded TV input. Both use a portable Kotlin core and canonical data/design,
+with their own rendering and operating-system integration. Shared UI/input rules
+define control behavior; each shell declares its implementation gaps.
 
-This independently maintained project builds on [Afnon](https://github.com/egyjs/afnon-android-tv-launcher) and carries over
-setup, recovery and lightweight background ideas from [CleanYourTV](https://github.com/Gathin23/cleanyourtv).
-The TV app and its screensaver are named **IslamicTVLauncher (Afnon)**. The Android package remains
-`tv.afnon.home`: updates signed with the installed app's key preserve preferences and the Home
-assignment. It shares Afnon's installation identity and cannot be installed alongside it.
+This project is independently maintained in
+[AbdelrahmanHajjaj/IslamicTVLauncher](https://github.com/AbdelrahmanHajjaj/IslamicTVLauncher).
+It began with [Afnon](https://github.com/egyjs/afnon-android-tv-launcher) and retains
+credit for that foundation, along with [CleanYourTV](https://github.com/Gathin23/cleanyourtv)
+setup/recovery ideas. Our architecture, test policy and releases are maintained here.
+[Repository independence](docs/REPOSITORY-INDEPENDENCE.md) documents the prepared
+GitHub detachment; Git history and original licence notices remain.
 
-Android and LG have separate native/platform UI shells over a portable Kotlin core
-and canonical data/design sources. See the [implemented architecture](docs/ARCHITECTURE.md)
-for boundaries and independent builds. Companion apps and additional TV platforms
-are deferred. This checkout retains its Git history and original licence notices.
+Keep existing installed identities when updating: Android `tv.afnon.home`, LG
+`tv.afnon.webos` and its service `tv.afnon.webos.service`. Android retains its
+**IslamicTVLauncher (Afnon)** app/screensaver label and signing continuity. Its
+package identity is shared with original Afnon, so they cannot coexist. Companion
+apps and additional TV shells are deferred; the existing Android phone installer
+is a setup/recovery tool, not the planned companion.
 
-A [LG webOS port](platforms/webos/README.md) lives in `platforms/webos/`: full-screen HDMI inside Islamic TV Launcher,
+| Project | Role and current evidence |
+| --- | --- |
+| [Shared core](shared/core/README.md) | Pure JVM/ES5 rules, semantic UI/input contracts and common tests; no rendering or device APIs. |
+| [Android TV](platforms/android-tv/README.md) | Java/Android Views launcher; historical TCL 50C641K/Android 11 evidence. Current rewrite's physical-TV acceptance remains pending. |
+| [LG webOS](platforms/webos/README.md) | Separate app/service; installed 0.2.20 accepted on LG LF6300/webOS 2.2. Newer LG hardware remains unverified. |
+| `site/` | Browser demonstration; TV integrations are simulated. |
+| `installer/` | Android phone installation/recovery workflow; full current-branch real-phone acceptance remains pending. |
+
+Sony Android/Google TV uses the Android shell; other Sony targets need
+identification. Samsung/Tizen is research only. See the [architecture](docs/ARCHITECTURE.md)
+for boundaries and independent builds, and the [queue](docs/ARCHITECTURE-QUEUE.md)
+for current acceptance gates.
+
+The [LG webOS app](platforms/webos/README.md) lives in `platforms/webos/`: full-screen HDMI inside Islamic TV Launcher,
 prayer overlays, grouped settings, local adhan and voice previews, scheduled alerts, Today & Qibla,
 Quran radio, compact Home shortcuts and TV-app links, Home color/layout controls,
 and an optional once-per-boot startup service.
 In-app tests exercise banners, audio and background delivery; hardware validation is recorded separately.
 It targets the tested LG LF6300 / webOS 2.2 and is installed separately through Developer Mode.
 
-**Build this checkout for these features.** [Upstream APKs](https://github.com/egyjs/afnon-android-tv-launcher/releases)
-and the [upstream browser demo](https://egyjs.github.io/afnon-android-tv-launcher/) do not include all
-fork changes. The fork has been tested on **TCL 50C641K, Android 11**; upstream reports TCL 55P7K,
-Android 12, and a Super General CVTE TV, Android 9. See the [validation record](docs/LOCAL-VALIDATION.md)
-for completed checks and remaining hardware tests.
+**Build this checkout for these features.** Use this project's build/install
+instructions and support links. The feature list below describes Android behavior
+unless it names another platform; LG's guide and the [gap report](docs/UI-GAPS.md)
+describe its available controls. Historical Android checks live in
+[local validation](docs/LOCAL-VALIDATION.md); current migration evidence lives in
+[architecture evidence](docs/ARCHITECTURE-EVIDENCE.md).
 
 ## What's included
 
@@ -62,10 +81,15 @@ for completed checks and remaining hardware tests.
   to compare six calculated times with AlAdhan and show signed minute differences.
   Calculated times keep your saved offsets; reference values omit them. Results are advisory,
   with retry and cancellation, and never replace the offline schedule. Old-LG HTTPS
-  and physical-TV verification remain pending.
+  and its six-row comparison are verified on the LF6300; current Android TV
+  hardware acceptance remains pending.
 - **Adhan and reminders.** Fourteen voices, a separate Fajr recording, per-prayer switches, advance
   reminders and optional spoken announcements. The call screen restores its temporary volume change
-  afterwards. Test the banner or adhan from Settings without consuming a scheduled alert.
+  afterwards. Old LG uses the saved app percentage as an absolute TV level (30%
+  means 30/100), then restores the previous level; its volume editor stays inline.
+  Newer LG uses media-element attenuation and remains hardware-unverified; Android
+  uses system media volume and declares the app-volume editor as a gap.
+  Test the banner or adhan from Settings without consuming a scheduled alert.
 - **Qibla, Friday and Ramadan.** City-based Qibla bearing with a saved room direction; Jumu'ah and
   al-Kahf reminders on Friday; iftar and suhoor countdowns in Ramadan. The Hijri date uses Umm al-Qura;
   adjust it when local moon sighting differs. Six shared prayer icons accompany names throughout the UI.
@@ -151,7 +175,7 @@ prayer timetable. Settings and All apps are real TCL 50C641K captures in both la
 ## Install
 
 Read [setup and recovery](tools/device.md) before changing the default launcher. Build this source
-with **JDK 17 and Android SDK 34**. Enable debugging on the TV and approve the connection prompt.
+with **JDK 17, Node 24 and Android SDK 34**. Enable debugging on the TV and approve the connection prompt.
 The example address below must be replaced with your TV's address.
 
 ### From a PC
@@ -253,8 +277,8 @@ radio streams are listed in `shared/data/stations.json`; Android's
 [network security config](platforms/android-tv/src/main/res/xml/network_security.xml) permits plain HTTP only for Cairo's
 stream. Android, LG source builds and the browser preview also include a manual AlAdhan comparison: it sends the selected
 city's coordinates, date, calculation method and Asr school to `api.aladhan.com` over
-HTTPS when requested, with no polling or schedule replacement. Its old-TV HTTPS
-compatibility still needs verification. The preview uses direct browser HTTPS/CORS
+HTTPS when requested, with no polling or schedule replacement. Verified HTTPS works
+on the tested old LG through its bundled public CA root. The preview uses direct browser HTTPS/CORS
 with credentials omitted and no referrer. Favourites, themes and recent-app history stay on the TV.
 The phone installer separately
 uses the network for ADB setup and, when selected, this project's release APK and
@@ -281,24 +305,22 @@ menus and alerts together; the website frame keeps its size.
 
 ## Development and contributions
 
-Follow [CONTRIBUTING.md](CONTRIBUTING.md), including bilingual text, design tokens, physical D-pad
-checks and real-TV screenshots. Changes target this project's `main`; the
-[architecture queue](docs/ARCHITECTURE-QUEUE.md) owns the active migration scope and
-acceptance evidence. The older [upstream contribution plan](docs/CONTRIBUTION-PLAN.md)
-is historical; it does not govern this migration or authorize publication.
+Follow [CONTRIBUTING.md](CONTRIBUTING.md) and the scope matrix in
+[TESTING.md](TESTING.md). Changes target this project's `main`; the
+[architecture queue](docs/ARCHITECTURE-QUEUE.md) owns active scope and acceptance
+gates. The [PR template](.github/pull_request_template.md) records affected
+consumers, checks, evidence type and remaining limits. Start with the core's
+independent check; build only the affected shells and preview as required:
 
 ```powershell
-python -S -B -m unittest discover -s tests -v
-./gradlew.bat --offline --no-daemon :app:assembleDebug :app:lintDebug :installer:assembleDebug :installer:lintDebug
-npm.cmd --prefix site test
-npm.cmd --prefix site run build
-npm.cmd --prefix site run tokens:check
+npm.cmd --prefix shared/core ci --ignore-scripts
+./gradlew.bat -p shared/core check jvmJar --no-daemon
 ```
 
-These offline Gradle commands need dependencies already cached. Use `./gradlew` and `npm` on
-Linux/macOS. The preview's generator requires Node 24. See [local validation](docs/LOCAL-VALIDATION.md)
-for recorded results, warning counts and untested cases; a passing build alone does not make every
-feature validated on a physical TV.
+Use `./gradlew` and `npm` on Linux/macOS, with JDK 17 and Node 24. Android additionally
+needs SDK 34. Run shared JS builds sequentially. [TESTING.md](TESTING.md) covers
+platform commands, local media prerequisites and physical-device acceptance;
+a passing build does not validate a TV's picture, sound or remote.
 
 For manual preview checks, these existing ADB hooks open temporary test states without changing the
 saved city. Screenshots go to the ignored `state/` directory:
@@ -320,7 +342,7 @@ observed on one board is not proof for every TV from that brand.
 
 | Path | Contents |
 |---|---|
-| `shared/core/` | Portable JVM/ES5 prayer and reminder rules; no UI or device APIs |
+| `shared/core/` | Portable JVM/ES5 product and semantic UI/input rules; no rendering or device APIs |
 | `shared/data/` | Canonical cities, methods, bilingual text, station and voice metadata |
 | `platforms/android-tv/src/main/java/tv/afnon/home/` | Home, apps, settings, prayer calculation, radio, overlays and screensaver |
 | `platforms/android-tv/src/main/res/drawable/` | Native drawable resources; prayer vectors and background patterns are generated |
@@ -337,7 +359,8 @@ observed on one board is not proof for every TV from that brand.
 
 <div dir="rtl">
 
-**IslamicTVLauncher (Afnon)** نسخة مطوّرة من أفنون، تبقي الصلاة والإذاعة في قلب الشاشة الرئيسية.
+**Islamic TV Launcher** مشروع مستقل بدأ من أفنون، ويجمع مكتبة مشتركة وواجهتين منفصلتين لأندرويد وLG webOS.
+نحتفظ بحقوق المشروع الأصلي وتاريخه، ونتولى تطوير البنية والاختبارات والإصدارات هنا.
 اسم التطبيق وحافظة الشاشة متطابقان، ومعرّف التطبيق لم يتغيّر؛ يحتفظ التحديث بالإعدادات عند استخدام
 مفتاح التوقيع نفسه. روابط إصدارات المشروع الأصلي لا تتضمّن جميع إضافات هذه النسخة.
 
@@ -369,8 +392,9 @@ Android 11؛ اختبار مصدر HDMI حي واختبار الهاتف الك�
 
 ## Credits and licence
 
-- Original launcher, Mihrab design and project history: [egyjs/Afnon](https://github.com/egyjs/afnon-android-tv-launcher),
-  originally developed with Claude Code on a real TV. The original MIT copyright and attribution are retained.
+- Original launcher, mihrab design and project foundation: [egyjs/Afnon](https://github.com/egyjs/afnon-android-tv-launcher).
+  The original MIT copyright, attribution and Git history are retained. Islamic TV
+  Launcher maintains the current shared architecture and platform work independently.
 - Setup/recovery and colour-sampling ideas: [CleanYourTV](https://github.com/Gathin23/cleanyourtv),
   Copyright (c) 2026 Gathin, MIT; [retained licence](docs/CLEANYOURTV-LICENSE.txt).
 - Prayer calculation: [adhan-java](https://github.com/batoulapps/adhan-java), MIT, by Batoul Apps.

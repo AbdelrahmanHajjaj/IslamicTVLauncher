@@ -1,12 +1,13 @@
 name: Idea · فكرة
-description: Suggest something new for Afnon.
+description: Suggest something for household users of Islamic TV Launcher.
 labels: [enhancement]
 body:
   - type: markdown
     attributes:
       value: |
-        Afnon stays calm and private: no feeds, ads, telemetry, sign-ins or anything that phones home, and it
-        has to run smoothly on a TV with under 2 GB of RAM. Ideas that fit that are very welcome.
+        Islamic TV Launcher serves households and must run on low-memory TVs.
+        No feeds, ads, telemetry or sign-ins. Radio and manual online prayer comparison are optional.
+        Name the affected platform and shared behavior; companion apps remain deferred.
         For a ruling where scholars differ, describe the options rather than one answer.
   - type: textarea
     id: idea

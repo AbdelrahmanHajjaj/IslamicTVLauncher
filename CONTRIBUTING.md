@@ -1,133 +1,128 @@
 # Contributing to Islamic TV Launcher · المساهمة في المشروع
 
-Thank you for helping. Afnon is a home screen people look at five times a day, at prayer time, so
-the bar is calm, correct and reliable. A wrong Fajr time matters more than a missing feature.
+Islamic TV Launcher serves households using a TV remote. We maintain its product
+rules, platform shells and contribution policy in this repository. Open issues
+and pull requests in Arabic or English.
 
-<p dir="rtl">شكرًا لمساهمتك. أفنون شاشة ينظر إليها الناس خمس مرات في اليوم عند كل صلاة، لذلك نريدها
-هادئة ودقيقة ويُعتمد عليها؛ خطأ في وقت الفجر أهم من أي ميزة ناقصة. يمكنك فتح المشكلات وطلبات الدمج
-بالعربية أو الإنجليزية.</p>
+<p dir="rtl">نرحب بالمشكلات وطلبات الدمج بالعربية أو الإنجليزية. حافظ على دقة مواقيت الصلاة والنصوص الدينية، واختبر التنقل بالريموت والعربية والإنجليزية، مع الاحتفاظ بإعدادات المستخدم عند التحديث.</p>
 
-Issues and pull requests are welcome in Arabic or English.
+Start with the [architecture](docs/ARCHITECTURE.md), [UI/input contract](docs/UI-CONTRACT.md)
+and [test requirements](TESTING.md). The [durable queue](docs/ARCHITECTURE-QUEUE.md)
+owns the migration's approved scope and open hardware acceptance. Historical
+upstream plans do not govern current work.
 
-This fork also includes a separate LG webOS application in `platforms/webos/`. Read
-[`AGENTS.md`](AGENTS.md) for the platform map and [`platforms/webos/AGENTS.md`](platforms/webos/AGENTS.md)
-for LG maintenance rules. The Java, ADB, accessibility-service and APK instructions
-below apply to Android. The LG port uses ES5, a webOS JS service and IPK packages;
-its build shares catalogs, design and assets with Android; its UI and system integrations are separate.
-The shared core targets JVM and ES5. Building the preview or LG also compiles that
-core with the repository's Gradle wrapper: install JDK 17 and Node 24 first. The
-preview consumes it as a local package; LG packages the compiler's UMD files.
+## Where changes belong
 
-The native shell is in [`platforms/android-tv/`](platforms/android-tv/README.md).
-With JDK 17 and `ANDROID_HOME` set to SDK 34, run
-`./gradlew -p platforms/android-tv verifyApkSize lintDebug` independently. Root
-`:app` tasks still work alongside `:installer`; neither build changes installed IDs.
+| Project/source | Responsibility |
+| --- | --- |
+| `shared/core/` | Portable Kotlin rules, semantic navigation and UI/numeric contracts; JVM and ES5, without platform APIs. |
+| `shared/data/` | Stable catalog/control IDs, bilingual strings, methods, voices, stations and exact sacred text. |
+| `shared/design/`, `afnon-mihrab/` | Canonical assets, themes, tokens, patterns and notices. |
+| `platforms/android-tv/` | Java/Android Views shell, astronomy/calendar and Android storage, media, remote and Home integration. |
+| `platforms/webos/` | Separate ES5 renderer, adapters and Activity Manager service for LG. |
+| `site/` | Browser demonstration and generation tools; simulated device integration. |
+| `installer/`, `tools/device.py` | Existing Android-phone/PC installation and recovery, separate from a future companion app. |
 
-Changes target this project's `main`. Read the [architecture](docs/ARCHITECTURE.md)
-for implemented boundaries and the [durable queue](docs/ARCHITECTURE-QUEUE.md) for the
-active migration scope/status. Essential verification facts are in
-[architecture evidence](docs/ARCHITECTURE-EVIDENCE.md). The [upstream contribution plan](docs/CONTRIBUTION-PLAN.md)
-is historical; it does not authorize new upstream submissions or publication.
+Put common product behavior in core and define controls in the canonical catalog
+before binding them in shells. Core returns decisions from explicit inputs;
+shells own rendering, persistence, clocks, transport and OS operations. Keep
+platform gaps explicit in the generated [coverage report](docs/UI-GAPS.md).
+Use Android's existing screens for parity where the contract leaves a detail open.
+Sharing a token or control ID does not update another renderer automatically.
 
-## 1. Add your city
+Read [Android integration notes](CLAUDE.md) for Android work and
+[LG agent rules](platforms/webos/AGENTS.md) for LG work. Android remains Java Views;
+LG's installed app/service must work on WebKit 538.2 and Node 0.10.25. Build tools
+use JDK 17 and Node 24, plus Android SDK 34 for Android. See
+[independent builds](docs/ARCHITECTURE.md#independent-builds) and [TESTING.md](TESTING.md)
+for setup and exact checks. Run shared JS builds sequentially.
 
-Cities live in `shared/data/cities.json`, each with Arabic and English names,
-coordinates, a calculation method and an Asr-school default. Region membership
-lives in `shared/data/regions.json`.
+## Product and compatibility rules
 
-1. Add a city beside its country's other cities, keeping existing IDs and ordering.
-   Run `npm --prefix site run gen` to regenerate Android's `CityCatalog.java`, then
-   `npm --prefix site test` and `npm --prefix site run data:check`. Do not edit the
-   generated Java catalog. Cairo remains the fallback for old/unknown city settings.
-2. Use the method your local religious authority publishes, for example Egyptian General Authority
-   of Survey for Egypt, or Umm al-Qura for Saudi Arabia.
-3. In the PR, compare Afnon's six times for one day with an official source (a ministry or awqaf
-   site, or a local masjid's timetable) and link it. Within a minute or two is expected; say if
-   anything is further off.
+- Keep the visible product name, installed package/service IDs, signing continuity
+  and saved preferences. Upgrade in place; do not uninstall or clear data to make
+  an update work. Preserve later user changes when restoring temporary test state.
+- Edit canonical sources and regenerate Java/XML/CSS/catalog outputs through the
+  owning tools. Do not hand-edit generated projections or duplicate shared rules.
+- Ship Arabic and English together. Check RTL/LTR, joined Arabic, clipping and
+  focus at supported sizes. Do not add letter spacing to Arabic; Quranic text
+  uses Amiri. Reuse design tokens and existing controls.
+- Follow semantic focus and numeric editor/step/bounds rules. Ordinary numeric
+  settings edit inline with OK/save and Back/cancel; appearance keeps its Apply
+  scope. Translate horizontal remote input for RTL once at the shell boundary.
+- Keep prayer calculation and scheduling offline. Manual AlAdhan comparison is
+  advisory and must not replace the schedule or saved adjustments. Runtime
+  network use stays limited to requested radio/comparison; the installer's
+  documented ADB/download flow is separate. No accounts, ads, analytics or feeds.
+- Retain low-memory rendering: cached local artwork, no blur, decorative video
+  backgrounds or idle animation loops. Android prayer checks share the existing
+  service timer; LG uses its existing OS activities. Avoid new background services,
+  polling, runtime dependencies or frameworks for incidental features.
 
-## 2. Add your TV
+Companion apps/pairing and additional TV shells are deferred. Sony Android/Google
+TV uses the Android shell; Samsung/Tizen remains research. Do not describe a TV
+brand as supported from a browser demo or another model's test.
 
-The current Android branch has historical TCL 50C641K / Android 11 evidence; upstream
-reported TCL 55P7K / Android 12. Current migration hardware acceptance is tracked in
-the queue. If you run it on another TV,
-tell us how it went, even if everything worked:
+## Catalogs, prayer rules and religious content
 
-- Model, Android version and RAM.
-- Whether Home, the remote buttons service, the screensaver and the call screen survive a reboot.
-- What the remote's special buttons send. `adb shell getevent -l` shows the codes; add them to the
-  table in `RemoteKeys.java`.
-- If your brand has its own way to turn the panel off while sound plays (like TCL's Audio Only),
-  add it to `ScreenOffActivity.audioOnly()` behind a check that fails quietly elsewhere.
+Cities live in `shared/data/cities.json`, with region membership in `regions.json`.
+Keep IDs/order stable, use cited coordinates and identify the authority behind a
+method default. Run `npm --prefix site run gen`, then the relevant data/consumer
+checks. Cairo remains the fallback for old or unknown saved city IDs.
 
-## 3. Improve the launcher
+For a city/method or calculation change, include a dated six-time comparison with
+a relevant ministry, awqaf or local timetable and link the source. Record timezone,
+Asr school, method and offsets so differences can be reproduced. Report differences;
+do not promise minute-exact agreement with an official timetable from astronomical
+calculation alone. Test changed parameters, flooring and date/DST boundaries.
 
-The Android UI stays in Java and Android Views; astronomy uses adhan-java and shared
-product rules use the Kotlin core. No AndroidX or Compose. It has to stay smooth on
-a TV with under 2 GB of RAM, so:
+Preserve exact Quranic text, prayer names and complete adhan wording. Cite surah
+and ayah for changed verses and use a verified text source. Discuss ambiguous
+religious choices before changing defaults. Frozen sacred-text/calculation fixtures
+must change only with an intentional, explained source or behavior change.
 
-- **No blur, video backgrounds or shadows.** Animate with transform and opacity only.
-- **No new timers or background services.** Prayer checks share one 15-second timer in the
-  accessibility service.
-- **Bounded network access.** Only the chosen radio stream and the explicitly requested,
-  manual AlAdhan prayer-time comparison. No automatic comparison polling, accounts,
-  analytics, ads, feeds or "recommended" rows. Calculations and reminders remain offline.
-- **Design tokens.** Colours, sizes and timings live in `afnon-mihrab/tokens.json`. `Tokens.java`,
-  `colors.xml` and the preview site's CSS are generated from it: edit the JSON, then run `npm run tokens`
-  in `site/` (Node 24). Never edit the generated files; CI checks they match. Plain bilingual text
-  comes from `shared/data/strings.json`, with formatter literals in `shared/data/format-text.json`.
-  Formatting logic lives in `platforms/android-tv/src/main/templates/Text.java.template`.
-- **Arabic and English together.** Every string has both. Check the layout in RTL and in LTR.
-  Arabic gets no letter-spacing. Quranic text uses Amiri.
-- **D-pad focus is explicit.** Each screen has a focus map, with Left and Right swapped in RTL. Test
-  Up, Down, Left and Right from every edge, and Back from every screen.
-- **Verify on a real TV.** Use the test hooks in the README (`--es test friday|ramadan|call|…`) and
-  `tools/shot.sh`. Put screenshots in the PR, one in Arabic and one in English if layout changed.
+## Recordings and attribution
 
-**The web preview** (`site/`) is an Astro site that copies each screen for the browser. It reads
-`shared/data/` catalogs/text directly; fonts and artwork are still
-extracted at build time (`site/scripts/extract.mjs`). If you change a screen's layout, change its component in
-`site/src/screens/` too: `cd site && npm install && npm run dev`.
+Only propose recordings with a clear source and redistribution permission. Local
+recordings stay ignored under `state/media/`; metadata lives in
+`shared/data/voices.json`. The current downloaded collection does not establish
+redistribution rights. Do not commit or publish restricted recordings.
 
-Good fits: more cities and methods, an Inputs screen, accessibility of the call screen, more
-reciters with clear licences, other brands' screen-off modes.
+Reviewed content cuts live in `shared/data/adhan-edits.json`, guarded by exact
+source SHA-256. `node tools/prepare-adhans.mjs` prepares them once using FFmpeg;
+originals/stamps stay under `state/media-originals/`, outside packaged inputs.
+Follow the media checks in [TESTING.md](TESTING.md) and preserve complete final
+words. Keep curated findings in [AUDIO-AUDIT.md](docs/AUDIO-AUDIT.md) and raw review
+clips/transcripts private.
 
-Not a fit: content feeds, ads, telemetry, account sign-ins, anything that phones home.
+Keep the original Afnon MIT copyright, CleanYourTV credit and third-party texts.
+[Repository independence](docs/REPOSITORY-INDEPENDENCE.md) changes project
+maintenance and GitHub affiliation, without erasing provenance or retained code.
 
-## 4. Religious content
+## Pull requests and review
 
-Quranic verses, adhan wording and prayer names must be exact. For a verse, give the surah and ayah
-number, and copy it from a standard mushaf text (for example from tanzil.net). If you are unsure
-about a ruling (Asr schools, high-latitude rules, Hijri sighting), open an issue first rather than
-choosing for everyone. Afnon gives users the choice wherever scholars differ.
+1. Work on a feature branch against `AbdelrahmanHajjaj/IslamicTVLauncher:main`.
+   Keep one coherent change with its tests and docs; an approved architecture
+   change may span modules. Unrelated cleanup belongs separately.
+2. Follow [TESTING.md](TESTING.md), add focused regressions for changed rules/bugs
+   and check affected consumers. State pending hardware checks explicitly; a
+   passing mock or emulator does not close a physical-TV gate.
+3. Fill the [PR template](.github/pull_request_template.md) with the problem,
+   resulting behavior, affected modules, commands/results and remaining limits.
+   Label screenshots browser/emulator/TV; record human LG observations where TV
+   capture APIs cannot show the result. Update owning docs and the Changelog for
+   user-visible behavior.
+4. Review the diff for credentials, device/account identifiers, private content,
+   keys, `state/`, local configuration, build outputs and restricted audio. Keep
+   raw logs/backups/captures private; share sanitized evidence only.
+5. Resolve relevant failures and new touched-code warnings. Draft review can
+   proceed while acceptance is pending; do not claim hardware/release readiness.
+   Publishing, merging, releasing and permanent repository administration require
+   the corresponding owner authorization. A local change or PR is not a release.
 
-## 5. Audio
+Report a TV issue with platform, model, OS/firmware, app version and reproducible
+steps. Distinguish Android remote/Home integration from LG's window/input behavior.
+Do not include device addresses, pairing keys or private programme content.
 
-Only add recordings you have the right to share, and say where each one comes from and under what
-licence. Local recordings go in ignored `state/media/adhan/`; metadata and download filenames
-belong in `shared/data/voices.json`. Run `node tools/catalogs.mjs` to update the
-native catalog and fetch list. Do not commit recordings without permission to distribute them.
-Reviewed content cuts live in `shared/data/adhan-edits.json`, guarded by the exact
-original SHA-256 and applied once by `node tools/prepare-adhans.mjs` using FFmpeg.
-Keep originals under `state/media-originals/`, never inside the packaged `state/media/`.
-Run `node tools/prepare-adhans.test.mjs` for changes to this preparation step; its
-synthetic-audio check requires FFmpeg/ffprobe and verifies unchanged encoded frames,
-backups, idempotence and rejection of unknown recordings. Keep audit findings in
-`docs/AUDIO-AUDIT.md`, with raw transcripts/review clips ignored.
-
-## Pull requests
-
-- One topic per PR. Small is fine.
-- Say which TV you tested on, and attach screenshots.
-- Android changes: `./gradlew :app:assembleDebug` must build with no new warnings.
-- LG changes: run `npm --prefix platforms/webos test` and `npm --prefix platforms/webos run test:browser`
-  with the prerequisites in [`platforms/webos/README.md`](platforms/webos/README.md#build-and-check).
-  Separate mocked browser evidence from actual TV picture/sound and remote checks.
-  A desktop preview is not a screenshot of the TV. Run probe tests only when changing
-  `tools/webos-background-probe/`; do not install a historical probe as routine QA.
-- **No personal data.** Before you push, check screenshots and logs for your Wi-Fi name, IP
-  addresses, serial numbers, your home city or room direction if you'd rather keep them private,
-  and other apps' content playing behind Afnon. Never commit `state/`, `local.properties`,
-  pairing credentials, APK/IPK output or downloaded/generated speech recordings.
-- Be kind in reviews.
-
-By contributing you agree that your work is released under the repo's MIT licence.
+Code contributions use the repository's [MIT licence](LICENSE). Retain third-party
+notices and identify any dependency or asset rights change in the PR.

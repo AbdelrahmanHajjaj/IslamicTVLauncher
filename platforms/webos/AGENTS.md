@@ -46,6 +46,11 @@ earlier experiments; later versioned validation in this README takes precedence.
 
 ## Build and validation
 
+Follow the root [`TESTING.md`](../../TESTING.md) scope matrix and PR evidence rules.
+Shared UI/input changes start in core/catalog, then bind the LG controls; ordinary
+numbers use the shared inline editor, step and bounds. Keep capability/choice gaps
+explicit and regenerate the gap report rather than silently omitting controls.
+
 From the repository root:
 
 ```sh

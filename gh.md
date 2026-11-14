@@ -4,6 +4,8 @@ This is the project's Android release procedure. Normal work uses a feature bran
 and PR into `AbdelrahmanHajjaj/IslamicTVLauncher`'s `main`. A commit or PR request does
 not authorize merging, publishing or detaching the GitHub fork. Current migration
 acceptance and hardware gates live in [the durable queue](docs/ARCHITECTURE-QUEUE.md).
+Use [TESTING.md](TESTING.md) for required checks and
+[repository independence](docs/REPOSITORY-INDEPENDENCE.md) for detachment preparation.
 
 LG versions, tests and IPK packaging are separate; follow
 [its guide](platforms/webos/README.md) and [agent rules](platforms/webos/AGENTS.md).

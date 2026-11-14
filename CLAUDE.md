@@ -1,14 +1,16 @@
-# Islamic TV Launcher: notes for Claude
+# Islamic TV Launcher: Android integration notes
 
 Read `AGENTS.md` first for repository-wide instructions and the platform map.
 LG work belongs in `platforms/webos/`; read `platforms/webos/AGENTS.md` and `platforms/webos/README.md` for its
 ES5/Node 0.10 constraints, Activity Manager service and hardware validation workflow.
 The Android rules below do not prohibit the LG service or embedded HDMI video.
+Use `TESTING.md` for this project's test requirements and `docs/ARCHITECTURE.md`
+for the core/shell boundary. These notes do not override the shared UI/input contract.
 
-Afnon is an Android TV home screen (HOME launcher) built around the prayer day: next-prayer countdown in a mihrab
+The Android shell is a home screen (HOME launcher) built around the prayer day: next-prayer countdown in a mihrab
 arch, offline prayer times, Qibla, the adhan at prayer time, reminders, Friday/Ramadan modes and Quran Radio Cairo.
-Package `tv.afnon.home`. This fork is github.com/AbdelrahmanHajjaj/IslamicTVLauncher;
-upstream is github.com/egyjs/afnon-android-tv-launcher (MIT).
+Package `tv.afnon.home`. The maintained project is github.com/AbdelrahmanHajjaj/IslamicTVLauncher;
+original Afnon attribution and MIT notices remain. Contribution/release policy belongs to this project.
 
 Read `README.md` (features, install, TCL notes) and `CONTRIBUTING.md` (the rules below in full) before larger work.
 Releasing: `gh.md`. History: `CHANGELOG.md`. Design spec: `afnon-mihrab/HANDOFF.md` and `afnon-mihrab/design/`.
@@ -16,8 +18,11 @@ Machine- and TV-specific details (TV address, adb path) live in `CLAUDE.local.md
 
 ## Android target device
 
-TCL 55P7K, Google TV, Android 12, 1920×1080, ~1.8 GB RAM, weak GPU, D-pad remote only. Everything is checked on the
-real TV over ADB, never just in the build.
+Historical local hardware: TCL 50C641K, Android 11. The original project also
+reported TCL 55P7K/Android 12 and Super General/CVTE Android 9; that is provenance,
+not current branch acceptance. Confirm the actual connected model/firmware before
+testing. Target low-memory TVs with D-pad remotes. The queue owns the current
+physical Android TV gate; emulator/build results cannot close it.
 
 ## Android rules
 
@@ -113,6 +118,6 @@ layout changes in the app, update its component. `npm run dev` / `npm run build`
 LG has its own package version and IPK build; see `platforms/webos/AGENTS.md`. Do not apply
 these Android signing, ADB or APK release steps to the LG port.
 
-Debug-signed as in upstream, with `~/.android/debug.keystore` on the maintainer's machine:
+Existing builds use `~/.android/debug.keystore` on the maintainer's machine:
 releases must keep that key or installed TVs can't upgrade. Steps in `gh.md`; record changes in `CHANGELOG.md`
 under Unreleased as you go.

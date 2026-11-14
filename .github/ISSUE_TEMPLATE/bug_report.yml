@@ -26,16 +26,16 @@ body:
   - type: input
     id: tv
     attributes:
-      label: TV
-      placeholder: TCL 55P7K, Google TV, Android 12
+      label: Platform, TV model and OS/firmware
+      placeholder: LG LF6300, webOS 2.2; or TCL 50C641K, Android 11
     validations:
       required: true
   - type: input
     id: version
     attributes:
-      label: Afnon version
-      description: "The release you installed, or `adb shell dumpsys package tv.afnon.home | grep versionName`."
-      placeholder: "0.2.1"
+      label: Islamic TV Launcher version
+      description: "App version or source commit. Say if this is a physical TV, emulator or browser preview."
+      placeholder: "LG 0.2.20, physical TV"
     validations:
       required: true
   - type: dropdown
@@ -47,5 +47,5 @@ body:
     id: logs
     attributes:
       label: Screenshots or logs
-      description: "Optional. `adb logcat -d | grep -i afnon` helps for crashes."
+      description: "Optional sanitized evidence. Label browser/emulator/TV captures; keep device addresses, keys and private content out. ADB logs apply only to Android."
       render: text

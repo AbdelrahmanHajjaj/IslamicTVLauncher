@@ -1,5 +1,10 @@
 # Local validation — 25 October 2026
 
+Historical Android evidence follows. Use [TESTING.md](../TESTING.md) for current
+requirements and [ARCHITECTURE-QUEUE.md](ARCHITECTURE-QUEUE.md) for current gates;
+later migration results live in [ARCHITECTURE-EVIDENCE.md](ARCHITECTURE-EVIDENCE.md).
+Old device/branch state and counts below do not describe the current checkout.
+
 Tested on TCL 50C641K, Android 11/API 30 confirmed over ADB, firmware V8-R51MT02-LF1V903.021315. This is a chronological record: counts and selections below describe each increment, not necessarily the latest state. Work was initially local-only; a later explicitly authorised fetch/merge is recorded below. No push or PR was made. Existing CleanYourTV working changes were left alone.
 
 ## Passed locally

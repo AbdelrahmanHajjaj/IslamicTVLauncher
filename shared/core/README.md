@@ -3,6 +3,8 @@
 Pure product rules compiled from one Kotlin source to a JVM library and ES5
 JavaScript. The migration queue and adoption decisions live only in
 [`docs/ARCHITECTURE-QUEUE.md`](../../docs/ARCHITECTURE-QUEUE.md).
+Follow the root [test requirements](../../TESTING.md) for common regressions and
+affected consumer checks; a core pass alone does not validate a platform renderer.
 
 `PrayerRules` normalizes/validates six integer prayer offsets in [-30, 30] and selects the
 current/next prayer from six already-calculated epoch-millisecond times plus

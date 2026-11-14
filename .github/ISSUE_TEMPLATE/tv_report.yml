@@ -1,41 +1,44 @@
 name: My TV · تلفازي
-description: How Afnon runs on a TV other than the TCL 55P7K, even if everything worked.
+description: Report Islamic TV Launcher behavior on an Android TV or LG webOS device.
 labels: [tv-report]
 body:
   - type: markdown
     attributes:
       value: |
-        Afnon is tested on one TCL 55P7K. Reports from other TVs are how it gets better on yours.
+        Report your actual device and build; behavior differs between Android and LG.
+        Android Home/remote services do not apply to LG. Mark unavailable features N/A.
         Leave out your Wi-Fi name, IP addresses and serial numbers.
   - type: input
     id: tv
     attributes:
-      label: TV model, Android version and RAM
-      placeholder: Super General SGLED43, Android 9, 1.5 GB
+      label: Platform, TV model, OS/firmware and RAM if known
+      placeholder: LG LF6300, webOS 2.2; or TCL 50C641K, Android 11
     validations:
       required: true
   - type: input
     id: version
     attributes:
-      label: Afnon version
-      placeholder: "0.2.1"
+      label: Islamic TV Launcher version or source commit
+      placeholder: "LG 0.2.20"
     validations:
       required: true
   - type: checkboxes
     id: works
     attributes:
-      label: What works after a reboot
+      label: What you checked (leave untested items unchecked)
       options:
-        - label: Afnon stays as Home
-        - label: The Afnon remote buttons service stays on
-        - label: The call to prayer comes up by itself with the adhan
-        - label: The screensaver
-        - label: The radio, and the radio with the screen off
+        - label: In-place update preserves settings
+        - label: Arabic/English layout and remote navigation
+        - label: Adhan and normal picture/sound restoration
+        - label: Enabled startup works after a watched reboot
+        - label: Android default Home and remote buttons service
+        - label: LG embedded input and return from other apps
+        - label: Radio or screensaver (describe which below)
   - type: textarea
     id: buttons
     attributes:
       label: Remote buttons
-      description: Which special buttons (Settings, Netflix, YouTube, Source…) do what. `adb shell getevent -l` shows the codes they send.
+      description: Which navigation/special buttons work and how focus returns. Android ADB key diagnostics do not apply to LG.
   - type: textarea
     id: notes
     attributes:

@@ -41,7 +41,8 @@ python3 -S -B -m unittest discover -s tests -v
 ```
 
 See [contribution rules](../../CONTRIBUTING.md), [native integration notes](../../CLAUDE.md)
-and [guarded installation and recovery](../../tools/device.md). Edit canonical data
+and [test requirements](../../TESTING.md), plus
+[guarded installation and recovery](../../tools/device.md). Edit canonical data
 and design sources in `shared/` and `afnon-mihrab/`; regenerate their Java/XML/PNG
 outputs through the existing tools. Keep restricted audio and build/device state
 ignored. Automated checks do not replace physical TV, sound and remote acceptance.
@@ -80,6 +81,13 @@ establishes remote focus mode, with further key codes dispatched through the rea
 Activity handler; physical remote/firmware delivery remains a separate hardware check.
 App CI runs this mode on an API 34 emulator. Shell omissions are declared in
 `src/androidTest/assets/ui-{gaps,choice-gaps}.json`; see the generated [gap report](../../docs/UI-GAPS.md).
+
+Use `-e check size` for both-language size-contract and real View layout checks
+across 80–150%. `-e check size-windows` is an owned-emulator check requiring API
+29+: it exercises measured overlay windows, dialogs and screensaver sizing and
+temporarily changes accessibility/screensaver system settings. Use an isolated
+emulator for that mode. Both modes restore their preferences; inspect the runner's
+result. They are separate from CI's `ui` mode and physical remote/HDMI checks.
 
 Use `-e check online` for the comparison's strict JSON/ISO, 19-method mapping,
 offset/civil-Fajr, bounded transport/deadline and bilingual rendered UI checks.
