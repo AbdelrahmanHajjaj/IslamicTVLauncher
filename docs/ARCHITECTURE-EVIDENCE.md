@@ -87,7 +87,7 @@ or vendor remote/input/power evidence. The required TV checklist is in the queue
 | Sizing/Home | Inline 80–150%/10% draft/save/cancel; tested enlarged settings/Home, separated header/mihrab and larger prayer text. Owner accepted 32px Home art clearance. |
 | Appearance preview | Compact/Hidden patterns stay complete after redraw; fixed old-WebKit SVG image paint clipping with a CSS background. |
 | Startup | Owner power-cycled; launcher opened with HDMI automatically, preferences retained, exactly one boot launch; Browser did not trigger another startup launch. |
-| Volume | Native relative gain applies before local audio, restores owned baseline afterward and preserves mute/manual overrides; quiet playback/restoration accepted. |
+| Volume | 0.2.19 changes native gain to the absolute 0–100 scale. Owner confirms 30 during adhan, restoration to 50 and normal picture/sound; mute/manual ownership remains intact. |
 | Online | Real verified HTTPS returns six Cairo/Egyptian advisory rows, readable table and correct Back focus. Calculations/reminders remain offline. |
 | HDMI adhan | Watched video-only then quiet concurrent-audio probes kept picture moving, suppressed programme sound and restored normally. Installed 0.2.17 standard 12s test is owner-confirmed working. |
 | Full duration | Owner confirms full-length adhan was previously tested. Accept that evidence; do not keep it as an open gate without a new regression. |
@@ -117,8 +117,19 @@ replacement, arbitrary-app embedding or standby wake is claimed for old LG.
 - `f49a67d`: HDMI adhan uses the documented native video-only source; volume and
   lifecycle handlers remain unchanged.
 
-The full adhan/third-party texts remain exact. Recording advertising cleanup is
-new follow-up work, not an outstanding architecture requirement.
+`469885c` unifies numeric editor kinds/steps/draft bounds in core, consumed by
+Android, LG and preview. All supported LG numeric rows edit inline; bearing keeps
+its specialized card. JVM/JS, 93 legacy ES5 checks, all 16 LG size/language cases,
+preview, Android build/lint and 40 regressions pass. Installed 0.2.20 matches 103
+files; Node/WebKit pass 93 checks and Node passes 30 adapter checks. Real inline
+save 25→30→25 restores all 31 preferences. Cleaned Al-Qatami/Chebae previews reach
+natural EOF, native level 25 and normal HDMI/50 restoration; current Al-Menshawy
+selections are preserved. Final state has no test/audio/volume owner and the
+inspector is closed. Post-0.2.20 human UI/sound feedback is still pending.
+
+The full adhan/third-party texts remain exact. Recording cleanup and inline
+follow-up findings are in [AUDIO-AUDIT.md](AUDIO-AUDIT.md); Android TV hardware
+remains the architecture acceptance gate.
 
 ## Evidence locations
 
@@ -128,5 +139,7 @@ new follow-up work, not an outstanding architecture requirement.
 - `state/platform-core/lg-0217-candidate/`: exact local IPK and payload manifest.
 - `state/platform-core/q095-0217-lg-*-service/`: before/after/final/after12 state
   comparisons. Always capture a fresh baseline for a later device action.
+- `state/media-review/lg-0220-candidate/` and `state/platform-core/q095-0220-lg-*-service/`:
+  latest exact package/hash manifest, preserving upgrade and final-state evidence.
 - Earlier core/runtime/upgrade proofs remain under `state/platform-core/`; source
   and investigation chronology are recoverable from Git. Do not publish raw state.

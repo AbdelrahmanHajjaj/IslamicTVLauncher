@@ -37,13 +37,14 @@ tested, as the owner confirms; do not reopen that gate without a new failure.
 
 ## Current checkpoint
 
-- Old LG **0.2.17**, source `f49a67d`, is installed and verified. HDMI adhan keeps
+- Old LG **0.2.20**, source `469885c`, is installed; all 103 files match the candidate.
+  Node/WebKit each pass 93 core checks; Node also passes 30 adapter checks. HDMI adhan keeps
   video moving behind the central mihrab while suppressing programme sound;
   existing native-volume ownership and input restoration remain intact.
-- Owner accepted the normal 12-second installed test. The artificial 2-second
-  diagnostic was too short to establish audibility; it was not a playback defect.
+- Owner accepted the normal 12-second test and 0.2.19's absolute 30/100 level,
+  restoring 50 with normal HDMI picture/sound. The same volume service is in 0.2.20.
 - All 31 preferences, selected/current input, complete startup, boot and master
-  volume/mute are preserved. No active test/audio owner; diagnostics/emulator closed.
+  volume/mute are preserved. No active test/audio owner; inspector/emulator closed.
 - Online HTTPS, shared navigation/sizing, Arabic clipping fixes, Home layout,
   patterned previews and startup/power checks are accepted on the old LG.
 - Other HDMI ports and newer LG/Samsung/Sony hardware are unverified. This is a
@@ -54,7 +55,7 @@ tested, as the owner confirms; do not reopen that gate without a new failure.
 When Android TV hardware is available, follow `CLAUDE.md`/`CONTRIBUTING.md`:
 
 1. Capture current settings/device state; perform a preserving in-place upgrade.
-2. Check both languages, joined Arabic, global sizing, remote focus/return routes.
+2. Check both languages, joined Arabic, inline numeric controls, sizing and focus.
 3. Check online comparison, prayer/reminder/media, startup and lifecycle on the TV.
 4. Record the concise result and essential evidence. Close the goal only when
    this required acceptance passes, or the owner explicitly changes its scope.
@@ -69,11 +70,15 @@ outside packaged assets. The owner accepted the other four endings unchanged.
 LG 0.2.18 is installed with all 103 files verified; settings/input/startup/volume
 are preserved. Its normal short adhan and Al-Qatami ending restore correctly.
 LG 0.2.19 is installed; absolute 30/100 and restoration to 50 are owner-confirmed.
-The owner requests unified inline controls and a shared root contract. Centralize
-numeric editor/step/adjustment rules in core and bind Android, LG and preview.
-Make all supported LG numeric settings inline, retaining the existing bearing
-calibration editor and explicit platform gaps. Build/test/deploy 0.2.20, then finish
-watched inline save/cancel and saved regular/Fajr EOF/restoration checks. Findings live in
+Shared numeric editor/step/adjustment rules now drive Android, LG and preview.
+All supported LG numbers edit inline; the bearing card and platform gaps remain
+explicit. Core, LG browser/service, preview, Android build/lint and 40 regressions
+pass. 0.2.20 preserves all 31 current preferences (25%, both voices Al-Menshawy),
+HDMI, startup, boot and volume/mute. Actual inline save 25→30→25 changes only
+volume. Cleaned Al-Qatami/Chebae previews reach natural EOF at native 25 and restore
+HDMI/50; final state is clean. **Next:** record the pending owner confirmations of
+0.2.20 picture/sound, physical inline editing/cancellation and audible endings.
+Software/device diagnostics are complete; the owned inspector is closed. Findings live in
 [AUDIO-AUDIT.md](AUDIO-AUDIT.md). This does not extend the architecture goal.
 
 ## Deferred and guarded

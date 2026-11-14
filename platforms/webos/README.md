@@ -319,7 +319,16 @@ The owner confirms TV level 30 during adhan and restoration to 50 with normal
 HDMI picture/sound. Version 0.2.20 unifies inline numeric editing through core
 rules consumed by Android, LG and the preview. Core JVM/JS and 93 legacy checks,
 LG service/browser suites, all 16 size/language cases, preview and Android
-build/lint/regressions pass locally. Watched inline-control acceptance follows.
+build/lint/regressions pass locally. The installed 0.2.20 payload matches all 103
+candidate files; Node/WebKit each pass 93 checks and Node passes 30 adapter checks.
+Actual UI save 25→30→25 changes only volume, restoring all 31 preferences. The
+owner's current Al-Menshawy choices for both roles remain unchanged. Two temporary
+cleaned Al-Qatami/Chebae previews seek to their final eight seconds, reach natural
+EOF at native level 25 and restore normal HDMI and level 50 without a watchdog.
+Final input/startup/boot/mute/settings match the fresh baseline, with no audio,
+overlay, pending test or volume owner. The inspector is closed. Post-0.2.20
+human picture/sound, inline remote/cancel and ending observations remain requested;
+DOM/service diagnostics are not substituted for that feedback.
 
 Version 0.2.17 was installed over 0.2.16 on 13 November 2026. All 103 installed
 app/service files match the verified candidate; Node 0.10.25 passes 88 current
